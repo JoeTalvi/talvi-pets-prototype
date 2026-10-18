@@ -1,0 +1,4 @@
+/* Production UI sources copied byte-for-byte; slices from production-reuse.md. */
+.ns-modal{border:50px solid transparent;border-image:url('/assets/ui/Panel_ModalDialog.png') 100 fill / 50px / 0 stretch}
+.ns-btn-primary{border:20px solid transparent;border-image:url('/assets/ui/Btn_Primary_Normal.png') 40 108 fill / 20px 45px / 0 stretch;background:none}
+.ns-btn-primary:active{filter:brightness(.94)}

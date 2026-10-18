@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "Bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "strict": true,
+    "types": [
+      "vite/client",
+      "vitest/globals",
+      "node"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@sim/*": [
+        "src/sim/*"
+      ],
+      "@content/*": [
+        "src/content/*"
+      ],
+      "@app/*": [
+        "src/app/*"
+      ],
+      "@view/*": [
+        "src/view/*"
+      ],
+      "@ui/*": [
+        "src/ui/*"
+      ]
+    }
+  },
+  "include": [
+    "src",
+    "tests",
+    "vite.config.ts"
+  ]
+}

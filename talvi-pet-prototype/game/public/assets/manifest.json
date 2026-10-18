@@ -1,0 +1,215 @@
+{
+  "schemaVersion": 1,
+  "purpose": "WORK-001 runtime registry and stopgap provenance; creative approval pending",
+  "entries": [
+    {
+      "id": "ui/Panel_ModalDialog",
+      "type": "image",
+      "url": "ui/Panel_ModalDialog.png",
+      "px": {
+        "w": 832,
+        "h": 492
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/UI/Panel_ModalDialog.png",
+      "postProcess": "byte-for-byte copy; production retains its own ai-placeholder ledger",
+      "hash": "4ac0918a42e179309b2fdeb6ac59fd62ba819138d39615458f6f021f38c6a168",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "TASK-022 / WORK-001",
+      "history": []
+    },
+    {
+      "id": "ui/Btn_Primary_Normal",
+      "type": "image",
+      "url": "ui/Btn_Primary_Normal.png",
+      "px": {
+        "w": 532,
+        "h": 182
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/UI/Btn_Primary_Normal.png",
+      "postProcess": "byte-for-byte copy; production retains its own ai-placeholder ledger",
+      "hash": "94f50c1cf0b21994d1554d61327e1a588d8f2941ec2df8641fd9e4cd6e87c945",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "TASK-022 / WORK-001",
+      "history": []
+    },
+    {
+      "id": "ui/Joystick_Base",
+      "type": "image",
+      "url": "ui/Joystick_Base.png",
+      "px": {
+        "w": 328,
+        "h": 328
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/UI/Joystick_Base.png",
+      "postProcess": "byte-for-byte copy; production retains its own ai-placeholder ledger",
+      "hash": "5a9ac2359038155ca3ceda99515dbae4bd0817b880a0e50bbdb462b8eeba115b",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "TASK-022 / WORK-001",
+      "history": []
+    },
+    {
+      "id": "ui/Joystick_Handle",
+      "type": "image",
+      "url": "ui/Joystick_Handle.png",
+      "px": {
+        "w": 178,
+        "h": 178
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/UI/Joystick_Handle.png",
+      "postProcess": "byte-for-byte copy; production retains its own ai-placeholder ledger",
+      "hash": "5386616225ba29cf5e39fa4ea1e946d53009403fa160a9156c2d28e6b0fade9d",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "TASK-022 / WORK-001",
+      "history": []
+    },
+    {
+      "id": "fonts/baloo-2",
+      "type": "font",
+      "url": "fonts/baloo-2-wght.woff2",
+      "family": "Baloo 2",
+      "weight": "400 800",
+      "status": "production-reference",
+      "origin": "production",
+      "source": "@fontsource-variable/baloo-2@5.3.0/files/baloo-2-latin-wght-normal.woff2 (Google Fonts, SIL OFL 1.1)",
+      "note": "Production family; verified package name via npm view; latin variable subset",
+      "hash": "26fb4610d4bc976d2584ca15e66c11465dbc1f267a10dca668fcb3080dfe59c1",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "TASK-022 / WORK-001",
+      "history": []
+    },
+    {
+      "id": "fonts/nunito",
+      "type": "font",
+      "url": "fonts/nunito-wght.woff2",
+      "family": "Nunito",
+      "weight": "200 1000",
+      "status": "production-reference",
+      "origin": "production",
+      "source": "@fontsource-variable/nunito@5.3.0/files/nunito-latin-wght-normal.woff2 (Google Fonts, SIL OFL 1.1)",
+      "note": "Production family; verified package name via npm view; latin variable subset",
+      "hash": "ba344451eab25b217a165363b1982048a5e5830a0daf36577973955a04cac793",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "TASK-022 / WORK-001",
+      "history": []
+    },
+    {
+      "id": "rooms/dog-room",
+      "type": "image",
+      "url": "rooms/dog-room.jpg",
+      "px": {
+        "w": 1920,
+        "h": 1080
+      },
+      "status": "ai-placeholder",
+      "origin": "derived",
+      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/room-dog-iso.jpg",
+      "generator": "sips + ffmpeg",
+      "seed": 1012,
+      "postProcess": "sips --resampleHeightWidth 1080 1920 -s formatOptions 80 <source> --out <output>",
+      "note": "Phase 1 Asset-Bot original: runs/generate-image/room-dog-iso/1792171014237-c18ux4/candidate_002.png; single-frame integration stopgap, not creative approval",
+      "hash": "be0be1c52394e4c4df6dbf55bf32e5891e2737b9aa460a657f9b1c70547eb786",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "TASK-022 / WORK-001",
+      "history": []
+    },
+    {
+      "id": "player/avatar-sheet",
+      "type": "spritesheet",
+      "url": "player/avatar-sheet.png",
+      "px": {
+        "w": 192,
+        "h": 256
+      },
+      "status": "ai-placeholder",
+      "origin": "derived",
+      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/player.png",
+      "generator": "sips + ffmpeg",
+      "seed": 1004,
+      "postProcess": "sips --resampleHeight 256 <source> --out <intermediate>; ffmpeg -i <intermediate> -vf pad=192:256:(ow-iw)/2:oh-ih:color=0x00000000 -frames:v 1 <output>",
+      "note": "Phase 1 Asset-Bot original: runs/generate-image/player/1792069414927-mladn7/candidate_001.png; single-frame integration stopgap, not creative approval",
+      "frame": {
+        "w": 192,
+        "h": 256
+      },
+      "clips": {
+        "idle": {
+          "start": 0,
+          "end": 0,
+          "frameRate": 1,
+          "repeat": -1
+        }
+      },
+      "hash": "71130166669b3998c68fd6778af5ba678135087e72c22dca3c50b01f655e3d44",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "TASK-022 / WORK-001",
+      "history": []
+    },
+    {
+      "id": "charms/dog-bed",
+      "type": "image",
+      "url": "charms/dog-bed.png",
+      "px": {
+        "w": 320,
+        "h": 256
+      },
+      "status": "ai-placeholder",
+      "origin": "derived",
+      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/charm-dog-bed.png",
+      "generator": "sips + ffmpeg",
+      "seed": 2001,
+      "postProcess": "sips --resampleHeight 256 <source> --out <intermediate>; ffmpeg -i <intermediate> -vf pad=320:256:(ow-iw)/2:oh-ih:color=0x00000000 -frames:v 1 <output>",
+      "note": "Phase 1 Asset-Bot original: runs/generate-image/charm-dog-bed/1792069521456-5lkt2t/candidate_001.png; single-frame integration stopgap, not creative approval",
+      "hash": "fb835c68955c662187dd5335d45acbd164d3e620d333b574e00cfe548bebce09",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "TASK-022 / WORK-001",
+      "history": []
+    },
+    {
+      "id": "charms/lamp",
+      "type": "image",
+      "url": "charms/lamp.png",
+      "px": {
+        "w": 160,
+        "h": 192
+      },
+      "status": "ai-placeholder",
+      "origin": "derived",
+      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/charm-lamp.png",
+      "generator": "sips + ffmpeg",
+      "seed": 2002,
+      "postProcess": "sips --resampleHeight 192 <source> --out <intermediate>; ffmpeg -i <intermediate> -vf pad=160:192:(ow-iw)/2:oh-ih:color=0x00000000 -frames:v 1 <output>",
+      "note": "Phase 1 Asset-Bot original: runs/generate-image/charm-lamp/1792069539224-cyg5me/candidate_001.png; single-frame integration stopgap, not creative approval",
+      "hash": "bf8c7973b94c514647bef15e691aa54114a455a477c17d284528abc3deee473f",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "TASK-022 / WORK-001",
+      "history": []
+    },
+    {
+      "id": "sfx/place",
+      "type": "audio",
+      "urls": [
+        "sfx/place.m4a",
+        "sfx/place.ogg"
+      ],
+      "durationMs": 279,
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "working/TASK-022/prepare-assets.py (deterministic decaying sine pop)",
+      "generator": "Python waveform, afconvert, libsndfile",
+      "postProcess": "44100 Hz mono PCM, 220 ms; afconvert AAC 96k, libsndfile Vorbis default quality (ffmpeg lacks mono Vorbis support)",
+      "hash": "a0f4106a1c8f53486dabf5330391fa3943186ba8d1ed032a09933b466a6d8d57",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "TASK-022 / WORK-001",
+      "history": [],
+      "note": "Source waveform and decoded Vorbis220ms; AAC container reports278.639ms including encoder delay/padding (ffprobe)."
+    }
+  ]
+}

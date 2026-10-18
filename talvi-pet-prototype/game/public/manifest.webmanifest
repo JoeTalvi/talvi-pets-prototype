@@ -1,0 +1,9 @@
+{
+  "name": "Talvi Integration Room",
+  "short_name": "Talvi",
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#efe7d6",
+  "theme_color": "#efe7d6"
+}
