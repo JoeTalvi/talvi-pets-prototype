@@ -1,0 +1,1298 @@
+{
+  "street.json": {
+    "walkArea": [
+      {
+        "x": 80,
+        "y": 780
+      },
+      {
+        "x": 1840,
+        "y": 780
+      },
+      {
+        "x": 1840,
+        "y": 940
+      },
+      {
+        "x": 80,
+        "y": 940
+      }
+    ],
+    "playerSpawn": {
+      "x": 960,
+      "y": 900,
+      "facing": "down"
+    },
+    "houses": [
+      {
+        "projectId": "starter-house",
+        "x": 360,
+        "y": 880,
+        "stageSprites": [
+          "houses/fixture",
+          "houses/fixture",
+          "houses/fixture",
+          "houses/fixture",
+          "houses/fixture",
+          "houses/fixture"
+        ],
+        "door": {
+          "id": "starter-front",
+          "rect": {
+            "x": 320,
+            "y": 780,
+            "w": 80,
+            "h": 50
+          },
+          "target": {
+            "scene": "interior",
+            "roomId": "dog-room",
+            "doorId": "to-street"
+          },
+          "spawn": {
+            "x": 360,
+            "y": 860,
+            "facing": "down"
+          }
+        },
+        "attentionAnchor": {
+          "x": 360,
+          "y": 400
+        },
+        "arrivalPath": [
+          {
+            "x": 260,
+            "y": 900
+          },
+          {
+            "x": 360,
+            "y": 805
+          }
+        ]
+      },
+      {
+        "projectId": "pet-house",
+        "x": 1360,
+        "y": 880,
+        "stageSprites": [
+          "houses/fixture",
+          "houses/fixture",
+          "houses/fixture",
+          "houses/fixture",
+          "houses/fixture",
+          "houses/fixture"
+        ],
+        "door": {
+          "id": "pet-front",
+          "rect": {
+            "x": 1320,
+            "y": 780,
+            "w": 80,
+            "h": 50
+          },
+          "target": {
+            "scene": "interior",
+            "roomId": "owl-room",
+            "doorId": "to-street"
+          },
+          "spawn": {
+            "x": 1360,
+            "y": 860,
+            "facing": "down"
+          }
+        },
+        "attentionAnchor": {
+          "x": 1360,
+          "y": 400
+        },
+        "arrivalPath": [
+          {
+            "x": 1260,
+            "y": 900
+          },
+          {
+            "x": 1360,
+            "y": 805
+          }
+        ]
+      }
+    ],
+    "groundTiles": [
+      {
+        "sprite": "world/grass",
+        "x": -960,
+        "y": -540
+      },
+      {
+        "sprite": "world/grass",
+        "x": -960,
+        "y": 0
+      },
+      {
+        "sprite": "world/grass",
+        "x": -960,
+        "y": 540
+      },
+      {
+        "sprite": "world/grass",
+        "x": -960,
+        "y": 1080
+      },
+      {
+        "sprite": "world/grass",
+        "x": 0,
+        "y": -540
+      },
+      {
+        "sprite": "world/grass",
+        "x": 0,
+        "y": 0
+      },
+      {
+        "sprite": "world/grass",
+        "x": 0,
+        "y": 540
+      },
+      {
+        "sprite": "world/grass",
+        "x": 0,
+        "y": 1080
+      },
+      {
+        "sprite": "world/grass",
+        "x": 960,
+        "y": -540
+      },
+      {
+        "sprite": "world/grass",
+        "x": 960,
+        "y": 0
+      },
+      {
+        "sprite": "world/grass",
+        "x": 960,
+        "y": 540
+      },
+      {
+        "sprite": "world/grass",
+        "x": 960,
+        "y": 1080
+      },
+      {
+        "sprite": "world/grass",
+        "x": 1920,
+        "y": -540
+      },
+      {
+        "sprite": "world/grass",
+        "x": 1920,
+        "y": 0
+      },
+      {
+        "sprite": "world/grass",
+        "x": 1920,
+        "y": 540
+      },
+      {
+        "sprite": "world/grass",
+        "x": 1920,
+        "y": 1080
+      }
+    ],
+    "props": []
+  },
+  "dialogue.json": {
+    "orientation": [
+      "A synthetic content test.",
+      "No authored game content."
+    ]
+  },
+  "projects.json": {
+    "projects": [
+      {
+        "id": "starter-house",
+        "name": "Starter House",
+        "causeName": "Fixture",
+        "goalCents": 1500,
+        "completeAtStart": true,
+        "interiorRoomId": "dog-room",
+        "residentPetId": "dog",
+        "phaseRewards": [
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "clueCards": []
+      },
+      {
+        "id": "pet-house",
+        "name": "Pet House",
+        "causeName": "Fixture",
+        "goalCents": 1500,
+        "completeAtStart": false,
+        "interiorRoomId": "owl-room",
+        "residentPetId": "owl",
+        "phaseRewards": [
+          [
+            "fern",
+            "ball"
+          ],
+          [
+            "lamp-planter"
+          ],
+          [
+            "bookshelf"
+          ],
+          [
+            "perch-branch"
+          ],
+          [
+            "tall-lamp"
+          ]
+        ],
+        "clueCards": [
+          {
+            "icon": "clues/fixture",
+            "line": "A green place to rest.",
+            "hintTag": "plant"
+          },
+          {
+            "icon": "clues/fixture",
+            "line": "A green place to rest.",
+            "hintTag": "plant"
+          },
+          {
+            "icon": "clues/fixture",
+            "line": "A green place to rest.",
+            "hintTag": "plant"
+          },
+          {
+            "icon": "clues/fixture",
+            "line": "A green place to rest.",
+            "hintTag": "plant"
+          },
+          {
+            "icon": "clues/fixture",
+            "line": "A green place to rest.",
+            "hintTag": "plant"
+          }
+        ],
+        "descriptorImage": "clues/descriptor",
+        "phaseMessages": [
+          [
+            "A new step."
+          ],
+          [],
+          [],
+          [],
+          []
+        ],
+        "completionMessage": [
+          "A new home."
+        ]
+      }
+    ]
+  },
+  "charms.json": {
+    "types": [
+      {
+        "id": "dog-bed",
+        "name": "Dog Bed",
+        "description": "Synthetic fixture charm.",
+        "sizeClass": "large",
+        "tags": [
+          "soft",
+          "seat"
+        ],
+        "sprite": "charms/dog-bed"
+      },
+      {
+        "id": "lamp",
+        "name": "Lamp",
+        "description": "Synthetic fixture charm.",
+        "sizeClass": "small",
+        "tags": [
+          "light"
+        ],
+        "sprite": "charms/lamp"
+      },
+      {
+        "id": "fern",
+        "name": "Fern",
+        "description": "Synthetic fixture charm.",
+        "sizeClass": "small",
+        "tags": [
+          "plant"
+        ],
+        "sprite": "charms/fern"
+      },
+      {
+        "id": "ball",
+        "name": "Ball",
+        "description": "Synthetic fixture charm.",
+        "sizeClass": "small",
+        "tags": [
+          "toy"
+        ],
+        "sprite": "charms/ball"
+      },
+      {
+        "id": "lamp-planter",
+        "name": "Lamp Planter",
+        "description": "Synthetic fixture charm.",
+        "sizeClass": "small",
+        "tags": [
+          "light",
+          "plant"
+        ],
+        "sprite": "charms/lamp-planter"
+      },
+      {
+        "id": "painting",
+        "name": "Painting",
+        "description": "Synthetic fixture charm.",
+        "sizeClass": "wall",
+        "tags": [
+          "art"
+        ],
+        "sprite": "charms/painting"
+      },
+      {
+        "id": "perch-branch",
+        "name": "Perch Branch",
+        "description": "Synthetic fixture charm.",
+        "sizeClass": "large",
+        "tags": [
+          "tall"
+        ],
+        "sprite": "charms/perch-branch"
+      },
+      {
+        "id": "tall-lamp",
+        "name": "Tall Lamp",
+        "description": "Synthetic fixture charm.",
+        "sizeClass": "small",
+        "tags": [
+          "tall",
+          "light"
+        ],
+        "sprite": "charms/tall-lamp"
+      },
+      {
+        "id": "rug",
+        "name": "Rug",
+        "description": "Synthetic fixture charm.",
+        "sizeClass": "small",
+        "tags": [
+          "soft"
+        ],
+        "sprite": "charms/rug"
+      },
+      {
+        "id": "cushion",
+        "name": "Cushion",
+        "description": "Synthetic fixture charm.",
+        "sizeClass": "small",
+        "tags": [
+          "soft",
+          "seat"
+        ],
+        "sprite": "charms/cushion"
+      },
+      {
+        "id": "bookshelf",
+        "name": "Bookshelf",
+        "description": "Synthetic fixture charm.",
+        "sizeClass": "large",
+        "tags": [
+          "tall"
+        ],
+        "sprite": "charms/bookshelf"
+      },
+      {
+        "id": "stool",
+        "name": "Stool",
+        "description": "Synthetic fixture charm.",
+        "sizeClass": "small",
+        "tags": [
+          "seat"
+        ],
+        "sprite": "charms/stool"
+      },
+      {
+        "id": "vase",
+        "name": "Vase",
+        "description": "Synthetic fixture charm.",
+        "sizeClass": "small",
+        "tags": [
+          "food"
+        ],
+        "sprite": "charms/vase"
+      },
+      {
+        "id": "picture",
+        "name": "Picture",
+        "description": "Synthetic fixture charm.",
+        "sizeClass": "wall",
+        "tags": [
+          "art"
+        ],
+        "sprite": "charms/picture"
+      },
+      {
+        "id": "bowl",
+        "name": "Bowl",
+        "description": "Synthetic fixture charm.",
+        "sizeClass": "small",
+        "tags": [
+          "food"
+        ],
+        "sprite": "charms/bowl"
+      },
+      {
+        "id": "toy-mouse",
+        "name": "Toy Mouse",
+        "description": "Synthetic fixture charm.",
+        "sizeClass": "small",
+        "tags": [
+          "toy"
+        ],
+        "sprite": "charms/toy-mouse"
+      }
+    ],
+    "starterSet": [
+      "dog-bed",
+      "lamp",
+      "painting",
+      "stool",
+      "vase",
+      "picture"
+    ]
+  },
+  "verbs.json": {
+    "verbs": [
+      {
+        "id": "sit-on",
+        "name": "sit-on",
+        "emote": "\u2728",
+        "emoteText": "{pet} settles in.",
+        "tags": [
+          "seat"
+        ]
+      },
+      {
+        "id": "nap",
+        "name": "nap",
+        "emote": "\ud83d\ude34",
+        "emoteText": "{pet} is napping.",
+        "tags": [
+          "soft"
+        ]
+      },
+      {
+        "id": "look-at",
+        "name": "look-at",
+        "emote": "\ud83d\udc40",
+        "emoteText": "{pet} is taking a look.",
+        "tags": [
+          "plant",
+          "light",
+          "art"
+        ]
+      },
+      {
+        "id": "perch",
+        "name": "perch",
+        "emote": "\ud83e\udd89",
+        "emoteText": "{pet} perches up high.",
+        "tags": [
+          "tall"
+        ]
+      }
+    ]
+  },
+  "strings.json": {
+    "tpp.bubble.love": "Fixture",
+    "tpp.bubble.like": "Fixture",
+    "tpp.bubble.dislike": "Fixture",
+    "tpp.bubble.interrupted": "Fixture",
+    "tpp.bubble.greeting": "Fixture",
+    "tpp.bubble.want": "Fixture",
+    "tpp.bubble.wantHidden": "Fixture",
+    "tpp.bubble.chatter": "Fixture",
+    "tpp.dialogue.continue": "Fixture",
+    "tpp.dialogue.gameName": "Fixture"
+  },
+  "tags.json": {
+    "tags": [
+      {
+        "id": "soft",
+        "name": "Soft",
+        "icon": "ui/soft"
+      },
+      {
+        "id": "seat",
+        "name": "Seat",
+        "icon": "ui/seat"
+      },
+      {
+        "id": "light",
+        "name": "Light",
+        "icon": "ui/light"
+      },
+      {
+        "id": "plant",
+        "name": "Plant",
+        "icon": "ui/plant"
+      },
+      {
+        "id": "toy",
+        "name": "Toy",
+        "icon": "ui/toy"
+      },
+      {
+        "id": "art",
+        "name": "Art",
+        "icon": "ui/art"
+      },
+      {
+        "id": "tall",
+        "name": "Tall",
+        "icon": "ui/tall"
+      },
+      {
+        "id": "food",
+        "name": "Food",
+        "icon": "ui/food"
+      }
+    ]
+  },
+  "merchants.json": {
+    "merchants": [
+      {
+        "id": "coffee",
+        "name": "Coffee",
+        "minCents": 250,
+        "maxCents": 650
+      },
+      {
+        "id": "toll",
+        "name": "Toll",
+        "minCents": 100,
+        "maxCents": 101
+      },
+      {
+        "id": "bakery",
+        "name": "Bakery",
+        "minCents": 199,
+        "maxCents": 1299
+      }
+    ]
+  },
+  "tuning.json": {
+    "roomUnitPx": 240,
+    "avatarSpeedRu": 3,
+    "petSpeedRu": 2,
+    "arrivalImmunityMs": 500,
+    "facingDebounceMs": 60,
+    "eventIntervalMs": 20000,
+    "starsFirstCopy": 4,
+    "starsRepeat": 1,
+    "verbHoldMs": {
+      "min": 6000,
+      "max": 12000
+    },
+    "idleMs": {
+      "min": 3000,
+      "max": 8000
+    },
+    "walkOverMs": 5000,
+    "wantBubbleEveryMs": 40000,
+    "bubbleMs": 2000,
+    "bubbleTextMs": 3000,
+    "toastMs": 3000,
+    "fulfilmentUseHoldMs": 2000,
+    "recentTargetPenalty": 0.3,
+    "recentTargetsKept": 2,
+    "hiddenSlotFromWant": 3,
+    "revealCardStaggerMs": 250,
+    "revealSilhouetteHoldMs": 1500,
+    "revealResolveMs": 800,
+    "joystick": {
+      "x": 220,
+      "bottomOffset": 300,
+      "baseDiameter": 280,
+      "knobDiameter": 120,
+      "range": 80
+    },
+    "dtClampMs": 100,
+    "saveDebounceMs": 250,
+    "logRingLines": 5000
+  },
+  "pets/dog.json": {
+    "id": "dog",
+    "name": "Dog",
+    "portrait": "pets/dog-portrait",
+    "sheet": "pets/dog-sheet",
+    "likes": [
+      {
+        "tag": "soft",
+        "weight": 3
+      },
+      {
+        "tag": "seat",
+        "weight": 2
+      },
+      {
+        "tag": "toy",
+        "weight": 2,
+        "hidden": true
+      }
+    ],
+    "dislikes": [
+      "tall"
+    ],
+    "verbs": [
+      {
+        "verb": "nap",
+        "atStart": true
+      },
+      {
+        "verb": "look-at",
+        "atStart": true
+      },
+      {
+        "verb": "sit-on",
+        "atStart": false
+      }
+    ],
+    "lines": {
+      "greeting": [
+        "Hello, {pet}."
+      ],
+      "chatter": [
+        "A quiet day.",
+        "A lovely place."
+      ],
+      "dislike": [
+        "That is not for me."
+      ],
+      "intro": [
+        "This is a synthetic fixture."
+      ],
+      "wantAnnounce": {
+        "soft-nap": "I have a wish.",
+        "bright-corner": "I have a wish.",
+        "feels-like-home": "I have a wish."
+      },
+      "vignettes": {
+        "soft-nap": [
+          "A new corner.",
+          "A happy thought.",
+          "Thank you."
+        ],
+        "bright-corner": [
+          "A new corner.",
+          "A happy thought.",
+          "Thank you."
+        ],
+        "feels-like-home": [
+          "A new corner.",
+          "A happy thought.",
+          "Thank you."
+        ]
+      }
+    },
+    "wants": [
+      {
+        "id": "soft-nap",
+        "brief": "soft nap",
+        "conditions": [
+          {
+            "kind": "tag",
+            "tag": "soft"
+          },
+          {
+            "kind": "tag",
+            "tag": "seat"
+          }
+        ],
+        "reward": {
+          "kind": "types",
+          "typeIds": [
+            "rug",
+            "cushion"
+          ]
+        },
+        "rewardLabel": "Rug and Cushion"
+      },
+      {
+        "id": "bright-corner",
+        "brief": "bright corner",
+        "conditions": [
+          {
+            "kind": "tag",
+            "tag": "light"
+          },
+          {
+            "kind": "tag",
+            "tag": "plant"
+          },
+          {
+            "kind": "adjacent",
+            "tagA": "light",
+            "tagB": "plant"
+          }
+        ],
+        "reward": {
+          "kind": "verb",
+          "verb": "sit-on"
+        },
+        "rewardLabel": "Sit on"
+      },
+      {
+        "id": "feels-like-home",
+        "brief": "feels like home",
+        "conditions": [
+          {
+            "kind": "tag",
+            "tag": "plant"
+          },
+          {
+            "kind": "tag",
+            "tag": "toy",
+            "hidden": true
+          },
+          {
+            "kind": "stars",
+            "min": 24
+          }
+        ],
+        "reward": {
+          "kind": "vignette"
+        },
+        "rewardLabel": "Story"
+      }
+    ]
+  },
+  "pets/owl.json": {
+    "id": "owl",
+    "name": "Owl",
+    "portrait": "pets/owl-portrait",
+    "sheet": "pets/owl-sheet",
+    "likes": [
+      {
+        "tag": "plant",
+        "weight": 3
+      },
+      {
+        "tag": "tall",
+        "weight": 2
+      },
+      {
+        "tag": "light",
+        "weight": 1
+      }
+    ],
+    "dislikes": [
+      "toy"
+    ],
+    "verbs": [
+      {
+        "verb": "perch",
+        "atStart": true
+      },
+      {
+        "verb": "look-at",
+        "atStart": true
+      }
+    ],
+    "lines": {
+      "greeting": [
+        "Hello, {pet}."
+      ],
+      "chatter": [
+        "A quiet day.",
+        "A lovely place."
+      ],
+      "dislike": [
+        "That is not for me."
+      ],
+      "intro": [
+        "This is a synthetic fixture."
+      ],
+      "wantAnnounce": {
+        "green-view": "I have a wish."
+      },
+      "vignettes": {
+        "green-view": [
+          "A new corner.",
+          "A happy thought.",
+          "Thank you."
+        ]
+      }
+    },
+    "wants": [
+      {
+        "id": "green-view",
+        "brief": "green view",
+        "conditions": [
+          {
+            "kind": "tag",
+            "tag": "plant"
+          },
+          {
+            "kind": "tag",
+            "tag": "light"
+          }
+        ],
+        "reward": {
+          "kind": "vignette"
+        },
+        "rewardLabel": "Story"
+      }
+    ]
+  },
+  "rooms/dog-room.json": {
+    "id": "dog-room",
+    "name": "Synthetic dog-room",
+    "background": "rooms/fixture",
+    "walkArea": [
+      {
+        "x": 100,
+        "y": 140
+      },
+      {
+        "x": 1800,
+        "y": 140
+      },
+      {
+        "x": 1800,
+        "y": 940
+      },
+      {
+        "x": 100,
+        "y": 940
+      }
+    ],
+    "doors": [
+      {
+        "id": "to-street",
+        "rect": {
+          "x": 480,
+          "y": 150,
+          "w": 40,
+          "h": 20
+        },
+        "target": {
+          "scene": "street",
+          "doorId": "starter-front"
+        },
+        "spawn": {
+          "x": 500,
+          "y": 220,
+          "facing": "down"
+        }
+      }
+    ],
+    "slots": [
+      {
+        "id": "floor-1",
+        "sizeClass": "small",
+        "x": 200,
+        "y": 450,
+        "anchor": {
+          "x": 200,
+          "y": 480,
+          "facing": "left"
+        },
+        "adjacent": [
+          "floor-2"
+        ]
+      },
+      {
+        "id": "floor-2",
+        "sizeClass": "small",
+        "x": 330,
+        "y": 450,
+        "anchor": {
+          "x": 330,
+          "y": 480,
+          "facing": "left"
+        },
+        "adjacent": [
+          "floor-1"
+        ]
+      },
+      {
+        "id": "floor-3",
+        "sizeClass": "small",
+        "x": 460,
+        "y": 450,
+        "anchor": {
+          "x": 460,
+          "y": 480,
+          "facing": "left"
+        },
+        "adjacent": []
+      },
+      {
+        "id": "floor-4",
+        "sizeClass": "small",
+        "x": 590,
+        "y": 450,
+        "anchor": {
+          "x": 590,
+          "y": 480,
+          "facing": "left"
+        },
+        "adjacent": []
+      },
+      {
+        "id": "floor-5",
+        "sizeClass": "small",
+        "x": 720,
+        "y": 450,
+        "anchor": {
+          "x": 720,
+          "y": 480,
+          "facing": "left"
+        },
+        "adjacent": []
+      },
+      {
+        "id": "floor-6",
+        "sizeClass": "small",
+        "x": 850,
+        "y": 450,
+        "anchor": {
+          "x": 850,
+          "y": 480,
+          "facing": "left"
+        },
+        "adjacent": []
+      },
+      {
+        "id": "floor-7",
+        "sizeClass": "small",
+        "x": 980,
+        "y": 450,
+        "anchor": {
+          "x": 980,
+          "y": 480,
+          "facing": "left"
+        },
+        "adjacent": []
+      },
+      {
+        "id": "large-1",
+        "sizeClass": "large",
+        "x": 1250,
+        "y": 550,
+        "anchor": {
+          "x": 1250,
+          "y": 600,
+          "facing": "left"
+        },
+        "adjacent": []
+      },
+      {
+        "id": "wall-1",
+        "sizeClass": "wall",
+        "x": 350,
+        "y": 300,
+        "wall": "left",
+        "anchor": {
+          "x": 350,
+          "y": 360,
+          "facing": "left"
+        },
+        "adjacent": []
+      },
+      {
+        "id": "wall-2",
+        "sizeClass": "wall",
+        "x": 650,
+        "y": 300,
+        "wall": "left",
+        "anchor": {
+          "x": 650,
+          "y": 360,
+          "facing": "left"
+        },
+        "adjacent": []
+      },
+      {
+        "id": "wall-3",
+        "sizeClass": "wall",
+        "x": 950,
+        "y": 300,
+        "wall": "left",
+        "anchor": {
+          "x": 950,
+          "y": 360,
+          "facing": "left"
+        },
+        "adjacent": []
+      },
+      {
+        "id": "wall-4",
+        "sizeClass": "wall",
+        "x": 1250,
+        "y": 300,
+        "wall": "left",
+        "anchor": {
+          "x": 1250,
+          "y": 360,
+          "facing": "left"
+        },
+        "adjacent": []
+      }
+    ],
+    "wanderPoints": [
+      {
+        "id": "w0",
+        "x": 300,
+        "y": 700
+      },
+      {
+        "id": "w1",
+        "x": 1000,
+        "y": 700
+      },
+      {
+        "id": "w2",
+        "x": 1200,
+        "y": 500
+      }
+    ],
+    "petSpawn": {
+      "x": 800,
+      "y": 700,
+      "facing": "left"
+    },
+    "residentPetId": "dog"
+  },
+  "rooms/owl-room.json": {
+    "id": "owl-room",
+    "name": "Synthetic owl-room",
+    "background": "rooms/fixture",
+    "walkArea": [
+      {
+        "x": 100,
+        "y": 140
+      },
+      {
+        "x": 1800,
+        "y": 140
+      },
+      {
+        "x": 1800,
+        "y": 940
+      },
+      {
+        "x": 100,
+        "y": 940
+      }
+    ],
+    "doors": [
+      {
+        "id": "to-street",
+        "rect": {
+          "x": 480,
+          "y": 150,
+          "w": 40,
+          "h": 20
+        },
+        "target": {
+          "scene": "street",
+          "doorId": "pet-front"
+        },
+        "spawn": {
+          "x": 500,
+          "y": 220,
+          "facing": "down"
+        }
+      }
+    ],
+    "slots": [
+      {
+        "id": "floor-1",
+        "sizeClass": "small",
+        "x": 200,
+        "y": 450,
+        "anchor": {
+          "x": 200,
+          "y": 480,
+          "facing": "left"
+        },
+        "adjacent": [
+          "floor-2"
+        ]
+      },
+      {
+        "id": "floor-2",
+        "sizeClass": "small",
+        "x": 330,
+        "y": 450,
+        "anchor": {
+          "x": 330,
+          "y": 480,
+          "facing": "left"
+        },
+        "adjacent": [
+          "floor-1"
+        ]
+      },
+      {
+        "id": "floor-3",
+        "sizeClass": "small",
+        "x": 460,
+        "y": 450,
+        "anchor": {
+          "x": 460,
+          "y": 480,
+          "facing": "left"
+        },
+        "adjacent": []
+      },
+      {
+        "id": "floor-4",
+        "sizeClass": "small",
+        "x": 590,
+        "y": 450,
+        "anchor": {
+          "x": 590,
+          "y": 480,
+          "facing": "left"
+        },
+        "adjacent": []
+      },
+      {
+        "id": "floor-5",
+        "sizeClass": "small",
+        "x": 720,
+        "y": 450,
+        "anchor": {
+          "x": 720,
+          "y": 480,
+          "facing": "left"
+        },
+        "adjacent": []
+      },
+      {
+        "id": "floor-6",
+        "sizeClass": "small",
+        "x": 850,
+        "y": 450,
+        "anchor": {
+          "x": 850,
+          "y": 480,
+          "facing": "left"
+        },
+        "adjacent": []
+      },
+      {
+        "id": "floor-7",
+        "sizeClass": "small",
+        "x": 980,
+        "y": 450,
+        "anchor": {
+          "x": 980,
+          "y": 480,
+          "facing": "left"
+        },
+        "adjacent": []
+      },
+      {
+        "id": "large-1",
+        "sizeClass": "large",
+        "x": 1250,
+        "y": 550,
+        "anchor": {
+          "x": 1250,
+          "y": 600,
+          "facing": "left"
+        },
+        "adjacent": []
+      },
+      {
+        "id": "wall-1",
+        "sizeClass": "wall",
+        "x": 350,
+        "y": 300,
+        "wall": "left",
+        "anchor": {
+          "x": 350,
+          "y": 360,
+          "facing": "left"
+        },
+        "adjacent": []
+      },
+      {
+        "id": "wall-2",
+        "sizeClass": "wall",
+        "x": 650,
+        "y": 300,
+        "wall": "left",
+        "anchor": {
+          "x": 650,
+          "y": 360,
+          "facing": "left"
+        },
+        "adjacent": []
+      },
+      {
+        "id": "wall-3",
+        "sizeClass": "wall",
+        "x": 950,
+        "y": 300,
+        "wall": "left",
+        "anchor": {
+          "x": 950,
+          "y": 360,
+          "facing": "left"
+        },
+        "adjacent": []
+      },
+      {
+        "id": "wall-4",
+        "sizeClass": "wall",
+        "x": 1250,
+        "y": 300,
+        "wall": "left",
+        "anchor": {
+          "x": 1250,
+          "y": 360,
+          "facing": "left"
+        },
+        "adjacent": []
+      }
+    ],
+    "wanderPoints": [
+      {
+        "id": "w0",
+        "x": 300,
+        "y": 700
+      },
+      {
+        "id": "w1",
+        "x": 1000,
+        "y": 700
+      },
+      {
+        "id": "w2",
+        "x": 1200,
+        "y": 500
+      }
+    ],
+    "petSpawn": {
+      "x": 800,
+      "y": 700,
+      "facing": "left"
+    },
+    "residentPetId": "owl"
+  }
+}

@@ -1,0 +1,1 @@
+Full content-file bundles, each derived from content-min with the named deliberate fault. Runtime dedup remains WORK-003; duplicate-phase-rewards is authoring-invalid by CHK-002-03. Read bundle.json with --content and the content-min manifest. Existing baseline warnings remain visible; overlapping CHK aliases share one finding.

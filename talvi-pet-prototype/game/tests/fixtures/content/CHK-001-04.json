@@ -1,0 +1,11 @@
+[
+  {
+    "file": "rooms/dog-room.json",
+    "path": "/doors/0/spawn",
+    "value": {
+      "x": 500,
+      "y": 160,
+      "facing": "down"
+    }
+  }
+]

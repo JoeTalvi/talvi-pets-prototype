@@ -1,0 +1,14 @@
+[
+  {
+    "file": "charms.json",
+    "path": "/starterSet",
+    "value": [
+      "dog-bed",
+      "lamp",
+      "stool",
+      "vase",
+      "bowl",
+      "toy-mouse"
+    ]
+  }
+]

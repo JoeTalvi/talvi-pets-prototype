@@ -1,0 +1,121 @@
+[
+  {
+    "file": "rooms/dog-room.json",
+    "path": "/slots",
+    "value": [
+      {
+        "id": "floor-1",
+        "sizeClass": "small",
+        "x": 200,
+        "y": 450,
+        "anchor": {
+          "x": 200,
+          "y": 480,
+          "facing": "left"
+        },
+        "adjacent": [
+          "floor-2"
+        ]
+      },
+      {
+        "id": "floor-2",
+        "sizeClass": "small",
+        "x": 330,
+        "y": 450,
+        "anchor": {
+          "x": 330,
+          "y": 480,
+          "facing": "left"
+        },
+        "adjacent": [
+          "floor-1"
+        ]
+      },
+      {
+        "id": "floor-3",
+        "sizeClass": "small",
+        "x": 460,
+        "y": 450,
+        "anchor": {
+          "x": 460,
+          "y": 480,
+          "facing": "left"
+        },
+        "adjacent": []
+      },
+      {
+        "id": "floor-4",
+        "sizeClass": "small",
+        "x": 590,
+        "y": 450,
+        "anchor": {
+          "x": 590,
+          "y": 480,
+          "facing": "left"
+        },
+        "adjacent": []
+      },
+      {
+        "id": "floor-5",
+        "sizeClass": "small",
+        "x": 720,
+        "y": 450,
+        "anchor": {
+          "x": 720,
+          "y": 480,
+          "facing": "left"
+        },
+        "adjacent": []
+      },
+      {
+        "id": "floor-6",
+        "sizeClass": "small",
+        "x": 850,
+        "y": 450,
+        "anchor": {
+          "x": 850,
+          "y": 480,
+          "facing": "left"
+        },
+        "adjacent": []
+      },
+      {
+        "id": "floor-7",
+        "sizeClass": "small",
+        "x": 980,
+        "y": 450,
+        "anchor": {
+          "x": 980,
+          "y": 480,
+          "facing": "left"
+        },
+        "adjacent": []
+      },
+      {
+        "id": "large-1",
+        "sizeClass": "large",
+        "x": 1250,
+        "y": 550,
+        "anchor": {
+          "x": 1250,
+          "y": 600,
+          "facing": "left"
+        },
+        "adjacent": []
+      },
+      {
+        "id": "wall-1",
+        "sizeClass": "wall",
+        "x": 350,
+        "y": 300,
+        "wall": "left",
+        "anchor": {
+          "x": 350,
+          "y": 360,
+          "facing": "left"
+        },
+        "adjacent": []
+      }
+    ]
+  }
+]

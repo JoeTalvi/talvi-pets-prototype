@@ -1,0 +1,176 @@
+{
+  "types": [
+    {
+      "id": "dog-bed",
+      "name": "Dog Bed",
+      "description": "Synthetic fixture charm.",
+      "sizeClass": "large",
+      "tags": [
+        "soft",
+        "seat"
+      ],
+      "sprite": "charms/dog-bed"
+    },
+    {
+      "id": "lamp",
+      "name": "Lamp",
+      "description": "Synthetic fixture charm.",
+      "sizeClass": "small",
+      "tags": [
+        "light"
+      ],
+      "sprite": "charms/lamp"
+    },
+    {
+      "id": "fern",
+      "name": "Fern",
+      "description": "Synthetic fixture charm.",
+      "sizeClass": "small",
+      "tags": [
+        "plant"
+      ],
+      "sprite": "charms/fern"
+    },
+    {
+      "id": "ball",
+      "name": "Ball",
+      "description": "Synthetic fixture charm.",
+      "sizeClass": "small",
+      "tags": [
+        "toy"
+      ],
+      "sprite": "charms/ball"
+    },
+    {
+      "id": "lamp-planter",
+      "name": "Lamp Planter",
+      "description": "Synthetic fixture charm.",
+      "sizeClass": "small",
+      "tags": [
+        "light",
+        "plant"
+      ],
+      "sprite": "charms/lamp-planter"
+    },
+    {
+      "id": "painting",
+      "name": "Painting",
+      "description": "Synthetic fixture charm.",
+      "sizeClass": "wall",
+      "tags": [
+        "art"
+      ],
+      "sprite": "charms/painting"
+    },
+    {
+      "id": "perch-branch",
+      "name": "Perch Branch",
+      "description": "Synthetic fixture charm.",
+      "sizeClass": "large",
+      "tags": [
+        "tall"
+      ],
+      "sprite": "charms/perch-branch"
+    },
+    {
+      "id": "tall-lamp",
+      "name": "Tall Lamp",
+      "description": "Synthetic fixture charm.",
+      "sizeClass": "small",
+      "tags": [
+        "tall",
+        "light"
+      ],
+      "sprite": "charms/tall-lamp"
+    },
+    {
+      "id": "rug",
+      "name": "Rug",
+      "description": "Synthetic fixture charm.",
+      "sizeClass": "small",
+      "tags": [
+        "soft"
+      ],
+      "sprite": "charms/rug"
+    },
+    {
+      "id": "cushion",
+      "name": "Cushion",
+      "description": "Synthetic fixture charm.",
+      "sizeClass": "small",
+      "tags": [
+        "soft",
+        "seat"
+      ],
+      "sprite": "charms/cushion"
+    },
+    {
+      "id": "bookshelf",
+      "name": "Bookshelf",
+      "description": "Synthetic fixture charm.",
+      "sizeClass": "large",
+      "tags": [
+        "tall"
+      ],
+      "sprite": "charms/bookshelf"
+    },
+    {
+      "id": "stool",
+      "name": "Stool",
+      "description": "Synthetic fixture charm.",
+      "sizeClass": "small",
+      "tags": [
+        "seat"
+      ],
+      "sprite": "charms/stool"
+    },
+    {
+      "id": "vase",
+      "name": "Vase",
+      "description": "Synthetic fixture charm.",
+      "sizeClass": "small",
+      "tags": [
+        "food"
+      ],
+      "sprite": "charms/vase"
+    },
+    {
+      "id": "picture",
+      "name": "Picture",
+      "description": "Synthetic fixture charm.",
+      "sizeClass": "wall",
+      "tags": [
+        "art"
+      ],
+      "sprite": "charms/picture"
+    },
+    {
+      "id": "bowl",
+      "name": "Bowl",
+      "description": "Synthetic fixture charm.",
+      "sizeClass": "small",
+      "tags": [
+        "food"
+      ],
+      "sprite": "charms/bowl"
+    },
+    {
+      "id": "toy-mouse",
+      "name": "Toy Mouse",
+      "description": "Synthetic fixture charm.",
+      "sizeClass": "small",
+      "tags": [
+        "toy"
+      ],
+      "sprite": "charms/toy-mouse"
+    }
+  ],
+  "starterSet": [
+    "dog-bed",
+    "lamp",
+    "painting",
+    "stool",
+    "vase",
+    "picture"
+  ]
+}

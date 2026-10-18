@@ -1,0 +1,12 @@
+{
+  "tpp.bubble.love": "Fixture",
+  "tpp.bubble.like": "Fixture",
+  "tpp.bubble.dislike": "Fixture",
+  "tpp.bubble.interrupted": "Fixture",
+  "tpp.bubble.greeting": "Fixture",
+  "tpp.bubble.want": "Fixture",
+  "tpp.bubble.wantHidden": "Fixture",
+  "tpp.bubble.chatter": "Fixture",
+  "tpp.dialogue.continue": "Fixture",
+  "tpp.dialogue.gameName": "Fixture"
+}

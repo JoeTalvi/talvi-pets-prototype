@@ -1,0 +1,28 @@
+[
+  {
+    "file": "projects.json",
+    "path": "/projects/1/clueCards",
+    "value": [
+      {
+        "icon": "clues/fixture",
+        "line": "A green place to rest.",
+        "hintTag": "plant"
+      },
+      {
+        "icon": "clues/fixture",
+        "line": "A green place to rest.",
+        "hintTag": "plant"
+      },
+      {
+        "icon": "clues/fixture",
+        "line": "A green place to rest.",
+        "hintTag": "plant"
+      },
+      {
+        "icon": "clues/fixture",
+        "line": "A green place to rest.",
+        "hintTag": "plant"
+      }
+    ]
+  }
+]

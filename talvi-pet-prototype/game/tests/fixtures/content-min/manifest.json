@@ -1,0 +1,574 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Synthetic content-only fixture metadata, not deployable assets; use check-content, not check-assets",
+  "entries": [
+    {
+      "id": "charms/ball",
+      "type": "image",
+      "url": "synthetic/charms/ball.png",
+      "px": {
+        "w": 512,
+        "h": 512
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": []
+    },
+    {
+      "id": "charms/bookshelf",
+      "type": "image",
+      "url": "synthetic/charms/bookshelf.png",
+      "px": {
+        "w": 512,
+        "h": 512
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": []
+    },
+    {
+      "id": "charms/bowl",
+      "type": "image",
+      "url": "synthetic/charms/bowl.png",
+      "px": {
+        "w": 512,
+        "h": 512
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": []
+    },
+    {
+      "id": "charms/cushion",
+      "type": "image",
+      "url": "synthetic/charms/cushion.png",
+      "px": {
+        "w": 512,
+        "h": 512
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": []
+    },
+    {
+      "id": "charms/dog-bed",
+      "type": "image",
+      "url": "synthetic/charms/dog-bed.png",
+      "px": {
+        "w": 512,
+        "h": 512
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": []
+    },
+    {
+      "id": "charms/fern",
+      "type": "image",
+      "url": "synthetic/charms/fern.png",
+      "px": {
+        "w": 512,
+        "h": 512
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": []
+    },
+    {
+      "id": "charms/lamp",
+      "type": "image",
+      "url": "synthetic/charms/lamp.png",
+      "px": {
+        "w": 512,
+        "h": 512
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": []
+    },
+    {
+      "id": "charms/lamp-planter",
+      "type": "image",
+      "url": "synthetic/charms/lamp-planter.png",
+      "px": {
+        "w": 512,
+        "h": 512
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": []
+    },
+    {
+      "id": "charms/painting",
+      "type": "image",
+      "url": "synthetic/charms/painting.png",
+      "px": {
+        "w": 512,
+        "h": 512
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": []
+    },
+    {
+      "id": "charms/perch-branch",
+      "type": "image",
+      "url": "synthetic/charms/perch-branch.png",
+      "px": {
+        "w": 512,
+        "h": 512
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": []
+    },
+    {
+      "id": "charms/picture",
+      "type": "image",
+      "url": "synthetic/charms/picture.png",
+      "px": {
+        "w": 512,
+        "h": 512
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": []
+    },
+    {
+      "id": "charms/rug",
+      "type": "image",
+      "url": "synthetic/charms/rug.png",
+      "px": {
+        "w": 512,
+        "h": 512
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": []
+    },
+    {
+      "id": "charms/stool",
+      "type": "image",
+      "url": "synthetic/charms/stool.png",
+      "px": {
+        "w": 512,
+        "h": 512
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": []
+    },
+    {
+      "id": "charms/tall-lamp",
+      "type": "image",
+      "url": "synthetic/charms/tall-lamp.png",
+      "px": {
+        "w": 512,
+        "h": 512
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": []
+    },
+    {
+      "id": "charms/toy-mouse",
+      "type": "image",
+      "url": "synthetic/charms/toy-mouse.png",
+      "px": {
+        "w": 512,
+        "h": 512
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": []
+    },
+    {
+      "id": "charms/vase",
+      "type": "image",
+      "url": "synthetic/charms/vase.png",
+      "px": {
+        "w": 512,
+        "h": 512
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": []
+    },
+    {
+      "id": "clues/descriptor",
+      "type": "image",
+      "url": "synthetic/clues/descriptor.png",
+      "px": {
+        "w": 512,
+        "h": 512
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": []
+    },
+    {
+      "id": "clues/fixture",
+      "type": "image",
+      "url": "synthetic/clues/fixture.png",
+      "px": {
+        "w": 512,
+        "h": 512
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": []
+    },
+    {
+      "id": "clues/silhouette",
+      "type": "image",
+      "url": "synthetic/clues/silhouette.png",
+      "px": {
+        "w": 512,
+        "h": 512
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": []
+    },
+    {
+      "id": "houses/fixture",
+      "type": "image",
+      "url": "synthetic/houses/fixture.png",
+      "px": {
+        "w": 512,
+        "h": 512
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": []
+    },
+    {
+      "id": "pets/dog-portrait",
+      "type": "image",
+      "url": "synthetic/pets/dog-portrait.png",
+      "px": {
+        "w": 512,
+        "h": 512
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": []
+    },
+    {
+      "id": "pets/dog-sheet",
+      "type": "spritesheet",
+      "url": "synthetic/pets/dog-sheet.png",
+      "px": {
+        "w": 512,
+        "h": 512
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": [],
+      "frame": {
+        "w": 512,
+        "h": 512
+      },
+      "clips": {
+        "idle": {
+          "start": 0,
+          "end": 0,
+          "frameRate": 1,
+          "repeat": -1
+        }
+      }
+    },
+    {
+      "id": "pets/owl-portrait",
+      "type": "image",
+      "url": "synthetic/pets/owl-portrait.png",
+      "px": {
+        "w": 512,
+        "h": 512
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": []
+    },
+    {
+      "id": "pets/owl-sheet",
+      "type": "spritesheet",
+      "url": "synthetic/pets/owl-sheet.png",
+      "px": {
+        "w": 512,
+        "h": 512
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": [],
+      "frame": {
+        "w": 512,
+        "h": 512
+      },
+      "clips": {
+        "idle": {
+          "start": 0,
+          "end": 0,
+          "frameRate": 1,
+          "repeat": -1
+        }
+      }
+    },
+    {
+      "id": "rooms/fixture",
+      "type": "image",
+      "url": "synthetic/rooms/fixture.png",
+      "px": {
+        "w": 512,
+        "h": 512
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": []
+    },
+    {
+      "id": "ui/art",
+      "type": "image",
+      "url": "synthetic/ui/art.png",
+      "px": {
+        "w": 512,
+        "h": 512
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": []
+    },
+    {
+      "id": "ui/food",
+      "type": "image",
+      "url": "synthetic/ui/food.png",
+      "px": {
+        "w": 512,
+        "h": 512
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": []
+    },
+    {
+      "id": "ui/light",
+      "type": "image",
+      "url": "synthetic/ui/light.png",
+      "px": {
+        "w": 512,
+        "h": 512
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": []
+    },
+    {
+      "id": "ui/plant",
+      "type": "image",
+      "url": "synthetic/ui/plant.png",
+      "px": {
+        "w": 512,
+        "h": 512
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": []
+    },
+    {
+      "id": "ui/seat",
+      "type": "image",
+      "url": "synthetic/ui/seat.png",
+      "px": {
+        "w": 512,
+        "h": 512
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": []
+    },
+    {
+      "id": "ui/soft",
+      "type": "image",
+      "url": "synthetic/ui/soft.png",
+      "px": {
+        "w": 512,
+        "h": 512
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": []
+    },
+    {
+      "id": "ui/tall",
+      "type": "image",
+      "url": "synthetic/ui/tall.png",
+      "px": {
+        "w": 512,
+        "h": 512
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": []
+    },
+    {
+      "id": "ui/toy",
+      "type": "image",
+      "url": "synthetic/ui/toy.png",
+      "px": {
+        "w": 512,
+        "h": 512
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": []
+    },
+    {
+      "id": "world/grass",
+      "type": "image",
+      "url": "synthetic/world/grass.png",
+      "px": {
+        "w": 960,
+        "h": 540
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "synthetic metadata fixture; no exported image",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-002 fixture",
+      "history": []
+    }
+  ]
+}

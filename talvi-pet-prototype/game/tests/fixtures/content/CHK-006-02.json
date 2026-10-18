@@ -1,0 +1,12 @@
+[
+  {
+    "file": "rooms/dog-room.json",
+    "path": "/slots/0/sizeClass",
+    "value": "wall"
+  },
+  {
+    "file": "rooms/dog-room.json",
+    "path": "/slots/0/wall",
+    "value": "left"
+  }
+]

@@ -1,0 +1,16 @@
+[
+  {
+    "file": "charms.json",
+    "path": "/types/2/tags",
+    "value": [
+      "light"
+    ]
+  },
+  {
+    "file": "charms.json",
+    "path": "/types/4/tags",
+    "value": [
+      "light"
+    ]
+  }
+]

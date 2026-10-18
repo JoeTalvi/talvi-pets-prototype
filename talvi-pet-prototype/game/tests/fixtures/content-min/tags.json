@@ -1,0 +1,44 @@
+{
+  "tags": [
+    {
+      "id": "soft",
+      "name": "Soft",
+      "icon": "ui/soft"
+    },
+    {
+      "id": "seat",
+      "name": "Seat",
+      "icon": "ui/seat"
+    },
+    {
+      "id": "light",
+      "name": "Light",
+      "icon": "ui/light"
+    },
+    {
+      "id": "plant",
+      "name": "Plant",
+      "icon": "ui/plant"
+    },
+    {
+      "id": "toy",
+      "name": "Toy",
+      "icon": "ui/toy"
+    },
+    {
+      "id": "art",
+      "name": "Art",
+      "icon": "ui/art"
+    },
+    {
+      "id": "tall",
+      "name": "Tall",
+      "icon": "ui/tall"
+    },
+    {
+      "id": "food",
+      "name": "Food",
+      "icon": "ui/food"
+    }
+  ]
+}

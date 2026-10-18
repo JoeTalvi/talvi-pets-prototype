@@ -1,0 +1,16 @@
+[
+  {
+    "file": "pets/dog.json",
+    "path": "/wants/2/conditions",
+    "value": [
+      {
+        "kind": "tag",
+        "tag": "soft"
+      },
+      {
+        "kind": "tag",
+        "tag": "seat"
+      }
+    ]
+  }
+]

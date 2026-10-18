@@ -1,0 +1,12 @@
+[
+  {
+    "file": "charms.json",
+    "path": "/types/5/sizeClass",
+    "value": "small"
+  },
+  {
+    "file": "charms.json",
+    "path": "/types/13/sizeClass",
+    "value": "small"
+  }
+]

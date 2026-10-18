@@ -1,0 +1,13 @@
+[
+  {
+    "file": "rooms/dog-room.json",
+    "path": "/wanderPoints",
+    "value": [
+      {
+        "id": "w0",
+        "x": 300,
+        "y": 700
+      }
+    ]
+  }
+]

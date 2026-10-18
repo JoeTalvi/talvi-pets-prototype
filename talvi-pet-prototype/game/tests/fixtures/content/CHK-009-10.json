@@ -1,0 +1,17 @@
+[
+  {
+    "file": "projects.json",
+    "path": "/projects/1/phaseRewards/0",
+    "value": [
+      "ball"
+    ]
+  },
+  {
+    "file": "projects.json",
+    "path": "/projects/1/phaseRewards/1",
+    "value": [
+      "lamp-planter",
+      "fern"
+    ]
+  }
+]

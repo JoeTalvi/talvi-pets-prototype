@@ -1,0 +1,89 @@
+{
+  "projects": [
+    {
+      "id": "starter-house",
+      "name": "Starter House",
+      "causeName": "Fixture",
+      "goalCents": 1500,
+      "completeAtStart": true,
+      "interiorRoomId": "dog-room",
+      "residentPetId": "dog",
+      "phaseRewards": [
+        [],
+        [],
+        [],
+        [],
+        []
+      ],
+      "clueCards": []
+    },
+    {
+      "id": "pet-house",
+      "name": "Pet House",
+      "causeName": "Fixture",
+      "goalCents": 1500,
+      "completeAtStart": false,
+      "interiorRoomId": "owl-room",
+      "residentPetId": "owl",
+      "phaseRewards": [
+        [
+          "fern",
+          "ball"
+        ],
+        [
+          "lamp-planter"
+        ],
+        [
+          "bookshelf"
+        ],
+        [
+          "perch-branch"
+        ],
+        [
+          "tall-lamp"
+        ]
+      ],
+      "clueCards": [
+        {
+          "icon": "clues/fixture",
+          "line": "A green place to rest.",
+          "hintTag": "plant"
+        },
+        {
+          "icon": "clues/fixture",
+          "line": "A green place to rest.",
+          "hintTag": "plant"
+        },
+        {
+          "icon": "clues/fixture",
+          "line": "A green place to rest.",
+          "hintTag": "plant"
+        },
+        {
+          "icon": "clues/fixture",
+          "line": "A green place to rest.",
+          "hintTag": "plant"
+        },
+        {
+          "icon": "clues/fixture",
+          "line": "A green place to rest.",
+          "hintTag": "plant"
+        }
+      ],
+      "descriptorImage": "clues/descriptor",
+      "silhouetteImage": "clues/silhouette",
+      "phaseMessages": [
+        [
+          "A new step."
+        ],
+        [],
+        [],
+        [],
+        []
+      ],
+      "completionMessage": [
+        "A new home."
+      ]
+    }
+  ]
+}

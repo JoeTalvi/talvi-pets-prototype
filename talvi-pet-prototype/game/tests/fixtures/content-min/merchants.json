@@ -1,0 +1,22 @@
+{
+  "merchants": [
+    {
+      "id": "coffee",
+      "name": "Coffee",
+      "minCents": 250,
+      "maxCents": 650
+    },
+    {
+      "id": "toll",
+      "name": "Toll",
+      "minCents": 100,
+      "maxCents": 101
+    },
+    {
+      "id": "bakery",
+      "name": "Bakery",
+      "minCents": 199,
+      "maxCents": 1299
+    }
+  ]
+}

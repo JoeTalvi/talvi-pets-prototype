@@ -1,0 +1,202 @@
+{
+  "walkArea": [
+    {
+      "x": 80,
+      "y": 780
+    },
+    {
+      "x": 1840,
+      "y": 780
+    },
+    {
+      "x": 1840,
+      "y": 940
+    },
+    {
+      "x": 80,
+      "y": 940
+    }
+  ],
+  "playerSpawn": {
+    "x": 960,
+    "y": 900,
+    "facing": "down"
+  },
+  "houses": [
+    {
+      "projectId": "starter-house",
+      "x": 360,
+      "y": 880,
+      "stageSprites": [
+        "houses/fixture",
+        "houses/fixture",
+        "houses/fixture",
+        "houses/fixture",
+        "houses/fixture",
+        "houses/fixture"
+      ],
+      "door": {
+        "id": "starter-front",
+        "rect": {
+          "x": 320,
+          "y": 780,
+          "w": 80,
+          "h": 50
+        },
+        "target": {
+          "scene": "interior",
+          "roomId": "dog-room",
+          "doorId": "to-street"
+        },
+        "spawn": {
+          "x": 360,
+          "y": 860,
+          "facing": "down"
+        }
+      },
+      "attentionAnchor": {
+        "x": 360,
+        "y": 400
+      },
+      "arrivalPath": [
+        {
+          "x": 260,
+          "y": 900
+        },
+        {
+          "x": 360,
+          "y": 805
+        }
+      ]
+    },
+    {
+      "projectId": "pet-house",
+      "x": 1360,
+      "y": 880,
+      "stageSprites": [
+        "houses/fixture",
+        "houses/fixture",
+        "houses/fixture",
+        "houses/fixture",
+        "houses/fixture",
+        "houses/fixture"
+      ],
+      "door": {
+        "id": "pet-front",
+        "rect": {
+          "x": 1320,
+          "y": 780,
+          "w": 80,
+          "h": 50
+        },
+        "target": {
+          "scene": "interior",
+          "roomId": "owl-room",
+          "doorId": "to-street"
+        },
+        "spawn": {
+          "x": 1360,
+          "y": 860,
+          "facing": "down"
+        }
+      },
+      "attentionAnchor": {
+        "x": 1360,
+        "y": 400
+      },
+      "arrivalPath": [
+        {
+          "x": 1260,
+          "y": 900
+        },
+        {
+          "x": 1360,
+          "y": 805
+        }
+      ]
+    }
+  ],
+  "groundTiles": [
+    {
+      "sprite": "world/grass",
+      "x": -960,
+      "y": -540
+    },
+    {
+      "sprite": "world/grass",
+      "x": -960,
+      "y": 0
+    },
+    {
+      "sprite": "world/grass",
+      "x": -960,
+      "y": 540
+    },
+    {
+      "sprite": "world/grass",
+      "x": -960,
+      "y": 1080
+    },
+    {
+      "sprite": "world/grass",
+      "x": 0,
+      "y": -540
+    },
+    {
+      "sprite": "world/grass",
+      "x": 0,
+      "y": 0
+    },
+    {
+      "sprite": "world/grass",
+      "x": 0,
+      "y": 540
+    },
+    {
+      "sprite": "world/grass",
+      "x": 0,
+      "y": 1080
+    },
+    {
+      "sprite": "world/grass",
+      "x": 960,
+      "y": -540
+    },
+    {
+      "sprite": "world/grass",
+      "x": 960,
+      "y": 0
+    },
+    {
+      "sprite": "world/grass",
+      "x": 960,
+      "y": 540
+    },
+    {
+      "sprite": "world/grass",
+      "x": 960,
+      "y": 1080
+    },
+    {
+      "sprite": "world/grass",
+      "x": 1920,
+      "y": -540
+    },
+    {
+      "sprite": "world/grass",
+      "x": 1920,
+      "y": 0
+    },
+    {
+      "sprite": "world/grass",
+      "x": 1920,
+      "y": 540
+    },
+    {
+      "sprite": "world/grass",
+      "x": 1920,
+      "y": 1080
+    }
+  ],
+  "props": []
+}

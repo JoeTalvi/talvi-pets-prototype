@@ -1,0 +1,1 @@
+Synthetic test content only. Not final Dog or Owl content. Coordinator-authorized deviations: 3-like Dog (light omitted pending CN05); unique phase IDs, duplicate phases tested separately. Manifest contains synthetic metadata with no exported assets. Run from game/: npm run check:content -- --content tests/fixtures/content-min --manifest tests/fixtures/content-min/manifest.json.

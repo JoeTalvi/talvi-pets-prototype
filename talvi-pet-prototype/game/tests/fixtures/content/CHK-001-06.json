@@ -1,0 +1,54 @@
+[
+  {
+    "file": "street.json",
+    "path": "/houses",
+    "value": [
+      {
+        "projectId": "starter-house",
+        "x": 360,
+        "y": 880,
+        "stageSprites": [
+          "houses/fixture",
+          "houses/fixture",
+          "houses/fixture",
+          "houses/fixture",
+          "houses/fixture",
+          "houses/fixture"
+        ],
+        "door": {
+          "id": "starter-front",
+          "rect": {
+            "x": 320,
+            "y": 780,
+            "w": 80,
+            "h": 50
+          },
+          "target": {
+            "scene": "interior",
+            "roomId": "dog-room",
+            "doorId": "to-street"
+          },
+          "spawn": {
+            "x": 360,
+            "y": 860,
+            "facing": "down"
+          }
+        },
+        "attentionAnchor": {
+          "x": 360,
+          "y": 400
+        },
+        "arrivalPath": [
+          {
+            "x": 260,
+            "y": 900
+          },
+          {
+            "x": 360,
+            "y": 805
+          }
+        ]
+      }
+    ]
+  }
+]

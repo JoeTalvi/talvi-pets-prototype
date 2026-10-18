@@ -1,0 +1,146 @@
+{
+  "id": "dog",
+  "name": "Dog",
+  "portrait": "pets/dog-portrait",
+  "sheet": "pets/dog-sheet",
+  "likes": [
+    {
+      "tag": "soft",
+      "weight": 3
+    },
+    {
+      "tag": "seat",
+      "weight": 2
+    },
+    {
+      "tag": "toy",
+      "weight": 2,
+      "hidden": true
+    }
+  ],
+  "dislikes": [
+    "tall"
+  ],
+  "verbs": [
+    {
+      "verb": "nap",
+      "atStart": true
+    },
+    {
+      "verb": "look-at",
+      "atStart": true
+    },
+    {
+      "verb": "sit-on",
+      "atStart": false
+    }
+  ],
+  "lines": {
+    "greeting": [
+      "Hello, {pet}."
+    ],
+    "chatter": [
+      "A quiet day.",
+      "A lovely place."
+    ],
+    "dislike": [
+      "That is not for me."
+    ],
+    "intro": [
+      "This is a synthetic fixture."
+    ],
+    "wantAnnounce": {
+      "soft-nap": "I have a wish.",
+      "bright-corner": "I have a wish.",
+      "feels-like-home": "I have a wish."
+    },
+    "vignettes": {
+      "soft-nap": [
+        "A new corner.",
+        "A happy thought.",
+        "Thank you."
+      ],
+      "bright-corner": [
+        "A new corner.",
+        "A happy thought.",
+        "Thank you."
+      ],
+      "feels-like-home": [
+        "A new corner.",
+        "A happy thought.",
+        "Thank you."
+      ]
+    }
+  },
+  "wants": [
+    {
+      "id": "soft-nap",
+      "brief": "soft nap",
+      "conditions": [
+        {
+          "kind": "tag",
+          "tag": "soft"
+        },
+        {
+          "kind": "tag",
+          "tag": "seat"
+        }
+      ],
+      "reward": {
+        "kind": "types",
+        "typeIds": [
+          "rug",
+          "cushion"
+        ]
+      },
+      "rewardLabel": "Rug and Cushion"
+    },
+    {
+      "id": "bright-corner",
+      "brief": "bright corner",
+      "conditions": [
+        {
+          "kind": "tag",
+          "tag": "light"
+        },
+        {
+          "kind": "tag",
+          "tag": "plant"
+        },
+        {
+          "kind": "adjacent",
+          "tagA": "light",
+          "tagB": "plant"
+        }
+      ],
+      "reward": {
+        "kind": "verb",
+        "verb": "sit-on"
+      },
+      "rewardLabel": "Sit on"
+    },
+    {
+      "id": "feels-like-home",
+      "brief": "feels like home",
+      "conditions": [
+        {
+          "kind": "tag",
+          "tag": "plant"
+        },
+        {
+          "kind": "tag",
+          "tag": "toy",
+          "hidden": true
+        },
+        {
+          "kind": "stars",
+          "min": 24
+        }
+      ],
+      "reward": {
+        "kind": "vignette"
+      },
+      "rewardLabel": "Story"
+    }
+  ]
+}

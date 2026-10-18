@@ -1,0 +1,20 @@
+[
+  {
+    "file": "pets/owl.json",
+    "path": "/verbs",
+    "value": [
+      {
+        "verb": "perch",
+        "atStart": true
+      },
+      {
+        "verb": "look-at",
+        "atStart": true
+      },
+      {
+        "verb": "sit-on",
+        "atStart": true
+      }
+    ]
+  }
+]

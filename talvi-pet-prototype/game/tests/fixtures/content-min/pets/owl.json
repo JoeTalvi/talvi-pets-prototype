@@ -1,0 +1,78 @@
+{
+  "id": "owl",
+  "name": "Owl",
+  "portrait": "pets/owl-portrait",
+  "sheet": "pets/owl-sheet",
+  "likes": [
+    {
+      "tag": "plant",
+      "weight": 3
+    },
+    {
+      "tag": "tall",
+      "weight": 2
+    },
+    {
+      "tag": "light",
+      "weight": 1
+    }
+  ],
+  "dislikes": [
+    "toy"
+  ],
+  "verbs": [
+    {
+      "verb": "perch",
+      "atStart": true
+    },
+    {
+      "verb": "look-at",
+      "atStart": true
+    }
+  ],
+  "lines": {
+    "greeting": [
+      "Hello, {pet}."
+    ],
+    "chatter": [
+      "A quiet day.",
+      "A lovely place."
+    ],
+    "dislike": [
+      "That is not for me."
+    ],
+    "intro": [
+      "This is a synthetic fixture."
+    ],
+    "wantAnnounce": {
+      "green-view": "I have a wish."
+    },
+    "vignettes": {
+      "green-view": [
+        "A new corner.",
+        "A happy thought.",
+        "Thank you."
+      ]
+    }
+  },
+  "wants": [
+    {
+      "id": "green-view",
+      "brief": "green view",
+      "conditions": [
+        {
+          "kind": "tag",
+          "tag": "plant"
+        },
+        {
+          "kind": "tag",
+          "tag": "light"
+        }
+      ],
+      "reward": {
+        "kind": "vignette"
+      },
+      "rewardLabel": "Story"
+    }
+  ]
+}
