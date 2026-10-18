@@ -210,6 +210,723 @@
       "recordedBy": "TASK-022 / WORK-001",
       "history": [],
       "note": "Source waveform and decoded Vorbis220ms; AAC container reports278.639ms including encoder delay/padding (ffprobe)."
+    },
+    {
+      "id": "ui/Bar_ChunkBackground_No_Fill",
+      "type": "image",
+      "url": "ui/Bar_ChunkBackground_No_Fill.png",
+      "px": {
+        "w": 130,
+        "h": 280
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/UI/Bar_ChunkBackground_No_Fill.png",
+      "postProcess": "copy",
+      "hash": "9290e08fb658b21702b22e60493e65b159b8ed32b433f510eb6bafbc4c7fa0f8",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": []
+    },
+    {
+      "id": "ui/Bar_ChunkFill",
+      "type": "image",
+      "url": "ui/Bar_ChunkFill.png",
+      "px": {
+        "w": 130,
+        "h": 280
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/UI/Bar_ChunkFill.png",
+      "postProcess": "copy",
+      "hash": "99ee67878ec59b5a14bc1863fe273974e0e6cb9ed079ad182299a6e9165ea57d",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": []
+    },
+    {
+      "id": "ui/Btn_Primary_Disabled",
+      "type": "image",
+      "url": "ui/Btn_Primary_Disabled.png",
+      "px": {
+        "w": 532,
+        "h": 182
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/UI/Btn_Primary_Disabled.png",
+      "postProcess": "copy",
+      "hash": "9d60c3c17f1c1c3fb8bc09e88396aab55f77723a444631bdf4ae37285f03ed62",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": []
+    },
+    {
+      "id": "ui/Btn_Primary_Pressed",
+      "type": "image",
+      "url": "ui/Btn_Primary_Pressed.png",
+      "px": {
+        "w": 532,
+        "h": 182
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/UI/Btn_Primary_Pressed.png",
+      "postProcess": "copy",
+      "hash": "253143790f2baa0fdbded61b775bde3424a1e806b4a08c76f4e729416d57f3c1",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": []
+    },
+    {
+      "id": "ui/Btn_RoundIcon",
+      "type": "image",
+      "url": "ui/Btn_RoundIcon.png",
+      "px": {
+        "w": 218,
+        "h": 218
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/UI/Btn_RoundIcon.png",
+      "postProcess": "copy",
+      "hash": "414aee2b26784a6ca299d40b1bb6fe921ebce13b2429656fff0857ca175f5b79",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": []
+    },
+    {
+      "id": "ui/Btn_Secondary_Disabled",
+      "type": "image",
+      "url": "ui/Btn_Secondary_Disabled.png",
+      "px": {
+        "w": 532,
+        "h": 182
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/UI/Btn_Secondary_Disabled.png",
+      "postProcess": "copy",
+      "hash": "87b6f2dadb7ceaf97b76241ec1172a35467ecf50f653220d82917d997d8be5ee",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": []
+    },
+    {
+      "id": "ui/Btn_Secondary_Normal",
+      "type": "image",
+      "url": "ui/Btn_Secondary_Normal.png",
+      "px": {
+        "w": 532,
+        "h": 182
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/UI/Btn_Secondary_Normal.png",
+      "postProcess": "copy",
+      "hash": "c69f7c5ff35e72a9375b30342ec48a14542b6cc38bd559b1bd3d9145e2c21df0",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": []
+    },
+    {
+      "id": "ui/Btn_Secondary_Pressed",
+      "type": "image",
+      "url": "ui/Btn_Secondary_Pressed.png",
+      "px": {
+        "w": 532,
+        "h": 182
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/UI/Btn_Secondary_Pressed.png",
+      "postProcess": "copy",
+      "hash": "50254589466f0bcd18d48c146eec87701e61be572ffaebe971bf06646597732f",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": []
+    },
+    {
+      "id": "ui/Btn_Tab_Locked",
+      "type": "image",
+      "url": "ui/Btn_Tab_Locked.png",
+      "px": {
+        "w": 392,
+        "h": 162
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/UI/Btn_Tab_Locked.png",
+      "postProcess": "copy",
+      "hash": "83b07e0b5865fe1875ac1805bb3fb3d89c4253ba8d5b53c12eb12e2a21c08a14",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": []
+    },
+    {
+      "id": "ui/Btn_Tab_Selected",
+      "type": "image",
+      "url": "ui/Btn_Tab_Selected.png",
+      "px": {
+        "w": 392,
+        "h": 162
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/UI/Btn_Tab_Selected.png",
+      "postProcess": "copy",
+      "hash": "2acd655267bcf2c7cebf37ee315d28d215a063fba119aa803f6e0d48c1094689",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": []
+    },
+    {
+      "id": "ui/Btn_Tab_Unselected",
+      "type": "image",
+      "url": "ui/Btn_Tab_Unselected.png",
+      "px": {
+        "w": 392,
+        "h": 162
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/UI/Btn_Tab_Unselected.png",
+      "postProcess": "copy",
+      "hash": "52404c43622a25c18fcaa27441fc99b6c9996c12b3f8252454f85fc4ab1ea0c3",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": []
+    },
+    {
+      "id": "ui/Panel_BottomSheet",
+      "type": "image",
+      "url": "ui/Panel_BottomSheet.png",
+      "px": {
+        "w": 1132,
+        "h": 812
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/UI/Panel_BottomSheet.png",
+      "postProcess": "copy",
+      "hash": "5bdf7118dfda7f2bc01b0f784d74375e4b567f63d1480e69c4b6e923942fd6f0",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": []
+    },
+    {
+      "id": "ui/Panel_GridTile",
+      "type": "image",
+      "url": "ui/Panel_GridTile.png",
+      "px": {
+        "w": 272,
+        "h": 272
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/UI/Panel_GridTile.png",
+      "postProcess": "copy",
+      "hash": "123f58d89e6bfa1c1d3a710870a4529b7e35e70c1b44aa8fa0a4fa8b58253879",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": []
+    },
+    {
+      "id": "ui/Panel_InsetSubPanel",
+      "type": "image",
+      "url": "ui/Panel_InsetSubPanel.png",
+      "px": {
+        "w": 772,
+        "h": 292
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/UI/Panel_InsetSubPanel.png",
+      "postProcess": "copy",
+      "hash": "232b98bdd84fc51f17ca11e8249bba833b36f44eb785a6fe97cdeeee45ad3179",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": []
+    },
+    {
+      "id": "ui/Panel_ListRow",
+      "type": "image",
+      "url": "ui/Panel_ListRow.png",
+      "px": {
+        "w": 992,
+        "h": 212
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/UI/Panel_ListRow.png",
+      "postProcess": "copy",
+      "hash": "ac613662ad7f4ca6a22286efbfe42620af78b7ee0b17b0f1e555896d029096fa",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": []
+    },
+    {
+      "id": "ui/Panel_PopupHero",
+      "type": "image",
+      "url": "ui/Panel_PopupHero.png",
+      "px": {
+        "w": 952,
+        "h": 692
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/UI/Panel_PopupHero.png",
+      "postProcess": "copy",
+      "hash": "12acca32f0f263ba5edc9d69469435a8dc3103f6044370beda8d2378ddc0b83f",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": []
+    },
+    {
+      "id": "ui/Panel_ToastPill",
+      "type": "image",
+      "url": "ui/Panel_ToastPill.png",
+      "px": {
+        "w": 672,
+        "h": 162
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/UI/Panel_ToastPill.png",
+      "postProcess": "copy",
+      "hash": "de714d9b5a0c2cb8d212318bba408d92f7e417878cdf187c522a956deac00cb4",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": []
+    },
+    {
+      "id": "ui/Panel_TooltipBubble",
+      "type": "image",
+      "url": "ui/Panel_TooltipBubble.png",
+      "px": {
+        "w": 612,
+        "h": 326
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/UI/Panel_TooltipBubble.png",
+      "postProcess": "copy",
+      "hash": "2808f6535dab304cacfbcd6cd6dea7c31d0eae4a31d5dec11b9acfff4cdd1086",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": []
+    },
+    {
+      "id": "ui/Switch_Knob",
+      "type": "image",
+      "url": "ui/Switch_Knob.png",
+      "px": {
+        "w": 344,
+        "h": 144
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/UI/Switch_Knob.png",
+      "postProcess": "copy",
+      "hash": "46427e5f619a5fd1f6723d840a5771649771edde1b24de7d43e9cc5bbf15d304",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": []
+    },
+    {
+      "id": "ui/Switch_Track",
+      "type": "image",
+      "url": "ui/Switch_Track.png",
+      "px": {
+        "w": 672,
+        "h": 172
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/UI/Switch_Track.png",
+      "postProcess": "copy",
+      "hash": "3d5f27204bbb9b90ed83acda75a557250472ced817312f08804c0734860293ec",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": []
+    },
+    {
+      "id": "ui/Toggle_Checkbox_Off",
+      "type": "image",
+      "url": "ui/Toggle_Checkbox_Off.png",
+      "px": {
+        "w": 192,
+        "h": 192
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/UI/Toggle_Checkbox_Off.png",
+      "postProcess": "copy",
+      "hash": "c1bb42e7f01f2ecdb2b79d4f908d00bb25dc2e76db44f176f0c1ec0c8b849e54",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": []
+    },
+    {
+      "id": "ui/Toggle_Checkbox_On",
+      "type": "image",
+      "url": "ui/Toggle_Checkbox_On.png",
+      "px": {
+        "w": 192,
+        "h": 192
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/UI/Toggle_Checkbox_On.png",
+      "postProcess": "copy",
+      "hash": "633f38b77efc6941657676c96bcc2297614938d4b5266be4f909c8f3b8512d18",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": []
+    },
+    {
+      "id": "houses/pet-house-lv1",
+      "type": "image",
+      "url": "houses/pet-house-lv1.png",
+      "px": {
+        "w": 800,
+        "h": 675
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/BuildProjects/DogHouse/pet_house_lv1.png",
+      "postProcess": "resize:800",
+      "hash": "4a14dc661cc2dd681fe633be7f55f09b781490c718c9f5fd7bbc6ceb2b076794",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": [],
+      "generator": "sips-316",
+      "note": "Known production-house pivot exception, WORK-012: measured bottom gap 0px and centre offset 15.5px; source composition retained. VERIFY-ASSET-004 remains partial, not a pixel pass."
+    },
+    {
+      "id": "houses/pet-house-lv2",
+      "type": "image",
+      "url": "houses/pet-house-lv2.png",
+      "px": {
+        "w": 800,
+        "h": 675
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/BuildProjects/DogHouse/pet_house_lv2.png",
+      "postProcess": "resize:800",
+      "hash": "faf8563b0a7675d3381aac19cea793e40cd75dcccefca5adc67d4c7d3e1e0492",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": [],
+      "generator": "sips-316",
+      "note": "Known production-house pivot exception, WORK-012: measured bottom gap 0px and centre offset 15.5px; source composition retained. VERIFY-ASSET-004 remains partial, not a pixel pass."
+    },
+    {
+      "id": "houses/pet-house-lv3",
+      "type": "image",
+      "url": "houses/pet-house-lv3.png",
+      "px": {
+        "w": 800,
+        "h": 675
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/BuildProjects/DogHouse/pet_house_lv3.png",
+      "postProcess": "resize:800",
+      "hash": "d46d9aa8bc2b9397447161384e8cf93b4d553914f5c0989220c60e1d6c552bba",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": [],
+      "generator": "sips-316",
+      "note": "Known production-house pivot exception, WORK-012: measured bottom gap 0px and centre offset 11.5px; source composition retained. VERIFY-ASSET-004 remains partial, not a pixel pass."
+    },
+    {
+      "id": "houses/pet-house-lv4",
+      "type": "image",
+      "url": "houses/pet-house-lv4.png",
+      "px": {
+        "w": 800,
+        "h": 675
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/BuildProjects/DogHouse/pet_house_lv4.png",
+      "postProcess": "resize:800",
+      "hash": "47ddffa628b788d4c0e4b79e4e9a922ec06466f7060c720e52273ed02d2946ec",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": [],
+      "generator": "sips-316",
+      "note": "Known production-house pivot exception, WORK-012: measured bottom gap 0px and centre offset 18px; source composition retained. VERIFY-ASSET-004 remains partial, not a pixel pass."
+    },
+    {
+      "id": "houses/pet-house-lv5",
+      "type": "image",
+      "url": "houses/pet-house-lv5.png",
+      "px": {
+        "w": 800,
+        "h": 675
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/BuildProjects/DogHouse/pet_house_lv5.png",
+      "postProcess": "resize:800",
+      "hash": "dd6ff458e22752303d2ff9a4ca1295fe574af48f415017a8f9fd4b4e9dd0d89f",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": [],
+      "generator": "sips-316",
+      "note": "Known production-house pivot exception, WORK-012: measured bottom gap 0px and centre offset 53.5px; source composition retained. VERIFY-ASSET-004 remains partial, not a pixel pass."
+    },
+    {
+      "id": "houses/pet-house-lv6",
+      "type": "image",
+      "url": "houses/pet-house-lv6.png",
+      "px": {
+        "w": 800,
+        "h": 675
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/BuildProjects/DogHouse/pet_house_lv6.png",
+      "postProcess": "resize:800",
+      "hash": "00bbe3d01479e2363988830cfeba292d2cacbacdd73bf464cf932d9b6bf500ec",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": [],
+      "generator": "sips-316",
+      "note": "Known production-house pivot exception, WORK-012: measured bottom gap 123px and centre offset 25px; source composition retained. VERIFY-ASSET-004 remains partial, not a pixel pass."
+    },
+    {
+      "id": "houses/starter-house-complete",
+      "type": "image",
+      "url": "houses/starter-house-complete.png",
+      "px": {
+        "w": 764,
+        "h": 800
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/BuildProjects/HouseExtension/talvi_build_project_house_clr_6.png",
+      "postProcess": "resize:800",
+      "hash": "3759b1750a0fe9351dbd3b3ea825b158bba939fd59e2ddebb56c72652fb24fb0",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": [],
+      "generator": "sips-316",
+      "note": "Known production-house pivot exception, WORK-012: measured bottom gap 21px and centre offset 18.5px; source composition retained. VERIFY-ASSET-004 remains partial, not a pixel pass."
+    },
+    {
+      "id": "world/tile-grass-base",
+      "type": "image",
+      "url": "world/tile-grass-base.png",
+      "px": {
+        "w": 320,
+        "h": 213
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/Tiles/Outdoor/Talvi_Outdoor_Ground_Atlas.png bottom-left rect (0,1366,1024,682)",
+      "postProcess": "ffmpeg crop=1024:682:0:0 (top-left); sips -z 213 320; crop RGBA verified byte-identical to source rect",
+      "hash": "0bc09a7d5e58b86e2107dbcdfa5b7c62c6d96766d2f19ea72720f840269716d3",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": [],
+      "generator": "ffmpeg crop + sips resize"
+    },
+    {
+      "id": "world/tile-grass-clover",
+      "type": "image",
+      "url": "world/tile-grass-clover.png",
+      "px": {
+        "w": 320,
+        "h": 213
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/Tiles/Outdoor/Talvi_Outdoor_Ground_Atlas.png bottom-left rect (1024,1366,1024,682)",
+      "postProcess": "ffmpeg crop=1024:682:1024:0 (top-left); sips -z 213 320; crop RGBA verified byte-identical to source rect",
+      "hash": "283bcd3e4c922ecb94ee3a84815c9b9a795151ec40ed829693fa79347324457d",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": [],
+      "generator": "ffmpeg crop + sips resize"
+    },
+    {
+      "id": "world/tile-grass-short",
+      "type": "image",
+      "url": "world/tile-grass-short.png",
+      "px": {
+        "w": 320,
+        "h": 213
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/Tiles/Outdoor/Talvi_Outdoor_Ground_Atlas.png bottom-left rect (0,684,1024,682)",
+      "postProcess": "ffmpeg crop=1024:682:0:682 (top-left); sips -z 213 320; crop RGBA verified byte-identical to source rect",
+      "hash": "a72622ff29b03fde2db6957ca10319feb2d14c16755567f8039db4cf7d36ad24",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": [],
+      "generator": "ffmpeg crop + sips resize"
+    },
+    {
+      "id": "world/tile-grass-tall",
+      "type": "image",
+      "url": "world/tile-grass-tall.png",
+      "px": {
+        "w": 320,
+        "h": 213
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/Tiles/Outdoor/Talvi_Outdoor_Ground_Atlas.png bottom-left rect (1024,684,1024,682)",
+      "postProcess": "ffmpeg crop=1024:682:1024:682 (top-left); sips -z 213 320; crop RGBA verified byte-identical to source rect",
+      "hash": "c3da2eba878deefe548b369894969be946a34c9a340ff6b345ba044972000b27",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": [],
+      "generator": "ffmpeg crop + sips resize"
+    },
+    {
+      "id": "world/tile-grass-wildflower",
+      "type": "image",
+      "url": "world/tile-grass-wildflower.png",
+      "px": {
+        "w": 320,
+        "h": 213
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/Tiles/Outdoor/Talvi_Outdoor_Ground_Atlas.png bottom-left rect (0,2,1024,682)",
+      "postProcess": "ffmpeg crop=1024:682:0:1364 (top-left); sips -z 213 320; crop RGBA verified byte-identical to source rect",
+      "hash": "6567b2dfad29e990ef7e06577a6142156814a41785d92bc5bda12741efebeb22",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": [],
+      "generator": "ffmpeg crop + sips resize"
+    },
+    {
+      "id": "world/bush-1",
+      "type": "image",
+      "url": "world/bush-1.png",
+      "px": {
+        "w": 320,
+        "h": 260
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/ArtDeliveries/_Ingested/bush-1/bush-1.png",
+      "postProcess": "resize:320",
+      "hash": "09adc41a5fa20f1c2a87381ecce3a0a1e1e19b4b49a3925d05d94f3a59609409",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": [],
+      "generator": "sips-316"
+    },
+    {
+      "id": "world/bush-2",
+      "type": "image",
+      "url": "world/bush-2.png",
+      "px": {
+        "w": 320,
+        "h": 240
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/ArtDeliveries/_Ingested/bush-2/bush-2.png",
+      "postProcess": "sips -Z 320 (320x245); ffmpeg crop=320:240:0:0, removing five fully transparent bottom rows; RGBA retained pixels verified byte-identical",
+      "hash": "e90dfa89389868379a79e38cf3f3ace55722314a37e1c81353aed7c3471e42fe",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": [],
+      "generator": "sips-316",
+      "note": "Production source retained read-only; pivot normalization preserves every nontransparent exported pixel."
+    },
+    {
+      "id": "world/rock-1",
+      "type": "image",
+      "url": "world/rock-1.png",
+      "px": {
+        "w": 320,
+        "h": 226
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/ArtDeliveries/_Ingested/rock-1-1/rock-1-1.png",
+      "postProcess": "resize:320",
+      "hash": "251fce951a51d20b0862e7398e1f5014f18ebc71ebbb0d23a0cf843864fefa90",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": [],
+      "generator": "sips-316"
+    },
+    {
+      "id": "world/flower-1",
+      "type": "image",
+      "url": "world/flower-1.png",
+      "px": {
+        "w": 320,
+        "h": 239
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/ArtDeliveries/_Ingested/flower-1a/flower-1a.png",
+      "postProcess": "resize:320",
+      "hash": "373af06b7bd55a934cb36d45e2ffe43be7faf55419c99160b4d03253e8c3b22e",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": [],
+      "generator": "sips-316"
+    },
+    {
+      "id": "world/dust-poof",
+      "type": "spritesheet",
+      "url": "world/dust-poof.png",
+      "px": {
+        "w": 960,
+        "h": 960
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/VFX/Dust_Poof_Sheet.png",
+      "postProcess": "copy",
+      "hash": "c525ddce32294600329432226d0526372066d7876e1374d714e14cd8db5ce424",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": [],
+      "frame": {
+        "w": 320,
+        "h": 320
+      },
+      "clips": {
+        "dust": {
+          "start": 0,
+          "end": 8,
+          "frameRate": 18,
+          "repeat": 0
+        }
+      }
+    },
+    {
+      "id": "clues/lantern",
+      "type": "image",
+      "url": "clues/lantern.png",
+      "px": {
+        "w": 256,
+        "h": 256
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/BuildProjects/Art/RewardIcons/RewardIcon_Lantern.png",
+      "postProcess": "lantern",
+      "hash": "d3bda395b43f88679a278424b2f3fbff27f875ce32ed50fc5b02a54263fccda8",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": [],
+      "generator": "sips-316"
     }
   ]
 }

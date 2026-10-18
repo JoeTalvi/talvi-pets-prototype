@@ -1,0 +1,33 @@
+import { resolve, dirname } from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { AssetManifest } from '../src/content/schema/assets';
+import { flags, readJson, report, type Finding } from './assets/common';
+import { checkAssetFiles, checkLedger, contentChecks, gitBaseline, type Add } from './assets/checks';
+export function main(args: string[]): number {
+    const opts = flags(args, ['format', 'out', 'content', 'manifest', 'baseline', 'seed'], ['strict', 'no-git']);
+    const file = String(opts.manifest ?? 'public/assets/manifest.json'), findings: Finding[] = [];
+    const add: Add = (id, level, path, message, details, findingFile) => findings.push({ ids: [`VERIFY-ASSET-${id}`], level, file: findingFile ?? file, path, message, ...(details ? { details } : {}) });
+    const parsed = AssetManifest.safeParse(readJson(file));
+    if (!parsed.success) {
+        for (const i of parsed.error.issues)
+            add('001', 'error', '/' + i.path.join('/'), i.message);
+        return report(findings, opts, 1, 1);
+    }
+    checkAssetFiles(parsed.data, dirname(resolve(file)), add);
+    contentChecks(parsed.data, resolve(String(opts.content ?? 'src/content')), add);
+    const previous = opts.baseline ? AssetManifest.parse(readJson(String(opts.baseline))) : opts['no-git'] ? undefined : gitBaseline(resolve(file));
+    if (previous)
+        checkLedger(parsed.data, previous, add);
+    else
+        add('007', 'info', '', 'No committed baseline available (or explicitly disabled); ledger comparison not executed');
+    return report(findings, opts, 8, parsed.data.entries.length);
+}
+if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
+    try {
+        process.exitCode = main(process.argv.slice(2));
+    }
+    catch (error) {
+        process.stderr.write(`check-assets: ${error instanceof Error ? error.message : String(error)}\n`);
+        process.exitCode = 3;
+    }
+}

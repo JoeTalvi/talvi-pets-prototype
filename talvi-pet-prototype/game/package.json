@@ -14,7 +14,7 @@
     "preview": "vite preview --host",
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "eslint src tests",
+    "lint": "eslint src tests tools",
     "check:content": "tsx tools/check-content.ts",
     "check:assets": "tsx tools/check-assets.ts",
     "report:coverage": "tsx tools/coverage.ts",
@@ -22,7 +22,8 @@
     "preview:pet": "tsx tools/pet-preview.ts",
     "log": "tsx tools/log-reader.ts",
     "fixture": "tsx tools/make-fixture.ts",
-    "deploy": "npm run build && wrangler deploy"
+    "deploy": "npm run build && wrangler deploy",
+    "asset:ledger": "tsx tools/asset-ledger.ts"
   },
   "dependencies": {
     "phaser": "4.2.1",
