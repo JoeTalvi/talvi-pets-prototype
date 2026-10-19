@@ -927,6 +927,25 @@
       "recordedBy": "WORK-012 / TASK-031",
       "history": [],
       "generator": "sips-316"
+    },
+    {
+      "id": "ui/mystery-shape",
+      "type": "image",
+      "url": "ui/mystery-shape.svg",
+      "html": true,
+      "px": {
+        "w": 600,
+        "h": 600
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "game/public/assets/ui/mystery-shape.svg (TASK-039; presentation renders mystery() as functional reference)",
+      "generator": "svg-authored",
+      "hash": "3683eb6382c9f60c9d7b875ccbdba009a00bc25c71de0e384c41cfdeaef54c7d",
+      "recordedAt": "2026-10-19",
+      "recordedBy": "WORK-011/TASK-039",
+      "history": [],
+      "note": "ASSET-006 HTML-only blurred anonymous ink blobs and outlined question mark; no pet silhouette; creative verdict pending."
     }
   ]
 }

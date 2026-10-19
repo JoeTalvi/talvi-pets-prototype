@@ -1,4 +1,40 @@
-/* Production UI sources copied byte-for-byte; slices from production-reuse.md. */
-.ns-modal{border:50px solid transparent;border-image:url('/assets/ui/Panel_ModalDialog.png') 100 fill / 50px / 0 stretch}
-.ns-btn-primary{border:20px solid transparent;border-image:url('/assets/ui/Btn_Primary_Normal.png') 40 108 fill / 20px 45px / 0 stretch;background:none}
-.ns-btn-primary:active{filter:brightness(.94)}
+/* Exact production source pixels; CSS order T R B L. Border images do not consume layout space. */
+.ns-hero{border:0 solid transparent;background:none;border-image:url("/assets/ui/Panel_PopupHero.png") 110 fill / 110px / 0 stretch;box-sizing:border-box}
+.ns-modal{border:0 solid transparent;background:none;border-image:url("/assets/ui/Panel_ModalDialog.png") 100 fill / 100px / 0 stretch;box-sizing:border-box}
+.ns-sheet{border:0 solid transparent;background:none;border-image:url("/assets/ui/Panel_BottomSheet.png") 105 105 50 105 fill / 105px 105px 50px 105px / 0 stretch;box-sizing:border-box}
+.ns-inset{border:0 solid transparent;background:none;border-image:url("/assets/ui/Panel_InsetSubPanel.png") 85 fill / 85px / 0 stretch;box-sizing:border-box}
+.ns-row{border:0 solid transparent;background:none;border-image:url("/assets/ui/Panel_ListRow.png") 85 fill / 85px / 0 stretch;box-sizing:border-box}
+.ns-tile{border:0 solid transparent;background:none;border-image:url("/assets/ui/Panel_GridTile.png") 80 fill / 80px / 0 stretch;box-sizing:border-box}
+.ns-toast{border:0 solid transparent;background:none;border-image:url("/assets/ui/Panel_ToastPill.png") 0 98 0 98 fill / 0 98px 0 98px / 0 stretch;box-sizing:border-box}
+.ns-btn-primary{border:0 solid transparent;background:none;border-image:url("/assets/ui/Btn_Primary_Normal.png") 0 108 0 108 fill / 0 108px 0 108px / 0 stretch;box-sizing:border-box}
+.ns-btn-secondary{border:0 solid transparent;background:none;border-image:url("/assets/ui/Btn_Secondary_Normal.png") 0 108 0 108 fill / 0 108px 0 108px / 0 stretch;box-sizing:border-box}
+.ns-tab{border:0 solid transparent;background:none;border-image:url("/assets/ui/Btn_Tab_Unselected.png") 70 70 45 70 fill / 70px 70px 45px 70px / 0 stretch;box-sizing:border-box}
+.ns-switch-track{border:0 solid transparent;background:none;border-image:url("/assets/ui/Switch_Track.png") 0 100 0 100 fill / 0 100px 0 100px / 0 stretch;box-sizing:border-box}
+.ns-switch-knob{border:0 solid transparent;background:none;border-image:url("/assets/ui/Switch_Knob.png") 0 85 0 85 fill / 0 85px 0 85px / 0 stretch;box-sizing:border-box}
+.ns-checkbox{border:0 solid transparent;background:none;border-image:url("/assets/ui/Toggle_Checkbox_Off.png") 70 fill / 70px / 0 stretch;box-sizing:border-box}
+.ns-tooltip{border:0 solid transparent;background:none;border-image:url("/assets/ui/Panel_TooltipBubble.png") 80 80 100 80 fill / 80px 80px 100px 80px / 0 stretch;box-sizing:border-box}
+.ns-btn-primary:active{border-image-source:url("/assets/ui/Btn_Primary_Pressed.png")}
+.ns-btn-primary.pressed{border-image-source:url("/assets/ui/Btn_Primary_Pressed.png")}
+.ns-btn-primary:disabled{border-image-source:url("/assets/ui/Btn_Primary_Disabled.png")}
+.ns-btn-primary.disabled{border-image-source:url("/assets/ui/Btn_Primary_Disabled.png")}
+.ns-btn-secondary:active{border-image-source:url("/assets/ui/Btn_Secondary_Pressed.png")}
+.ns-btn-secondary.pressed{border-image-source:url("/assets/ui/Btn_Secondary_Pressed.png")}
+.ns-btn-secondary:disabled{border-image-source:url("/assets/ui/Btn_Secondary_Disabled.png")}
+.ns-btn-secondary.disabled{border-image-source:url("/assets/ui/Btn_Secondary_Disabled.png")}
+.ns-tab.selected,.ns-tab[aria-selected=true]{border-image-source:url('/assets/ui/Btn_Tab_Selected.png')}
+.ns-tab.locked,.ns-tab:disabled{border-image-source:url('/assets/ui/Btn_Tab_Locked.png')}
+.ns-checkbox.checked,.ns-checkbox[aria-checked=true]{border-image-source:url('/assets/ui/Toggle_Checkbox_On.png')}
+.ns-switch{border:0;background:none;padding:0;position:relative;display:inline-block;width:200px;height:64px}
+.ns-switch-track{position:absolute;inset:0}.ns-switch-knob{position:absolute;left:8px;top:8px;width:96px;height:48px}
+.ns-switch[aria-checked=true] .ns-switch-knob{left:96px}
+.ns-btn-popup{position:relative;isolation:isolate;border:0;background:none;height:76px;width:460px}
+.ns-btn-popup::before{content:"";position:absolute;inset:0;z-index:-1;border:0 solid transparent;border-image:url('/assets/ui/Panel_ModalDialog.png') 100 fill / 100px / 0 stretch}
+/* Matrix multiplies source RGB by Unity's tint (233,186,35); lettering remains ink. */
+.ns-btn-popup.gold::before{filter:var(--popup-tint)}
+.tpp-tint-defs{position:absolute;overflow:hidden;pointer-events:none}
+.ns-btn-popup:active,.ns-btn-popup.pressed{filter:brightness(.9)}
+.ns-btn-popup:disabled,.ns-btn-popup.disabled{filter:brightness(.8) opacity(.6)}
+.ns-btn-popup.secondary{width:400px;font-size:26px}
+.tpp-attention{position:relative;isolation:isolate;width:64px;height:64px;border:0;background:none;font:800 44px Nunito;color:var(--white);text-align:center;line-height:64px}
+.tpp-attention::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--red);mask:url('/assets/ui/Btn_RoundIcon.png') center/contain no-repeat}
+.tpp-attention::after{content:"";position:absolute;inset:0;z-index:-1;background:url('/assets/ui/Btn_RoundIcon.png') center/contain no-repeat;mix-blend-mode:multiply}
