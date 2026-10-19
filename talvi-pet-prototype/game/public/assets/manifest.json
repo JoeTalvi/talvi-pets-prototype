@@ -79,11 +79,11 @@
       "status": "production-reference",
       "origin": "production",
       "source": "@fontsource-variable/baloo-2@5.3.0/files/baloo-2-latin-wght-normal.woff2 (Google Fonts, SIL OFL 1.1)",
-      "note": "Production family; verified package name via npm view; latin variable subset",
       "hash": "26fb4610d4bc976d2584ca15e66c11465dbc1f267a10dca668fcb3080dfe59c1",
       "recordedAt": "2026-10-17",
       "recordedBy": "TASK-022 / WORK-001",
-      "history": []
+      "history": [],
+      "note": "Production family; verified package name via npm view; latin variable subset"
     },
     {
       "id": "fonts/nunito",
@@ -94,11 +94,11 @@
       "status": "production-reference",
       "origin": "production",
       "source": "@fontsource-variable/nunito@5.3.0/files/nunito-latin-wght-normal.woff2 (Google Fonts, SIL OFL 1.1)",
-      "note": "Production family; verified package name via npm view; latin variable subset",
       "hash": "ba344451eab25b217a165363b1982048a5e5830a0daf36577973955a04cac793",
       "recordedAt": "2026-10-17",
       "recordedBy": "TASK-022 / WORK-001",
-      "history": []
+      "history": [],
+      "note": "Production family; verified package name via npm view; latin variable subset"
     },
     {
       "id": "rooms/dog-room",
@@ -109,16 +109,32 @@
         "h": 1080
       },
       "status": "ai-placeholder",
-      "origin": "derived",
-      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/room-dog-iso.jpg",
-      "generator": "sips + ffmpeg",
-      "seed": 1012,
-      "postProcess": "sips --resampleHeightWidth 1080 1920 -s formatOptions 80 <source> --out <output>",
-      "note": "Phase 1 Asset-Bot original: runs/generate-image/room-dog-iso/1792171014237-c18ux4/candidate_002.png; single-frame integration stopgap, not creative approval",
-      "hash": "be0be1c52394e4c4df6dbf55bf32e5891e2737b9aa460a657f9b1c70547eb786",
-      "recordedAt": "2026-10-17",
-      "recordedBy": "TASK-022 / WORK-001",
-      "history": []
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/rooms/1792440274527-79qnvo/candidate_001.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 13001,
+      "prompt": "- Image 1: Pet House Lv3 style reference\n- Image 2: Room A style reference\n- Study the reference images carefully and match their art style CLOSELY. Replicate the exact line work thickness, shading technique, lighting style, level of detail, texture rendering, and overall aesthetic. Match the proportions, silhouette style, and form language precisely. Only use colors from the description — do not copy colors from references. The final result should look like it was drawn by the same artist as the references.\n- Scene: An empty three-quarter isometric pet living room, keeping the room reference's two back walls, open floor diamond, left doorway, small right window, low wooden skirting, warm pale plaster and honey-oak wood. Make the plaster walls nearly uniform pale cream, with only very faint broad tonal variation and no vertical streaks or mottled patches. Broad pale honey-oak floorboards have very low contrast joins and almost no grain marks, no knots or scratches. Preserve the reference room proportions and camera angle. The room walls and floor occupy the middle 72 percent of image height, with generous plain warm off-white space above and below. A flexible unlabeled pet living space. No furniture, animals, people, plants, rug, text, labels, UI, scaffolding, exterior building or roof.\n- Single unified image. No collage, grid, or multi-panel layout.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/production/pet_house_lv3.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/concepts/v1/room-a.png"
+      ],
+      "postProcess": "Uniform image-only fit into y128..951; sampled neutral exterior paper;6px feather outside image contour plus3px protected margin; Chrome canvas JPEG quality0.8; recipe game/tools/assets/export-refinements.mjs + refinements-v1.config.json; preserved source /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/production/refinements-v1/sources/room-a-refined.jpg SHA256 490f15731a6bec1eb02f005bda2cb8f3b0f623357774e03d1b7109bb3a4c95bb",
+      "batch": "trial-WORK013B",
+      "hash": "781e0c2311d7bf4c1a523d12f3479b43a057fd15c2a7996b2e139889798c8cc3",
+      "recordedAt": "2026-10-19",
+      "recordedBy": "WORK-013B / TASK-063",
+      "history": [
+        {
+          "hash": "be0be1c52394e4c4df6dbf55bf32e5891e2737b9aa460a657f9b1c70547eb786",
+          "status": "ai-placeholder",
+          "origin": "derived",
+          "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/room-dog-iso.jpg",
+          "recordedAt": "2026-10-17",
+          "recordedBy": "TASK-022 / WORK-001",
+          "note": "Phase 1 Asset-Bot original: runs/generate-image/room-dog-iso/1792171014237-c18ux4/candidate_002.png; single-frame integration stopgap, not creative approval"
+        }
+      ],
+      "note": "WORK013B technical export, creative/runtime/device review pending; source preserved. Authored front walk-area/door alignment requires runtime review; world geometry unchanged."
     },
     {
       "id": "player/avatar-sheet",
@@ -128,13 +144,6 @@
         "w": 192,
         "h": 256
       },
-      "status": "ai-placeholder",
-      "origin": "derived",
-      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/player.png",
-      "generator": "sips + ffmpeg",
-      "seed": 1004,
-      "postProcess": "sips --resampleHeight 256 <source> --out <intermediate>; ffmpeg -i <intermediate> -vf pad=192:256:(ow-iw)/2:oh-ih:color=0x00000000 -frames:v 1 <output>",
-      "note": "Phase 1 Asset-Bot original: runs/generate-image/player/1792069414927-mladn7/candidate_001.png; single-frame integration stopgap, not creative approval",
       "frame": {
         "w": 192,
         "h": 256
@@ -147,10 +156,17 @@
           "repeat": -1
         }
       },
+      "status": "ai-placeholder",
+      "origin": "derived",
+      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/player.png",
+      "generator": "sips + ffmpeg",
+      "seed": 1004,
+      "postProcess": "sips --resampleHeight 256 <source> --out <intermediate>; ffmpeg -i <intermediate> -vf pad=192:256:(ow-iw)/2:oh-ih:color=0x00000000 -frames:v 1 <output>",
       "hash": "71130166669b3998c68fd6778af5ba678135087e72c22dca3c50b01f655e3d44",
       "recordedAt": "2026-10-17",
       "recordedBy": "TASK-022 / WORK-001",
-      "history": []
+      "history": [],
+      "note": "Phase 1 Asset-Bot original: runs/generate-image/player/1792069414927-mladn7/candidate_001.png; single-frame integration stopgap, not creative approval"
     },
     {
       "id": "charms/dog-bed",
@@ -166,11 +182,11 @@
       "generator": "sips + ffmpeg",
       "seed": 2001,
       "postProcess": "sips --resampleHeight 256 <source> --out <intermediate>; ffmpeg -i <intermediate> -vf pad=320:256:(ow-iw)/2:oh-ih:color=0x00000000 -frames:v 1 <output>",
-      "note": "Phase 1 Asset-Bot original: runs/generate-image/charm-dog-bed/1792069521456-5lkt2t/candidate_001.png; single-frame integration stopgap, not creative approval",
       "hash": "fb835c68955c662187dd5335d45acbd164d3e620d333b574e00cfe548bebce09",
       "recordedAt": "2026-10-17",
       "recordedBy": "TASK-022 / WORK-001",
-      "history": []
+      "history": [],
+      "note": "Phase 1 Asset-Bot original: runs/generate-image/charm-dog-bed/1792069521456-5lkt2t/candidate_001.png; single-frame integration stopgap, not creative approval"
     },
     {
       "id": "charms/lamp",
@@ -181,16 +197,32 @@
         "h": 192
       },
       "status": "ai-placeholder",
-      "origin": "derived",
-      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/charm-lamp.png",
-      "generator": "sips + ffmpeg",
-      "seed": 2002,
-      "postProcess": "sips --resampleHeight 192 <source> --out <intermediate>; ffmpeg -i <intermediate> -vf pad=160:192:(ow-iw)/2:oh-ih:color=0x00000000 -frames:v 1 <output>",
-      "note": "Phase 1 Asset-Bot original: runs/generate-image/charm-lamp/1792069539224-cyg5me/candidate_001.png; single-frame integration stopgap, not creative approval",
-      "hash": "bf8c7973b94c514647bef15e691aa54114a455a477c17d284528abc3deee473f",
-      "recordedAt": "2026-10-17",
-      "recordedBy": "TASK-022 / WORK-001",
-      "history": []
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792440299690-q10gf8/candidate_001.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 13002,
+      "prompt": "- Image 1: Pet House Lv3 style reference\n- Image 2: Charms Nano style reference\n- Study the reference images carefully and match their art style CLOSELY. Replicate the exact line work thickness, shading technique, lighting style, level of detail, texture rendering, and overall aesthetic. Match the proportions, silhouette style, and form language precisely. Only use colors from the description — do not copy colors from references. The final result should look like it was drawn by the same artist as the references.\n- Scene: Exactly one small table lamp, isolated against a plain white background. Keep the furniture reference lamp's simple pale cream truncated-cone shade, slim warm wooden upright stem, broad round wooden foot and small side pull cord, viewed from the same three-quarter angle. The shade is completely opaque solid cream cloth: its front and side are uninterrupted cream surfaces. The bulb, socket and inner supports are fully concealed. Close the top with an opaque matching cream cap so the camera cannot see inside; no top opening or interior view. No bulb outline, bulb silhouette, transparency or cutaway. Whole lamp visible, centered, modest margins, shade and foot distinctly separated by the stem. No bed, picture frame, other objects, table, floor plane, room, text or labels.\n- Single unified image. No collage, grid, or multi-panel layout.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/production/pet_house_lv3.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/concepts/v1/charms-nano.png"
+      ],
+      "postProcess": "Boundary-connected white flood; enclosed cream retained opaque; keep-region dilation2px; exterior luma alpha and white unmatte; trim and uniform base-centre canvas fit; recipe game/tools/assets/export-refinements.mjs + refinements-v1.config.json; preserved source /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/production/refinements-v1/sources/lamp-refined.jpg SHA256 f3585ba4bf694b4caff4cea53338cf7f721890e71b989ead25fbeb99684f745b",
+      "batch": "trial-WORK013B",
+      "hash": "46aa575040c0dc6e898d9aa46e70c9ee9c22d9a70cd151d4f67a6d776c83d9be",
+      "recordedAt": "2026-10-19",
+      "recordedBy": "WORK-013B / TASK-063",
+      "history": [
+        {
+          "hash": "bf8c7973b94c514647bef15e691aa54114a455a477c17d284528abc3deee473f",
+          "status": "ai-placeholder",
+          "origin": "derived",
+          "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/charm-lamp.png",
+          "recordedAt": "2026-10-17",
+          "recordedBy": "TASK-022 / WORK-001",
+          "note": "Phase 1 Asset-Bot original: runs/generate-image/charm-lamp/1792069539224-cyg5me/candidate_001.png; single-frame integration stopgap, not creative approval"
+        }
+      ],
+      "note": "WORK013B technical export, creative/runtime/device review pending; source preserved. Proportional fit yields30px side margins (contract <=8 unmet); no distortion applied. Coordinator TASK068: technical proportional-fit exception recorded in assets.md at revision135, exact export hash reviewed by TASK065. Creative/context/device acceptance remains pending."
     },
     {
       "id": "sfx/place",
@@ -596,12 +628,12 @@
       "status": "production-reference",
       "origin": "production",
       "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/BuildProjects/DogHouse/pet_house_lv1.png",
+      "generator": "sips-316",
       "postProcess": "resize:800",
       "hash": "4a14dc661cc2dd681fe633be7f55f09b781490c718c9f5fd7bbc6ceb2b076794",
       "recordedAt": "2026-10-17",
       "recordedBy": "WORK-012 / TASK-031",
       "history": [],
-      "generator": "sips-316",
       "note": "Known production-house pivot exception, WORK-012: measured bottom gap 0px and centre offset 15.5px; source composition retained. VERIFY-ASSET-004 remains partial, not a pixel pass."
     },
     {
@@ -615,12 +647,12 @@
       "status": "production-reference",
       "origin": "production",
       "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/BuildProjects/DogHouse/pet_house_lv2.png",
+      "generator": "sips-316",
       "postProcess": "resize:800",
       "hash": "faf8563b0a7675d3381aac19cea793e40cd75dcccefca5adc67d4c7d3e1e0492",
       "recordedAt": "2026-10-17",
       "recordedBy": "WORK-012 / TASK-031",
       "history": [],
-      "generator": "sips-316",
       "note": "Known production-house pivot exception, WORK-012: measured bottom gap 0px and centre offset 15.5px; source composition retained. VERIFY-ASSET-004 remains partial, not a pixel pass."
     },
     {
@@ -634,12 +666,12 @@
       "status": "production-reference",
       "origin": "production",
       "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/BuildProjects/DogHouse/pet_house_lv3.png",
+      "generator": "sips-316",
       "postProcess": "resize:800",
       "hash": "d46d9aa8bc2b9397447161384e8cf93b4d553914f5c0989220c60e1d6c552bba",
       "recordedAt": "2026-10-17",
       "recordedBy": "WORK-012 / TASK-031",
       "history": [],
-      "generator": "sips-316",
       "note": "Known production-house pivot exception, WORK-012: measured bottom gap 0px and centre offset 11.5px; source composition retained. VERIFY-ASSET-004 remains partial, not a pixel pass."
     },
     {
@@ -653,12 +685,12 @@
       "status": "production-reference",
       "origin": "production",
       "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/BuildProjects/DogHouse/pet_house_lv4.png",
+      "generator": "sips-316",
       "postProcess": "resize:800",
       "hash": "47ddffa628b788d4c0e4b79e4e9a922ec06466f7060c720e52273ed02d2946ec",
       "recordedAt": "2026-10-17",
       "recordedBy": "WORK-012 / TASK-031",
       "history": [],
-      "generator": "sips-316",
       "note": "Known production-house pivot exception, WORK-012: measured bottom gap 0px and centre offset 18px; source composition retained. VERIFY-ASSET-004 remains partial, not a pixel pass."
     },
     {
@@ -672,12 +704,12 @@
       "status": "production-reference",
       "origin": "production",
       "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/BuildProjects/DogHouse/pet_house_lv5.png",
+      "generator": "sips-316",
       "postProcess": "resize:800",
       "hash": "dd6ff458e22752303d2ff9a4ca1295fe574af48f415017a8f9fd4b4e9dd0d89f",
       "recordedAt": "2026-10-17",
       "recordedBy": "WORK-012 / TASK-031",
       "history": [],
-      "generator": "sips-316",
       "note": "Known production-house pivot exception, WORK-012: measured bottom gap 0px and centre offset 53.5px; source composition retained. VERIFY-ASSET-004 remains partial, not a pixel pass."
     },
     {
@@ -691,12 +723,12 @@
       "status": "production-reference",
       "origin": "production",
       "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/BuildProjects/DogHouse/pet_house_lv6.png",
+      "generator": "sips-316",
       "postProcess": "resize:800",
       "hash": "00bbe3d01479e2363988830cfeba292d2cacbacdd73bf464cf932d9b6bf500ec",
       "recordedAt": "2026-10-17",
       "recordedBy": "WORK-012 / TASK-031",
       "history": [],
-      "generator": "sips-316",
       "note": "Known production-house pivot exception, WORK-012: measured bottom gap 123px and centre offset 25px; source composition retained. VERIFY-ASSET-004 remains partial, not a pixel pass."
     },
     {
@@ -710,12 +742,12 @@
       "status": "production-reference",
       "origin": "production",
       "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/BuildProjects/HouseExtension/talvi_build_project_house_clr_6.png",
+      "generator": "sips-316",
       "postProcess": "resize:800",
       "hash": "3759b1750a0fe9351dbd3b3ea825b158bba939fd59e2ddebb56c72652fb24fb0",
       "recordedAt": "2026-10-17",
       "recordedBy": "WORK-012 / TASK-031",
       "history": [],
-      "generator": "sips-316",
       "note": "Known production-house pivot exception, WORK-012: measured bottom gap 21px and centre offset 18.5px; source composition retained. VERIFY-ASSET-004 remains partial, not a pixel pass."
     },
     {
@@ -729,12 +761,12 @@
       "status": "production-reference",
       "origin": "production",
       "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/Tiles/Outdoor/Talvi_Outdoor_Ground_Atlas.png bottom-left rect (0,1366,1024,682)",
+      "generator": "ffmpeg crop + sips resize",
       "postProcess": "ffmpeg crop=1024:682:0:0 (top-left); sips -z 213 320; crop RGBA verified byte-identical to source rect",
       "hash": "0bc09a7d5e58b86e2107dbcdfa5b7c62c6d96766d2f19ea72720f840269716d3",
       "recordedAt": "2026-10-17",
       "recordedBy": "WORK-012 / TASK-031",
-      "history": [],
-      "generator": "ffmpeg crop + sips resize"
+      "history": []
     },
     {
       "id": "world/tile-grass-clover",
@@ -747,12 +779,12 @@
       "status": "production-reference",
       "origin": "production",
       "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/Tiles/Outdoor/Talvi_Outdoor_Ground_Atlas.png bottom-left rect (1024,1366,1024,682)",
+      "generator": "ffmpeg crop + sips resize",
       "postProcess": "ffmpeg crop=1024:682:1024:0 (top-left); sips -z 213 320; crop RGBA verified byte-identical to source rect",
       "hash": "283bcd3e4c922ecb94ee3a84815c9b9a795151ec40ed829693fa79347324457d",
       "recordedAt": "2026-10-17",
       "recordedBy": "WORK-012 / TASK-031",
-      "history": [],
-      "generator": "ffmpeg crop + sips resize"
+      "history": []
     },
     {
       "id": "world/tile-grass-short",
@@ -765,12 +797,12 @@
       "status": "production-reference",
       "origin": "production",
       "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/Tiles/Outdoor/Talvi_Outdoor_Ground_Atlas.png bottom-left rect (0,684,1024,682)",
+      "generator": "ffmpeg crop + sips resize",
       "postProcess": "ffmpeg crop=1024:682:0:682 (top-left); sips -z 213 320; crop RGBA verified byte-identical to source rect",
       "hash": "a72622ff29b03fde2db6957ca10319feb2d14c16755567f8039db4cf7d36ad24",
       "recordedAt": "2026-10-17",
       "recordedBy": "WORK-012 / TASK-031",
-      "history": [],
-      "generator": "ffmpeg crop + sips resize"
+      "history": []
     },
     {
       "id": "world/tile-grass-tall",
@@ -783,12 +815,12 @@
       "status": "production-reference",
       "origin": "production",
       "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/Tiles/Outdoor/Talvi_Outdoor_Ground_Atlas.png bottom-left rect (1024,684,1024,682)",
+      "generator": "ffmpeg crop + sips resize",
       "postProcess": "ffmpeg crop=1024:682:1024:682 (top-left); sips -z 213 320; crop RGBA verified byte-identical to source rect",
       "hash": "c3da2eba878deefe548b369894969be946a34c9a340ff6b345ba044972000b27",
       "recordedAt": "2026-10-17",
       "recordedBy": "WORK-012 / TASK-031",
-      "history": [],
-      "generator": "ffmpeg crop + sips resize"
+      "history": []
     },
     {
       "id": "world/tile-grass-wildflower",
@@ -801,12 +833,12 @@
       "status": "production-reference",
       "origin": "production",
       "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/Tiles/Outdoor/Talvi_Outdoor_Ground_Atlas.png bottom-left rect (0,2,1024,682)",
+      "generator": "ffmpeg crop + sips resize",
       "postProcess": "ffmpeg crop=1024:682:0:1364 (top-left); sips -z 213 320; crop RGBA verified byte-identical to source rect",
       "hash": "6567b2dfad29e990ef7e06577a6142156814a41785d92bc5bda12741efebeb22",
       "recordedAt": "2026-10-17",
       "recordedBy": "WORK-012 / TASK-031",
-      "history": [],
-      "generator": "ffmpeg crop + sips resize"
+      "history": []
     },
     {
       "id": "world/bush-1",
@@ -819,12 +851,12 @@
       "status": "production-reference",
       "origin": "production",
       "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/ArtDeliveries/_Ingested/bush-1/bush-1.png",
+      "generator": "sips-316",
       "postProcess": "resize:320",
       "hash": "09adc41a5fa20f1c2a87381ecce3a0a1e1e19b4b49a3925d05d94f3a59609409",
       "recordedAt": "2026-10-17",
       "recordedBy": "WORK-012 / TASK-031",
-      "history": [],
-      "generator": "sips-316"
+      "history": []
     },
     {
       "id": "world/bush-2",
@@ -837,12 +869,12 @@
       "status": "production-reference",
       "origin": "production",
       "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/ArtDeliveries/_Ingested/bush-2/bush-2.png",
+      "generator": "sips-316",
       "postProcess": "sips -Z 320 (320x245); ffmpeg crop=320:240:0:0, removing five fully transparent bottom rows; RGBA retained pixels verified byte-identical",
       "hash": "e90dfa89389868379a79e38cf3f3ace55722314a37e1c81353aed7c3471e42fe",
       "recordedAt": "2026-10-17",
       "recordedBy": "WORK-012 / TASK-031",
       "history": [],
-      "generator": "sips-316",
       "note": "Production source retained read-only; pivot normalization preserves every nontransparent exported pixel."
     },
     {
@@ -856,12 +888,12 @@
       "status": "production-reference",
       "origin": "production",
       "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/ArtDeliveries/_Ingested/rock-1-1/rock-1-1.png",
+      "generator": "sips-316",
       "postProcess": "resize:320",
       "hash": "251fce951a51d20b0862e7398e1f5014f18ebc71ebbb0d23a0cf843864fefa90",
       "recordedAt": "2026-10-17",
       "recordedBy": "WORK-012 / TASK-031",
-      "history": [],
-      "generator": "sips-316"
+      "history": []
     },
     {
       "id": "world/flower-1",
@@ -874,12 +906,12 @@
       "status": "production-reference",
       "origin": "production",
       "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/ArtDeliveries/_Ingested/flower-1a/flower-1a.png",
+      "generator": "sips-316",
       "postProcess": "resize:320",
       "hash": "373af06b7bd55a934cb36d45e2ffe43be7faf55419c99160b4d03253e8c3b22e",
       "recordedAt": "2026-10-17",
       "recordedBy": "WORK-012 / TASK-031",
-      "history": [],
-      "generator": "sips-316"
+      "history": []
     },
     {
       "id": "world/dust-poof",
@@ -889,14 +921,6 @@
         "w": 960,
         "h": 960
       },
-      "status": "production-reference",
-      "origin": "production",
-      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/VFX/Dust_Poof_Sheet.png",
-      "postProcess": "copy",
-      "hash": "c525ddce32294600329432226d0526372066d7876e1374d714e14cd8db5ce424",
-      "recordedAt": "2026-10-17",
-      "recordedBy": "WORK-012 / TASK-031",
-      "history": [],
       "frame": {
         "w": 320,
         "h": 320
@@ -908,7 +932,15 @@
           "frameRate": 18,
           "repeat": 0
         }
-      }
+      },
+      "status": "production-reference",
+      "origin": "production",
+      "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/VFX/Dust_Poof_Sheet.png",
+      "postProcess": "copy",
+      "hash": "c525ddce32294600329432226d0526372066d7876e1374d714e14cd8db5ce424",
+      "recordedAt": "2026-10-17",
+      "recordedBy": "WORK-012 / TASK-031",
+      "history": []
     },
     {
       "id": "clues/lantern",
@@ -921,12 +953,12 @@
       "status": "production-reference",
       "origin": "production",
       "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/BuildProjects/Art/RewardIcons/RewardIcon_Lantern.png",
+      "generator": "sips-316",
       "postProcess": "lantern",
       "hash": "d3bda395b43f88679a278424b2f3fbff27f875ce32ed50fc5b02a54263fccda8",
       "recordedAt": "2026-10-17",
       "recordedBy": "WORK-012 / TASK-031",
-      "history": [],
-      "generator": "sips-316"
+      "history": []
     },
     {
       "id": "ui/mystery-shape",
@@ -946,6 +978,32 @@
       "recordedBy": "WORK-011/TASK-039",
       "history": [],
       "note": "ASSET-006 HTML-only blurred anonymous ink blobs and outlined question mark; no pet silhouette; creative verdict pending."
+    },
+    {
+      "id": "charms/painting",
+      "type": "image",
+      "url": "charms/painting.png",
+      "px": {
+        "w": 128,
+        "h": 128
+      },
+      "status": "ai-placeholder",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792440333096-u3le6h/candidate_001.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 13003,
+      "prompt": "- Image 1: Pet House Lv3 style reference\n- Image 2: Charms Nano style reference\n- Study the reference images carefully and match their art style CLOSELY. Replicate the exact line work thickness, shading technique, lighting style, level of detail, texture rendering, and overall aesthetic. Match the proportions, silhouette style, and form language precisely. Only use colors from the description — do not copy colors from references. The final result should look like it was drawn by the same artist as the references.\n- Scene: Exactly one simple square warm wooden wall picture frame containing the furniture reference's muted brown sprig on a pale cream paper field with a cream mat. Keep the reference frame's restrained moulding, warm wood, sprig motif and three-quarter front view. The frame is vertical and wall-mounted in purpose, with only a thin flush backing immediately behind the frame. Absolutely no rear easel stand, no hinged leg, support strut, pedestal, feet or tabletop hardware. Clean outer rectangular silhouette with no projecting shapes behind or below it. Whole frame visible, centered with modest margins, isolated on plain white background. No lamp, dog bed, other objects, visible wall, floor, room, text or labels.\n- Single unified image. No collage, grid, or multi-panel layout.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/production/pet_house_lv3.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/concepts/v1/charms-nano.png"
+      ],
+      "postProcess": "Boundary-connected white flood; enclosed cream retained opaque; keep-region dilation2px; exterior luma alpha and white unmatte; trim and uniform base-centre canvas fit; recipe game/tools/assets/export-refinements.mjs + refinements-v1.config.json; preserved source /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/production/refinements-v1/sources/painting-refined.jpg SHA256 92e34fd806dea3be73e1a0891289c8756fc7e7051a13fbfad920423818c898a4",
+      "batch": "trial-WORK013B",
+      "hash": "8dcb5496879c2d681f61ad140ae333732d1afe7fcc4f54bd7566e4c5739b7698",
+      "recordedAt": "2026-10-19",
+      "recordedBy": "WORK-013B / TASK-063",
+      "history": [],
+      "note": "WORK013B technical export, creative/runtime/device review pending; source preserved. Proportional fit yields10px side margins (contract <=8 unmet); no distortion applied. Coordinator TASK068: technical proportional-fit exception recorded in assets.md at revision135, exact export hash reviewed by TASK065. Creative/context/device acceptance remains pending."
     }
   ]
 }

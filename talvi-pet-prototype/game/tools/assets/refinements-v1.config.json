@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "sourceDirectory": "phase-3-preproduction/production/refinements-v1",
+  "room": { "source": "room-a-refined.jpg", "id": "rooms/dog-room", "width": 1920, "height": 1080, "bandTop": 128, "bandHeight": 824, "quality": 0.8, "exteriorBoundary": [[690,14],[1087,243],[1087,527],[699,755],[292,527],[292,243]], "exteriorKeep": 3, "exteriorFeather": 6 },
+  "sprites": [
+    { "source": "lamp-refined.jpg", "id": "charms/lamp", "width": 160, "height": 192, "backgroundMin": 240, "backgroundChroma": 18, "dilation": 2 },
+    { "source": "painting-refined.jpg", "id": "charms/painting", "width": 128, "height": 128, "backgroundMin": 240, "backgroundChroma": 18, "dilation": 2 }
+  ]
+}
