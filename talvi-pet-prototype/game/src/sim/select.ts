@@ -1,5 +1,8 @@
 import type { Content } from '../content/types';
-/** Content-only selector; WORK-003 takes ownership of this module. */
+import type { Door } from '../content/schema/common';
+import type { GameState } from './state';
+
+/** CONTRACT-SELECT v1.3; content-only consumers retain their original signature. */
 export function typeUnlockPhase(content: Content, typeId: string): {
     projectId: string;
     phase: number;
@@ -12,4 +15,16 @@ export function typeUnlockPhase(content: Content, typeId: string): {
             };
     }
     return null;
+}
+
+export function inputFrozen(_content: Content, state: GameState): boolean {
+    return state.dialogue.current !== null || state.celebration !== null ||
+        state.arrival !== null || state.mode === 'design';
+}
+
+export function doorEnabled(content: Content, state: GameState, door: Door): boolean {
+    const target = door.target;
+    if (target.scene === 'street') return true;
+    const project = content.projects.find(project => project.interiorRoomId === target.roomId);
+    return project ? state.projects[project.id].complete && state.projects[project.id].arrivalDone : true;
 }

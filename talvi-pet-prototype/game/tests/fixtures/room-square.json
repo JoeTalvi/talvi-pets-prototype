@@ -1,0 +1,215 @@
+{
+  "id": "dog-room",
+  "name": "Square movement fixture",
+  "background": "rooms/fixture",
+  "walkArea": [
+    {
+      "x": 100,
+      "y": 100
+    },
+    {
+      "x": 900,
+      "y": 100
+    },
+    {
+      "x": 900,
+      "y": 700
+    },
+    {
+      "x": 100,
+      "y": 700
+    }
+  ],
+  "doors": [
+    {
+      "id": "to-street",
+      "rect": {
+        "x": 480,
+        "y": 100,
+        "w": 40,
+        "h": 20
+      },
+      "target": {
+        "scene": "street",
+        "doorId": "starter-front"
+      },
+      "spawn": {
+        "x": 500,
+        "y": 150,
+        "facing": "down"
+      }
+    }
+  ],
+  "slots": [
+    {
+      "id": "floor-1",
+      "sizeClass": "small",
+      "x": 200,
+      "y": 400,
+      "anchor": {
+        "x": 200,
+        "y": 420,
+        "facing": "left"
+      },
+      "adjacent": [
+        "floor-2"
+      ]
+    },
+    {
+      "id": "floor-2",
+      "sizeClass": "small",
+      "x": 245,
+      "y": 400,
+      "anchor": {
+        "x": 245,
+        "y": 420,
+        "facing": "left"
+      },
+      "adjacent": [
+        "floor-1"
+      ]
+    },
+    {
+      "id": "floor-3",
+      "sizeClass": "small",
+      "x": 290,
+      "y": 400,
+      "anchor": {
+        "x": 290,
+        "y": 420,
+        "facing": "left"
+      },
+      "adjacent": []
+    },
+    {
+      "id": "floor-4",
+      "sizeClass": "small",
+      "x": 335,
+      "y": 400,
+      "anchor": {
+        "x": 335,
+        "y": 420,
+        "facing": "left"
+      },
+      "adjacent": []
+    },
+    {
+      "id": "floor-5",
+      "sizeClass": "small",
+      "x": 380,
+      "y": 400,
+      "anchor": {
+        "x": 380,
+        "y": 420,
+        "facing": "left"
+      },
+      "adjacent": []
+    },
+    {
+      "id": "floor-6",
+      "sizeClass": "small",
+      "x": 425,
+      "y": 400,
+      "anchor": {
+        "x": 425,
+        "y": 420,
+        "facing": "left"
+      },
+      "adjacent": []
+    },
+    {
+      "id": "floor-7",
+      "sizeClass": "small",
+      "x": 470,
+      "y": 400,
+      "anchor": {
+        "x": 470,
+        "y": 420,
+        "facing": "left"
+      },
+      "adjacent": []
+    },
+    {
+      "id": "large-1",
+      "sizeClass": "large",
+      "x": 515,
+      "y": 400,
+      "anchor": {
+        "x": 515,
+        "y": 420,
+        "facing": "left"
+      },
+      "adjacent": []
+    },
+    {
+      "id": "wall-1",
+      "sizeClass": "wall",
+      "x": 560,
+      "y": 400,
+      "wall": "left",
+      "anchor": {
+        "x": 560,
+        "y": 420,
+        "facing": "left"
+      },
+      "adjacent": []
+    },
+    {
+      "id": "wall-2",
+      "sizeClass": "wall",
+      "x": 605,
+      "y": 400,
+      "wall": "left",
+      "anchor": {
+        "x": 605,
+        "y": 420,
+        "facing": "left"
+      },
+      "adjacent": []
+    },
+    {
+      "id": "wall-3",
+      "sizeClass": "wall",
+      "x": 650,
+      "y": 400,
+      "wall": "left",
+      "anchor": {
+        "x": 650,
+        "y": 420,
+        "facing": "left"
+      },
+      "adjacent": []
+    },
+    {
+      "id": "wall-4",
+      "sizeClass": "wall",
+      "x": 695,
+      "y": 400,
+      "wall": "left",
+      "anchor": {
+        "x": 695,
+        "y": 420,
+        "facing": "left"
+      },
+      "adjacent": []
+    }
+  ],
+  "wanderPoints": [
+    {
+      "id": "left",
+      "x": 300,
+      "y": 400
+    },
+    {
+      "id": "right",
+      "x": 700,
+      "y": 400
+    }
+  ],
+  "petSpawn": {
+    "x": 400,
+    "y": 400,
+    "facing": "right"
+  },
+  "residentPetId": "dog"
+}
