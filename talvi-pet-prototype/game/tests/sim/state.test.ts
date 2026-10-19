@@ -3,7 +3,7 @@ import { initialState } from '../../src/sim/state';
 import { validContent } from '../content/helpers';
 import { deepFreeze } from './helpers';
 
-it('CONTRACT-STATE v1.3 initial session, avatar, projects and inventory match the authored content', () => {
+it('CONTRACT-STATE v1.4 initial session, avatar, projects and inventory match the authored content', () => {
   const content = deepFreeze(validContent()), state = initialState(content, 1234);
   expect(state.schemaVersion).toBe(1);
   expect(state.session).toEqual({ seed: 1234, eventIntervalMs: 20000, feedPresentation: 'events',
@@ -12,8 +12,8 @@ it('CONTRACT-STATE v1.3 initial session, avatar, projects and inventory match th
   expect(state.avatar).toEqual({ ...content.street.playerSpawn, immunityMs: 0, facingCandidate: null });
   expect(state.mode).toBe('play');
   expect(state.projects).toEqual({
-    'starter-house': { currentCents: 1500, acknowledgedPhase: 5, complete: true, arrivalDone: true, guess: '' },
-    'pet-house': { currentCents: 0, acknowledgedPhase: 0, complete: false, arrivalDone: false, guess: '' },
+    'starter-house': { currentCents: 1500, acknowledgedPhase: 5, complete: true, arrivalDone: true },
+    'pet-house': { currentCents: 0, acknowledgedPhase: 0, complete: false, arrivalDone: false },
   });
   expect(state.inventory.ownedTypeIds).toEqual(content.charms.starterSet);
   expect(state.inventory.ownedTypeIds).not.toBe(content.charms.starterSet);
@@ -22,7 +22,7 @@ it('CONTRACT-STATE v1.3 initial session, avatar, projects and inventory match th
   expect(state.dialogue).toEqual({ current: null, queue: [] });
 });
 
-it('CONTRACT-STATE v1.3 initial rooms and pets are independent JSON values in content order', () => {
+it('CONTRACT-STATE v1.4 initial rooms and pets are independent JSON values in content order', () => {
   const content = deepFreeze(validContent()), state = initialState(content, 1);
   for (const [id, room] of Object.entries(content.rooms)) {
     expect(state.rooms[id]).toEqual({ placements: {} });

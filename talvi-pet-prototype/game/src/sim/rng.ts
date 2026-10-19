@@ -6,7 +6,7 @@ export function mulberry32(seed: number): { value: number; seed: number } {
   return { value: ((value ^ (value >>> 14)) >>> 0) / 4294967296, seed: next };
 }
 
-/** Independent pet stream, in content order (CONTRACT-STATE v1.3 §1). */
+/** Independent pet stream, in content order (CONTRACT-STATE v1.4 §1). */
 export function petSeed(seed: number, petIndex: number): number {
   return (seed ^ Math.imul(0x9e3779b9, petIndex + 1)) >>> 0;
 }

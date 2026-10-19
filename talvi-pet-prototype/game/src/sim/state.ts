@@ -1,8 +1,8 @@
 import type { Content } from '../content/types';
 import { petSeed } from './rng';
 
-/** CONTRACT-STATE/ACTIONS/EVENTS/SELECT v1.3 (core.md); no derived view state. */
-export const CONTRACT_VERSION = '1.3' as const;
+/** CONTRACT-STATE/ACTIONS/EVENTS/SELECT v1.4 (core.md); no derived view state. */
+export const CONTRACT_VERSION = '1.4' as const;
 export type RoomId = string;
 export type ProjectId = string;
 export type CharmTypeId = string;
@@ -34,7 +34,6 @@ export type GameState = {
     acknowledgedPhase: 0 | 1 | 2 | 3 | 4 | 5; // what the house sprite and reward state show (DEC-028)
     complete: boolean;            // set at the completing celebration's collectRewards
     arrivalDone: boolean;         // set by arrivalFinished; the interior door is enabled only then (DEC-026)
-    guess: string;                // reveal panel free text, ≤ 40 chars (MEC-003)
   }>;
   feed: { rngState: number; sinceLastEventMs: number; eventCount: number }; // feed RNG stream (TECH-008)
   celebration: {                  // acknowledgeProject → closeReveal (mec-002); persisted (replay, TECH-007)
@@ -98,7 +97,7 @@ export function initialState(content: Content, seed: number): GameState {
     projects: Object.fromEntries(content.projects.map(project => [project.id, {
       currentCents: project.completeAtStart ? project.goalCents : 0,
       acknowledgedPhase: project.completeAtStart ? 5 : 0,
-      complete: project.completeAtStart, arrivalDone: project.completeAtStart, guess: '',
+      complete: project.completeAtStart, arrivalDone: project.completeAtStart,
     }])),
     feed: { rngState: seed >>> 0, sinceLastEventMs: 0, eventCount: 0 },
     celebration: null, arrival: null,

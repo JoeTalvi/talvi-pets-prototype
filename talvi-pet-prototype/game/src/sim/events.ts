@@ -48,7 +48,6 @@ export type SimEvent =
   | { type: 'dialogue.opened'; script: DialogueScript }
   | { type: 'dialogue.advanced'; index: number }
   | { type: 'dialogue.closed'; source: DialogueScript['source'] }
-  | { type: 'guess.changed'; projectId: ProjectId; text: string }
   | { type: 'audio.muteChanged'; muted: boolean }
   | { type: 'debug.applied'; action: Action; adjusted?: { field: string; requested: number; applied: number } }
   | { type: 'state.reset' }

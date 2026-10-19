@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { log } from './log';
-// Spike-only state. WORK-004 replaces this with CONTRACT-PERSIST v1.3.
+// Spike-only state. WORK-004 replaces this with CONTRACT-PERSIST v1.4.
 export const SpikeState = z.object({ scene: z.enum(['Interior', 'Street']), avatar: z.object({ x: z.number().finite().min(0).max(1920), y: z.number().finite().min(0).max(1080) }) });
 export type SpikeState = z.infer<typeof SpikeState>;
 const Save = z.object({ schemaVersion: z.literal(1), state: SpikeState });

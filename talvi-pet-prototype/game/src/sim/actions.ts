@@ -14,7 +14,6 @@ export type Action =
   | { type: 'arrivalFinished' }
   | { type: 'advanceDialogue' }
   | { type: 'tapPet'; petId: PetId }
-  | { type: 'setGuess'; projectId: ProjectId; text: string }
   | { type: 'debugSimulatePurchase' }
   | { type: 'debugSetEventInterval'; ms: number | null }
   | { type: 'debugSetFeedPresentation'; mode: 'events' | 'trickle' }

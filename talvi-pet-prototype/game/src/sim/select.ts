@@ -2,7 +2,7 @@ import type { Content } from '../content/types';
 import type { Door } from '../content/schema/common';
 import type { GameState } from './state';
 
-/** CONTRACT-SELECT v1.3; content-only consumers retain their original signature. */
+/** CONTRACT-SELECT v1.4; content-only consumers retain their original signature. */
 export function typeUnlockPhase(content: Content, typeId: string): {
     projectId: string;
     phase: number;

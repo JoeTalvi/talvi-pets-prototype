@@ -22,7 +22,7 @@ function unionNames(path: string, alias: string): string[] {
   });
 }
 
-it('VERIFY-CORE-001 partial: exact v1.3 Action and SimEvent unions (not handler completion)', () => {
+it('VERIFY-CORE-001 partial: exact v1.4 Action and SimEvent unions (not handler completion)', () => {
   expectTypeOf<Action['type']>().toEqualTypeOf<typeof names.actionNames[number]>();
   expectTypeOf<SimEvent['type']>().toEqualTypeOf<typeof names.eventNames[number]>();
   expect(unionNames('src/sim/actions.ts', 'Action').sort()).toEqual([...names.actionNames].sort());
