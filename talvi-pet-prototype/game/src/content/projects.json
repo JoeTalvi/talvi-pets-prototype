@@ -1,0 +1,81 @@
+{
+  "projects": [
+    {
+      "id": "starter-house",
+      "name": "Starter House",
+      "causeName": "Pet Shelters",
+      "goalCents": 1500,
+      "completeAtStart": true,
+      "interiorRoomId": "dog-room",
+      "residentPetId": "dog",
+      "phaseRewards": [
+        [],
+        [],
+        [],
+        [],
+        []
+      ],
+      "clueCards": []
+    },
+    {
+      "id": "pet-house",
+      "name": "Pet House",
+      "causeName": "Pet Shelters",
+      "goalCents": 1500,
+      "completeAtStart": false,
+      "interiorRoomId": "owl-room",
+      "residentPetId": "owl",
+      "phaseRewards": [
+        [
+          "fern",
+          "perch-branch"
+        ],
+        [
+          "lamp-planter",
+          "stool"
+        ],
+        [
+          "toy-basket",
+          "wall-clock"
+        ],
+        [
+          "tall-lamp",
+          "hanging-plant"
+        ],
+        [
+          "lantern",
+          "reading-chair"
+        ]
+      ],
+      "clueCards": [
+        {
+          "icon": "clues/feather-book",
+          "line": "A feather tucked in a gardening book.",
+          "hintTag": "plant"
+        },
+        {
+          "icon": "clues/spectacles",
+          "line": "A pair of round spectacles rests between pressed leaves.",
+          "hintTag": "plant"
+        },
+        {
+          "icon": "clues/branch-book",
+          "line": "A book waits on a branch, high above the ground.",
+          "hintTag": "tall"
+        },
+        {
+          "icon": "clues/lantern",
+          "line": "A little lantern lights a leafy reading corner.",
+          "hintTag": "plant"
+        },
+        {
+          "icon": "clues/moth",
+          "line": "A silent night-time visitor watches a moth from a high perch.",
+          "hintTag": "tall"
+        }
+      ],
+      "descriptorImage": "pets/owl-portrait",
+      "silhouetteImage": "pets/owl-silhouette"
+    }
+  ]
+}

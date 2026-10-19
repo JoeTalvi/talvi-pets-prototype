@@ -1,0 +1,304 @@
+{
+  "merchants": [
+    {
+      "id": "coffee",
+      "name": "Coffee",
+      "minCents": 250,
+      "maxCents": 650
+    },
+    {
+      "id": "corner-bakery",
+      "name": "Corner Bakery",
+      "minCents": 200,
+      "maxCents": 1800
+    },
+    {
+      "id": "green-grocer",
+      "name": "Green Grocer",
+      "minCents": 400,
+      "maxCents": 5500
+    },
+    {
+      "id": "market-flowers",
+      "name": "Market Flowers",
+      "minCents": 500,
+      "maxCents": 3500
+    },
+    {
+      "id": "book-nook",
+      "name": "Book Nook",
+      "minCents": 500,
+      "maxCents": 4500
+    },
+    {
+      "id": "tea-room",
+      "name": "Tea Room",
+      "minCents": 300,
+      "maxCents": 1600
+    },
+    {
+      "id": "farm-stand",
+      "name": "Farm Stand",
+      "minCents": 250,
+      "maxCents": 3000
+    },
+    {
+      "id": "little-deli",
+      "name": "Little Deli",
+      "minCents": 500,
+      "maxCents": 2400
+    },
+    {
+      "id": "noodle-kitchen",
+      "name": "Noodle Kitchen",
+      "minCents": 700,
+      "maxCents": 2600
+    },
+    {
+      "id": "pizza-place",
+      "name": "Pizza Place",
+      "minCents": 800,
+      "maxCents": 3200
+    },
+    {
+      "id": "soup-counter",
+      "name": "Soup Counter",
+      "minCents": 400,
+      "maxCents": 1500
+    },
+    {
+      "id": "sandwich-shop",
+      "name": "Sandwich Shop",
+      "minCents": 500,
+      "maxCents": 1800
+    },
+    {
+      "id": "breakfast-cafe",
+      "name": "Breakfast Cafe",
+      "minCents": 600,
+      "maxCents": 2400
+    },
+    {
+      "id": "neighbourhood-market",
+      "name": "Neighbourhood Market",
+      "minCents": 300,
+      "maxCents": 6000
+    },
+    {
+      "id": "fruit-cart",
+      "name": "Fruit Cart",
+      "minCents": 150,
+      "maxCents": 1400
+    },
+    {
+      "id": "ice-cream-shop",
+      "name": "Ice Cream Shop",
+      "minCents": 250,
+      "maxCents": 1200
+    },
+    {
+      "id": "corner-pharmacy",
+      "name": "Corner Pharmacy",
+      "minCents": 300,
+      "maxCents": 4000
+    },
+    {
+      "id": "garden-centre",
+      "name": "Garden Centre",
+      "minCents": 400,
+      "maxCents": 6500
+    },
+    {
+      "id": "stationery-shop",
+      "name": "Stationery Shop",
+      "minCents": 200,
+      "maxCents": 3500
+    },
+    {
+      "id": "craft-store",
+      "name": "Craft Store",
+      "minCents": 300,
+      "maxCents": 5000
+    },
+    {
+      "id": "pet-supply-shop",
+      "name": "Pet Supply Shop",
+      "minCents": 400,
+      "maxCents": 6000
+    },
+    {
+      "id": "bike-shop",
+      "name": "Bike Shop",
+      "minCents": 500,
+      "maxCents": 8000
+    },
+    {
+      "id": "hardware-store",
+      "name": "Hardware Store",
+      "minCents": 300,
+      "maxCents": 7000
+    },
+    {
+      "id": "train-ticket",
+      "name": "Train Ticket",
+      "minCents": 250,
+      "maxCents": 2200
+    },
+    {
+      "id": "bus-ticket",
+      "name": "Bus Ticket",
+      "minCents": 150,
+      "maxCents": 900
+    },
+    {
+      "id": "museum-cafe",
+      "name": "Museum Cafe",
+      "minCents": 300,
+      "maxCents": 2000
+    },
+    {
+      "id": "gallery-shop",
+      "name": "Gallery Shop",
+      "minCents": 500,
+      "maxCents": 4000
+    },
+    {
+      "id": "music-shop",
+      "name": "Music Shop",
+      "minCents": 500,
+      "maxCents": 5000
+    },
+    {
+      "id": "record-store",
+      "name": "Record Store",
+      "minCents": 700,
+      "maxCents": 4500
+    },
+    {
+      "id": "thrift-shop",
+      "name": "Thrift Shop",
+      "minCents": 200,
+      "maxCents": 3500
+    },
+    {
+      "id": "laundry",
+      "name": "Laundry",
+      "minCents": 300,
+      "maxCents": 2000
+    },
+    {
+      "id": "shoe-repair",
+      "name": "Shoe Repair",
+      "minCents": 800,
+      "maxCents": 4500
+    },
+    {
+      "id": "tailor",
+      "name": "Tailor",
+      "minCents": 1000,
+      "maxCents": 6500
+    },
+    {
+      "id": "plant-stall",
+      "name": "Plant Stall",
+      "minCents": 300,
+      "maxCents": 3200
+    },
+    {
+      "id": "weekend-market",
+      "name": "Weekend Market",
+      "minCents": 250,
+      "maxCents": 5000
+    },
+    {
+      "id": "cheese-counter",
+      "name": "Cheese Counter",
+      "minCents": 400,
+      "maxCents": 2400
+    },
+    {
+      "id": "pasta-shop",
+      "name": "Pasta Shop",
+      "minCents": 500,
+      "maxCents": 3000
+    },
+    {
+      "id": "rice-bowl-cafe",
+      "name": "Rice Bowl Cafe",
+      "minCents": 600,
+      "maxCents": 2200
+    },
+    {
+      "id": "taco-stand",
+      "name": "Taco Stand",
+      "minCents": 300,
+      "maxCents": 1800
+    },
+    {
+      "id": "dumpling-kitchen",
+      "name": "Dumpling Kitchen",
+      "minCents": 500,
+      "maxCents": 2600
+    },
+    {
+      "id": "salad-bar",
+      "name": "Salad Bar",
+      "minCents": 500,
+      "maxCents": 2000
+    },
+    {
+      "id": "smoothie-stand",
+      "name": "Smoothie Stand",
+      "minCents": 350,
+      "maxCents": 1200
+    },
+    {
+      "id": "chocolate-shop",
+      "name": "Chocolate Shop",
+      "minCents": 250,
+      "maxCents": 2800
+    },
+    {
+      "id": "honey-stall",
+      "name": "Honey Stall",
+      "minCents": 400,
+      "maxCents": 2200
+    },
+    {
+      "id": "pottery-shop",
+      "name": "Pottery Shop",
+      "minCents": 600,
+      "maxCents": 5500
+    },
+    {
+      "id": "fabric-shop",
+      "name": "Fabric Shop",
+      "minCents": 400,
+      "maxCents": 5000
+    },
+    {
+      "id": "toy-shop",
+      "name": "Toy Shop",
+      "minCents": 400,
+      "maxCents": 4500
+    },
+    {
+      "id": "kitchen-shop",
+      "name": "Kitchen Shop",
+      "minCents": 500,
+      "maxCents": 6000
+    },
+    {
+      "id": "newsstand",
+      "name": "Newsstand",
+      "minCents": 150,
+      "maxCents": 1500
+    },
+    {
+      "id": "refill-shop",
+      "name": "Refill Shop",
+      "minCents": 300,
+      "maxCents": 3500
+    }
+  ]
+}

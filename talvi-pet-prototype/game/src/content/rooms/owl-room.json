@@ -1,0 +1,242 @@
+{
+  "id": "owl-room",
+  "name": "Owl's room",
+  "background": "rooms/dog-room",
+  "walkArea": [
+    {
+      "x": 964,
+      "y": 566
+    },
+    {
+      "x": 1226,
+      "y": 712
+    },
+    {
+      "x": 1020,
+      "y": 950
+    },
+    {
+      "x": 900,
+      "y": 950
+    },
+    {
+      "x": 702,
+      "y": 712
+    }
+  ],
+  "doors": [
+    {
+      "id": "to-street",
+      "rect": {
+        "x": 920,
+        "y": 900,
+        "w": 80,
+        "h": 40
+      },
+      "target": {
+        "scene": "street",
+        "doorId": "pet-front"
+      },
+      "spawn": {
+        "x": 960,
+        "y": 860,
+        "facing": "up"
+      }
+    }
+  ],
+  "slots": [
+    {
+      "id": "floor-1",
+      "sizeClass": "small",
+      "x": 900,
+      "y": 650,
+      "anchor": {
+        "x": 900,
+        "y": 668,
+        "facing": "right"
+      },
+      "adjacent": [
+        "floor-2"
+      ]
+    },
+    {
+      "id": "floor-2",
+      "sizeClass": "small",
+      "x": 1000,
+      "y": 650,
+      "anchor": {
+        "x": 1000,
+        "y": 668,
+        "facing": "left"
+      },
+      "adjacent": [
+        "floor-1"
+      ]
+    },
+    {
+      "id": "floor-3",
+      "sizeClass": "small",
+      "x": 820,
+      "y": 715,
+      "anchor": {
+        "x": 820,
+        "y": 733,
+        "facing": "right"
+      },
+      "adjacent": [
+        "floor-4"
+      ]
+    },
+    {
+      "id": "floor-4",
+      "sizeClass": "small",
+      "x": 920,
+      "y": 720,
+      "anchor": {
+        "x": 920,
+        "y": 738,
+        "facing": "right"
+      },
+      "adjacent": [
+        "floor-3",
+        "floor-5"
+      ]
+    },
+    {
+      "id": "floor-5",
+      "sizeClass": "small",
+      "x": 1030,
+      "y": 720,
+      "anchor": {
+        "x": 1030,
+        "y": 738,
+        "facing": "left"
+      },
+      "adjacent": [
+        "floor-4",
+        "floor-6"
+      ]
+    },
+    {
+      "id": "floor-6",
+      "sizeClass": "small",
+      "x": 1120,
+      "y": 715,
+      "anchor": {
+        "x": 1120,
+        "y": 733,
+        "facing": "left"
+      },
+      "adjacent": [
+        "floor-5"
+      ]
+    },
+    {
+      "id": "floor-7",
+      "sizeClass": "small",
+      "x": 870,
+      "y": 780,
+      "anchor": {
+        "x": 870,
+        "y": 798,
+        "facing": "right"
+      },
+      "adjacent": [
+        "large-1"
+      ]
+    },
+    {
+      "id": "large-1",
+      "sizeClass": "large",
+      "x": 1010,
+      "y": 800,
+      "anchor": {
+        "x": 1010,
+        "y": 812,
+        "facing": "left"
+      },
+      "adjacent": [
+        "floor-7"
+      ]
+    },
+    {
+      "id": "wall-1",
+      "sizeClass": "wall",
+      "x": 760,
+      "y": 470,
+      "wall": "left",
+      "depthOverride": 1,
+      "anchor": {
+        "x": 830,
+        "y": 680,
+        "facing": "left"
+      },
+      "adjacent": []
+    },
+    {
+      "id": "wall-2",
+      "sizeClass": "wall",
+      "x": 900,
+      "y": 390,
+      "wall": "left",
+      "depthOverride": 1,
+      "anchor": {
+        "x": 920,
+        "y": 625,
+        "facing": "left"
+      },
+      "adjacent": []
+    },
+    {
+      "id": "wall-3",
+      "sizeClass": "wall",
+      "x": 1040,
+      "y": 390,
+      "wall": "right",
+      "depthOverride": 1,
+      "anchor": {
+        "x": 1010,
+        "y": 630,
+        "facing": "right"
+      },
+      "adjacent": []
+    },
+    {
+      "id": "wall-4",
+      "sizeClass": "wall",
+      "x": 1180,
+      "y": 470,
+      "wall": "right",
+      "depthOverride": 1,
+      "anchor": {
+        "x": 1100,
+        "y": 685,
+        "facing": "right"
+      },
+      "adjacent": []
+    }
+  ],
+  "wanderPoints": [
+    {
+      "id": "centre",
+      "x": 964,
+      "y": 735
+    },
+    {
+      "id": "left-corner",
+      "x": 850,
+      "y": 720
+    },
+    {
+      "id": "right-corner",
+      "x": 1080,
+      "y": 745
+    }
+  ],
+  "petSpawn": {
+    "x": 970,
+    "y": 780,
+    "facing": "left"
+  },
+  "residentPetId": "owl"
+}

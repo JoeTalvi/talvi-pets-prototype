@@ -1,0 +1,82 @@
+{
+  "id": "owl",
+  "name": "Owl",
+  "portrait": "pets/owl-portrait",
+  "sheet": "pets/owl-sheet",
+  "likes": [
+    {
+      "tag": "plant",
+      "weight": 3
+    },
+    {
+      "tag": "tall",
+      "weight": 2
+    },
+    {
+      "tag": "light",
+      "weight": 1
+    }
+  ],
+  "dislikes": [
+    "toy"
+  ],
+  "verbs": [
+    {
+      "verb": "perch",
+      "atStart": true
+    },
+    {
+      "verb": "look-at",
+      "atStart": true
+    },
+    {
+      "verb": "nap",
+      "atStart": true
+    }
+  ],
+  "lines": {
+    "greeting": [
+      "Good evening, neighbour."
+    ],
+    "chatter": [
+      "There is always something to notice among the leaves.",
+      "A quiet room makes a good reading place."
+    ],
+    "dislike": [
+      "That is a little too lively for my reading corner."
+    ],
+    "intro": [
+      "Hello. I am the Owl. A leafy view and a high perch would suit me nicely."
+    ],
+    "wantAnnounce": {
+      "leafy-perch": "Could I have a high place beside some leaves?"
+    },
+    "vignettes": {
+      "leafy-perch": [
+        "Just the view I was hoping for.",
+        "From up here, every leaf looks like a little page.",
+        "I think I shall read the room for a while."
+      ]
+    }
+  },
+  "wants": [
+    {
+      "id": "leafy-perch",
+      "brief": "A leafy view from a high perch",
+      "conditions": [
+        {
+          "kind": "tag",
+          "tag": "plant"
+        },
+        {
+          "kind": "tag",
+          "tag": "tall"
+        }
+      ],
+      "reward": {
+        "kind": "vignette"
+      },
+      "rewardLabel": "A little story"
+    }
+  ]
+}

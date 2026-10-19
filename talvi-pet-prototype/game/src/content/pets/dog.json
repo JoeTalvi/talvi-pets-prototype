@@ -1,0 +1,154 @@
+{
+  "id": "dog",
+  "name": "Dog",
+  "portrait": "pets/dog-portrait",
+  "sheet": "pets/dog-sheet",
+  "likes": [
+    {
+      "tag": "soft",
+      "weight": 3
+    },
+    {
+      "tag": "seat",
+      "weight": 2
+    },
+    {
+      "tag": "light",
+      "weight": 1
+    },
+    {
+      "tag": "toy",
+      "weight": 2,
+      "hidden": true
+    }
+  ],
+  "dislikes": [
+    "tall"
+  ],
+  "verbs": [
+    {
+      "verb": "nap",
+      "atStart": true
+    },
+    {
+      "verb": "look-at",
+      "atStart": true
+    },
+    {
+      "verb": "sit-on",
+      "atStart": false
+    }
+  ],
+  "lines": {
+    "greeting": [
+      "There you are!",
+      "Hello, hello!",
+      "Come in. I saved you a spot."
+    ],
+    "chatter": [
+      "A good nap takes a little practice.",
+      "I like it when the light moves across the floor.",
+      "This is becoming my favourite corner.",
+      "Did you hear that? ...No, me neither.",
+      "I think I will stay a while."
+    ],
+    "dislike": [
+      "That is a little high for me.",
+      "I prefer things closer to paw level.",
+      "A fine view, probably. I will stay down here."
+    ],
+    "intro": [
+      "Oh! Hello. I am the Dog.",
+      "A soft place, a good seat, and a bit of light. That is my sort of home."
+    ],
+    "wantAnnounce": {
+      "soft-nap": "Somewhere soft to nap, please.",
+      "bright-corner": "A bright corner to watch the window would be lovely.",
+      "feels-like-home": "It is nearly home. I think one little thing is missing."
+    },
+    "vignettes": {
+      "soft-nap": [
+        "Oh! Somewhere soft to nap... that is all I ever wanted.",
+        "I used to sleep on the doormat, you know.",
+        "This is better. Much better."
+      ],
+      "bright-corner": [
+        "Look at that light on the leaves.",
+        "There is room to sit and watch it move.",
+        "I could spend a whole afternoon here."
+      ],
+      "feels-like-home": [
+        "There it is! I thought a little play was missing.",
+        "A quiet corner is lovely. A little fun makes it mine.",
+        "Now it really feels like home."
+      ]
+    }
+  },
+  "wants": [
+    {
+      "id": "soft-nap",
+      "brief": "Somewhere soft to nap",
+      "conditions": [
+        {
+          "kind": "tag",
+          "tag": "soft"
+        },
+        {
+          "kind": "tag",
+          "tag": "seat"
+        }
+      ],
+      "reward": {
+        "kind": "types",
+        "typeIds": [
+          "rug",
+          "cushion"
+        ]
+      },
+      "rewardLabel": "2 charm types: Rug and Cushion"
+    },
+    {
+      "id": "bright-corner",
+      "brief": "A bright corner to watch the window",
+      "conditions": [
+        {
+          "kind": "tag",
+          "tag": "light"
+        },
+        {
+          "kind": "tag",
+          "tag": "plant"
+        },
+        {
+          "kind": "adjacent",
+          "tagA": "light",
+          "tagB": "plant"
+        }
+      ],
+      "reward": {
+        "kind": "verb",
+        "verb": "sit-on"
+      },
+      "rewardLabel": "New trick: sit on"
+    },
+    {
+      "id": "feels-like-home",
+      "brief": "Something to make it feel like home",
+      "conditions": [
+        {
+          "kind": "tag",
+          "tag": "plant"
+        },
+        {
+          "kind": "tag",
+          "tag": "toy",
+          "hidden": true
+        }
+      ],
+      "reward": {
+        "kind": "vignette"
+      },
+      "rewardLabel": "A little story"
+    }
+  ]
+}

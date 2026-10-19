@@ -1,0 +1,196 @@
+{
+  "types": [
+    {
+      "id": "dog-bed",
+      "name": "Dog Bed",
+      "description": "A squashy bed with a worn-in dip.",
+      "sizeClass": "large",
+      "tags": [
+        "soft",
+        "seat"
+      ],
+      "sprite": "charms/dog-bed"
+    },
+    {
+      "id": "lamp",
+      "name": "Lamp",
+      "description": "Warm light beneath a solid shade.",
+      "sizeClass": "small",
+      "tags": [
+        "light"
+      ],
+      "sprite": "charms/lamp"
+    },
+    {
+      "id": "fern",
+      "name": "Fern",
+      "description": "A spray of green fronds for a bright corner.",
+      "sizeClass": "small",
+      "tags": [
+        "plant"
+      ],
+      "sprite": "charms/fern"
+    },
+    {
+      "id": "cushion",
+      "name": "Cushion",
+      "description": "A soft little landing for tired paws.",
+      "sizeClass": "small",
+      "tags": [
+        "soft"
+      ],
+      "sprite": "charms/cushion"
+    },
+    {
+      "id": "ball",
+      "name": "Ball",
+      "description": "A well-loved ball waiting for one more game.",
+      "sizeClass": "small",
+      "tags": [
+        "toy"
+      ],
+      "sprite": "charms/ball"
+    },
+    {
+      "id": "food-bowl",
+      "name": "Food Bowl",
+      "description": "A sturdy bowl at just the right height.",
+      "sizeClass": "small",
+      "tags": [
+        "food"
+      ],
+      "sprite": "charms/food-bowl"
+    },
+    {
+      "id": "painting",
+      "name": "Painting",
+      "description": "A small framed landscape, ready for the wall.",
+      "sizeClass": "wall",
+      "tags": [
+        "art"
+      ],
+      "sprite": "charms/painting"
+    },
+    {
+      "id": "rug",
+      "name": "Rug",
+      "description": "A woven patch of comfort underfoot.",
+      "sizeClass": "small",
+      "tags": [
+        "soft"
+      ],
+      "sprite": "charms/rug"
+    },
+    {
+      "id": "bookshelf",
+      "name": "Bookshelf",
+      "description": "Tall shelves for books and small discoveries.",
+      "sizeClass": "wall",
+      "tags": [
+        "tall"
+      ],
+      "sprite": "charms/bookshelf"
+    },
+    {
+      "id": "perch-branch",
+      "name": "Perch Branch",
+      "description": "A broad branch with a view of the room.",
+      "sizeClass": "wall",
+      "tags": [
+        "tall"
+      ],
+      "sprite": "charms/perch-branch"
+    },
+    {
+      "id": "lamp-planter",
+      "name": "Lamp Planter",
+      "description": "A leafy pot sharing a base with a warm little light.",
+      "sizeClass": "small",
+      "tags": [
+        "light",
+        "plant"
+      ],
+      "sprite": "charms/lamp-planter"
+    },
+    {
+      "id": "tall-lamp",
+      "name": "Tall Lamp",
+      "description": "A slender standing lamp with light above the leaves.",
+      "sizeClass": "small",
+      "tags": [
+        "light",
+        "tall"
+      ],
+      "sprite": "charms/tall-lamp"
+    },
+    {
+      "id": "stool",
+      "name": "Stool",
+      "description": "A low wooden seat for taking a moment.",
+      "sizeClass": "small",
+      "tags": [
+        "seat"
+      ],
+      "sprite": "charms/stool"
+    },
+    {
+      "id": "toy-basket",
+      "name": "Toy Basket",
+      "description": "A basket of little things to nudge and chase.",
+      "sizeClass": "small",
+      "tags": [
+        "toy"
+      ],
+      "sprite": "charms/toy-basket"
+    },
+    {
+      "id": "wall-clock",
+      "name": "Wall Clock",
+      "description": "A painted clock that makes a wall feel familiar.",
+      "sizeClass": "wall",
+      "tags": [
+        "art"
+      ],
+      "sprite": "charms/wall-clock"
+    },
+    {
+      "id": "hanging-plant",
+      "name": "Hanging Plant",
+      "description": "Trailing leaves in a basket fixed to the wall.",
+      "sizeClass": "wall",
+      "tags": [
+        "plant"
+      ],
+      "sprite": "charms/hanging-plant"
+    },
+    {
+      "id": "lantern",
+      "name": "Lantern",
+      "description": "A small steady glow for the evening.",
+      "sizeClass": "small",
+      "tags": [
+        "light"
+      ],
+      "sprite": "charms/lantern"
+    },
+    {
+      "id": "reading-chair",
+      "name": "Reading Chair",
+      "description": "A padded chair with room to curl up.",
+      "sizeClass": "large",
+      "tags": [
+        "soft",
+        "seat"
+      ],
+      "sprite": "charms/reading-chair"
+    }
+  ],
+  "starterSet": [
+    "dog-bed",
+    "lamp",
+    "ball",
+    "food-bowl",
+    "painting",
+    "bookshelf"
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "verbs": [
+    {
+      "id": "sit-on",
+      "name": "sit on",
+      "emote": "✨",
+      "emoteText": "{pet} settles in.",
+      "tags": [
+        "seat"
+      ]
+    },
+    {
+      "id": "nap",
+      "name": "nap",
+      "emote": "😴",
+      "emoteText": "{pet} is napping.",
+      "tags": [
+        "soft"
+      ]
+    },
+    {
+      "id": "look-at",
+      "name": "look at",
+      "emote": "👀",
+      "emoteText": "{pet} is taking a look.",
+      "tags": [
+        "plant",
+        "light",
+        "art"
+      ]
+    },
+    {
+      "id": "perch",
+      "name": "perch",
+      "emote": "🦉",
+      "emoteText": "{pet} perches up high.",
+      "tags": [
+        "tall"
+      ]
+    }
+  ]
+}
