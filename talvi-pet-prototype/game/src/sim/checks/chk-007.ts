@@ -46,8 +46,8 @@ function checkProfiles(c: Content): Finding[] {
     const add = (n: string, f: string, p: string, msg: string, level: 'error' | 'warning' = 'error') => out.push(finding(`CHK-007-${n}`, level, f, p, msg));
     for (const p of Object.values(c.pets)) {
         const f = `pets/${p.id}.json`;
-        if (p.likes.length < 2 || p.likes.length > 3 || new Set(p.likes.map(l => l.tag)).size !== p.likes.length || p.likes.some(l => !Number.isInteger(l.weight) || l.weight < 1 || l.weight > 3) || p.likes.filter(l => l.hidden).length > 1 || p.dislikes.length !== 1 || p.likes.some(l => p.dislikes.includes(l.tag)))
-            add('02', f, '/likes', 'Pet requires 2–3 distinct likes weighted 1..3, at most 1 hidden, and 1 distinct dislike');
+        if (p.likes.length < 2 || p.likes.length > 4 || new Set(p.likes.map(l => l.tag)).size !== p.likes.length || p.likes.some(l => !Number.isInteger(l.weight) || l.weight < 1 || l.weight > 3) || p.likes.filter(l => l.hidden).length > 1 || p.dislikes.length !== 1 || p.likes.some(l => p.dislikes.includes(l.tag)))
+            add('02', f, '/likes', 'Pet requires 2–4 distinct likes weighted 1..3, at most 1 hidden, and 1 distinct dislike');
         const max = Math.max(...p.likes.map(l => l.weight));
         if (p.likes.filter(l => l.weight === max).length > 1)
             add('03', f, '/likes', 'More than one like has maximum weight', 'warning');

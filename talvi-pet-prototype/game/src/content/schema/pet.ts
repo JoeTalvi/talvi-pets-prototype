@@ -25,7 +25,7 @@ export const WantSchema = z.object({
 export const PetSchema = z.object({
     id: Id, name: z.string().min(1), portrait: AssetId, sheet: AssetId, likes: z.array(z.object({
         tag: Id, weight: z.number(), hidden: z.boolean().optional()
-    })), dislikes: z.array(Id), verbs: z.array(z.object({
+    })).min(2).max(4), dislikes: z.array(Id), verbs: z.array(z.object({
         verb: Id, atStart: z.boolean()
     })), lines: z.object({
         greeting: z.array(z.string()), chatter: z.array(z.string()), dislike: z.array(z.string()), intro: z.array(z.string()), wantAnnounce: z.record(z.string(), z.string()), vignettes: z.record(z.string(), z.array(z.string()))
