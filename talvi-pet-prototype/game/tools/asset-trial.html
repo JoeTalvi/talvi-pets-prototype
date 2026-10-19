@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="data:,"><title>Asset import inspection · development only</title></head>
+<body><main>
+<h1>Asset import inspection <small>Development only · WORK014A</small></h1>
+<p>Authored Dog room geometry; selected assets only. Native texture sizes, no gameplay or creative acceptance.</p>
+<form id="controls">
+<label>Viewport <select id="height"><option value="1080">1920 × 1080</option><option value="823">1920 × 823</option></select></label>
+<label>Scene <select id="mode"><option value="fill">Representative fill by size class</option><option value="room">Room alone</option></select></label>
+<label><input id="guides" type="checkbox" checked> Authored slots, anchors, walk area and crop band</label>
+<label><input id="bounds" type="checkbox"> Texture canvas bounds</label>
+<button type="button" id="reload">Fresh reload / clear failure probe</button>
+</form>
+<p id="status" role="status">Loading manifest…</p><p id="mapping"></p>
+<div id="stage"><div id="game"></div></div>
+<p>Guides: cyan slot bases; orange pet anchors and their connecting lines; green walk polygon; magenta door; blue guaranteed viewport band. Rectangular overlaps are canvas-bounds diagnostics, not opaque-pixel collision checks.</p>
+<details open><summary>Selected-file load report (SHA-256, decoded Phaser texture dimensions, original source)</summary><pre id="report"></pre></details>
+</main><script type="module" src="/tools/asset-trial.ts"></script></body></html>
