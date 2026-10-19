@@ -2,6 +2,9 @@ import type { Content } from '../content/types';
 import type { Door } from '../content/schema/common';
 import type { GameState } from './state';
 
+export { chooserTypes, ownsTag } from './rules/inventory';
+export { starsOf } from './rules/stars';
+
 /** CONTRACT-SELECT v1.4; content-only consumers retain their original signature. */
 export function typeUnlockPhase(content: Content, typeId: string): {
     projectId: string;

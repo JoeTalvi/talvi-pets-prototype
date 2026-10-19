@@ -34,7 +34,7 @@ it('VERIFY-CORE-001 partial: exact v1.4 Action and SimEvent unions (not handler 
 
 it('VERIFY-CORE-001 partial: selector exports cover only the delivered slice; full set remains deferred', () => {
   const implemented = Object.keys(select).sort();
-  expect(implemented).toEqual(['doorEnabled', 'inputFrozen', 'typeUnlockPhase']);
+  expect(implemented).toEqual(['chooserTypes', 'doorEnabled', 'inputFrozen', 'ownsTag', 'starsOf', 'typeUnlockPhase']);
   expect(implemented.every(name => (names.selectorNames as readonly string[]).includes(name))).toBe(true);
-  expect(names.selectorNames.length - implemented.length).toBe(24);
+  expect(names.selectorNames.length - implemented.length).toBe(21);
 });

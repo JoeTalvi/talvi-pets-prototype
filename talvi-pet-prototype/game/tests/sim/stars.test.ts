@@ -1,0 +1,121 @@
+import { expect, it } from 'vitest';
+import { ContentError } from '../../src/content/load';
+import { afterRoomChange } from '../../src/sim/rules/stars';
+import { starsOf } from '../../src/sim/select';
+import { mulberry32 } from '../../src/sim/rng';
+import { initialState, type GameState } from '../../src/sim/state';
+import { validContent } from '../content/helpers';
+import { deepFreeze } from './helpers';
+
+// Synthetic before/after placement snapshots: the full placement dispatch is not implemented here.
+function withPlacements(state: GameState, placements: Record<string, string>): GameState {
+  return { ...state, rooms: { ...state.rooms, 'dog-room': { placements } } };
+}
+
+it('VERIFY-MEC-006-001: empty room has zero points and a 48-point maximum', () => {
+  const content = deepFreeze(validContent()), state = deepFreeze(initialState(content, 1));
+  expect(starsOf(content, state, 'dog-room')).toEqual({ points: 0, max: 48 });
+});
+
+it('VERIFY-MEC-006-002/003/004 isolated: first copy, repeat and removal give exact net deltas', () => {
+  const content = deepFreeze(validContent()), initial = deepFreeze(initialState(content, 1));
+  const bed = deepFreeze(withPlacements(initial, { 'large-1': 'dog-bed' }));
+  expect(afterRoomChange(content, initial, bed, 'dog-room')).toEqual([
+    { type: 'stars.changed', roomId: 'dog-room', from: 0, to: 4, delta: 4, max: 48 },
+  ]);
+  const three = withPlacements(bed, { ...bed.rooms['dog-room'].placements, 'floor-1': 'lamp', 'wall-1': 'painting' });
+  const repeated = deepFreeze(withPlacements(three, { ...three.rooms['dog-room'].placements, 'floor-2': 'lamp' }));
+  expect(starsOf(content, three, 'dog-room').points).toBe(12);
+  expect(afterRoomChange(content, three, repeated, 'dog-room')).toEqual([
+    { type: 'stars.changed', roomId: 'dog-room', from: 12, to: 13, delta: 1, max: 48 },
+  ]);
+  const removed = deepFreeze(withPlacements(repeated, { 'floor-1': 'lamp', 'floor-2': 'lamp', 'wall-1': 'painting' }));
+  expect(afterRoomChange(content, repeated, removed, 'dog-room')).toEqual([
+    { type: 'stars.changed', roomId: 'dog-room', from: 13, to: 9, delta: -4, max: 48 },
+  ]);
+  expect(removed.pets).toBe(initial.pets);
+});
+
+it('VERIFY-MEC-006-005/006 isolated: replacement emits one net event, equal scores emit none', () => {
+  const content = validContent(), initial = initialState(content, 1);
+  const before = deepFreeze(withPlacements(initial, { 'floor-1': 'lamp', 'floor-2': 'fern' }));
+  const after = deepFreeze(withPlacements(before, { 'floor-1': 'fern', 'floor-2': 'fern' }));
+  expect(afterRoomChange(content, before, after, 'dog-room')).toEqual([
+    { type: 'stars.changed', roomId: 'dog-room', from: 8, to: 5, delta: -3, max: 48 },
+  ]);
+  expect(afterRoomChange(content, before, structuredClone(before), 'dog-room')).toEqual([]);
+  const differentType = withPlacements(before, { 'floor-1': 'stool', 'floor-2': 'fern' });
+  expect(afterRoomChange(content, before, differentType, 'dog-room')).toEqual([]);
+});
+
+it('VERIFY-MEC-006-007: twelve compatible distinct types reach the maximum', () => {
+  const content = validContent();
+  const wall = content.charms.types.find(type => type.id === 'painting')!;
+  content.charms.types.push({ ...wall, id: 'wall-fixture-a' }, { ...wall, id: 'wall-fixture-b' });
+  const state = initialState(content, 1);
+  state.inventory.ownedTypeIds = content.charms.types.map(type => type.id);
+  const used = new Set<string>();
+  for (const slot of content.rooms['dog-room'].slots) {
+    const type = content.charms.types.find(type => type.sizeClass === slot.sizeClass && !used.has(type.id))!;
+    used.add(type.id);
+    state.rooms['dog-room'].placements[slot.id] = type.id;
+  }
+  expect(used.size).toBe(12);
+  expect(starsOf(content, state, 'dog-room')).toEqual({ points: 48, max: 48 });
+});
+
+it('VERIFY-MEC-006-010/013: scores ignore pet tags, visibility and other rooms', () => {
+  const content = validContent(), initial = initialState(content, 1);
+  const state = deepFreeze(withPlacements(initial, { 'floor-1': 'tall-lamp' }));
+  expect(starsOf(content, state, 'dog-room')).toEqual({ points: 4, max: 48 });
+  expect(starsOf(content, state, 'owl-room')).toEqual({ points: 0, max: 48 });
+  content.pets.dog.dislikes = ['light'];
+  content.charms.types.find(type => type.id === 'tall-lamp')!.tags = ['toy'];
+  const hidden = { ...state, session: { ...state.session, starsVisible: false } };
+  expect(starsOf(content, hidden, 'dog-room')).toEqual({ points: 4, max: 48 });
+  expect(afterRoomChange(content, initial, hidden, 'dog-room')).toEqual([
+    { type: 'stars.changed', roomId: 'dog-room', from: 0, to: 4, delta: 4, max: 48 },
+  ]);
+});
+
+it('MEC-006 selector errors identify unknown rooms and charm references', () => {
+  const content = validContent(), state = initialState(content, 1);
+  expect(() => starsOf(content, state, 'unknown')).toThrow(ContentError);
+  expect(() => starsOf(content, state, 'unknown')).toThrow('Unknown room id "unknown"');
+  state.rooms['dog-room'].placements['floor-1'] = 'unknown';
+  expect(() => starsOf(content, state, 'dog-room')).toThrow('Unknown charm type id "unknown"');
+});
+
+it.each([1, 2, 3])('VERIFY-MEC-006-008 isolated property: 500 valid snapshot edits, seed %i', seed => {
+  const content = validContent();
+  let state = initialState(content, seed);
+  state.inventory.ownedTypeIds = content.charms.types.map(type => type.id);
+  const slots = content.rooms['dog-room'].slots;
+  for (let step = 0; step < 500; step++) {
+    const draw = mulberry32(seed); seed = draw.seed;
+    const slot = slots[Math.floor(draw.value * slots.length)];
+    const choices = content.charms.types.filter(type => type.sizeClass === slot.sizeClass);
+    const choice = mulberry32(seed); seed = choice.seed;
+    const placements = { ...state.rooms['dog-room'].placements };
+    if (choice.value < 0.25) delete placements[slot.id];
+    else placements[slot.id] = choices[Math.floor(choice.value * choices.length)].id;
+    const next = deepFreeze(withPlacements(state, placements));
+    const values = Object.values(placements), unique = new Set(values).size;
+    for (const [first, repeat] of [[4, 1], [1, 0], [4, 4], [7, 2]]) {
+      content.tuning.starsFirstCopy = first; content.tuning.starsRepeat = repeat;
+      const expected = values.length * repeat + unique * (first - repeat);
+      expect(starsOf(content, next, 'dog-room')).toEqual({ points: expected, max: first * slots.length });
+      expect(expected).toBeGreaterThanOrEqual(0);
+      expect(expected).toBeLessThanOrEqual(first * slots.length);
+      const previous = Object.values(state.rooms['dog-room'].placements);
+      const from = previous.length * repeat + new Set(previous).size * (first - repeat);
+      expect(afterRoomChange(content, state, next, 'dog-room')).toEqual(expected === from ? [] : [
+        { type: 'stars.changed', roomId: 'dog-room', from, to: expected, delta: expected - from, max: first * slots.length },
+      ]);
+    }
+    expect(next.inventory).toBe(state.inventory);
+    expect(next.pets).toBe(state.pets);
+    expect(JSON.parse(JSON.stringify(next))).toEqual(next);
+    state = next;
+  }
+});
