@@ -1,23 +1,31 @@
-// Disposable TASK-064 validation support. Tools normally exclude engine imports;
+// Disposable TASK-064 / TASK-074 (WORK-013G) validation support. Tools normally exclude engine imports;
 // this explicitly authorized, development-only entrypoint inspects Phaser textures.
 // eslint-disable-next-line no-restricted-imports
 import Phaser from 'phaser';
 // Bounded diagnostic uses the maintained world-view component.
 // eslint-disable-next-line no-restricted-imports
 import { CharmSprite } from '../src/view/objects/CharmSprite';
+// eslint-disable-next-line no-restricted-imports
+import { registerClips, clipKey } from '../src/view/anims';
 import { AssetManifest, type AssetEntry } from '../src/content/schema/assets';
 import { RoomSchema, type Room } from '../src/content/schema/room';
 import { CharmsSchema } from '../src/content/schema/charms';
 import './asset-trial.css';
 
 type LoadRow = { id: string; status: string; url?: string; source?: string; ledgerHash?: string; actualHash?: string; hashMatches?: boolean; declared?: { w: number; h: number }; decoded?: { w: number; h: number }; textureSource?: string; error?: string };
+type FrameEvent = { t: number; frame: number; event: 'start' | 'update' | 'repeat' };
+type OpaqueBox = { x: number; y: number; w: number; h: number };
 type Placement = { slot: string; id: string; sizeClass: string; x: number; y: number; depth: number; w: number; h: number; textureKey: string; wallProjection?: CharmSprite['wallProjection'] };
 const params = new URLSearchParams(location.search);
 const height = params.get('height') === '823' ? 823 : 1080;
 const mode = params.get('mode') === 'room' ? 'room' : 'fill';
 const guides = params.get('guides') !== '0';
 const bounds = params.get('bounds') === '1';
-const report = { scope: 'Selected asset import and authored alignment only; no full-content or gameplay validation', phase: 'loading', phaser: Phaser.VERSION, viewport: { w: 1920, h: height }, cameraScrollY: (1080 - height) / 2, mode, guides, bounds, manifestUrl: params.get('failure') === 'manifest' ? '/assets/__asset-trial-missing-manifest.json' : '/assets/manifest.json', inputHashes: {} as Record<string, string>, assets: [] as LoadRow[], loadErrors: [] as string[], decodeErrors: [] as string[], placements: [] as Placement[], canvasOverlaps: [] as string[], missingSlots: [] as string[], fatal: '' };
+const clips = ['idle', 'walk', 'use', 'react'];
+const clip = clips.includes(params.get('clip') ?? '') ? params.get('clip')! : 'idle';
+const showPet = params.get('pet') !== '0';
+const SHEET = 'pets/dog-sheet', BUBBLE_OFFSET = 236;
+const report = { scope: 'Selected asset import and authored alignment only; no full-content or gameplay validation', phase: 'loading', phaser: Phaser.VERSION, viewport: { w: 1920, h: height }, cameraScrollY: (1080 - height) / 2, mode, guides, bounds, manifestUrl: params.get('failure') === 'manifest' ? '/assets/__asset-trial-missing-manifest.json' : '/assets/manifest.json', inputHashes: {} as Record<string, string>, assets: [] as LoadRow[], loadErrors: [] as string[], decodeErrors: [] as string[], placements: [] as Placement[], pet: { shown: showPet, clip, key: '', x: 0, y: 0, facing: '', flipX: false, origin: [0.5, 1], scale: 1, depth: 0, bubbleAnchor: { x: 0, y: 0 }, textureFrames: 0, keysRegistered: [] as string[], keysPresent: {} as Record<string, boolean>, declaredDurations: [] as number[], omitted: '' }, idleTiming: { events: [] as FrameEvent[], cycles: 0, measuredMs: [] as number[][], meanMs: [] as number[], displayFrameMs: 0 }, opaque: {} as Record<string, OpaqueBox | null>, canvasOverlaps: [] as string[], missingSlots: [] as string[], fatal: '' };
 Object.assign(window, { assetTrial: report });
 const element = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const refreshReport = () => { element('report').textContent = JSON.stringify(report, null, 2); };
@@ -32,17 +40,20 @@ async function inputJson(url: string): Promise<unknown> {
 function controls(): void {
   element<HTMLSelectElement>('height').value = String(height); element<HTMLSelectElement>('mode').value = mode;
   element<HTMLInputElement>('guides').checked = guides; element<HTMLInputElement>('bounds').checked = bounds;
+  element<HTMLSelectElement>('clip').value = clip; element<HTMLInputElement>('pet').checked = showPet;
   element('controls').addEventListener('change', () => {
     const next = new URL(location.href);
     next.searchParams.set('height', element<HTMLSelectElement>('height').value);
     next.searchParams.set('mode', element<HTMLSelectElement>('mode').value);
     next.searchParams.set('guides', element<HTMLInputElement>('guides').checked ? '1' : '0');
     next.searchParams.set('bounds', element<HTMLInputElement>('bounds').checked ? '1' : '0');
+    next.searchParams.set('clip', element<HTMLSelectElement>('clip').value);
+    next.searchParams.set('pet', element<HTMLInputElement>('pet').checked ? '1' : '0');
     location.assign(next);
   });
   element('reload').onclick = () => { const next = new URL(location.href); next.searchParams.delete('failure'); location.assign(next); };
   element('stage').style.aspectRatio = `1920 / ${height}`;
-  element('mapping').textContent = `World 1920 × 1080 → viewport 1920 × ${height}; camera scroll (0, ${report.cameraScrollY}). Viewport y = world y − ${report.cameraScrollY}. Background origin (0,0); charms origin (0.5,1), scale 1, depth = authored override or base y.`;
+  element('mapping').textContent = `World 1920 × 1080 → viewport 1920 × ${height}; camera scroll (0, ${report.cameraScrollY}). Viewport y = world y − ${report.cameraScrollY}. Background origin (0,0); charms origin (0.5,1), scale 1, depth = authored override or base y. Dog: room.petSpawn, origin (0.5,1), scale 1, flipX when facing left (sheet faces right), depth = y, bubble anchor y − ${BUBBLE_OFFSET}.`;
 }
 function drawGuides(scene: Phaser.Scene, room: Room): void {
   const g = scene.add.graphics().setDepth(10000);
@@ -58,6 +69,31 @@ function drawGuides(scene: Phaser.Scene, room: Room): void {
   for (const d of room.doors) { g.lineStyle(3, 0xaa368b).strokeRect(d.rect.x, d.rect.y, d.rect.w, d.rect.h); label(d.rect.x, d.rect.y - 22, d.id, '#aa368b'); }
   for (const p of room.wanderPoints) g.fillStyle(0x139151).fillCircle(p.x, p.y, 5);
   g.lineStyle(3, 0x555555).strokeCircle(room.petSpawn.x, room.petSpawn.y, 12);
+  if (showPet) {
+    const bx = room.petSpawn.x, by = room.petSpawn.y - BUBBLE_OFFSET;
+    g.lineStyle(3, 0xb5523f).strokeCircle(bx, by, 10).lineBetween(bx - 18, by, bx + 18, by).lineBetween(bx, by - 18, bx, by + 18);
+    label(bx + 16, by - 30, `bubble anchor (${bx},${by}) = spawn y − ${BUBBLE_OFFSET}`, '#b5523f');
+  }
+}
+/** Opaque (alpha > 0) bounding box of one texture frame, in frame pixels; measured from the decoded source image. */
+function opaqueBox(source: HTMLImageElement, fx = 0, fy = 0, fw = source.width, fh = source.height): OpaqueBox | null {
+  const canvas = document.createElement('canvas'); canvas.width = fw; canvas.height = fh;
+  const ctx = canvas.getContext('2d', { willReadFrequently: true })!; ctx.drawImage(source, fx, fy, fw, fh, 0, 0, fw, fh);
+  const data = ctx.getImageData(0, 0, fw, fh).data; let x0 = fw, y0 = fh, x1 = -1, y1 = -1;
+  for (let y = 0; y < fh; y++) for (let x = 0; x < fw; x++) if (data[(y * fw + x) * 4 + 3] > 0) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+  return x1 < 0 ? null : { x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1 };
+}
+/** Per-cycle on-screen frame durations from animation event timestamps (frame index 0..n-1 within the clip). */
+function summariseIdleTiming(frameCount: number): void {
+  const t = report.idleTiming, starts = t.events.filter((e, i, a) => i === 0 || e.frame !== a[i - 1].frame);
+  const cycles: number[][] = [];
+  for (let i = 0; i + frameCount < starts.length; i++) {
+    if (starts[i].frame !== 0) continue;
+    const seq = starts.slice(i, i + frameCount + 1);
+    if (seq.every((e, k) => e.frame === k % frameCount)) cycles.push(seq.slice(0, frameCount).map((e, k) => Math.round((seq[k + 1].t - e.t) * 10) / 10));
+  }
+  t.measuredMs = cycles; t.cycles = cycles.length;
+  t.meanMs = cycles.length ? Array.from({ length: frameCount }, (_, k) => Math.round(cycles.reduce((sum, c) => sum + c[k], 0) / cycles.length * 10) / 10) : [];
 }
 function overlapReport(): void {
   const a = report.placements;
@@ -72,15 +108,16 @@ async function start(): Promise<void> {
   const manifest = AssetManifest.parse(await inputJson(report.manifestUrl));
   const room = RoomSchema.parse(await inputJson('/src/content/rooms/dog-room.json'));
   const charms = CharmsSchema.parse(await inputJson('/src/content/charms.json'));
-  const ids = [room.background, 'charms/dog-bed', 'charms/lamp', 'charms/painting'];
+  const ids = [room.background, 'charms/dog-bed', 'charms/lamp', 'charms/painting', SHEET];
   const queued: { entry: AssetEntry; row: LoadRow; blobUrl: string }[] = [];
   for (const id of ids) {
     const entry = manifest.entries.find(e => e.id === id);
     const row: LoadRow = { id, status: entry ? 'fetching' : 'missing-manifest-entry' }; report.assets.push(row);
     if (!entry) continue;
     row.source = entry.source; row.ledgerHash = entry.hash; row.declared = entry.px;
-    if (entry.type !== 'image' || entry.html || !entry.url) { row.status = 'unsupported-selected-entry'; continue; }
-    row.url = params.get('failure') === 'asset' && id === 'charms/lamp' ? '/assets/__asset-trial-missing-lamp.png' : new URL(entry.url, new URL('/assets/', location.href)).href;
+    if ((entry.type !== 'image' && !(entry.type === 'spritesheet' && id === SHEET)) || entry.html || !entry.url) { row.status = 'unsupported-selected-entry'; continue; }
+    const probe = (params.get('failure') === 'asset' && id === 'charms/lamp') || (params.get('failure') === 'sheet' && id === SHEET);
+    row.url = probe ? `/assets/__asset-trial-missing-${id === SHEET ? 'dog-sheet' : 'lamp'}.png` : new URL(entry.url, new URL('/assets/', location.href)).href;
     try {
       const response = await fetch(row.url, { cache: 'no-store' });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -93,7 +130,10 @@ async function start(): Promise<void> {
     constructor() { super('AssetTrial'); }
     preload(): void {
       this.load.on('loaderror', (file: Phaser.Loader.File) => { report.loadErrors.push(file.key); const row = report.assets.find(e => e.id === file.key); if (row) { row.status = 'phaser-loaderror'; row.error = `Phaser could not decode ${row.url}`; } });
-      for (const item of queued) this.load.image(item.entry.id, item.blobUrl);
+      for (const item of queued) {
+        if (item.entry.type === 'spritesheet' && item.entry.frame) this.load.spritesheet(item.entry.id, item.blobUrl, { frameWidth: item.entry.frame.w, frameHeight: item.entry.frame.h });
+        else this.load.image(item.entry.id, item.blobUrl);
+      }
     }
     create(): void {
       this.cameras.main.setScroll(0, report.cameraScrollY);
@@ -118,11 +158,34 @@ async function start(): Promise<void> {
         report.placements.push({ slot: slot.id, id: charm.sprite, sizeClass: slot.sizeClass, x: slot.x, y: slot.y, depth: sprite.depth, w: sprite.width, h: sprite.height, textureKey: sprite.texture.key, wallProjection: sprite.wallProjection });
         if (bounds) this.add.graphics().lineStyle(2, 0xae3b91, 0.8).strokeRect(slot.x - sprite.width / 2, slot.y - sprite.height, sprite.width, sprite.height).setDepth(9999);
       }
+      for (const id of ['charms/dog-bed', 'charms/lamp']) if (this.textures.exists(id)) report.opaque[id] = opaqueBox(this.textures.get(id).getSourceImage() as HTMLImageElement);
+      this.placePet(room, manifest.entries.find(e => e.id === SHEET));
       if (guides) drawGuides(this, room);
       overlapReport(); report.phase = 'ready';
       const good = report.assets.filter(a => a.status === 'loaded-verified').length;
-      element('status').textContent = `${good}/${ids.length} selected files verified · ${report.loadErrors.length} Phaser load errors / ${report.decodeErrors.length} decode errors · ${report.placements.length}/${mode === 'fill' ? room.slots.length : 0} representative placements. Missing files are omitted; inspect the report.`;
+      element('status').textContent = `${good}/${ids.length} selected files verified · ${report.loadErrors.length} Phaser load errors / ${report.decodeErrors.length} decode errors · ${report.placements.length}/${mode === 'fill' ? room.slots.length : 0} representative placements · Dog ${report.pet.key ? `${report.pet.key} at (${report.pet.x},${report.pet.y})` : `omitted (${report.pet.omitted})`}. Missing files are omitted; inspect the report.`;
       refreshReport();
+    }
+    placePet(room: Room, entry: AssetEntry | undefined): void {
+      if (!entry || !this.textures.exists(SHEET)) { report.pet.omitted = entry ? 'sheet texture not loaded' : 'no manifest entry'; return; }
+      const texture = this.textures.get(SHEET);
+      report.pet.textureFrames = texture.frameTotal - 1;
+      report.pet.keysRegistered = registerClips(this, entry);
+      for (const name of clips) { const key = clipKey(SHEET, name)!; report.pet.keysPresent[key] = this.anims.exists(key); }
+      const key = clipKey(SHEET, clip)!, frames = entry.clips?.[clip];
+      const source = texture.getSourceImage() as HTMLImageElement, fw = entry.frame!.w, fh = entry.frame!.h, cols = source.width / fw;
+      for (const name of clips) { const c = entry.clips?.[name]; if (c) report.opaque[`${SHEET}#${name}${c.start}`] = opaqueBox(source, (c.start % cols) * fw, Math.floor(c.start / cols) * fh, fw, fh); }
+      report.pet.declaredDurations = (this.anims.get(key)?.frames ?? []).map(f => f.duration || 1000 / (frames?.frameRate ?? 1));
+      if (!showPet) { report.pet.omitted = '?pet=0'; return; }
+      const { x, y, facing } = room.petSpawn;
+      const pet = this.add.sprite(x, y, SHEET, frames?.start ?? 0).setOrigin(0.5, 1).setScale(1).setFlipX(facing === 'left').setDepth(y);
+      Object.assign(report.pet, { key, x, y, facing, flipX: pet.flipX, depth: pet.depth, bubbleAnchor: { x, y: y - BUBBLE_OFFSET } });
+      if (clip === 'idle') {
+        const stamp = (event: FrameEvent['event']) => (_a: Phaser.Animations.Animation, f: Phaser.Animations.AnimationFrame) => { report.idleTiming.events.push({ t: performance.now(), frame: f.index - 1, event }); };
+        pet.on(Phaser.Animations.Events.ANIMATION_START, stamp('start')).on(Phaser.Animations.Events.ANIMATION_UPDATE, stamp('update')).on(Phaser.Animations.Events.ANIMATION_REPEAT, stamp('repeat'));
+        this.time.addEvent({ delay: 1000, loop: true, callback: () => { summariseIdleTiming(frames!.end - frames!.start + 1); report.idleTiming.displayFrameMs = Math.round(this.game.loop.delta * 10) / 10; refreshReport(); } });
+      }
+      pet.play(key);
     }
   }
   const game = new Phaser.Game({ type: Phaser.WEBGL, parent: 'game', backgroundColor: '#eee9df', scale: { mode: Phaser.Scale.FIT, width: 1920, height, autoCenter: Phaser.Scale.CENTER_BOTH }, render: { antialias: true, roundPixels: false, pixelArt: false }, audio: { noAudio: true }, scene: [AssetTrialScene] });
