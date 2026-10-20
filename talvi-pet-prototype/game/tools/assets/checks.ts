@@ -3,7 +3,7 @@ import { existsSync, readFileSync, statSync } from 'node:fs';
 import { dirname, relative, resolve, extname } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { AssetManifest, frameDurationIssue, type AssetEntry } from '../../src/content/schema/assets';
-import { assetPath, files, readJson, type Finding } from './common';
+import { assetPath, files, readJson, type Finding, type KnownMissing } from './common';
 import { dimensions, decodePng, bounds, alphaIoU, type Raster } from './image';
 export type Add = (id: string, level: Finding['level'], path: string, message: string, details?: Record<string, unknown>, file?: string) => void;
 export function checkClips(e: AssetEntry): string[] {
@@ -136,22 +136,38 @@ export function checkLedger(current: AssetManifest, previous: AssetManifest, add
             add('007', 'error', path, 'Human-accepted row changed; requires separate human review');
     }
 }
+/** Committed HEAD copy of the manifest, or undefined when the file is outside a Git work tree or not yet committed. */
 export function gitBaseline(manifestFile: string): AssetManifest | undefined {
-    const cwd = dirname(manifestFile), root = execFileSync('git', ['rev-parse', '--show-toplevel'], { cwd, encoding: 'utf8' }).trim(), path = relative(root, resolve(manifestFile)).split('\\').join('/');
-    const present = execFileSync('git', ['ls-tree', 'HEAD', '--', path], { cwd: root, encoding: 'utf8' }).trim();
+    const cwd = dirname(manifestFile);
+    let root: string, path: string, present: string;
+    try {
+        root = execFileSync('git', ['rev-parse', '--show-toplevel'], { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+        path = relative(root, resolve(manifestFile)).split('\\').join('/');
+        present = execFileSync('git', ['ls-tree', 'HEAD', '--', path], { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+    }
+    catch {
+        // Fresh copies without history (no work tree or no HEAD): callers report the skipped ledger comparison as VERIFY-ASSET-007 info.
+        return;
+    }
     if (!present)
         return;
     return AssetManifest.parse(JSON.parse(execFileSync('git', ['show', `HEAD:${path}`], { cwd: root, encoding: 'utf8' })));
 }
+/** VERIFY-ASSET-007 derived-row rule, shared with asset-ledger so it rejects rows check-assets would fail. */
+export function derivedIssue(e: AssetEntry, m: AssetManifest): { level: Finding['level']; message: string } | undefined {
+    if (e.origin !== 'derived')
+        return;
+    const parent = m.entries.find(p => p.id === e.source);
+    if (!parent)
+        return { level: e.recordedBy === 'TASK-022 / WORK-001' ? 'warning' : 'error', message: 'Derived source is an external path; no runtime parent status to compare' };
+    if (e.status !== parent.status)
+        return { level: 'error', message: 'Derived creative status must inherit parent status' };
+}
 function derivedChecks(m: AssetManifest, add: Add) {
-    for (const e of m.entries.filter(e => e.origin === 'derived')) {
-        const parent = m.entries.find(p => p.id === e.source);
-        if (!parent) {
-            add('007', e.recordedBy === 'TASK-022 / WORK-001' ? 'warning' : 'error', '/entries/' + m.entries.indexOf(e), 'Derived source is an external path; no runtime parent status to compare');
-            continue;
-        }
-        if (e.status !== parent.status)
-            add('007', 'error', '/entries/' + e.id, 'Derived creative status must inherit parent status');
+    for (const e of m.entries) {
+        const issue = derivedIssue(e, m);
+        if (issue)
+            add('007', issue.level, issue.message.startsWith('Derived source') ? '/entries/' + m.entries.indexOf(e) : '/entries/' + e.id, issue.message);
     }
 }
 export function checkAssetFiles(m: AssetManifest, root: string, add: Add) {
@@ -193,7 +209,8 @@ export function checkAssetFiles(m: AssetManifest, root: string, add: Add) {
     add('009', bytes > 20000000 || kib * 1024 > 20000000 ? 'error' : 'info', '', 'Asset payload measured', { bytes, allocatedKiB: kib, fileCount: files(root).length });
     derivedChecks(m, add);
 }
-export function contentChecks(m: AssetManifest, contentDir: string, add: Add) {
+/** `known` (from --known-missing) downgrades absent, listed AssetIds to warnings; retired IDs stay errors. */
+export function contentChecks(m: AssetManifest, contentDir: string, add: Add, known?: { ids: KnownMissing; file: string }) {
     const referenced = new Set<string>(), ids = new Map(m.entries.map(e => [e.id, e]));
     if (!existsSync(contentDir)) {
         add('001', 'info', '', 'Content directory unavailable; isolated pipeline check');
@@ -210,7 +227,10 @@ export function contentChecks(m: AssetManifest, contentDir: string, add: Add) {
                 visit(v, path + '/' + k, file);
         if (typeof value === 'string' && /^(fonts|ui|world|houses|rooms|charms|pets|player|clues|sfx)\//.test(value)) {
             referenced.add(value);
-            if (!ids.has(value) || ids.get(value)?.retired)
+            const batch = ids.has(value) ? undefined : known?.ids.get(value);
+            if (batch)
+                add('001', 'warning', path, `Known-missing AssetId ${value} (later batch ${batch}, listed in ${known!.file})`, undefined, file);
+            else if (!ids.has(value) || ids.get(value)?.retired)
                 add('001', 'error', path, `Unresolved or retired AssetId ${value}`, undefined, file);
         }
     }

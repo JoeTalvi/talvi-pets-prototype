@@ -1,12 +1,13 @@
 import { resolve, dirname } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { AssetManifest } from '../src/content/schema/assets';
-import { flags, readJson, report, type Finding } from './assets/common';
+import { flags, readJson, readKnownMissing, report, resolvedKnownMissing, type Finding } from './assets/common';
 import { checkAssetFiles, checkLedger, contentChecks, gitBaseline, type Add } from './assets/checks';
 export function main(args: string[]): number {
-    const opts = flags(args, ['format', 'out', 'content', 'manifest', 'baseline', 'seed'], ['strict', 'no-git']);
+    const opts = flags(args, ['format', 'out', 'content', 'manifest', 'baseline', 'seed', 'known-missing'], ['strict', 'no-git']);
     const file = String(opts.manifest ?? 'public/assets/manifest.json'), findings: Finding[] = [];
     const add: Add = (id, level, path, message, details, findingFile) => findings.push({ ids: [`VERIFY-ASSET-${id}`], level, file: findingFile ?? file, path, message, ...(details ? { details } : {}) });
+    const known = opts['known-missing'] ? readKnownMissing(String(opts['known-missing'])) : undefined;
     const parsed = AssetManifest.safeParse(readJson(file));
     if (!parsed.success) {
         for (const i of parsed.error.issues)
@@ -14,7 +15,9 @@ export function main(args: string[]): number {
         return report(findings, opts, 1, 1);
     }
     checkAssetFiles(parsed.data, dirname(resolve(file)), add);
-    contentChecks(parsed.data, resolve(String(opts.content ?? 'src/content')), add);
+    contentChecks(parsed.data, resolve(String(opts.content ?? 'src/content')), add, known && { ids: known, file: String(opts['known-missing']) });
+    for (const id of known ? resolvedKnownMissing(known, parsed.data.entries.map(e => e.id)) : [])
+        add('001', 'info', '', `${id} now resolves in the manifest; remove it from the known-missing list`, undefined, String(opts['known-missing']));
     const previous = opts.baseline ? AssetManifest.parse(readJson(String(opts.baseline))) : opts['no-git'] ? undefined : gitBaseline(resolve(file));
     if (previous)
         checkLedger(parsed.data, previous, add);

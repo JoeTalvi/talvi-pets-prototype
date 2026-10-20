@@ -1,4 +1,12 @@
-/** Manual transcription of core.md v1.4 §2, §3, §5. Full selector work is pending. */
+/**
+ * Vendored contract fixture so the suite runs from the committed tree alone (WORK-017 F-03).
+ * Manual transcription of core.md v1.4 §2 (actions), §3 (events), §5 (selectors).
+ * Source: talvi-pet-prototype/phase-2-technical/systems/core.md (untracked in this repository),
+ * SHA-256 7e4278cdcae4b55dd3e042ce99b55cc52116ccf2ce49bb4dde383a9767c406e9 when vendored (2026-10-20, TASK-077).
+ * When the contract changes, re-transcribe these lists and update the version, path and hash together.
+ */
+export const SOURCE_DOC = '../phase-2-technical/systems/core.md';
+export const SOURCE_SHA256 = '7e4278cdcae4b55dd3e042ce99b55cc52116ccf2ce49bb4dde383a9767c406e9';
 export const CONTRACT_VERSION = '1.4' as const;
 export const actionNames = [
   'tick', 'setDesignMode', 'placeCharm', 'removeCharm', 'acknowledgeProject',

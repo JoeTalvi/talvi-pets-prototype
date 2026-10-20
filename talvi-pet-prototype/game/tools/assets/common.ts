@@ -47,3 +47,25 @@ export function report(findings: Finding[], opts: Record<string, string | boolea
         process.stdout.write(output + '\n');
     return exitCode;
 }
+/** AssetId → owning later batch, from a --known-missing file (default list: tools/known-missing-assets.json). */
+export type KnownMissing = Map<string, string>;
+export function readKnownMissing(path: string): KnownMissing {
+    const data = readJson(path) as { assets?: unknown };
+    if (!Array.isArray(data.assets))
+        throw new Error(`${path}: expected { "assets": [{ "id", "batch" }] }`);
+    const known: KnownMissing = new Map();
+    for (const [i, row] of data.assets.entries()) {
+        const { id, batch } = (row ?? {}) as { id?: unknown; batch?: unknown };
+        if (typeof id !== 'string' || !/^[a-z]+\/[A-Za-z0-9][A-Za-z0-9_-]*$/.test(id) || typeof batch !== 'string' || !/^WORK-\d{3}$/.test(batch))
+            throw new Error(`${path}: assets[${i}] needs an AssetId "id" and a "batch" like WORK-018`);
+        if (known.has(id))
+            throw new Error(`${path}: duplicate id ${id}`);
+        known.set(id, batch);
+    }
+    return known;
+}
+/** Listed IDs that the manifest now contains, so the list can be pruned when a batch lands. */
+export function resolvedKnownMissing(known: KnownMissing, manifestIds: Iterable<string>): string[] {
+    const present = new Set(manifestIds);
+    return [...known.keys()].filter(id => present.has(id));
+}

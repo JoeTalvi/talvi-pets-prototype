@@ -1,11 +1,16 @@
-import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { existsSync, readFileSync } from 'node:fs';
 import ts from 'typescript';
 import { expect, expectTypeOf, it } from 'vitest';
 import type { Action } from '../../src/sim/actions';
 import type { SimEvent } from '../../src/sim/events';
 import * as select from '../../src/sim/select';
 import { CONTRACT_VERSION } from '../../src/sim/state';
-import * as names from './contract-names';
+import * as names from '../fixtures/core-contract';
+// The live Phase 2 document sits outside game/ and is untracked; isolated checkouts skip the drift check.
+const liveDocPresent = existsSync(names.SOURCE_DOC);
+if (!liveDocPresent)
+  process.stdout.write(`contract.test: ${names.SOURCE_DOC} absent; live-doc drift check skipped (vendored fixture still asserted)\n`);
 
 function unionNames(path: string, alias: string): string[] {
   const source = ts.createSourceFile(path, readFileSync(path, 'utf8'), ts.ScriptTarget.Latest, true);
@@ -28,8 +33,15 @@ it('VERIFY-CORE-001 partial: exact v1.4 Action and SimEvent unions (not handler 
   expect(unionNames('src/sim/actions.ts', 'Action').sort()).toEqual([...names.actionNames].sort());
   expect(unionNames('src/sim/events.ts', 'SimEvent').sort()).toEqual([...names.eventNames].sort());
   expect(CONTRACT_VERSION).toBe(names.CONTRACT_VERSION);
-  const core = readFileSync('../phase-2-technical/systems/core.md', 'utf8');
-  expect(core).toContain(`Version **${CONTRACT_VERSION}**`);
+});
+
+it.skipIf(!liveDocPresent)('VERIFY-CORE-001 drift: live core.md still declares the vendored version and names', () => {
+  const core = readFileSync(names.SOURCE_DOC, 'utf8');
+  expect(core).toContain(`Version **${names.CONTRACT_VERSION}**`);
+  const absent = [...names.actionNames, ...names.eventNames, ...names.selectorNames].filter(name => !core.includes(name));
+  expect(absent).toEqual([]);
+  if (createHash('sha256').update(core).digest('hex') !== names.SOURCE_SHA256)
+    process.stdout.write('contract.test: core.md changed since the fixture was vendored; review tests/fixtures/core-contract.ts\n');
 });
 
 it('VERIFY-CORE-001 partial: selector exports cover only the delivered slice; full set remains deferred', () => {

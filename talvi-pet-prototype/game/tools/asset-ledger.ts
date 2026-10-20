@@ -5,6 +5,7 @@ import { pathToFileURL } from 'node:url';
 import { AssetEntry, AssetManifest } from '../src/content/schema/assets';
 import { assetPath, flags, readJson } from './assets/common';
 import { dimensions } from './assets/image';
+import { derivedIssue } from './assets/checks';
 function snapshot(e: AssetEntry) {
     const { hash, status, origin, source, recordedAt, recordedBy, note } = e;
     return { hash, status, origin, source, recordedAt, recordedBy, ...(note ? { note } : {}) };
@@ -114,6 +115,9 @@ export function main(args: string[]): number {
             throw new Error('Append would overwrite an existing file; choose a new AssetId');
     }
     AssetManifest.parse(m);
+    const derived = derivedIssue(m.entries.find(e => e.id === id)!, m);
+    if (derived?.level === 'error')
+        throw new Error(`VERIFY-ASSET-007: ${derived.message}; a derived row's --source must be an existing runtime AssetId (or record a non-derived origin for an external file)`);
     writes.push({ path: manifestFile, data: JSON.stringify(m, null, 2) + '\n' });
     if (!opts['dry-run'])
         publish(writes);
