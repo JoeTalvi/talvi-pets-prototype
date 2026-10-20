@@ -1,7 +1,19 @@
 import { z } from 'zod';
 export const AssetId = z.string().regex(/^(fonts|ui|world|houses|rooms|charms|pets|player|clues|sfx)\/[A-Za-z0-9][A-Za-z0-9_-]*$/);
 const Px = z.object({ w: z.number().int().positive().max(2048), h: z.number().int().positive().max(2048) });
-const Clip = z.object({ start: z.number().int().min(0), end: z.number().int().min(0), frameRate: z.number().positive(), repeat: z.number().int().min(-1) });
+// CN-07 / assets.md "ASSET-014 explicit per-frame clip timing": optional per-frame ms durations override frameRate for that clip.
+export function frameDurationIssue(clip: { start: number; end: number; frameDurationsMs?: number[] }): string | undefined {
+    const d = clip.frameDurationsMs;
+    if (d === undefined)
+        return undefined;
+    if (d.length !== clip.end - clip.start + 1)
+        return `frameDurationsMs length ${d.length} must equal end − start + 1 (${clip.end - clip.start + 1})`;
+    if (d.some(ms => !Number.isInteger(ms) || ms <= 0))
+        return 'frameDurationsMs values must be positive integers';
+    return undefined;
+}
+const Clip = z.object({ start: z.number().int().min(0), end: z.number().int().min(0), frameRate: z.number().positive(), repeat: z.number().int().min(-1), frameDurationsMs: z.array(z.number()).optional() })
+    .superRefine((c, ctx) => { const issue = frameDurationIssue(c); if (issue) ctx.addIssue({ code: 'custom', path: ['frameDurationsMs'], message: issue }); });
 const HistoryRow = z.object({ hash: z.string().length(64), status: z.enum(['ai-placeholder', 'production-reference', 'accepted']),
     origin: z.enum(['asset-bot', 'production', 'authored', 'derived', 'cc0']), source: z.string(), recordedAt: z.string().date(), recordedBy: z.string(), note: z.string().optional() });
 export const AssetEntry = z.object({
@@ -55,3 +67,4 @@ export const AssetManifest = z.object({
 export type AssetId = z.infer<typeof AssetId>;
 export type AssetEntry = z.infer<typeof AssetEntry>;
 export type AssetManifest = z.infer<typeof AssetManifest>;
+export type Clip = z.infer<typeof Clip>;

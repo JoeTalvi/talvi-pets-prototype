@@ -1019,6 +1019,341 @@
       "recordedBy": "WORK-013B / TASK-063",
       "history": [],
       "note": "WORK013B technical export, creative/runtime/device review pending; source preserved. Proportional fit yields10px side margins (contract <=8 unmet); no distortion applied. Coordinator TASK068: technical proportional-fit exception recorded in assets.md at revision135, exact export hash reviewed by TASK065. Creative/context/device acceptance remains pending."
+    },
+    {
+      "id": "pets/dog-sheet",
+      "type": "spritesheet",
+      "url": "pets/dog-sheet.png",
+      "px": {
+        "w": 1536,
+        "h": 1024
+      },
+      "frame": {
+        "w": 256,
+        "h": 256
+      },
+      "clips": {
+        "idle": {
+          "start": 0,
+          "end": 3,
+          "frameRate": 6,
+          "repeat": -1,
+          "frameDurationsMs": [
+            2600,
+            80,
+            120,
+            80
+          ]
+        },
+        "walk": {
+          "start": 6,
+          "end": 11,
+          "frameRate": 10,
+          "repeat": -1
+        },
+        "use": {
+          "start": 12,
+          "end": 15,
+          "frameRate": 4,
+          "repeat": -1
+        },
+        "react": {
+          "start": 18,
+          "end": 21,
+          "frameRate": 8,
+          "repeat": -1
+        }
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "phase-3-preproduction/production/representatives-v2/sources/idle-base.png (idle frames 0,1,3; = WORK-013D idle-0) + phase-3-preproduction/production/representatives-v2/sources/idle-closed.png (idle frame 2); walk/use/react cells from phase-3-preproduction/production/representatives-v1/sources/dog-walk.png, phase-3-preproduction/production/representatives-v1/sources/dog-use.png, phase-3-preproduction/production/representatives-v1/sources/dog-react.png (idle-base originally cut from phase-3-preproduction/production/representatives-v1/sources/dog-idle.png)",
+      "generator": "builtin-imagegen",
+      "prompt": "[phase-3-preproduction/production/representatives-v1/idle-call.json] Use case: identity-preserve game sprite animation. Exactly FOUR full-body poses of the SAME approved orange-and-cream Dog in ONE horizontal row on a wide transparent canvas, four equal-width cells without borders. Match reference identity exactly: compact orange body, cream muzzle/chest/belly/paws and eyebrow spots, upright ears, short legs, curled tail, simple flat warm shading and dark brown outline. All four face right at the same slight three-quarter side angle, same stance, same proportions and body size, paws on one baseline. A quiet looping IDLE: pose1 eyes open relaxed; pose2 same pose with tiny breath rise in chest; pose3 same pose with both eyes softly closed in blink; pose4 eyes open again matching pose1. Minimal tail tip and chest movement only; no leg travel, different expressions, action leaps or rotation. Entire ears/tails/feet visible with generous transparent padding and gutters. True alpha background, solid opaque cream/orange inside. No numbers, labels, gridlines, floor, cast shadow, glow, objects or checkerboard.\n\n[phase-3-preproduction/production/representatives-v1/walk-call.json] Use case: identity-preserve game sprite animation. Draw exactly SIX full-body frames of the same approved orange-and-cream Dog from the reference, arranged in ONE horizontal row on a wide transparent canvas. Each frame has exactly the same compact body size, upright triangular ears, cream muzzle/chest/belly/paws, dark eyes, curled tail and clean brown outline/flat warm shading. All six face right at the SAME slight three-quarter side camera angle as the reference. This is one seamless WALK-IN-PLACE cycle, not six different characters: frame1 near foreleg forward and near hindleg back; frame2 passing legs with small body dip; frame3 near foreleg back and near hindleg forward; frame4 opposite contact; frame5 opposite passing; frame6 approaching frame1. Far legs counterphase. No running, jumping, sitting, duplicated feet, extra legs or body rotation. Feet share one baseline; identical head and body proportions, dog stays centered in each of six equal-width cells with generous transparent gutters. Show whole tails and ears, no clipping. No cell borders, captions, numbers, other objects, room, floor, shadows or checkerboard. True alpha transparency outside each dog; all orange/cream fur opaque. Smooth modest walk poses with clear changing leg positions, same character identity throughout.\n\n[phase-3-preproduction/production/representatives-v1/use-call.json] Use case: identity-preserve game sprite animation. Exactly FOUR full-body frames of the SAME approved orange-and-cream Dog, ONE horizontal row with four equal-width cells on transparent background. Match compact silhouette, upright ears, cream muzzle/chest/belly/paws and eyebrows, orange curled tail, simple flat warm shading and clean brown line of reference. Same right-facing slight three-quarter side view in every frame. A calm SEATED resting/using loop: hindquarters on ground, both forepaws planted, relaxed upright head, tail curled beside the rear. Pose1 calm open eyes; pose2 slight chest inhale; pose3 soft eyes closing in contentment; pose4 return to pose1. Same body size/face/markings across frames. Do not add furniture, bed, toy or props; this standalone sitting pose is for a generic use clip. No walking, front-facing turn, human posture, tongue or clothing. Entire dog visible, consistent ground baseline, clear transparent gutters and margins. No captions/numbers/grid/floor/shadows/glow/checkerboard. True alpha transparency; cream and orange opaque.\n\n[phase-3-preproduction/production/representatives-v1/react-call.json] Use case: identity-preserve game sprite animation. Exactly FOUR full-body frames of the same approved compact orange-and-cream Dog in ONE horizontal row, four equal-width cells, transparent background. Same right-facing slight three-quarter side view, upright ears, cream eyebrows/muzzle/chest/belly/paws, tightly curled tail, compact short-legged proportions, clean brown contours and restrained flat warm shading as reference. A small joyful HOP cycle: frame1 planted paws with gentle knee crouch and happy eyes; frame2 all four paws just lifted, legs slightly tucked; frame3 near peak of a very small hop, ears alert and happy relaxed face; frame4 soft landing matching frame1. Same dog scale and same head size, no stretched body, no exaggerated jump, no standing on two legs, no flips or rotation. Complete ears and curled tails in every frame; equal transparent cells/gutters; no clipping. No hearts or particles, props, floor, shadow, labels, gridlines or checkerboard. True transparent background with opaque fur.\n\n[phase-3-preproduction/production/representatives-v2/imagegen-call.json closed-eye edit] Precise-object-edit. Edit this exact orange and cream Dog animation frame only to close BOTH eyes for a relaxed blink. Replace the two dark open eyes with slim dark brown gently curved closed eyelid strokes at the exact same eye positions. Keep the entire dog pose, head, muzzle, eyebrows, ears, fur markings, silhouette, legs, tail, outlines, shading, size, camera and position identical. No motion or redrawing of the body or head. Preserve transparent background. Single frame, whole dog, same square canvas and composition. This will be used only as the closed-eye layer over the original stationary frame.",
+      "refs": [
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/concepts/v1/dog-a-nano.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/working/WORK-013D/previews/frames/idle-0.png"
+      ],
+      "postProcess": "phase-3-preproduction/production/representatives-v1/prepare-dog.mjs (Chrome canvas): alpha<8→0, trim native transparency, per-clip uniform scale to max height idle/walk/react 224 px, use 236 px, inspected transparent-gutter splits for walk/use, base-centre pivot into 256×256 cells of a 1536×1024 sheet, unused cells 4,5,16,17,22,23 transparent; phase-3-preproduction/production/representatives-v2/prepare-idle.mjs: idle frames 0,1,3 = fixed idle-base, frame 2 = closed-eyes-generated.png composited only inside two feathered eye masks (boxes 178,77,24×16 and 207,74,14×14; sources/eye-mask.png), all other cells unchanged; phase-3-preproduction/production/representatives-v2/repack-png.mjs: lossless IDAT recompression (zlib level 9, memLevel 9), scanlines unchanged.",
+      "batch": "WORK-013D/E-representatives-v2",
+      "hash": "148ff5d7fd39df24f4bdd6178744ce74f03d7fbdf317f72b95f36c8640584121",
+      "recordedAt": "2026-10-20",
+      "recordedBy": "WORK-013F / TASK-073",
+      "history": [],
+      "note": "AI-generated via built-in imagegen (5 pose/portrait calls WORK-013D + 1 closed-eye edit WORK-013E); not Asset-Bot or human-only drawing; model/seed not exposed. Provenance: phase-3-preproduction/production/representatives-v1/provenance.json, phase-3-preproduction/production/representatives-v2/provenance.json, production-notes.md. Idle uses explicit frameDurationsMs per CN-07. User visual acceptance: phase-3-preproduction/approvals/approval-2026-10-20-representative-visuals.md. In-engine contextual and device verdicts pending; not status accepted."
+    },
+    {
+      "id": "pets/dog-portrait",
+      "type": "image",
+      "url": "pets/dog-portrait.png",
+      "px": {
+        "w": 600,
+        "h": 600
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "phase-3-preproduction/production/representatives-v1/sources/dog-portrait.png",
+      "generator": "builtin-imagegen",
+      "prompt": "Use case: identity-preserve. Create a game dialogue portrait of the EXACT approved orange-and-cream Dog in the reference. Retain the compact friendly Shiba-like identity, triangular upright ears, cream eyebrow spots, cream muzzle and chest, dark brown almond eyes, black nose, restrained flat warm shading and clean dark brown ink contour. Bust portrait: head, both ears, neck and upper chest only; no legs, paws, tail, collar or accessories. Facing slightly to the viewer's right in a gentle three-quarter view, relaxed closed-mouth friendly expression. Center the whole bust in a square canvas with transparent space around both ears; do not crop ear tips. Cream areas opaque. Match the reference's simple flat illustration rather than fur rendering or photorealism. True transparent background with exactly zero alpha outside the silhouette, no glow, shadow, floor, framing, text or checkerboard.",
+      "refs": [
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/concepts/v1/dog-a-nano.png"
+      ],
+      "postProcess": "phase-3-preproduction/production/representatives-v1/prepare-dog.mjs (Chrome canvas): alpha<8→0, trim, uniform fit longest side 568 centred in 600×600; pngquant 3.0.3 --quality 90-100 --speed 1 --nofs (256 colours), Chrome canvas RGBA re-encode, phase-3-preproduction/production/representatives-v1/repack-png.mjs lossless IDAT recompression (phase-3-preproduction/production/representatives-v1/optimization-final.json).",
+      "batch": "WORK-013D/E-representatives-v2",
+      "hash": "1a34c9b64862b66ec50d90c68f93b9fe95835f7615986aed5ceab70b77a41a39",
+      "recordedAt": "2026-10-20",
+      "recordedBy": "WORK-013F / TASK-073",
+      "history": [],
+      "note": "AI-generated via built-in imagegen (WORK-013D portrait call); not Asset-Bot or human-only drawing; model/seed not exposed. Byte-identical in representatives-v1 and v2. Provenance: phase-3-preproduction/production/representatives-v1/provenance.json. User visual acceptance: phase-3-preproduction/approvals/approval-2026-10-20-representative-visuals.md. In-engine contextual and device verdicts pending; not status accepted."
+    },
+    {
+      "id": "ui/tag-soft",
+      "type": "image",
+      "url": "ui/tag-soft.png",
+      "px": {
+        "w": 96,
+        "h": 96
+      },
+      "status": "ai-placeholder",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/ui/1792433765678-vzoe21/candidate_001.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 8401,
+      "prompt": "- Image 1: Reward Icon Lantern style reference\n- Image 2: Reward Icon Bucket style reference\n- Image 3: REF TAG 001 style reference\n- Image 4: Charm Bookshelf style reference\n- Study the reference images carefully and match their art style CLOSELY. Replicate the exact line work thickness, shading technique, lighting style, level of detail, texture rendering, and overall aesthetic. Match the proportions, silhouette style, and form language precisely. Only use colors from the description — do not copy colors from references. The final result should look like it was drawn by the same artist as the references.\n- Scene: Eight distinct small cream-and-brown object symbols arranged separately in two ordered rows of four on a plain white background, with even generous spacing. Top row from left: a single soft cushion without chair structure; one simple chair with seat and back; a sprout with two leaves; a table lamp with shade and stem. Bottom row from left: a simple toy ball; a tall upright bookshelf with a strong vertical outline; a food bowl; one framed picture. Every object fits its own square region, no touching or overlap, no text or numbers, no ornamental background. Use only warm cream fills and dark brown outlines with very few internal marks. Each object should remain recognizable when tiny.\n- Single unified image. No collage, grid, or multi-panel layout.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/style/reward_icon_lantern.png",
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/style/reward_icon_bucket.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/references/tag-icons/v1/previews/REF-TAG-001.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/charm-bookshelf.png"
+      ],
+      "postProcess": "phase-3-preproduction/production/representatives-v1/prepare-icons.mjs (Chrome canvas) from concept sheet phase-3-preproduction/concepts/v1/tags-nano.png SHA256 a13ff8823e36364f0d224ece3d9bd1a631551b7a8e261e5f77e58061e6177878: crop cell 0,0 of the 4×2 grid; flood border-connected near-white (min≥240, spread≤18) as exterior; keep-region dilation 2 px; exterior alpha from luma with white unmatte; trim; uniform fit with 8 px margin centred in 96×96. Metrics: phase-3-preproduction/production/representatives-v1/icon-export-report.json.",
+      "batch": "WORK-013D/E-representatives-v2",
+      "hash": "e21d6d2de3e5c6809566f06be5d6631a96ae638fc65b28135ac4bff2f5b01777",
+      "recordedAt": "2026-10-20",
+      "recordedBy": "WORK-013F / TASK-073",
+      "history": [],
+      "note": "Drawing from the WORK-008 Asset-Bot nano-banana concept tags-nano (seed 8401, run candidate in source; preserved copy phase-3-preproduction/production/representatives-v1/sources/accepted/tags-nano.png, same SHA256), concept approval phase-3-preproduction/approvals/APPROVAL-004-concepts.md; no new generation. Byte-identical in representatives-v1 and v2. User visual acceptance: phase-3-preproduction/approvals/approval-2026-10-20-representative-visuals.md. In-engine contextual and device verdicts pending; not status accepted."
+    },
+    {
+      "id": "ui/tag-seat",
+      "type": "image",
+      "url": "ui/tag-seat.png",
+      "px": {
+        "w": 96,
+        "h": 96
+      },
+      "status": "ai-placeholder",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/ui/1792433765678-vzoe21/candidate_001.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 8401,
+      "prompt": "- Image 1: Reward Icon Lantern style reference\n- Image 2: Reward Icon Bucket style reference\n- Image 3: REF TAG 001 style reference\n- Image 4: Charm Bookshelf style reference\n- Study the reference images carefully and match their art style CLOSELY. Replicate the exact line work thickness, shading technique, lighting style, level of detail, texture rendering, and overall aesthetic. Match the proportions, silhouette style, and form language precisely. Only use colors from the description — do not copy colors from references. The final result should look like it was drawn by the same artist as the references.\n- Scene: Eight distinct small cream-and-brown object symbols arranged separately in two ordered rows of four on a plain white background, with even generous spacing. Top row from left: a single soft cushion without chair structure; one simple chair with seat and back; a sprout with two leaves; a table lamp with shade and stem. Bottom row from left: a simple toy ball; a tall upright bookshelf with a strong vertical outline; a food bowl; one framed picture. Every object fits its own square region, no touching or overlap, no text or numbers, no ornamental background. Use only warm cream fills and dark brown outlines with very few internal marks. Each object should remain recognizable when tiny.\n- Single unified image. No collage, grid, or multi-panel layout.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/style/reward_icon_lantern.png",
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/style/reward_icon_bucket.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/references/tag-icons/v1/previews/REF-TAG-001.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/charm-bookshelf.png"
+      ],
+      "postProcess": "phase-3-preproduction/production/representatives-v1/prepare-icons.mjs (Chrome canvas) from concept sheet phase-3-preproduction/concepts/v1/tags-nano.png SHA256 a13ff8823e36364f0d224ece3d9bd1a631551b7a8e261e5f77e58061e6177878: crop cell 1,0 of the 4×2 grid; flood border-connected near-white (min≥240, spread≤18) as exterior; keep-region dilation 2 px; exterior alpha from luma with white unmatte; trim; uniform fit with 8 px margin centred in 96×96. Metrics: phase-3-preproduction/production/representatives-v1/icon-export-report.json.",
+      "batch": "WORK-013D/E-representatives-v2",
+      "hash": "b9a5a9692a1e3cd347c6c1fe4ac5501f6b079616121e017f62ca32f29de0cf99",
+      "recordedAt": "2026-10-20",
+      "recordedBy": "WORK-013F / TASK-073",
+      "history": [],
+      "note": "Drawing from the WORK-008 Asset-Bot nano-banana concept tags-nano (seed 8401, run candidate in source; preserved copy phase-3-preproduction/production/representatives-v1/sources/accepted/tags-nano.png, same SHA256), concept approval phase-3-preproduction/approvals/APPROVAL-004-concepts.md; no new generation. Byte-identical in representatives-v1 and v2. User visual acceptance: phase-3-preproduction/approvals/approval-2026-10-20-representative-visuals.md. In-engine contextual and device verdicts pending; not status accepted."
+    },
+    {
+      "id": "ui/tag-plant",
+      "type": "image",
+      "url": "ui/tag-plant.png",
+      "px": {
+        "w": 96,
+        "h": 96
+      },
+      "status": "ai-placeholder",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/ui/1792433765678-vzoe21/candidate_001.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 8401,
+      "prompt": "- Image 1: Reward Icon Lantern style reference\n- Image 2: Reward Icon Bucket style reference\n- Image 3: REF TAG 001 style reference\n- Image 4: Charm Bookshelf style reference\n- Study the reference images carefully and match their art style CLOSELY. Replicate the exact line work thickness, shading technique, lighting style, level of detail, texture rendering, and overall aesthetic. Match the proportions, silhouette style, and form language precisely. Only use colors from the description — do not copy colors from references. The final result should look like it was drawn by the same artist as the references.\n- Scene: Eight distinct small cream-and-brown object symbols arranged separately in two ordered rows of four on a plain white background, with even generous spacing. Top row from left: a single soft cushion without chair structure; one simple chair with seat and back; a sprout with two leaves; a table lamp with shade and stem. Bottom row from left: a simple toy ball; a tall upright bookshelf with a strong vertical outline; a food bowl; one framed picture. Every object fits its own square region, no touching or overlap, no text or numbers, no ornamental background. Use only warm cream fills and dark brown outlines with very few internal marks. Each object should remain recognizable when tiny.\n- Single unified image. No collage, grid, or multi-panel layout.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/style/reward_icon_lantern.png",
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/style/reward_icon_bucket.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/references/tag-icons/v1/previews/REF-TAG-001.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/charm-bookshelf.png"
+      ],
+      "postProcess": "phase-3-preproduction/production/representatives-v1/prepare-icons.mjs (Chrome canvas) from concept sheet phase-3-preproduction/concepts/v1/tags-nano.png SHA256 a13ff8823e36364f0d224ece3d9bd1a631551b7a8e261e5f77e58061e6177878: crop cell 2,0 of the 4×2 grid; flood border-connected near-white (min≥240, spread≤18) as exterior; keep-region dilation 2 px; exterior alpha from luma with white unmatte; trim; uniform fit with 8 px margin centred in 96×96. Metrics: phase-3-preproduction/production/representatives-v1/icon-export-report.json.",
+      "batch": "WORK-013D/E-representatives-v2",
+      "hash": "cc2885b4e1043800e58e5ae058b6096a85c63eee8b8b7148ebd19fe0aab96187",
+      "recordedAt": "2026-10-20",
+      "recordedBy": "WORK-013F / TASK-073",
+      "history": [],
+      "note": "Drawing from the WORK-008 Asset-Bot nano-banana concept tags-nano (seed 8401, run candidate in source; preserved copy phase-3-preproduction/production/representatives-v1/sources/accepted/tags-nano.png, same SHA256), concept approval phase-3-preproduction/approvals/APPROVAL-004-concepts.md; no new generation. Byte-identical in representatives-v1 and v2. User visual acceptance: phase-3-preproduction/approvals/approval-2026-10-20-representative-visuals.md. In-engine contextual and device verdicts pending; not status accepted."
+    },
+    {
+      "id": "ui/tag-light",
+      "type": "image",
+      "url": "ui/tag-light.png",
+      "px": {
+        "w": 96,
+        "h": 96
+      },
+      "status": "ai-placeholder",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/ui/1792433765678-vzoe21/candidate_001.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 8401,
+      "prompt": "- Image 1: Reward Icon Lantern style reference\n- Image 2: Reward Icon Bucket style reference\n- Image 3: REF TAG 001 style reference\n- Image 4: Charm Bookshelf style reference\n- Study the reference images carefully and match their art style CLOSELY. Replicate the exact line work thickness, shading technique, lighting style, level of detail, texture rendering, and overall aesthetic. Match the proportions, silhouette style, and form language precisely. Only use colors from the description — do not copy colors from references. The final result should look like it was drawn by the same artist as the references.\n- Scene: Eight distinct small cream-and-brown object symbols arranged separately in two ordered rows of four on a plain white background, with even generous spacing. Top row from left: a single soft cushion without chair structure; one simple chair with seat and back; a sprout with two leaves; a table lamp with shade and stem. Bottom row from left: a simple toy ball; a tall upright bookshelf with a strong vertical outline; a food bowl; one framed picture. Every object fits its own square region, no touching or overlap, no text or numbers, no ornamental background. Use only warm cream fills and dark brown outlines with very few internal marks. Each object should remain recognizable when tiny.\n- Single unified image. No collage, grid, or multi-panel layout.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/style/reward_icon_lantern.png",
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/style/reward_icon_bucket.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/references/tag-icons/v1/previews/REF-TAG-001.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/charm-bookshelf.png"
+      ],
+      "postProcess": "phase-3-preproduction/production/representatives-v1/prepare-icons.mjs (Chrome canvas) from concept sheet phase-3-preproduction/concepts/v1/tags-nano.png SHA256 a13ff8823e36364f0d224ece3d9bd1a631551b7a8e261e5f77e58061e6177878: crop cell 3,0 of the 4×2 grid; flood border-connected near-white (min≥240, spread≤18) as exterior; keep-region dilation 2 px; exterior alpha from luma with white unmatte; trim; uniform fit with 8 px margin centred in 96×96. Metrics: phase-3-preproduction/production/representatives-v1/icon-export-report.json.",
+      "batch": "WORK-013D/E-representatives-v2",
+      "hash": "87caeb0edd48ab41e210fc29c45d5522b8816a95683534397b38fb188409d1c5",
+      "recordedAt": "2026-10-20",
+      "recordedBy": "WORK-013F / TASK-073",
+      "history": [],
+      "note": "Drawing from the WORK-008 Asset-Bot nano-banana concept tags-nano (seed 8401, run candidate in source; preserved copy phase-3-preproduction/production/representatives-v1/sources/accepted/tags-nano.png, same SHA256), concept approval phase-3-preproduction/approvals/APPROVAL-004-concepts.md; no new generation. Byte-identical in representatives-v1 and v2. User visual acceptance: phase-3-preproduction/approvals/approval-2026-10-20-representative-visuals.md. In-engine contextual and device verdicts pending; not status accepted."
+    },
+    {
+      "id": "ui/tag-toy",
+      "type": "image",
+      "url": "ui/tag-toy.png",
+      "px": {
+        "w": 96,
+        "h": 96
+      },
+      "status": "ai-placeholder",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/ui/1792433765678-vzoe21/candidate_001.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 8401,
+      "prompt": "- Image 1: Reward Icon Lantern style reference\n- Image 2: Reward Icon Bucket style reference\n- Image 3: REF TAG 001 style reference\n- Image 4: Charm Bookshelf style reference\n- Study the reference images carefully and match their art style CLOSELY. Replicate the exact line work thickness, shading technique, lighting style, level of detail, texture rendering, and overall aesthetic. Match the proportions, silhouette style, and form language precisely. Only use colors from the description — do not copy colors from references. The final result should look like it was drawn by the same artist as the references.\n- Scene: Eight distinct small cream-and-brown object symbols arranged separately in two ordered rows of four on a plain white background, with even generous spacing. Top row from left: a single soft cushion without chair structure; one simple chair with seat and back; a sprout with two leaves; a table lamp with shade and stem. Bottom row from left: a simple toy ball; a tall upright bookshelf with a strong vertical outline; a food bowl; one framed picture. Every object fits its own square region, no touching or overlap, no text or numbers, no ornamental background. Use only warm cream fills and dark brown outlines with very few internal marks. Each object should remain recognizable when tiny.\n- Single unified image. No collage, grid, or multi-panel layout.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/style/reward_icon_lantern.png",
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/style/reward_icon_bucket.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/references/tag-icons/v1/previews/REF-TAG-001.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/charm-bookshelf.png"
+      ],
+      "postProcess": "phase-3-preproduction/production/representatives-v1/prepare-icons.mjs (Chrome canvas) from concept sheet phase-3-preproduction/concepts/v1/tags-nano.png SHA256 a13ff8823e36364f0d224ece3d9bd1a631551b7a8e261e5f77e58061e6177878: crop cell 0,1 of the 4×2 grid; flood border-connected near-white (min≥240, spread≤18) as exterior; keep-region dilation 2 px; exterior alpha from luma with white unmatte; trim; uniform fit with 8 px margin centred in 96×96. Metrics: phase-3-preproduction/production/representatives-v1/icon-export-report.json.",
+      "batch": "WORK-013D/E-representatives-v2",
+      "hash": "a675d5eb5c86a71f865879b1626deab77ad06ce5394eaf1f0d1bac359d439c2c",
+      "recordedAt": "2026-10-20",
+      "recordedBy": "WORK-013F / TASK-073",
+      "history": [],
+      "note": "Drawing from the WORK-008 Asset-Bot nano-banana concept tags-nano (seed 8401, run candidate in source; preserved copy phase-3-preproduction/production/representatives-v1/sources/accepted/tags-nano.png, same SHA256), concept approval phase-3-preproduction/approvals/APPROVAL-004-concepts.md; no new generation. Byte-identical in representatives-v1 and v2. User visual acceptance: phase-3-preproduction/approvals/approval-2026-10-20-representative-visuals.md. In-engine contextual and device verdicts pending; not status accepted."
+    },
+    {
+      "id": "ui/tag-tall",
+      "type": "image",
+      "url": "ui/tag-tall.png",
+      "px": {
+        "w": 96,
+        "h": 96
+      },
+      "status": "ai-placeholder",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/ui/1792433765678-vzoe21/candidate_001.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 8401,
+      "prompt": "- Image 1: Reward Icon Lantern style reference\n- Image 2: Reward Icon Bucket style reference\n- Image 3: REF TAG 001 style reference\n- Image 4: Charm Bookshelf style reference\n- Study the reference images carefully and match their art style CLOSELY. Replicate the exact line work thickness, shading technique, lighting style, level of detail, texture rendering, and overall aesthetic. Match the proportions, silhouette style, and form language precisely. Only use colors from the description — do not copy colors from references. The final result should look like it was drawn by the same artist as the references.\n- Scene: Eight distinct small cream-and-brown object symbols arranged separately in two ordered rows of four on a plain white background, with even generous spacing. Top row from left: a single soft cushion without chair structure; one simple chair with seat and back; a sprout with two leaves; a table lamp with shade and stem. Bottom row from left: a simple toy ball; a tall upright bookshelf with a strong vertical outline; a food bowl; one framed picture. Every object fits its own square region, no touching or overlap, no text or numbers, no ornamental background. Use only warm cream fills and dark brown outlines with very few internal marks. Each object should remain recognizable when tiny.\n- Single unified image. No collage, grid, or multi-panel layout.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/style/reward_icon_lantern.png",
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/style/reward_icon_bucket.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/references/tag-icons/v1/previews/REF-TAG-001.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/charm-bookshelf.png"
+      ],
+      "postProcess": "phase-3-preproduction/production/representatives-v1/prepare-icons.mjs (Chrome canvas) from concept sheet phase-3-preproduction/concepts/v1/tags-nano.png SHA256 a13ff8823e36364f0d224ece3d9bd1a631551b7a8e261e5f77e58061e6177878: crop cell 1,1 of the 4×2 grid; flood border-connected near-white (min≥240, spread≤18) as exterior; keep-region dilation 2 px; exterior alpha from luma with white unmatte; trim; uniform fit with 8 px margin centred in 96×96. Metrics: phase-3-preproduction/production/representatives-v1/icon-export-report.json.",
+      "batch": "WORK-013D/E-representatives-v2",
+      "hash": "c23f16dc0cdf835c035967be5724ae913e42bc001ff1deced7ff2c67342cda19",
+      "recordedAt": "2026-10-20",
+      "recordedBy": "WORK-013F / TASK-073",
+      "history": [],
+      "note": "Drawing from the WORK-008 Asset-Bot nano-banana concept tags-nano (seed 8401, run candidate in source; preserved copy phase-3-preproduction/production/representatives-v1/sources/accepted/tags-nano.png, same SHA256), concept approval phase-3-preproduction/approvals/APPROVAL-004-concepts.md; no new generation. Byte-identical in representatives-v1 and v2. User visual acceptance: phase-3-preproduction/approvals/approval-2026-10-20-representative-visuals.md. In-engine contextual and device verdicts pending; not status accepted."
+    },
+    {
+      "id": "ui/tag-food",
+      "type": "image",
+      "url": "ui/tag-food.png",
+      "px": {
+        "w": 96,
+        "h": 96
+      },
+      "status": "ai-placeholder",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/ui/1792433765678-vzoe21/candidate_001.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 8401,
+      "prompt": "- Image 1: Reward Icon Lantern style reference\n- Image 2: Reward Icon Bucket style reference\n- Image 3: REF TAG 001 style reference\n- Image 4: Charm Bookshelf style reference\n- Study the reference images carefully and match their art style CLOSELY. Replicate the exact line work thickness, shading technique, lighting style, level of detail, texture rendering, and overall aesthetic. Match the proportions, silhouette style, and form language precisely. Only use colors from the description — do not copy colors from references. The final result should look like it was drawn by the same artist as the references.\n- Scene: Eight distinct small cream-and-brown object symbols arranged separately in two ordered rows of four on a plain white background, with even generous spacing. Top row from left: a single soft cushion without chair structure; one simple chair with seat and back; a sprout with two leaves; a table lamp with shade and stem. Bottom row from left: a simple toy ball; a tall upright bookshelf with a strong vertical outline; a food bowl; one framed picture. Every object fits its own square region, no touching or overlap, no text or numbers, no ornamental background. Use only warm cream fills and dark brown outlines with very few internal marks. Each object should remain recognizable when tiny.\n- Single unified image. No collage, grid, or multi-panel layout.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/style/reward_icon_lantern.png",
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/style/reward_icon_bucket.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/references/tag-icons/v1/previews/REF-TAG-001.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/charm-bookshelf.png"
+      ],
+      "postProcess": "phase-3-preproduction/production/representatives-v1/prepare-icons.mjs (Chrome canvas) from concept sheet phase-3-preproduction/concepts/v1/tags-nano.png SHA256 a13ff8823e36364f0d224ece3d9bd1a631551b7a8e261e5f77e58061e6177878: crop cell 2,1 of the 4×2 grid; flood border-connected near-white (min≥240, spread≤18) as exterior; keep-region dilation 2 px; exterior alpha from luma with white unmatte; trim; uniform fit with 8 px margin centred in 96×96. Metrics: phase-3-preproduction/production/representatives-v1/icon-export-report.json.",
+      "batch": "WORK-013D/E-representatives-v2",
+      "hash": "39567da7328f514dc1276c2da599de9c254637641894dd2e10c0a371ab40e556",
+      "recordedAt": "2026-10-20",
+      "recordedBy": "WORK-013F / TASK-073",
+      "history": [],
+      "note": "Drawing from the WORK-008 Asset-Bot nano-banana concept tags-nano (seed 8401, run candidate in source; preserved copy phase-3-preproduction/production/representatives-v1/sources/accepted/tags-nano.png, same SHA256), concept approval phase-3-preproduction/approvals/APPROVAL-004-concepts.md; no new generation. Byte-identical in representatives-v1 and v2. User visual acceptance: phase-3-preproduction/approvals/approval-2026-10-20-representative-visuals.md. In-engine contextual and device verdicts pending; not status accepted."
+    },
+    {
+      "id": "ui/tag-art",
+      "type": "image",
+      "url": "ui/tag-art.png",
+      "px": {
+        "w": 96,
+        "h": 96
+      },
+      "status": "ai-placeholder",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/ui/1792433765678-vzoe21/candidate_001.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 8401,
+      "prompt": "- Image 1: Reward Icon Lantern style reference\n- Image 2: Reward Icon Bucket style reference\n- Image 3: REF TAG 001 style reference\n- Image 4: Charm Bookshelf style reference\n- Study the reference images carefully and match their art style CLOSELY. Replicate the exact line work thickness, shading technique, lighting style, level of detail, texture rendering, and overall aesthetic. Match the proportions, silhouette style, and form language precisely. Only use colors from the description — do not copy colors from references. The final result should look like it was drawn by the same artist as the references.\n- Scene: Eight distinct small cream-and-brown object symbols arranged separately in two ordered rows of four on a plain white background, with even generous spacing. Top row from left: a single soft cushion without chair structure; one simple chair with seat and back; a sprout with two leaves; a table lamp with shade and stem. Bottom row from left: a simple toy ball; a tall upright bookshelf with a strong vertical outline; a food bowl; one framed picture. Every object fits its own square region, no touching or overlap, no text or numbers, no ornamental background. Use only warm cream fills and dark brown outlines with very few internal marks. Each object should remain recognizable when tiny.\n- Single unified image. No collage, grid, or multi-panel layout.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/style/reward_icon_lantern.png",
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/style/reward_icon_bucket.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/references/tag-icons/v1/previews/REF-TAG-001.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/charm-bookshelf.png"
+      ],
+      "postProcess": "phase-3-preproduction/production/representatives-v1/prepare-icons.mjs (Chrome canvas) from concept sheet phase-3-preproduction/concepts/v1/tags-nano.png SHA256 a13ff8823e36364f0d224ece3d9bd1a631551b7a8e261e5f77e58061e6177878: crop cell 3,1 of the 4×2 grid; flood border-connected near-white (min≥240, spread≤18) as exterior; keep-region dilation 2 px; exterior alpha from luma with white unmatte; trim; uniform fit with 8 px margin centred in 96×96. Metrics: phase-3-preproduction/production/representatives-v1/icon-export-report.json.",
+      "batch": "WORK-013D/E-representatives-v2",
+      "hash": "18ac2435021c71c6d90a0735b2527ee71eb8de6c94d49752649d8e912c94243d",
+      "recordedAt": "2026-10-20",
+      "recordedBy": "WORK-013F / TASK-073",
+      "history": [],
+      "note": "Drawing from the WORK-008 Asset-Bot nano-banana concept tags-nano (seed 8401, run candidate in source; preserved copy phase-3-preproduction/production/representatives-v1/sources/accepted/tags-nano.png, same SHA256), concept approval phase-3-preproduction/approvals/APPROVAL-004-concepts.md; no new generation. Byte-identical in representatives-v1 and v2. User visual acceptance: phase-3-preproduction/approvals/approval-2026-10-20-representative-visuals.md. In-engine contextual and device verdicts pending; not status accepted."
+    },
+    {
+      "id": "clues/feather-book",
+      "type": "image",
+      "url": "clues/feather-book.png",
+      "px": {
+        "w": 256,
+        "h": 256
+      },
+      "status": "ai-placeholder",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/clues/1792433807893-96pegg/candidate_001.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 8501,
+      "prompt": "- Image 1: Reward Icon Lantern style reference\n- Image 2: Clue Feather Book style reference\n- Study the reference images carefully and match their art style CLOSELY. Replicate the exact line work thickness, shading technique, lighting style, level of detail, texture rendering, and overall aesthetic. Match the proportions, silhouette style, and form language precisely. Only use colors from the description — do not copy colors from references. The final result should look like it was drawn by the same artist as the references.\n- Scene: One closed cream book with a brown spine and one large feather lying diagonally across its cover. The book is the dominant mass, feather is the only added clue. Simple three-quarter object view, spare internal marks, cream and brown only, no cover leaf or other decoration, no words, no glow, no frame, plain white background. Entire isolated object with comfortable margin.\n- Single unified image. No collage, grid, or multi-panel layout.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/style/reward_icon_lantern.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/clue-feather-book.png"
+      ],
+      "postProcess": "phase-3-preproduction/production/representatives-v1/prepare-icons.mjs (Chrome canvas) from concept sheet phase-3-preproduction/concepts/v1/clue-nano.png SHA256 4afb2c2e0023be78382cc4f6396ceb66af06cbca25a9c4f896fe955c78beca81: whole sheet; flood border-connected near-white (min≥240, spread≤18) as exterior; keep-region dilation 2 px; exterior alpha from luma with white unmatte; trim; uniform fit with 8 px margin centred in 256×256; pngquant 3.0.3 --quality 90-100 --speed 1 --nofs (128 colours), Chrome canvas RGBA re-encode, phase-3-preproduction/production/representatives-v1/repack-png.mjs lossless recompression (phase-3-preproduction/production/representatives-v1/optimization-final.json). Metrics: phase-3-preproduction/production/representatives-v1/icon-export-report.json.",
+      "batch": "WORK-013D/E-representatives-v2",
+      "hash": "5346d6936434378d1cc88478aa3f3fafd9af43805363976ae5c4cf8e1d578c19",
+      "recordedAt": "2026-10-20",
+      "recordedBy": "WORK-013F / TASK-073",
+      "history": [],
+      "note": "Drawing from the WORK-008 Asset-Bot nano-banana concept clue-nano (seed 8501, run candidate in source; preserved copy phase-3-preproduction/production/representatives-v1/sources/accepted/clue-nano.png, same SHA256), concept approval phase-3-preproduction/approvals/APPROVAL-004-concepts.md; no new generation. Byte-identical in representatives-v1 and v2. User visual acceptance: phase-3-preproduction/approvals/approval-2026-10-20-representative-visuals.md. In-engine contextual and device verdicts pending; not status accepted."
     }
   ]
 }

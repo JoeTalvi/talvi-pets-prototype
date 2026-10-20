@@ -10,7 +10,7 @@ export function main(args: string[]): number {
     const parsed = AssetManifest.safeParse(readJson(file));
     if (!parsed.success) {
         for (const i of parsed.error.issues)
-            add('001', 'error', '/' + i.path.join('/'), i.message);
+            add(i.path.includes('frameDurationsMs') ? '005' : '001', 'error', '/' + i.path.join('/'), i.message);
         return report(findings, opts, 1, 1);
     }
     checkAssetFiles(parsed.data, dirname(resolve(file)), add);

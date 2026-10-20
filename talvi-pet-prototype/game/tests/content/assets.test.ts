@@ -1,9 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { readFileSync, mkdtempSync, rmSync, writeFileSync, mkdirSync, copyFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { tmpdir } from 'node:os';
 import { AssetManifest, AssetEntry } from '../../src/content/schema/assets';
 import { checkClips, checkLedger, gitBaseline } from '../../tools/assets/checks';
 import { alphaIoU, bounds, decodePng, dimensions } from '../../tools/assets/image';
 import { assetPath, flags, type Finding } from '../../tools/assets/common';
+import { main as checkAssets } from '../../tools/check-assets';
 const manifest = AssetManifest.parse(JSON.parse(readFileSync('public/assets/manifest.json', 'utf8')));
 const fixture = (name: string) => decodePng(readFileSync(`tests/content/asset-fixtures/${name}.png`));
 function findings(next: typeof manifest, old: typeof manifest) {
@@ -59,5 +62,58 @@ describe('asset registry and independent validation', () => {
         expect(() => assetPath('public/assets', 'https://example.com/a.png')).toThrow();
         expect(() => flags(['--wat'], ['format'])).toThrow();
         expect(() => flags(['--format', 'xml'], ['format'])).toThrow();
+    });
+});
+const dog = manifest.entries.find(e => e.id === 'pets/dog-sheet')!;
+const withIdle = (idle: Record<string, unknown>) => ({ ...dog, clips: { ...dog.clips, idle: { ...dog.clips!.idle, ...idle } } });
+/** Runs the real check-assets CLI on a temporary manifest (optionally beside a copy of the dog sheet). */
+function checkFixture(entries: unknown[], withSheet = false): Finding[] {
+    const dir = mkdtempSync(join(tmpdir(), 'tpp-assets-'));
+    try {
+        const file = join(dir, 'manifest.json'), out = join(dir, 'report.json');
+        if (withSheet) {
+            mkdirSync(join(dir, 'pets'));
+            copyFileSync('public/assets/pets/dog-sheet.png', join(dir, 'pets/dog-sheet.png'));
+        }
+        writeFileSync(file, JSON.stringify({ ...manifest, entries }));
+        checkAssets(['--manifest', file, '--format', 'json', '--out', out, '--no-git']);
+        return JSON.parse(readFileSync(out, 'utf8')).findings as Finding[];
+    }
+    finally {
+        rmSync(dir, { recursive: true, force: true });
+    }
+}
+describe('CN-07 explicit per-frame clip timing', () => {
+    it('accepts the integrated dog idle with frameRate and [2600, 80, 120, 80]', () => {
+        expect(dog.clips!.idle).toEqual({ start: 0, end: 3, frameRate: 6, repeat: -1, frameDurationsMs: [2600, 80, 120, 80] });
+        expect(AssetEntry.safeParse(dog).success).toBe(true);
+        expect(checkClips(dog)).toEqual([]);
+    });
+    it('rejects a wrong-length array in schema and VERIFY-ASSET-005 clip check', () => {
+        expect(AssetEntry.safeParse(withIdle({ frameDurationsMs: [2600, 80, 120] })).success).toBe(false);
+        expect(AssetEntry.safeParse(withIdle({ frameDurationsMs: [2600, 80, 120, 80, 80] })).success).toBe(false);
+        expect(checkClips(withIdle({ frameDurationsMs: [2600, 80, 120] }) as AssetEntry)).toEqual([expect.stringContaining('length 3')]);
+    });
+    it('rejects zero, negative and fractional durations', () => {
+        for (const bad of [[2600, 0, 120, 80], [2600, -80, 120, 80], [2600, 80.5, 120, 80]]) {
+            expect(AssetEntry.safeParse(withIdle({ frameDurationsMs: bad })).success).toBe(false);
+            expect(checkClips(withIdle({ frameDurationsMs: bad }) as AssetEntry)).toEqual([expect.stringContaining('positive integers')]);
+        }
+    });
+    it('keeps frameRate required even when durations are present', () => {
+        const idle: Record<string, unknown> = { ...dog.clips!.idle };
+        delete idle.frameRate;
+        expect(AssetEntry.safeParse({ ...dog, clips: { ...dog.clips, idle } }).success).toBe(false);
+    });
+    it('check-assets reports bad timing as a VERIFY-ASSET-005 error on a fixture manifest', () => {
+        expect(checkFixture([withIdle({ frameDurationsMs: [2600, 0, 120] })])).toContainEqual(expect.objectContaining({ ids: ['VERIFY-ASSET-005'], level: 'error', path: '/entries/0/clips/idle/frameDurationsMs' }));
+    });
+});
+describe('VERIFY-ASSET-004 sheet cells', () => {
+    it('skips transparent unused cells but not empty cells inside a clip', () => {
+        const pivots = (clips: AssetEntry['clips']) => checkFixture([{ ...dog, clips }], true).filter(f => f.ids[0] === 'VERIFY-ASSET-004');
+        expect(pivots(dog.clips)).toEqual([]);
+        const widened = pivots({ ...dog.clips, walk: { start: 4, end: 11, frameRate: 10, repeat: -1 } });
+        expect(widened.map(f => (f.details as { frame: { x: number } }).frame.x)).toEqual([1024, 1280]);
     });
 });

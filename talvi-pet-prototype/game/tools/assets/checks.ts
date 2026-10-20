@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { dirname, relative, resolve, extname } from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { AssetManifest, type AssetEntry } from '../../src/content/schema/assets';
+import { AssetManifest, frameDurationIssue, type AssetEntry } from '../../src/content/schema/assets';
 import { assetPath, files, readJson, type Finding } from './common';
 import { dimensions, decodePng, bounds, alphaIoU, type Raster } from './image';
 export type Add = (id: string, level: Finding['level'], path: string, message: string, details?: Record<string, unknown>, file?: string) => void;
@@ -15,6 +15,11 @@ export function checkClips(e: AssetEntry): string[] {
     for (const [name, c] of Object.entries(e.clips ?? {}))
         if (c.start > c.end || c.end >= count)
             issues.push(`Clip ${name} indices outside ${count} frames`);
+    for (const [name, c] of Object.entries(e.clips ?? {})) {
+        const timing = frameDurationIssue(c);
+        if (timing)
+            issues.push(`Clip ${name}: ${timing}`);
+    }
     if (e.id === 'world/dust-poof' && (count !== 9 || e.frame.w !== 320 || e.frame.h !== 320 || JSON.stringify(e.clips?.dust) !== JSON.stringify({ start: 0, end: 8, frameRate: 18, repeat: 0 })))
         issues.push('Dust requires nine 320×320 frames, clip 0–8 at 18 fps repeat 0');
     return issues;
@@ -68,7 +73,10 @@ function pivot(e: AssetEntry, r: Raster, add: Add, path: string) {
     const w = e.frame?.w ?? r.w, h = e.frame?.h ?? r.h;
     for (let y = 0; y < r.h; y += h)
         for (let x = 0; x < r.w; x += w) {
-            const box = bounds(r, x, y, w, h);
+            const box = bounds(r, x, y, w, h), index = (y / h) * (r.w / w) + x / w;
+            // §1.3 sheets leave unused cells transparent; only cells a clip plays must carry a base-centred pose.
+            if (e.type === 'spritesheet' && box.centerOffset === Infinity && !Object.values(e.clips ?? {}).some(c => index >= c.start && index <= c.end))
+                continue;
             if (box.bottomGap > 2 || box.centerOffset > 6)
                 add('004', e.origin === 'production' && housePivotExceptions[e.id] === e.hash ? 'warning' : 'error', path, `${e.id}: base-centre mismatch; production/stopgap art retained for review`, { frame: { x, y, w, h }, ...box });
         }
