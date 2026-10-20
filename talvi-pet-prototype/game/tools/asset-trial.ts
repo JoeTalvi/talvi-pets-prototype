@@ -2,13 +2,16 @@
 // this explicitly authorized, development-only entrypoint inspects Phaser textures.
 // eslint-disable-next-line no-restricted-imports
 import Phaser from 'phaser';
+// Bounded diagnostic uses the maintained world-view component.
+// eslint-disable-next-line no-restricted-imports
+import { CharmSprite } from '../src/view/objects/CharmSprite';
 import { AssetManifest, type AssetEntry } from '../src/content/schema/assets';
 import { RoomSchema, type Room } from '../src/content/schema/room';
 import { CharmsSchema } from '../src/content/schema/charms';
 import './asset-trial.css';
 
 type LoadRow = { id: string; status: string; url?: string; source?: string; ledgerHash?: string; actualHash?: string; hashMatches?: boolean; declared?: { w: number; h: number }; decoded?: { w: number; h: number }; textureSource?: string; error?: string };
-type Placement = { slot: string; id: string; sizeClass: string; x: number; y: number; depth: number; w: number; h: number };
+type Placement = { slot: string; id: string; sizeClass: string; x: number; y: number; depth: number; w: number; h: number; textureKey: string; wallProjection?: CharmSprite['wallProjection'] };
 const params = new URLSearchParams(location.search);
 const height = params.get('height') === '823' ? 823 : 1080;
 const mode = params.get('mode') === 'room' ? 'room' : 'fill';
@@ -109,8 +112,10 @@ async function start(): Promise<void> {
       if (mode === 'fill') for (const slot of room.slots) {
         const charm = charms.types.find(c => c.sizeClass === slot.sizeClass && ids.includes(c.sprite));
         if (!charm || !this.textures.exists(charm.sprite)) { report.missingSlots.push(slot.id); continue; }
-        const sprite = this.add.image(slot.x, slot.y, charm.sprite).setOrigin(0.5, 1).setDepth(slot.depthOverride ?? slot.y);
-        report.placements.push({ slot: slot.id, id: charm.sprite, sizeClass: slot.sizeClass, x: slot.x, y: slot.y, depth: sprite.depth, w: sprite.width, h: sprite.height });
+        const sourceHash = report.assets.find(a => a.id === charm.sprite)?.actualHash ?? '';
+        const sprite = new CharmSprite(this, slot.x, slot.y, charm.sprite,
+          slot.wall && charm.sprite === 'charms/painting' ? { side: slot.wall, sourceHash } : undefined).setDepth(slot.depthOverride ?? slot.y);
+        report.placements.push({ slot: slot.id, id: charm.sprite, sizeClass: slot.sizeClass, x: slot.x, y: slot.y, depth: sprite.depth, w: sprite.width, h: sprite.height, textureKey: sprite.texture.key, wallProjection: sprite.wallProjection });
         if (bounds) this.add.graphics().lineStyle(2, 0xae3b91, 0.8).strokeRect(slot.x - sprite.width / 2, slot.y - sprite.height, sprite.width, sprite.height).setDepth(9999);
       }
       if (guides) drawGuides(this, room);
@@ -120,6 +125,7 @@ async function start(): Promise<void> {
       refreshReport();
     }
   }
-  new Phaser.Game({ type: Phaser.WEBGL, parent: 'game', backgroundColor: '#eee9df', scale: { mode: Phaser.Scale.FIT, width: 1920, height, autoCenter: Phaser.Scale.CENTER_BOTH }, render: { antialias: true, roundPixels: false, pixelArt: false }, audio: { noAudio: true }, scene: [AssetTrialScene] });
+  const game = new Phaser.Game({ type: Phaser.WEBGL, parent: 'game', backgroundColor: '#eee9df', scale: { mode: Phaser.Scale.FIT, width: 1920, height, autoCenter: Phaser.Scale.CENTER_BOTH }, render: { antialias: true, roundPixels: false, pixelArt: false }, audio: { noAudio: true }, scene: [AssetTrialScene] });
+  Object.assign(window, { assetTrialGame: game });
 }
 void start().catch(error => { report.phase = 'failed'; report.fatal = String(error); element('status').textContent = `Inspection stopped: ${report.fatal}`; refreshReport(); });

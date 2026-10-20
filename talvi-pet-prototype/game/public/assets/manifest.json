@@ -177,16 +177,31 @@
         "h": 256
       },
       "status": "ai-placeholder",
-      "origin": "derived",
-      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/charm-dog-bed.png",
-      "generator": "sips + ffmpeg",
-      "seed": 2001,
-      "postProcess": "sips --resampleHeight 256 <source> --out <intermediate>; ffmpeg -i <intermediate> -vf pad=320:256:(ow-iw)/2:oh-ih:color=0x00000000 -frames:v 1 <output>",
-      "hash": "fb835c68955c662187dd5335d45acbd164d3e620d333b574e00cfe548bebce09",
-      "recordedAt": "2026-10-17",
-      "recordedBy": "TASK-022 / WORK-001",
-      "history": [],
-      "note": "Phase 1 Asset-Bot original: runs/generate-image/charm-dog-bed/1792069521456-5lkt2t/candidate_001.png; single-frame integration stopgap, not creative approval"
+      "origin": "authored",
+      "source": "phase-3-preproduction/production/perspective-v1/sources/dog-bed-v1.png",
+      "generator": "builtin-imagegen",
+      "prompt": "Use case: precise-object-edit. Asset type: Talvi game world furniture sprite. Input1 is the accepted furniture concept sheet; input2 is the exact room environment and camera reference. Create ONLY the padded Dog bed from the left of input1, preserving its round low bolster, lowered front entrance, muted warm clay upholstery, cream cushion, fine brown drawn outline and restrained watercolor/paper finish. Correct camera to the room's three-quarter isometric viewpoint (about30 degrees above horizontal), visibly low enough to show the padded front side and base. Round horizontal opening should project as a wide shallow ellipse with depth about half its width; cushion sits inside with visible back inner bolster, front edge hides a portion. Keep thick padded sides, no tall basket, no legs, no wooden base. The side/base must be clearly visible, not a bird's-eye view or upright circular dish. Single complete isolated bed centered, generous transparent padding, no floor/shadow outside object, no room, lamp, picture, pet, text, extra objects or checkerboard. True transparent background; preserve opaque cream cushion and clay upholstery. High fidelity to the approved concept's quiet ink/wash style. Landscape canvas.",
+      "refs": [
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/concepts/v1/charms-nano.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/game/public/assets/rooms/dog-room.jpg"
+      ],
+      "postProcess": "tools/assets/export-alpha.mjs; sourceSHA256 9dcbc792aa59e1710fcc3a8407fefad1b0a5839bbd32604942abd53ee1301872; alpha<8 to0, trim, uniform max-fit320x256, bottom centre; native alpha retained otherwise.",
+      "batch": "WORK-013C-perspective-v1",
+      "hash": "2ac21b9a53ddaf38a693d33df39ed8c440e9c91994bcca51d819f40e672f8f41",
+      "recordedAt": "2026-10-20",
+      "recordedBy": "WORK-013C",
+      "history": [
+        {
+          "hash": "fb835c68955c662187dd5335d45acbd164d3e620d333b574e00cfe548bebce09",
+          "status": "ai-placeholder",
+          "origin": "derived",
+          "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/charm-dog-bed.png",
+          "recordedAt": "2026-10-17",
+          "recordedBy": "TASK-022 / WORK-001",
+          "note": "Phase 1 Asset-Bot original: runs/generate-image/charm-dog-bed/1792069521456-5lkt2t/candidate_001.png; single-frame integration stopgap, not creative approval"
+        }
+      ],
+      "note": "AI-generated via built-in imagegen, not Asset-Bot or human-only drawing. Exact calls/source hashes/export recipe: phase-3-preproduction/production/perspective-v1/generation.json and workflow.md. Approved-direction perspective correction; sitting3 final acceptance pending."
     },
     {
       "id": "charms/lamp",
