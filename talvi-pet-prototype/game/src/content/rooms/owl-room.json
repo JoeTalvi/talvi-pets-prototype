@@ -4,42 +4,46 @@
   "background": "rooms/dog-room",
   "walkArea": [
     {
-      "x": 752,
-      "y": 561
+      "x": 688,
+      "y": 568
     },
     {
-      "x": 964,
-      "y": 465
+      "x": 965,
+      "y": 441
     },
     {
-      "x": 1330,
-      "y": 670
+      "x": 1441,
+      "y": 709
     },
     {
-      "x": 970,
-      "y": 890
+      "x": 1040,
+      "y": 951
     },
     {
-      "x": 580,
-      "y": 670
+      "x": 894,
+      "y": 951
+    },
+    {
+      "x": 463,
+      "y": 711
     }
   ],
   "doors": [
     {
       "id": "to-street",
       "rect": {
-        "x": 732,
-        "y": 548,
-        "w": 48,
-        "h": 40
+        "x": 662,
+        "y": 551,
+        "w": 63,
+        "h": 53
       },
       "target": {
         "scene": "street",
         "doorId": "pet-front"
       },
       "spawn": {
-        "x": 800,
-        "y": 610,
+        "x": 750,
+        "y": 631,
         "facing": "down"
       }
     }
@@ -48,11 +52,11 @@
     {
       "id": "floor-1",
       "sizeClass": "small",
-      "x": 660,
-      "y": 710,
+      "x": 567,
+      "y": 762,
       "anchor": {
-        "x": 680,
-        "y": 710,
+        "x": 593,
+        "y": 762,
         "facing": "right"
       },
       "adjacent": [
@@ -62,11 +66,11 @@
     {
       "id": "floor-2",
       "sizeClass": "small",
-      "x": 820,
-      "y": 600,
+      "x": 776,
+      "y": 618,
       "anchor": {
-        "x": 820,
-        "y": 622,
+        "x": 776,
+        "y": 647,
         "facing": "left"
       },
       "adjacent": [
@@ -76,11 +80,11 @@
     {
       "id": "floor-3",
       "sizeClass": "small",
-      "x": 920,
-      "y": 600,
+      "x": 907,
+      "y": 618,
       "anchor": {
-        "x": 920,
-        "y": 624,
+        "x": 906,
+        "y": 649,
         "facing": "right"
       },
       "adjacent": [
@@ -90,11 +94,11 @@
     {
       "id": "floor-4",
       "sizeClass": "small",
-      "x": 1040,
-      "y": 600,
+      "x": 1063,
+      "y": 618,
       "anchor": {
-        "x": 1040,
-        "y": 624,
+        "x": 1063,
+        "y": 649,
         "facing": "right"
       },
       "adjacent": [
@@ -105,11 +109,11 @@
     {
       "id": "floor-5",
       "sizeClass": "small",
-      "x": 1155,
-      "y": 620,
+      "x": 1213,
+      "y": 644,
       "anchor": {
-        "x": 1155,
-        "y": 644,
+        "x": 1213,
+        "y": 675,
         "facing": "left"
       },
       "adjacent": [
@@ -120,11 +124,11 @@
     {
       "id": "floor-6",
       "sizeClass": "small",
-      "x": 1240,
-      "y": 725,
+      "x": 1323,
+      "y": 780,
       "anchor": {
-        "x": 1220,
-        "y": 725,
+        "x": 1297,
+        "y": 780,
         "facing": "left"
       },
       "adjacent": [
@@ -134,11 +138,11 @@
     {
       "id": "floor-7",
       "sizeClass": "small",
-      "x": 770,
-      "y": 770,
+      "x": 710,
+      "y": 839,
       "anchor": {
-        "x": 795,
-        "y": 770,
+        "x": 743,
+        "y": 839,
         "facing": "right"
       },
       "adjacent": [
@@ -149,10 +153,10 @@
       "id": "large-1",
       "sizeClass": "large",
       "x": 970,
-      "y": 860,
+      "y": 930,
       "anchor": {
         "x": 970,
-        "y": 868,
+        "y": 940,
         "facing": "left"
       },
       "adjacent": [
@@ -162,13 +166,13 @@
     {
       "id": "wall-1",
       "sizeClass": "wall",
-      "x": 620,
-      "y": 530,
+      "x": 515,
+      "y": 529,
       "wall": "left",
       "depthOverride": 1,
       "anchor": {
-        "x": 650,
-        "y": 655,
+        "x": 554,
+        "y": 691,
         "facing": "left"
       },
       "adjacent": []
@@ -176,13 +180,13 @@
     {
       "id": "wall-2",
       "sizeClass": "wall",
-      "x": 865,
-      "y": 395,
+      "x": 835,
+      "y": 351,
       "wall": "left",
       "depthOverride": 1,
       "anchor": {
-        "x": 865,
-        "y": 535,
+        "x": 835,
+        "y": 533,
         "facing": "left"
       },
       "adjacent": []
@@ -190,13 +194,13 @@
     {
       "id": "wall-3",
       "sizeClass": "wall",
-      "x": 1040,
-      "y": 390,
+      "x": 1064,
+      "y": 344,
       "wall": "right",
       "depthOverride": 1,
       "anchor": {
-        "x": 1060,
-        "y": 545,
+        "x": 1089,
+        "y": 546,
         "facing": "right"
       },
       "adjacent": []
@@ -204,13 +208,13 @@
     {
       "id": "wall-4",
       "sizeClass": "wall",
-      "x": 1290,
-      "y": 535,
+      "x": 1389,
+      "y": 534,
       "wall": "right",
       "depthOverride": 1,
       "anchor": {
-        "x": 1250,
-        "y": 670,
+        "x": 1337,
+        "y": 709,
         "facing": "right"
       },
       "adjacent": []
@@ -219,23 +223,23 @@
   "wanderPoints": [
     {
       "id": "centre",
-      "x": 955,
-      "y": 680
+      "x": 952,
+      "y": 722
     },
     {
       "id": "left-corner",
-      "x": 750,
-      "y": 690
+      "x": 684,
+      "y": 736
     },
     {
       "id": "right-corner",
-      "x": 1190,
-      "y": 690
+      "x": 1258,
+      "y": 735
     }
   ],
   "petSpawn": {
-    "x": 930,
-    "y": 740,
+    "x": 919,
+    "y": 800,
     "facing": "left"
   },
   "residentPetId": "owl"
