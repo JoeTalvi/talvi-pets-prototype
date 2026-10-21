@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "$comment": "WORK-013H / TASK-080 (APPROVAL-005 items 1 and 5): the Dog sheet and the Dog bed re-fitted to at most half their opaque height inside unchanged canvases. Sources are the committed bytes at Git b753fa6 (game root relative paths), verified by SHA-256. Run: npx tsx tools/assets/refit.ts --config tools/assets/refit-half-v1.config.json --out <staging-dir>",
+  "items": [
+    { "id": "pets/dog-sheet", "git": "b753fa6", "path": "public/assets/pets/dog-sheet.png", "sha256": "148ff5d7fd39df24f4bdd6178744ce74f03d7fbdf317f72b95f36c8640584121", "frame": { "w": 256, "h": 256 }, "referenceFrame": 0, "fitFraction": 0.5 },
+    { "id": "charms/dog-bed", "git": "b753fa6", "path": "public/assets/charms/dog-bed.png", "sha256": "2ac21b9a53ddaf38a693d33df39ed8c440e9c91994bcca51d819f40e672f8f41", "frame": { "w": 320, "h": 256 }, "referenceFrame": 0, "fitFraction": 0.5 }
+  ]
+}

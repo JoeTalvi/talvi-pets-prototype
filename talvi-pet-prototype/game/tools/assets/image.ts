@@ -41,7 +41,8 @@ function paeth(a: number, b: number, c: number): number {
     const p = a + b - c, pa = Math.abs(p - a), pb = Math.abs(p - b), pc = Math.abs(p - c);
     return pa <= pb && pa <= pc ? a : pb <= pc ? b : c;
 }
-export function decodePng(b: Buffer): Raster {
+/** Unfiltered 8-bit PNG samples (channels per pixel as stored); shared by the alpha checks and the re-fit exporter. */
+export function decodePixels(b: Buffer): { w: number; h: number; color: number; channels: number; pixels: Buffer; transparency?: Buffer } {
     const { w, h } = dimensions(b), depth = b[24], color = b[25], channels = ({ 0: 1, 2: 3, 3: 1, 4: 2, 6: 4 } as Record<number, number>)[color];
     if (depth !== 8 || !channels || b[28] !== 0)
         throw new Error('PNG alpha decoder requires noninterlaced 8-bit PNG');
@@ -67,6 +68,10 @@ export function decodePng(b: Buffer): Raster {
             pixels[i] = (raw[y * (stride + 1) + 1 + x] + [0, a, up, Math.floor((a + up) / 2), paeth(a, up, c)][filter]) & 255;
         }
     }
+    return { w, h, color, channels, pixels, transparency };
+}
+export function decodePng(b: Buffer): Raster {
+    const { w, h, color, channels, pixels, transparency } = decodePixels(b);
     const alpha = new Uint8Array(w * h);
     for (let i = 0; i < alpha.length; i++) {
         const p = i * channels;

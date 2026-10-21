@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
-import { dirname, extname, resolve } from 'node:path';
+import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { dirname, extname, isAbsolute, relative, resolve, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { AssetEntry, AssetManifest } from '../src/content/schema/assets';
 import { assetPath, flags, readJson } from './assets/common';
@@ -29,7 +29,7 @@ function prepareRow(opts: Record<string, string | boolean>, old: AssetEntry | un
     const row: Record<string, unknown> = { ...contract, ...metadata, id, type, origin: required(opts, 'origin'), source: required(opts, 'source'), recordedBy: required(opts, 'recorded-by'), recordedAt: required(opts, 'date'), history: old ? [...old.history, snapshot(old)] : [] };
     row.status = opts.status ?? (row.origin === 'production' ? 'production-reference' : 'ai-placeholder');
     if (row.status === 'accepted')
-        throw new Error('Only a human may record accepted status; this tool cannot');
+        throw new Error('append/replace cannot record accepted status; use `accept` with a human approval record (DEC-040)');
     delete row.acceptedBy;
     delete row.acceptedAt;
     delete row.acceptedReason;
@@ -85,35 +85,68 @@ function publish(writes: {
             rmSync(p, { force: true });
     }
 }
-export function main(args: string[]): number {
-    const [verb, ...rest] = args;
-    if (!['append', 'replace', 'retire'].includes(verb))
-        throw new Error('Usage: asset-ledger append|replace|retire --manifest file --id family/name ...');
-    const opts = flags(rest, ['manifest', 'id', 'from', 'type', 'origin', 'source', 'recorded-by', 'date', 'status', 'generator', 'note', 'row', 'url', 'format', 'out'], ['dry-run']);
-    const manifestFile = resolve(String(opts.manifest ?? 'public/assets/manifest.json')), root = dirname(manifestFile), m = AssetManifest.parse(readJson(manifestFile));
-    const id = required(opts, 'id'), index = m.entries.findIndex(e => e.id === id), old = m.entries[index];
+type Writes = { path: string; data: Buffer | string }[];
+type Opts = Record<string, string | boolean>;
+const APPROVALS = 'phase-3-preproduction/approvals';
+/** Local calendar date (YYYY-MM-DD); the ledger's dates are the user's day, not UTC. */
+function today(): string {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+/** The approval record, as a workflow-root relative path; the workflow root is three levels above game/public/assets/manifest.json. */
+function approvalRecord(opts: Opts, manifestFile: string): string {
+    const project = resolve(dirname(manifestFile), '../../..'), file = resolve(project, required(opts, 'record'));
+    const rel = relative(resolve(project, APPROVALS), file);
+    if (!rel || rel === '..' || rel.startsWith('..' + sep) || isAbsolute(rel))
+        throw new Error(`--record must name a file under ${APPROVALS}/ in the workflow root ${project}`);
+    if (!existsSync(file) || !statSync(file).isFile())
+        throw new Error(`--record ${relative(project, file)} does not exist`);
+    return relative(project, file).split(sep).join('/');
+}
+/** DEC-040: a human-instructed acceptance; previous provenance goes onto history[] so the ledger only grows. */
+function acceptRow(old: AssetEntry, opts: Opts, manifestFile: string): AssetEntry {
+    if (old.status === 'accepted')
+        throw new Error(`${old.id} is already accepted`);
+    if (old.retired)
+        throw new Error(`${old.id} is retired; accept a live row`);
+    const acceptedBy = required(opts, 'by'), reason = required(opts, 'reason'), record = approvalRecord(opts, manifestFile);
+    return AssetEntry.parse({ ...old, status: 'accepted', acceptedBy, acceptedAt: String(opts.date ?? today()), acceptedReason: `${reason} Record: ${record}`, history: [...old.history, snapshot(old)] });
+}
+/** Applies one verb to the manifest in memory and returns the asset byte writes it needs. */
+function applyVerb(verb: string, m: AssetManifest, id: string, opts: Opts, manifestFile: string): Writes {
+    const index = m.entries.findIndex(e => e.id === id), old = m.entries[index], root = dirname(manifestFile);
     if (verb === 'append' && old)
         throw new Error('AssetId already exists; use replace');
     if (verb !== 'append' && !old)
         throw new Error('Unknown AssetId');
-    if (old?.status === 'accepted')
-        throw new Error('Human-accepted rows cannot be changed by this tool');
-    let writes: {
-        path: string;
-        data: Buffer | string;
-    }[] = [];
-    if (verb === 'retire')
-        m.entries[index] = { ...old, retired: true, history: [...old.history, snapshot(old)], recordedBy: required(opts, 'recorded-by'), recordedAt: required(opts, 'date'), note: required(opts, 'note') };
-    else {
-        const result = prepareRow(opts, old);
-        if (old)
-            m.entries[index] = result.row;
-        else
-            m.entries.push(result.row);
-        writes = result.urls.map((url, i) => ({ path: assetPath(root, url), data: result.data[i] }));
-        if (!old && writes.some(w => existsSync(w.path)))
-            throw new Error('Append would overwrite an existing file; choose a new AssetId');
+    // An accepted row may only be replaced, which demotes it (new bytes are not yet accepted; history keeps the accepted snapshot).
+    if (old?.status === 'accepted' && verb === 'retire')
+        throw new Error('Human-accepted rows cannot be retired by this tool');
+    if (verb === 'accept') {
+        m.entries[index] = acceptRow(old, opts, manifestFile);
+        return [];
     }
+    if (verb === 'retire') {
+        m.entries[index] = { ...old, retired: true, history: [...old.history, snapshot(old)], recordedBy: required(opts, 'recorded-by'), recordedAt: required(opts, 'date'), note: required(opts, 'note') };
+        return [];
+    }
+    const result = prepareRow(opts, old);
+    if (old)
+        m.entries[index] = result.row;
+    else
+        m.entries.push(result.row);
+    const writes = result.urls.map((url, i) => ({ path: assetPath(root, url), data: result.data[i] }));
+    if (!old && writes.some(w => existsSync(w.path)))
+        throw new Error('Append would overwrite an existing file; choose a new AssetId');
+    return writes;
+}
+export function main(args: string[]): number {
+    const [verb, ...rest] = args;
+    if (!['append', 'replace', 'retire', 'accept'].includes(verb))
+        throw new Error('Usage: asset-ledger append|replace|retire|accept --manifest file --id family/name ... (accept: --by name --reason text --record phase-3-preproduction/approvals/<file>)');
+    const opts = flags(rest, ['manifest', 'id', 'from', 'type', 'origin', 'source', 'recorded-by', 'date', 'status', 'generator', 'note', 'row', 'url', 'format', 'out', 'by', 'reason', 'record'], ['dry-run']);
+    const manifestFile = resolve(String(opts.manifest ?? 'public/assets/manifest.json')), m = AssetManifest.parse(readJson(manifestFile));
+    const id = required(opts, 'id'), writes = applyVerb(verb, m, id, opts, manifestFile);
     AssetManifest.parse(m);
     const derived = derivedIssue(m.entries.find(e => e.id === id)!, m);
     if (derived?.level === 'error')

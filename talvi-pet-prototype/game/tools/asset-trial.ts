@@ -24,8 +24,11 @@ const bounds = params.get('bounds') === '1';
 const clips = ['idle', 'walk', 'use', 'react'];
 const clip = clips.includes(params.get('clip') ?? '') ? params.get('clip')! : 'idle';
 const showPet = params.get('pet') !== '0';
-const SHEET = 'pets/dog-sheet', BUBBLE_OFFSET = 236;
-const report = { scope: 'Selected asset import and authored alignment only; no full-content or gameplay validation', phase: 'loading', phaser: Phaser.VERSION, viewport: { w: 1920, h: height }, cameraScrollY: (1080 - height) / 2, mode, guides, bounds, manifestUrl: params.get('failure') === 'manifest' ? '/assets/__asset-trial-missing-manifest.json' : '/assets/manifest.json', inputHashes: {} as Record<string, string>, assets: [] as LoadRow[], loadErrors: [] as string[], decodeErrors: [] as string[], placements: [] as Placement[], pet: { shown: showPet, clip, key: '', x: 0, y: 0, facing: '', flipX: false, origin: [0.5, 1], scale: 1, depth: 0, bubbleAnchor: { x: 0, y: 0 }, textureFrames: 0, keysRegistered: [] as string[], keysPresent: {} as Record<string, boolean>, declaredDurations: [] as number[], omitted: '' }, idleTiming: { events: [] as FrameEvent[], cycles: 0, measuredMs: [] as number[][], meanMs: [] as number[], displayFrameMs: 0 }, opaque: {} as Record<string, OpaqueBox | null>, canvasOverlaps: [] as string[], missingSlots: [] as string[], fatal: '' };
+// TASK-080 (WORK-013H): the bubble anchor keeps the contract's margin above the measured idle head. The contract offset 236 was
+// set against the pre-re-fit sheet (Git b753fa6), whose idle frame 0 opaque top was 222 px above the base: margin 236 − 222 = 14.
+const SHEET = 'pets/dog-sheet', CONTRACT_BUBBLE_OFFSET = 236, CONTRACT_IDLE_HEAD_TOP = 222, BUBBLE_MARGIN = CONTRACT_BUBBLE_OFFSET - CONTRACT_IDLE_HEAD_TOP;
+let bubbleOffset = CONTRACT_BUBBLE_OFFSET;
+const report = { scope: 'Selected asset import and authored alignment only; no full-content or gameplay validation', phase: 'loading', phaser: Phaser.VERSION, viewport: { w: 1920, h: height }, cameraScrollY: (1080 - height) / 2, mode, guides, bounds, manifestUrl: params.get('failure') === 'manifest' ? '/assets/__asset-trial-missing-manifest.json' : '/assets/manifest.json', inputHashes: {} as Record<string, string>, assets: [] as LoadRow[], loadErrors: [] as string[], decodeErrors: [] as string[], placements: [] as Placement[], pet: { shown: showPet, clip, key: '', x: 0, y: 0, facing: '', flipX: false, origin: [0.5, 1], scale: 1, depth: 0, bubbleAnchor: { x: 0, y: 0 }, bubbleOffset: { idleHeadTop: 0, margin: BUBBLE_MARGIN, offset: 0 }, textureFrames: 0, keysRegistered: [] as string[], keysPresent: {} as Record<string, boolean>, declaredDurations: [] as number[], omitted: '' }, idleTiming: { events: [] as FrameEvent[], cycles: 0, measuredMs: [] as number[][], meanMs: [] as number[], displayFrameMs: 0 }, opaque: {} as Record<string, OpaqueBox | null>, canvasOverlaps: [] as string[], missingSlots: [] as string[], fatal: '' };
 Object.assign(window, { assetTrial: report });
 const element = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const refreshReport = () => { element('report').textContent = JSON.stringify(report, null, 2); };
@@ -53,7 +56,7 @@ function controls(): void {
   });
   element('reload').onclick = () => { const next = new URL(location.href); next.searchParams.delete('failure'); location.assign(next); };
   element('stage').style.aspectRatio = `1920 / ${height}`;
-  element('mapping').textContent = `World 1920 × 1080 → viewport 1920 × ${height}; camera scroll (0, ${report.cameraScrollY}). Viewport y = world y − ${report.cameraScrollY}. Background origin (0,0); charms origin (0.5,1), scale 1, depth = authored override or base y. Dog: room.petSpawn, origin (0.5,1), scale 1, flipX when facing left (sheet faces right), depth = y, bubble anchor y − ${BUBBLE_OFFSET}.`;
+  element('mapping').textContent = `World 1920 × 1080 → viewport 1920 × ${height}; camera scroll (0, ${report.cameraScrollY}). Viewport y = world y − ${report.cameraScrollY}. Background origin (0,0); charms origin (0.5,1), scale 1, depth = authored override or base y. Dog: room.petSpawn, origin (0.5,1), scale 1, flipX when facing left (sheet faces right), depth = y, bubble anchor y − (measured idle head top + ${BUBBLE_MARGIN}).`;
 }
 function drawGuides(scene: Phaser.Scene, room: Room): void {
   const g = scene.add.graphics().setDepth(10000);
@@ -70,9 +73,9 @@ function drawGuides(scene: Phaser.Scene, room: Room): void {
   for (const p of room.wanderPoints) g.fillStyle(0x139151).fillCircle(p.x, p.y, 5);
   g.lineStyle(3, 0x555555).strokeCircle(room.petSpawn.x, room.petSpawn.y, 12);
   if (showPet) {
-    const bx = room.petSpawn.x, by = room.petSpawn.y - BUBBLE_OFFSET;
+    const bx = room.petSpawn.x, by = room.petSpawn.y - bubbleOffset;
     g.lineStyle(3, 0xb5523f).strokeCircle(bx, by, 10).lineBetween(bx - 18, by, bx + 18, by).lineBetween(bx, by - 18, bx, by + 18);
-    label(bx + 16, by - 30, `bubble anchor (${bx},${by}) = spawn y − ${BUBBLE_OFFSET}`, '#b5523f');
+    label(bx + 16, by - 30, `bubble anchor (${bx},${by}) = spawn y − ${bubbleOffset} (idle head top ${bubbleOffset - BUBBLE_MARGIN} + ${BUBBLE_MARGIN})`, '#b5523f');
   }
 }
 /** Opaque (alpha > 0) bounding box of one texture frame, in frame pixels; measured from the decoded source image. */
@@ -175,11 +178,13 @@ async function start(): Promise<void> {
       const key = clipKey(SHEET, clip)!, frames = entry.clips?.[clip];
       const source = texture.getSourceImage() as HTMLImageElement, fw = entry.frame!.w, fh = entry.frame!.h, cols = source.width / fw;
       for (const name of clips) { const c = entry.clips?.[name]; if (c) report.opaque[`${SHEET}#${name}${c.start}`] = opaqueBox(source, (c.start % cols) * fw, Math.floor(c.start / cols) * fh, fw, fh); }
+      const idleTop = entry.clips?.idle ? report.opaque[`${SHEET}#idle${entry.clips.idle.start}`] : null;
+      if (idleTop) { bubbleOffset = fh - idleTop.y + BUBBLE_MARGIN; report.pet.bubbleOffset = { idleHeadTop: fh - idleTop.y, margin: BUBBLE_MARGIN, offset: bubbleOffset }; }
       report.pet.declaredDurations = (this.anims.get(key)?.frames ?? []).map(f => f.duration || 1000 / (frames?.frameRate ?? 1));
       if (!showPet) { report.pet.omitted = '?pet=0'; return; }
       const { x, y, facing } = room.petSpawn;
       const pet = this.add.sprite(x, y, SHEET, frames?.start ?? 0).setOrigin(0.5, 1).setScale(1).setFlipX(facing === 'left').setDepth(y);
-      Object.assign(report.pet, { key, x, y, facing, flipX: pet.flipX, depth: pet.depth, bubbleAnchor: { x, y: y - BUBBLE_OFFSET } });
+      Object.assign(report.pet, { key, x, y, facing, flipX: pet.flipX, depth: pet.depth, bubbleAnchor: { x, y: y - bubbleOffset } });
       if (clip === 'idle') {
         const stamp = (event: FrameEvent['event']) => (_a: Phaser.Animations.Animation, f: Phaser.Animations.AnimationFrame) => { report.idleTiming.events.push({ t: performance.now(), frame: f.index - 1, event }); };
         pet.on(Phaser.Animations.Events.ANIMATION_START, stamp('start')).on(Phaser.Animations.Events.ANIMATION_UPDATE, stamp('update')).on(Phaser.Animations.Events.ANIMATION_REPEAT, stamp('repeat'));

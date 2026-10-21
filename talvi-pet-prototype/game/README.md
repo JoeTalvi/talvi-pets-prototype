@@ -21,7 +21,7 @@ Phaser 4.2.1 / Vite scaffold, content schema and checks, asset registry and ledg
 | `check:content` | Zod schemas, then asset-ID resolution against `public/assets/manifest.json`, then every CHK-* check on `src/content`. If the only failures are unresolved asset IDs, the CHK checks still run and both are reported | **1** (later-batch IDs, below) |
 | `check:assets` | VERIFY-ASSET-001..009 on the manifest and exported files, plus the ledger-only-grows check against the manifest in Git `HEAD`. Outside a Git checkout, or before the manifest is committed, it prints a VERIFY-ASSET-007 INFO line and skips that comparison | **1** (same IDs) |
 | `report:coverage` | Content coverage sections A–F (`tools/coverage.ts`) | 1 while IDs are missing |
-| `asset:ledger` | `append` / `replace` / `retire` one manifest row with hash, dimensions and provenance history. Rejects human-accepted rows, format or dimension changes, and `derived` rows whose `source` is not a runtime AssetId (the VERIFY-ASSET-007 rule `check:assets` applies). Use `--dry-run` first | — |
+| `asset:ledger` | `append` / `replace` / `retire` / `accept` one manifest row with hash, dimensions and provenance history. `accept --id <id> --by <name> --reason <text> --record phase-3-preproduction/approvals/<file>` records a human-instructed acceptance (DEC-040); the record must be an existing file under `phase-3-preproduction/approvals/` of the workflow root (three levels above the manifest), and the reason is stored ending with that path. `append`/`replace` never write `accepted`; `replace` on an accepted row demotes it to `ai-placeholder` with the accepted snapshot in `history[]`; `retire` refuses accepted rows. Rejects format or dimension changes, and `derived` rows whose `source` is not a runtime AssetId (the VERIFY-ASSET-007 rule `check:assets` applies). Use `--dry-run` first | — |
 | `preview:feed`, `preview:pet`, `log`, `fixture` | Future tools TOOL-004, TOOL-005, TOOL-007 and TOOL-008. They need the sim kernel (WORK-003) | `ERR_MODULE_NOT_FOUND` until delivered |
 | `deploy` | Build plus `wrangler deploy`. Wrangler setup and login are deferred; never exercised | — |
 
@@ -44,6 +44,7 @@ With the flag, both exit 0 on the current tree (`--strict` makes warnings exit 2
 
 - `tools/assets/export-alpha.mjs source.png dest.png width height [alpha-cutoff]`: deterministic native-alpha fit onto a fixed canvas.
 - `tools/assets/export-refinements.mjs --project <game-root> --config game/tools/assets/refinements-v1.config.json --out <staging-dir>`: reproduces the room and furniture exports from their sources. Run it from the game root.
+- `npx tsx tools/assets/refit.ts --config tools/assets/refit-half-v1.config.json --out <staging-dir>`: deterministic re-fit (pure Node, no browser). Reads each source from a Git revision and checks its SHA-256, scales every frame's artwork uniformly about the frame's bottom centre by `fitFraction` of the reference frame's opaque height (rounded down to a whole pixel), keeps the canvas and frame grid, and writes PNGs plus `refit-report.json`. WORK-013H used it for the half-size Dog sheet and bed.
 - `tools/panels.html` (`/tools/panels.html` on the dev server): UI panel and state gallery, plus a contact sheet of every manifest row.
 - `tools/asset-trial.html` (`/tools/asset-trial.html?height=1080&guides=1&clip=idle`): inspection harness for the Dog sheet, tags, portrait and clue on hash-verified loads.
 - Exporters write only to the output path you give them. Add the result to the registry with `asset:ledger`, then run `check:assets`.
@@ -54,7 +55,7 @@ With the flag, both exit 0 on the current tree (`--strict` makes warnings exit 2
 |---|---|
 | `src/content/schema/*`, `src/content/load.ts`, `src/content/resolve.ts`, `src/sim/checks/*` | `tools/asset-trial.*` inspection harness |
 | `tools/check-content.ts`, `tools/check-assets.ts`, `tools/coverage.ts`, `tools/content/*`, `tools/assets/{checks,common,image}.ts`, `tools/known-missing-assets.json` | Archived preparation recipes under `../phase-3-preproduction/production/*/` (`prepare-*.mjs`). Their relative `node_modules` imports are not maintained |
-| `tools/asset-ledger.ts`, `tools/assets/export-*.mjs` and their config | Spike runtime: `app/spikeController.ts`, `view/scenes/SpikeScene.ts`, `view/spikeManifest.ts`, `view/spikeDiagnostics.ts`, which WORK-003/004/014 replace |
+| `tools/asset-ledger.ts`, `tools/assets/export-*.mjs`, `tools/assets/refit.ts` and their configs | Spike runtime: `app/spikeController.ts`, `view/scenes/SpikeScene.ts`, `view/spikeManifest.ts`, `view/spikeDiagnostics.ts`, which WORK-003/004/014 replace |
 | `src/view/anims.ts` (clip registration, per-frame durations) | Task probes under `../working/*/evidence/` |
 | `tools/panels.*` gallery | |
 
