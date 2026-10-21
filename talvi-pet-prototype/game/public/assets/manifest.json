@@ -176,7 +176,7 @@
         "w": 320,
         "h": 256
       },
-      "status": "ai-placeholder",
+      "status": "accepted",
       "origin": "authored",
       "source": "git b753fa6:talvi-pet-prototype/game/public/assets/charms/dog-bed.png (SHA-256 2ac21b9a53ddaf38a693d33df39ed8c440e9c91994bcca51d819f40e672f8f41, the WORK-013C row now in history[]), re-fitted by tools/assets/refit.ts",
       "generator": "builtin-imagegen",
@@ -190,6 +190,9 @@
       "hash": "9d2993fcfb067ea5ef449ce656a2569dd1a78cd1bb6707a8e43107e5daf697e4",
       "recordedAt": "2026-10-21",
       "recordedBy": "WORK-013H / TASK-080",
+      "acceptedBy": "Joe Francia",
+      "acceptedAt": "2026-10-21",
+      "acceptedReason": "Sitting 3b 2026-10-21: \"Yes, keep it and sign the sheet as accepted\" / \"Yes, keep it and sign it\" (half-size re-fit, DEC-040) Record: phase-3-preproduction/approvals/approval-2026-10-21-sitting-3b.md",
       "history": [
         {
           "hash": "fb835c68955c662187dd5335d45acbd164d3e620d333b574e00cfe548bebce09",
@@ -208,6 +211,15 @@
           "recordedAt": "2026-10-20",
           "recordedBy": "WORK-013C",
           "note": "AI-generated via built-in imagegen, not Asset-Bot or human-only drawing. Exact calls/source hashes/export recipe: phase-3-preproduction/production/perspective-v1/generation.json and workflow.md. Approved-direction perspective correction; sitting3 final acceptance pending."
+        },
+        {
+          "hash": "9d2993fcfb067ea5ef449ce656a2569dd1a78cd1bb6707a8e43107e5daf697e4",
+          "status": "ai-placeholder",
+          "origin": "authored",
+          "source": "git b753fa6:talvi-pet-prototype/game/public/assets/charms/dog-bed.png (SHA-256 2ac21b9a53ddaf38a693d33df39ed8c440e9c91994bcca51d819f40e672f8f41, the WORK-013C row now in history[]), re-fitted by tools/assets/refit.ts",
+          "recordedAt": "2026-10-21",
+          "recordedBy": "WORK-013H / TASK-080",
+          "note": "AI-generated via built-in imagegen, not Asset-Bot or human-only drawing. Exact calls/source hashes/export recipe: phase-3-preproduction/production/perspective-v1/generation.json and workflow.md. Approved-direction perspective correction; sitting3 final acceptance pending. WORK-013H / TASK-080: artwork re-fitted to half size per APPROVAL-005 item 1 (phase-3-preproduction/approvals/approval-2026-10-21-sitting-3.md); previous bytes in history[] and Git b753fa6. Signing waits for the user to see the re-fit in context."
         }
       ],
       "note": "AI-generated via built-in imagegen, not Asset-Bot or human-only drawing. Exact calls/source hashes/export recipe: phase-3-preproduction/production/perspective-v1/generation.json and workflow.md. Approved-direction perspective correction; sitting3 final acceptance pending. WORK-013H / TASK-080: artwork re-fitted to half size per APPROVAL-005 item 1 (phase-3-preproduction/approvals/approval-2026-10-21-sitting-3.md); previous bytes in history[] and Git b753fa6. Signing waits for the user to see the re-fit in context."
@@ -1073,7 +1085,7 @@
           "repeat": -1
         }
       },
-      "status": "ai-placeholder",
+      "status": "accepted",
       "origin": "authored",
       "source": "git b753fa6:talvi-pet-prototype/game/public/assets/pets/dog-sheet.png (SHA-256 148ff5d7fd39df24f4bdd6178744ce74f03d7fbdf317f72b95f36c8640584121, the WORK-013F row now in history[]), re-fitted by tools/assets/refit.ts",
       "generator": "builtin-imagegen",
@@ -1087,6 +1099,9 @@
       "hash": "3bfd2d80ab80df0609baab0c7dd974dff930f38d5854b907fb7918af817bea4c",
       "recordedAt": "2026-10-21",
       "recordedBy": "WORK-013H / TASK-080",
+      "acceptedBy": "Joe Francia",
+      "acceptedAt": "2026-10-21",
+      "acceptedReason": "Sitting 3b 2026-10-21: \"Yes, keep it and sign the sheet as accepted\" / \"Yes, keep it and sign it\" (half-size re-fit, DEC-040) Record: phase-3-preproduction/approvals/approval-2026-10-21-sitting-3b.md",
       "history": [
         {
           "hash": "148ff5d7fd39df24f4bdd6178744ce74f03d7fbdf317f72b95f36c8640584121",
@@ -1096,6 +1111,15 @@
           "recordedAt": "2026-10-20",
           "recordedBy": "WORK-013F / TASK-073",
           "note": "AI-generated via built-in imagegen (5 pose/portrait calls WORK-013D + 1 closed-eye edit WORK-013E); not Asset-Bot or human-only drawing; model/seed not exposed. Provenance: phase-3-preproduction/production/representatives-v1/provenance.json, phase-3-preproduction/production/representatives-v2/provenance.json, production-notes.md. Idle uses explicit frameDurationsMs per CN-07. User visual acceptance: phase-3-preproduction/approvals/approval-2026-10-20-representative-visuals.md. In-engine contextual and device verdicts pending; not status accepted."
+        },
+        {
+          "hash": "3bfd2d80ab80df0609baab0c7dd974dff930f38d5854b907fb7918af817bea4c",
+          "status": "ai-placeholder",
+          "origin": "authored",
+          "source": "git b753fa6:talvi-pet-prototype/game/public/assets/pets/dog-sheet.png (SHA-256 148ff5d7fd39df24f4bdd6178744ce74f03d7fbdf317f72b95f36c8640584121, the WORK-013F row now in history[]), re-fitted by tools/assets/refit.ts",
+          "recordedAt": "2026-10-21",
+          "recordedBy": "WORK-013H / TASK-080",
+          "note": "AI-generated via built-in imagegen (5 pose/portrait calls WORK-013D + 1 closed-eye edit WORK-013E); not Asset-Bot or human-only drawing; model/seed not exposed. Provenance: phase-3-preproduction/production/representatives-v1/provenance.json, phase-3-preproduction/production/representatives-v2/provenance.json, production-notes.md. Idle uses explicit frameDurationsMs per CN-07. User visual acceptance: phase-3-preproduction/approvals/approval-2026-10-20-representative-visuals.md. In-engine contextual and device verdicts pending; not status accepted. WORK-013H / TASK-080: artwork re-fitted to half size per APPROVAL-005 item 1 (phase-3-preproduction/approvals/approval-2026-10-21-sitting-3.md); previous bytes in history[] and Git b753fa6. Signing waits for the user to see the re-fit in context."
         }
       ],
       "note": "AI-generated via built-in imagegen (5 pose/portrait calls WORK-013D + 1 closed-eye edit WORK-013E); not Asset-Bot or human-only drawing; model/seed not exposed. Provenance: phase-3-preproduction/production/representatives-v1/provenance.json, phase-3-preproduction/production/representatives-v2/provenance.json, production-notes.md. Idle uses explicit frameDurationsMs per CN-07. User visual acceptance: phase-3-preproduction/approvals/approval-2026-10-20-representative-visuals.md. In-engine contextual and device verdicts pending; not status accepted. WORK-013H / TASK-080: artwork re-fitted to half size per APPROVAL-005 item 1 (phase-3-preproduction/approvals/approval-2026-10-21-sitting-3.md); previous bytes in history[] and Git b753fa6. Signing waits for the user to see the re-fit in context."
