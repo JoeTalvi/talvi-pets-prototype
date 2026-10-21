@@ -20,10 +20,13 @@ const hash = data => createHash('sha256').update(data).digest('hex');
 const results = [];
 try {
   for (const item of [config.room, ...config.sprites]) {
-    const sourcePath = resolve(project, config.sourceDirectory, 'sources', item.source);
+    // sourceSubdirectory defaults to the refinements-v1 layout (<sourceDirectory>/sources); "" reads sourceDirectory itself.
+    const sourcePath = resolve(project, config.sourceDirectory, config.sourceSubdirectory ?? 'sources', item.source);
+    const mime = item.source.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg';
     const source = await readFile(sourcePath);
-    const rendered = await page.evaluate(async ({ item, encoded, room }) => {
-      const img = new Image(); img.src = 'data:image/jpeg;base64,' + encoded; await img.decode();
+    if (item.sourceSha256 && hash(source) !== item.sourceSha256) throw new Error(`${sourcePath} SHA-256 ${hash(source)} does not match config sourceSha256 ${item.sourceSha256}`);
+    const rendered = await page.evaluate(async ({ item, encoded, mime, room }) => {
+      const img = new Image(); img.src = `data:${mime};base64,` + encoded; await img.decode();
       const canvas = document.createElement('canvas'); canvas.width = img.width; canvas.height = img.height;
       const ctx = canvas.getContext('2d', { willReadFrequently: true }); ctx.drawImage(img, 0, 0);
       const target = document.createElement('canvas'); target.width = item.width; target.height = item.height;
@@ -81,7 +84,7 @@ try {
         metrics={sourceSize:[w,h],sourceBounds:[left,top,right,bottom],scale,protectedOpaqueSourcePixels:protectedPixels,bounds:[l,t,r,b],bottomGap:item.height-1-b,centerOffset:Math.abs((l+r)/2-(item.width-1)/2),sideMargins:[l,item.width-1-r],transparentPixels:transparent,partialPixels:partial,corners:[rgba[3],rgba[(item.width-1)*4+3],rgba[(item.height-1)*item.width*4+3],rgba[rgba.length-1]]};
       }
       return { data:target.toDataURL(room?'image/jpeg':'image/png',room?item.quality:undefined).split(',')[1],metrics };
-    }, { item, encoded:source.toString('base64'), room:item.id===config.room.id });
+    }, { item, encoded:source.toString('base64'), mime, room:item.id===config.room.id });
     const data=Buffer.from(rendered.data,'base64'),relative=item.id+(item.id===config.room.id?'.jpg':'.png');
     await mkdir(dirname(resolve(output,relative)),{recursive:true}); await writeFile(resolve(output,relative),data);
     results.push({id:item.id,file:relative,source:sourcePath,sourceSha256:hash(source),sha256:hash(data),bytes:data.length,...rendered.metrics});

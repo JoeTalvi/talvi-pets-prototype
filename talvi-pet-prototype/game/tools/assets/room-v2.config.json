@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "sourceDirectory": "phase-3-preproduction/production/room-v2/candidates",
+  "sourceSubdirectory": "",
+  "room": { "source": "candidate_003.png", "sourceSha256": "383d9cc3741f2f9d9f55fec6630d6527a16d6af5b496ae59ed48af0d9168d17f", "id": "rooms/dog-room", "width": 1920, "height": 1080, "bandTop": 0, "bandHeight": 1080, "quality": 0.8, "exteriorBoundary": [[689,11],[1091,240],[1091,527],[698,758],[288,527],[288,240]], "exteriorKeep": 3, "exteriorFeather": 6 },
+  "sprites": []
+}

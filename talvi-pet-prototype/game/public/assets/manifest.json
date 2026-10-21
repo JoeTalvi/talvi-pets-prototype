@@ -110,19 +110,19 @@
       },
       "status": "ai-placeholder",
       "origin": "asset-bot",
-      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/rooms/1792440274527-79qnvo/candidate_001.png",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/rooms/1792600005606-r5bg1q/candidate_003.png",
       "generator": "asset-bot/generate_image:nano-banana",
-      "seed": 13001,
-      "prompt": "- Image 1: Pet House Lv3 style reference\n- Image 2: Room A style reference\n- Study the reference images carefully and match their art style CLOSELY. Replicate the exact line work thickness, shading technique, lighting style, level of detail, texture rendering, and overall aesthetic. Match the proportions, silhouette style, and form language precisely. Only use colors from the description — do not copy colors from references. The final result should look like it was drawn by the same artist as the references.\n- Scene: An empty three-quarter isometric pet living room, keeping the room reference's two back walls, open floor diamond, left doorway, small right window, low wooden skirting, warm pale plaster and honey-oak wood. Make the plaster walls nearly uniform pale cream, with only very faint broad tonal variation and no vertical streaks or mottled patches. Broad pale honey-oak floorboards have very low contrast joins and almost no grain marks, no knots or scratches. Preserve the reference room proportions and camera angle. The room walls and floor occupy the middle 72 percent of image height, with generous plain warm off-white space above and below. A flexible unlabeled pet living space. No furniture, animals, people, plants, rug, text, labels, UI, scaffolding, exterior building or roof.\n- Single unified image. No collage, grid, or multi-panel layout.",
+      "seed": 13002,
+      "prompt": "room-v1 prompt with the room about 1.5x larger in width and depth, doorway and window at reference size, walls and floor about 85% of image height",
       "refs": [
         "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/production/pet_house_lv3.png",
         "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/concepts/v1/room-a.png"
       ],
-      "postProcess": "Uniform image-only fit into y128..951; sampled neutral exterior paper;6px feather outside image contour plus3px protected margin; Chrome canvas JPEG quality0.8; recipe game/tools/assets/export-refinements.mjs + refinements-v1.config.json; preserved source /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/production/refinements-v1/sources/room-a-refined.jpg SHA256 490f15731a6bec1eb02f005bda2cb8f3b0f623357774e03d1b7109bb3a4c95bb",
-      "batch": "trial-WORK013B",
-      "hash": "781e0c2311d7bf4c1a523d12f3479b43a057fd15c2a7996b2e139889798c8cc3",
-      "recordedAt": "2026-10-19",
-      "recordedBy": "WORK-013B / TASK-063",
+      "postProcess": "Full-frame uniform fit: the whole 1376x768 source scaled by 1920/1376 (1.39535) to 1920x1072, centred at y 4.19 (bandTop 0, bandHeight 1080; no band fit, the phone-band clipping of the back and front floor corners is accepted under APPROVAL-011); sampled neutral exterior paper rgb(235,235,226) outside the source-image room contour [[689,11],[1091,240],[1091,527],[698,758],[288,527],[288,240]] with a 3px keep and 6px feather; Chrome canvas JPEG quality 0.8; recipe game/tools/assets/export-refinements.mjs + room-v2.config.json (SHA-256 5a34a5e2d22f556513f535da59b44a9707259ab6a657887522a3dc76454218ec); preserved source /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/production/room-v2/candidates/candidate_003.png SHA-256 383d9cc3741f2f9d9f55fec6630d6527a16d6af5b496ae59ed48af0d9168d17f (matches production/room-v2/provenance.json)",
+      "batch": "room-v2",
+      "hash": "f0a11d73f6b943dc201034aafd66a2bd22e5ab245cb2adbe626dbc285a4b2e6d",
+      "recordedAt": "2026-10-21",
+      "recordedBy": "WORK-013I / TASK-082",
       "history": [
         {
           "hash": "be0be1c52394e4c4df6dbf55bf32e5891e2737b9aa460a657f9b1c70547eb786",
@@ -132,9 +132,18 @@
           "recordedAt": "2026-10-17",
           "recordedBy": "TASK-022 / WORK-001",
           "note": "Phase 1 Asset-Bot original: runs/generate-image/room-dog-iso/1792171014237-c18ux4/candidate_002.png; single-frame integration stopgap, not creative approval"
+        },
+        {
+          "hash": "781e0c2311d7bf4c1a523d12f3479b43a057fd15c2a7996b2e139889798c8cc3",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/rooms/1792440274527-79qnvo/candidate_001.png",
+          "recordedAt": "2026-10-19",
+          "recordedBy": "WORK-013B / TASK-063",
+          "note": "WORK013B technical export, creative/runtime/device review pending; source preserved. Authored front walk-area/door alignment requires runtime review; world geometry unchanged."
         }
       ],
-      "note": "WORK013B technical export, creative/runtime/device review pending; source preserved. Authored front walk-area/door alignment requires runtime review; world geometry unchanged."
+      "note": "WORK-013I room candidate 3, chosen under APPROVAL-011 (phase-3-preproduction/approvals/approval-2026-10-21-sitting-3b.md); not yet signed. prompt holds provenance.json's promptNote verbatim (the provenance records no verbatim prompt; the run directory holds only the three candidates). Room geometry (walk area, door, slots, spawn) re-authored on this floor in src/content/rooms/dog-room.json."
     },
     {
       "id": "player/avatar-sheet",
