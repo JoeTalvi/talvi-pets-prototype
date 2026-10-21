@@ -481,7 +481,8 @@
         "emoteText": "{pet} settles in.",
         "tags": [
           "seat"
-        ]
+        ],
+        "clip": "use-sit"
       },
       {
         "id": "nap",
@@ -490,7 +491,8 @@
         "emoteText": "{pet} is napping.",
         "tags": [
           "soft"
-        ]
+        ],
+        "clip": "use-lie"
       },
       {
         "id": "look-at",
@@ -501,7 +503,8 @@
           "plant",
           "light",
           "art"
-        ]
+        ],
+        "clip": "use-look"
       },
       {
         "id": "perch",
@@ -510,7 +513,8 @@
         "emoteText": "{pet} perches up high.",
         "tags": [
           "tall"
-        ]
+        ],
+        "clip": "use-look"
       }
     ]
   },

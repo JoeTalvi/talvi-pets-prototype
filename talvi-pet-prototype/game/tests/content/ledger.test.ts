@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { main as ledger } from '../../tools/asset-ledger';
 import { AssetManifest } from '../../src/content/schema/assets';
 import { checkLedger } from '../../tools/assets/checks';
+import { encodePng } from '../../tools/assets/refit';
 const real = AssetManifest.parse(JSON.parse(readFileSync('public/assets/manifest.json', 'utf8')));
 let dir: string, file: string, source: string;
 beforeEach(() => {
@@ -112,5 +113,37 @@ describe('asset-ledger accepted rows and the other verbs (DEC-040)', () => {
     it('refuses to retire an accepted row', () => {
         accept(record);
         expect(() => ledger(['retire', '--manifest', manifest, '--id', 'charms/lamp', '--recorded-by', 't', '--date', '2026-10-22', '--note', 'n'])).toThrow(/accepted/);
+    });
+});
+describe('asset-ledger replace --layout-change (CN-12: the pet sheet grows to 6×7 with new clips)', () => {
+    let root: string, sheetManifest: string, source: string;
+    const sheetId = 'pets/dog-sheet', old = real.entries.find(e => e.id === sheetId)!;
+    const clips = { idle: old.clips!.idle, 'use-sit': { start: 12, end: 15, frameRate: 4, repeat: -1 } };
+    beforeEach(() => {
+        root = mkdtempSync(join(tmpdir(), 'tpp-layout-'));
+        sheetManifest = join(root, 'manifest.json');
+        source = join(root, 'sheet.png');
+        writeFileSync(sheetManifest, JSON.stringify({ ...real, entries: [old] }, null, 2) + '\n');
+        writeFileSync(source, encodePng({ w: 1536, h: 1792, data: new Uint8Array(1536 * 1792 * 4) }));
+        writeFileSync(join(root, 'row.json'), JSON.stringify({ clips }));
+    });
+    afterEach(() => rmSync(root, { recursive: true, force: true }));
+    const replace = (extra: string[]) => ledger(['replace', '--manifest', sheetManifest, '--id', sheetId, '--from', source, '--origin', 'asset-bot', '--generator', 'asset-bot/generate_image:nano-banana', '--source', 'runs', '--recorded-by', 'test', '--date', '2026-10-21', '--row', join(root, 'row.json'), '--out', join(root, 'out.json'), ...extra]);
+    it('still refuses new dimensions or clips without the switch', () => {
+        expect(() => replace([])).toThrow(/retain type, dimensions, frame, clips.*--layout-change/);
+    });
+    it('records the new px and clips, keeps type, frame and URL, and appends the old row to history', () => {
+        expect(replace(['--layout-change'])).toBe(0);
+        const after = AssetManifest.parse(JSON.parse(readFileSync(sheetManifest, 'utf8'))).entries[0];
+        expect(after).toMatchObject({ type: 'spritesheet', url: old.url, frame: old.frame, px: { w: 1536, h: 1792 }, clips, status: 'ai-placeholder' });
+        expect(after.history.at(-1)).toMatchObject({ hash: old.hash, status: old.status });
+        const findings: string[] = [];
+        checkLedger(AssetManifest.parse(JSON.parse(readFileSync(sheetManifest, 'utf8'))), AssetManifest.parse({ ...real, entries: [old] }), (_i, _l, _p, message) => findings.push(message));
+        // Only-grows holds; an accepted previous row additionally trips the separate accepted-row rule (TASK-080 open item 1).
+        expect(findings.filter(m => !m.startsWith('Human-accepted row changed'))).toEqual([]);
+    });
+    it('still refuses a changed frame size', () => {
+        writeFileSync(join(root, 'row.json'), JSON.stringify({ clips, frame: { w: 128, h: 128 } }));
+        expect(() => replace(['--layout-change'])).toThrow(/retain type, frame/);
     });
 });

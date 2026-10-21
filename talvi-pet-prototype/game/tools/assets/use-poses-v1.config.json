@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "$comment": "WORK-013J / TASK-083 (APPROVAL-013, CN-12): rows 0, 1 and 3 of the accepted half-size sheet (Git 223a35c, verified by SHA-256) copied byte for byte; rows 2 use-sit, 4 use-lie, 5 use-look built from the selected Asset-Bot candidates (JFIF data under .png names, decoded by ffmpeg); row 6 and unused cells transparent. Head height = ear tip to chin (lower jaw meets throat); reference 42 px = idle frame 0 of the accepted sheet. head.sourcePx is the candidate's measured head height (working/TASK-083/evidence/measurements.json); scale keeps the scaled head within headTolerancePx of the reference, and use-look's frame 0 opaque height within \u00b16 of 111. key.dilation 0: with the JPEG candidates a 1-2 px keep band unmattes near-white pixels into a light fringe (evidence/halo); 0 keeps the antialiased outline pixels opaque and clears the rest. use-lie exclude: the black cell dividers (dark columns 342-344, 686-689, 1031-1033 plus their light antialias columns) blanked white before keying. Run: npx tsx tools/assets/use-poses.ts --config tools/assets/use-poses-v1.config.json --out <staging-dir>",
+  "frame": {
+    "w": 256,
+    "h": 256
+  },
+  "grid": {
+    "columns": 6,
+    "rows": 7
+  },
+  "base": {
+    "git": "223a35c",
+    "path": "public/assets/pets/dog-sheet.png",
+    "sha256": "3bfd2d80ab80df0609baab0c7dd974dff930f38d5854b907fb7918af817bea4c",
+    "copyRows": [
+      0,
+      1,
+      3
+    ]
+  },
+  "key": {
+    "backgroundMin": 240,
+    "backgroundChroma": 18,
+    "dilation": 0,
+    "holeMinArea": 40
+  },
+  "headTolerancePx": 4,
+  "poses": [
+    {
+      "clip": "use-sit",
+      "row": 2,
+      "source": "phase-3-preproduction/production/use-poses-v1/candidates/sit-2.png",
+      "sha256": "28f0a56643814c15062e12b085cf270adb68b5a1e77f6ce6cc4a0cb6196f4ba7",
+      "cells": 4,
+      "scale": 0.279,
+      "head": {
+        "sourcePx": 150.5,
+        "referencePx": 42
+      }
+    },
+    {
+      "clip": "use-lie",
+      "row": 4,
+      "source": "phase-3-preproduction/production/use-poses-v1/candidates/nap-2.png",
+      "sha256": "e60ba50e40da089818d4609f2d39d2f823f8860ece56fefd3b2f8529c4b2cbee",
+      "cells": 4,
+      "exclude": [
+        [
+          339,
+          347
+        ],
+        [
+          684,
+          691
+        ],
+        [
+          1030,
+          1037
+        ]
+      ],
+      "scale": 0.269,
+      "head": {
+        "sourcePx": 156,
+        "referencePx": 42
+      }
+    },
+    {
+      "clip": "use-look",
+      "row": 5,
+      "source": "phase-3-preproduction/production/use-poses-v1/candidates/look-2.png",
+      "sha256": "3aa250a727691b2b6d4bed6279e33895b8df12dffa49f5d03c04ba87b55473b5",
+      "cells": 4,
+      "scale": 0.31,
+      "head": {
+        "sourcePx": 133.5,
+        "referencePx": 42
+      },
+      "standing": {
+        "referencePx": 111,
+        "tolerancePx": 6
+      }
+    }
+  ]
+}

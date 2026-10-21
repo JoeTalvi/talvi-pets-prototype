@@ -52,8 +52,12 @@ function prepareRow(opts: Record<string, string | boolean>, old: AssetEntry | un
         row.px = dimensions(data[0]);
     row.hash = createHash('sha256').update(data[0]).digest('hex');
     const parsed = AssetEntry.parse(row);
-    if (old && ['type', 'px', 'frame', 'clips', 'html', 'family', 'weight', 'url', 'urls'].some(k => JSON.stringify(parsed[k as keyof AssetEntry]) !== JSON.stringify(old[k as keyof AssetEntry])))
-        throw new Error('Replacement must retain type, dimensions, frame, clips, HTML/font semantics and URLs');
+    // --layout-change (a contract amendment such as CN-12's 6×7 pet sheet) lets dimensions and clips change; everything else stays.
+    const retained = ['type', 'px', 'frame', 'clips', 'html', 'family', 'weight', 'url', 'urls'].filter(k => !(opts['layout-change'] && (k === 'px' || k === 'clips')));
+    if (old && retained.some(k => JSON.stringify(parsed[k as keyof AssetEntry]) !== JSON.stringify(old[k as keyof AssetEntry])))
+        throw new Error(`Replacement must retain ${opts['layout-change'] ? 'type, frame' : 'type, dimensions, frame, clips'}, HTML/font semantics and URLs${opts['layout-change'] ? '' : ' (use --layout-change for an amended sheet layout)'}`);
+    if (opts['layout-change'] && !old)
+        throw new Error('--layout-change applies to replace only');
     return { row: parsed, data, urls };
 }
 /** Stage all bytes first; handled write failures restore the original bytes. Process-kill recovery uses Git. */
@@ -144,7 +148,7 @@ export function main(args: string[]): number {
     const [verb, ...rest] = args;
     if (!['append', 'replace', 'retire', 'accept'].includes(verb))
         throw new Error('Usage: asset-ledger append|replace|retire|accept --manifest file --id family/name ... (accept: --by name --reason text --record phase-3-preproduction/approvals/<file>)');
-    const opts = flags(rest, ['manifest', 'id', 'from', 'type', 'origin', 'source', 'recorded-by', 'date', 'status', 'generator', 'note', 'row', 'url', 'format', 'out', 'by', 'reason', 'record'], ['dry-run']);
+    const opts = flags(rest, ['manifest', 'id', 'from', 'type', 'origin', 'source', 'recorded-by', 'date', 'status', 'generator', 'note', 'row', 'url', 'format', 'out', 'by', 'reason', 'record'], ['dry-run', 'layout-change']);
     const manifestFile = resolve(String(opts.manifest ?? 'public/assets/manifest.json')), m = AssetManifest.parse(readJson(manifestFile));
     const id = required(opts, 'id'), writes = applyVerb(verb, m, id, opts, manifestFile);
     AssetManifest.parse(m);

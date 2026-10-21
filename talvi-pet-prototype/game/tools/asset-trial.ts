@@ -1,4 +1,4 @@
-// Disposable TASK-064 / TASK-074 (WORK-013G) / TASK-081 (WORK-013H) validation support. Tools normally exclude engine imports;
+// Disposable TASK-064 / TASK-074 (WORK-013G) / TASK-081 (WORK-013H) / TASK-083 (WORK-013J) validation support. Tools normally exclude engine imports;
 // this explicitly authorized, development-only entrypoint inspects Phaser textures.
 // eslint-disable-next-line no-restricted-imports
 import Phaser from 'phaser';
@@ -21,10 +21,13 @@ const height = params.get('height') === '823' ? 823 : 1080;
 const mode = params.get('mode') === 'room' ? 'room' : 'fill';
 const guides = params.get('guides') !== '0';
 const bounds = params.get('bounds') === '1';
-const clips = ['idle', 'walk', 'use', 'react'];
+// CN-12 (WORK-013J): row 2 `use` became `use-sit`; rows 4 and 5 add `use-lie` and `use-look`.
+const clips = ['idle', 'walk', 'use-sit', 'react', 'use-lie', 'use-look'];
 const clip = clips.includes(params.get('clip') ?? '') ? params.get('clip')! : 'idle';
 const showPet = params.get('pet') !== '0';
 const showBubble = params.get('bubble') === '1';
+// ?at=<slotId> stands the Dog on that slot's pet anchor with the anchor's facing (authored room content) instead of room.petSpawn.
+const atSlot = params.get('at') ?? '';
 // TASK-080 (WORK-013H): the bubble anchor keeps the contract's margin above the measured idle head. The contract offset 236 was
 // set against the pre-re-fit sheet (Git b753fa6), whose idle frame 0 opaque top was 222 px above the base: margin 236 − 222 = 14.
 const SHEET = 'pets/dog-sheet', CONTRACT_BUBBLE_OFFSET = 236, CONTRACT_IDLE_HEAD_TOP = 222, BUBBLE_MARGIN = CONTRACT_BUBBLE_OFFSET - CONTRACT_IDLE_HEAD_TOP;
@@ -34,7 +37,7 @@ let bubbleOffset = CONTRACT_BUBBLE_OFFSET;
 // texture is shown at the gallery's 72 px.
 const BUBBLE = { icon: 'ui/tag-soft', iconSize: 72, fill: 0xfffdf8, shadow: 0x3a2a1f, depth: 9000, body: { w: 168, h: 128, dx: 52, dy: -107 }, tail: [{ dx: 18, dy: -30, r: 12 }, { dx: 0, dy: -7, r: 7 }] };
 type BubbleReport = { shown: boolean; drawn?: boolean; anchor?: { x: number; y: number }; body?: { x: number; y: number; w: number; h: number; shape: string }; tail?: { x: number; y: number; r: number }[]; fill?: string; stroke?: string; shadow?: string; depth?: number; icon?: { id: string; x: number; y: number; w: number; h: number; native: [number, number]; offsetFromBodyCentre: [number, number] } | string };
-const report = { scope: 'Selected asset import and authored alignment only; no full-content or gameplay validation', phase: 'loading', phaser: Phaser.VERSION, viewport: { w: 1920, h: height }, cameraScrollY: (1080 - height) / 2, mode, guides, bounds, manifestUrl: params.get('failure') === 'manifest' ? '/assets/__asset-trial-missing-manifest.json' : '/assets/manifest.json', inputHashes: {} as Record<string, string>, assets: [] as LoadRow[], loadErrors: [] as string[], decodeErrors: [] as string[], placements: [] as Placement[], pet: { shown: showPet, clip, key: '', x: 0, y: 0, facing: '', flipX: false, origin: [0.5, 1], scale: 1, depth: 0, bubbleAnchor: { x: 0, y: 0 }, bubbleOffset: { idleHeadTop: 0, margin: BUBBLE_MARGIN, offset: 0 }, textureFrames: 0, keysRegistered: [] as string[], keysPresent: {} as Record<string, boolean>, declaredDurations: [] as number[], omitted: '' }, idleTiming: { events: [] as FrameEvent[], cycles: 0, measuredMs: [] as number[][], meanMs: [] as number[], displayFrameMs: 0 }, opaque: {} as Record<string, OpaqueBox | null>, bubble: { shown: showBubble } as BubbleReport, canvasOverlaps: [] as string[], missingSlots: [] as string[], fatal: '' };
+const report = { scope: 'Selected asset import and authored alignment only; no full-content or gameplay validation', phase: 'loading', phaser: Phaser.VERSION, viewport: { w: 1920, h: height }, cameraScrollY: (1080 - height) / 2, mode, guides, bounds, manifestUrl: params.get('failure') === 'manifest' ? '/assets/__asset-trial-missing-manifest.json' : '/assets/manifest.json', inputHashes: {} as Record<string, string>, assets: [] as LoadRow[], loadErrors: [] as string[], decodeErrors: [] as string[], placements: [] as Placement[], pet: { shown: showPet, clip, at: atSlot || 'petSpawn', key: '', x: 0, y: 0, facing: '', flipX: false, origin: [0.5, 1], scale: 1, depth: 0, bubbleAnchor: { x: 0, y: 0 }, bubbleOffset: { idleHeadTop: 0, margin: BUBBLE_MARGIN, offset: 0 }, textureFrames: 0, keysRegistered: [] as string[], keysPresent: {} as Record<string, boolean>, declaredDurations: [] as number[], omitted: '' }, idleTiming: { events: [] as FrameEvent[], cycles: 0, measuredMs: [] as number[][], meanMs: [] as number[], displayFrameMs: 0 }, opaque: {} as Record<string, OpaqueBox | null>, bubble: { shown: showBubble } as BubbleReport, canvasOverlaps: [] as string[], missingSlots: [] as string[], fatal: '' };
 Object.assign(window, { assetTrial: report });
 const element = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const refreshReport = () => { element('report').textContent = JSON.stringify(report, null, 2); };
@@ -63,7 +66,7 @@ function controls(): void {
   });
   element('reload').onclick = () => { const next = new URL(location.href); next.searchParams.delete('failure'); location.assign(next); };
   element('stage').style.aspectRatio = `1920 / ${height}`;
-  element('mapping').textContent = `World 1920 × 1080 → viewport 1920 × ${height}; camera scroll (0, ${report.cameraScrollY}). Viewport y = world y − ${report.cameraScrollY}. Background origin (0,0); charms origin (0.5,1), scale 1, depth = authored override or base y. Dog: room.petSpawn, origin (0.5,1), scale 1, flipX when facing left (sheet faces right), depth = y, bubble anchor y − (measured idle head top + ${BUBBLE_MARGIN}).`;
+  element('mapping').textContent = `World 1920 × 1080 → viewport 1920 × ${height}; camera scroll (0, ${report.cameraScrollY}). Viewport y = world y − ${report.cameraScrollY}. Background origin (0,0); charms origin (0.5,1), scale 1, depth = authored override or base y. Dog: ${atSlot ? `slot ${atSlot} pet anchor` : 'room.petSpawn'}, origin (0.5,1), scale 1, flipX when facing left (sheet faces right), depth = y, bubble anchor y − (measured idle head top + ${BUBBLE_MARGIN}).`;
 }
 function drawGuides(scene: Phaser.Scene, room: Room): void {
   const g = scene.add.graphics().setDepth(10000);
@@ -80,9 +83,9 @@ function drawGuides(scene: Phaser.Scene, room: Room): void {
   for (const p of room.wanderPoints) g.fillStyle(0x139151).fillCircle(p.x, p.y, 5);
   g.lineStyle(3, 0x555555).strokeCircle(room.petSpawn.x, room.petSpawn.y, 12);
   if (showPet) {
-    const bx = room.petSpawn.x, by = room.petSpawn.y - bubbleOffset;
+    const bx = standingSpot(room).x, by = standingSpot(room).y - bubbleOffset;
     g.lineStyle(3, 0xb5523f).strokeCircle(bx, by, 10).lineBetween(bx - 18, by, bx + 18, by).lineBetween(bx, by - 18, bx, by + 18);
-    label(bx + 16, by - 30, `bubble anchor (${bx},${by}) = spawn y − ${bubbleOffset} (idle head top ${bubbleOffset - BUBBLE_MARGIN} + ${BUBBLE_MARGIN})`, '#b5523f');
+    label(bx + 16, by - 30, `bubble anchor (${bx},${by}) = ${atSlot || 'spawn'} y − ${bubbleOffset} (idle head top ${bubbleOffset - BUBBLE_MARGIN} + ${BUBBLE_MARGIN})`, '#b5523f');
   }
 }
 /** Want bubble: fill only (no line style anywhere), tail bottom on the anchor, icon centred in the body, depth above the Dog. */
@@ -125,6 +128,13 @@ function overlapReport(): void {
     const x = a[i], y = a[j];
     if (Math.abs(x.x - y.x) < (x.w + y.w) / 2 && Math.max(x.y - x.h, y.y - y.h) < Math.min(x.y, y.y)) report.canvasOverlaps.push(`${x.slot} / ${y.slot}`);
   }
+}
+/** Where the Dog stands: the ?at= slot's pet anchor (and facing), else room.petSpawn. */
+function standingSpot(room: Room): { x: number; y: number; facing: string } {
+  if (!atSlot) return room.petSpawn;
+  const slot = room.slots.find(s => s.id === atSlot);
+  if (!slot) throw new Error(`?at=${atSlot}: no slot with that id in ${room.id}`);
+  return slot.anchor;
 }
 async function start(): Promise<void> {
   controls();
@@ -173,7 +183,8 @@ async function start(): Promise<void> {
         URL.revokeObjectURL(blobUrl);
       }
       if (this.textures.exists(room.background)) this.add.image(0, 0, room.background).setOrigin(0).setDepth(0);
-      if (mode === 'fill') for (const slot of room.slots) {
+      // Room mode still draws the charm of the ?at= slot (e.g. the bed at large-1) so the Dog is seen using it.
+      for (const slot of room.slots.filter(s => mode === 'fill' || s.id === atSlot)) {
         const charm = charms.types.find(c => c.sizeClass === slot.sizeClass && ids.includes(c.sprite));
         if (!charm || !this.textures.exists(charm.sprite)) { report.missingSlots.push(slot.id); continue; }
         const sourceHash = report.assets.find(a => a.id === charm.sprite)?.actualHash ?? '';
@@ -184,7 +195,7 @@ async function start(): Promise<void> {
       }
       for (const id of ['charms/dog-bed', 'charms/lamp']) if (this.textures.exists(id)) report.opaque[id] = opaqueBox(this.textures.get(id).getSourceImage() as HTMLImageElement);
       this.placePet(room, manifest.entries.find(e => e.id === SHEET));
-      if (showBubble) drawBubble(this, room.petSpawn.x, room.petSpawn.y - bubbleOffset);
+      if (showBubble) drawBubble(this, standingSpot(room).x, standingSpot(room).y - bubbleOffset);
       if (guides) drawGuides(this, room);
       overlapReport(); report.phase = 'ready';
       const good = report.assets.filter(a => a.status === 'loaded-verified').length;
@@ -204,7 +215,7 @@ async function start(): Promise<void> {
       if (idleTop) { bubbleOffset = fh - idleTop.y + BUBBLE_MARGIN; report.pet.bubbleOffset = { idleHeadTop: fh - idleTop.y, margin: BUBBLE_MARGIN, offset: bubbleOffset }; }
       report.pet.declaredDurations = (this.anims.get(key)?.frames ?? []).map(f => f.duration || 1000 / (frames?.frameRate ?? 1));
       if (!showPet) { report.pet.omitted = '?pet=0'; return; }
-      const { x, y, facing } = room.petSpawn;
+      const { x, y, facing } = standingSpot(room);
       const pet = this.add.sprite(x, y, SHEET, frames?.start ?? 0).setOrigin(0.5, 1).setScale(1).setFlipX(facing === 'left').setDepth(y);
       Object.assign(report.pet, { key, x, y, facing, flipX: pet.flipX, depth: pet.depth, bubbleAnchor: { x, y: y - bubbleOffset } });
       if (clip === 'idle') {

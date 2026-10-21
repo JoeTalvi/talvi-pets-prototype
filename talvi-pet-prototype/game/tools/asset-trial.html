@@ -1,16 +1,16 @@
 <!doctype html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="data:,"><title>Asset import inspection · development only</title></head>
 <body><main>
-<h1>Asset import inspection <small>Development only · WORK014A / WORK-013G / WORK-013H</small></h1>
+<h1>Asset import inspection <small>Development only · WORK014A / WORK-013G / WORK-013H / WORK-013J</small></h1>
 <p>Authored Dog room geometry; selected assets only; Dog sheet with clips registered by <code>registerClips</code>. Native texture sizes, no gameplay or creative acceptance.</p>
 <form id="controls">
 <label>Viewport <select id="height"><option value="1080">1920 × 1080</option><option value="823">1920 × 823</option></select></label>
 <label>Scene <select id="mode"><option value="fill">Representative fill by size class</option><option value="room">Room alone</option></select></label>
 <label><input id="guides" type="checkbox" checked> Authored slots, anchors, walk area and crop band</label>
 <label><input id="bounds" type="checkbox"> Texture canvas bounds</label>
-<label><input id="pet" type="checkbox" checked> Dog at room.petSpawn</label>
+<label><input id="pet" type="checkbox" checked> Dog at room.petSpawn (or <code>?at=&lt;slotId&gt;</code>: that slot's pet anchor and facing)</label>
 <label><input id="bubble" type="checkbox"> Want bubble (flat thought bubble, ui/tag-soft)</label>
-<label>Dog clip <select id="clip"><option value="idle">idle</option><option value="walk">walk</option><option value="use">use</option><option value="react">react</option></select></label>
+<label>Dog clip <select id="clip"><option value="idle">idle</option><option value="walk">walk</option><option value="use-sit">use-sit</option><option value="react">react</option><option value="use-lie">use-lie</option><option value="use-look">use-look</option></select></label>
 <button type="button" id="reload">Fresh reload / clear failure probe</button>
 </form>
 <p id="status" role="status">Loading manifest…</p><p id="mapping"></p>

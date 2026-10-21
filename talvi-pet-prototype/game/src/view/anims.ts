@@ -1,5 +1,6 @@
 import type Phaser from 'phaser';
 import type { Clip } from '@content/schema/assets';
+import type { Verb } from '@content/schema/verbs';
 export type SheetEntry = { id: string; clips?: Record<string, Clip> };
 /** Animation key per assets.md §1.4: `pet-<petId>-<clip>`, `avatar-<clip>`, and the dust sheet's bare `dust`. */
 export function clipKey(sheetId: string, clip: string): string | undefined {
@@ -22,4 +23,9 @@ export function registerClips(scene: Phaser.Scene, entry: SheetEntry): string[] 
     created.push(key);
   }
   return created;
+}
+/** CN-12: the `using` phase plays `pet-<petId>-<verb.clip>`; a pet whose sheet lacks that row falls back to `pet-<petId>-use-sit`. */
+export function useClipKey(anims: { exists(key: string): boolean }, petId: string, verb: Pick<Verb, 'clip'>): string {
+  const key = clipKey(`pets/${petId}-sheet`, verb.clip)!;
+  return anims.exists(key) ? key : clipKey(`pets/${petId}-sheet`, 'use-sit')!;
 }

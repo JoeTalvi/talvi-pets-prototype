@@ -3,7 +3,8 @@ import './setup';
 import { afterEach, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { AssetManifest } from '../../src/content/schema/assets';
-import { clipKey, registerClips } from '@view/anims';
+import { clipKey, registerClips, useClipKey } from '@view/anims';
+import { VerbsSchema } from '../../src/content/schema/verbs';
 import { createGame, destroyGame } from './helper';
 const manifest = AssetManifest.parse(JSON.parse(readFileSync('public/assets/manifest.json', 'utf8')));
 afterEach(() => destroyGame());
@@ -21,8 +22,10 @@ it('derives §1.4 animation keys', () => {
 });
 it('VERIFY-ASSET-005 HEADLESS: dog clips register once with explicit idle durations', async () => {
   const scene = await createGame(), dog = addSheet(scene, 'pets/dog-sheet');
-  expect(registerClips(scene, dog)).toEqual(['pet-dog-idle', 'pet-dog-walk', 'pet-dog-use', 'pet-dog-react']);
-  for (const key of ['pet-dog-idle', 'pet-dog-walk', 'pet-dog-use', 'pet-dog-react']) expect(scene.anims.exists(key)).toBe(true);
+  const keys = ['pet-dog-idle', 'pet-dog-walk', 'pet-dog-use-sit', 'pet-dog-react', 'pet-dog-use-lie', 'pet-dog-use-look'];
+  expect(registerClips(scene, dog)).toEqual(keys);
+  for (const key of keys) expect(scene.anims.exists(key)).toBe(true);
+  expect(scene.anims.exists('pet-dog-use')).toBe(false);
   const idle = scene.anims.get('pet-dog-idle')!;
   expect(idle.frames.map(f => f.duration)).toEqual([2600, 80, 120, 80]);
   expect(idle.frames.map(f => f.frame.name)).toEqual([0, 1, 2, 3]);
@@ -30,7 +33,28 @@ it('VERIFY-ASSET-005 HEADLESS: dog clips register once with explicit idle durati
   const walk = scene.anims.get('pet-dog-walk')!;
   expect(walk.frameRate).toBe(10);
   expect(walk.frames.map(f => f.duration)).toEqual([0, 0, 0, 0, 0, 0]);
+  for (const [key, first] of [['pet-dog-use-sit', 12], ['pet-dog-use-lie', 24], ['pet-dog-use-look', 30]] as const) {
+    const use = scene.anims.get(key)!;
+    expect(use.frames.map(f => f.frame.name)).toEqual([first, first + 1, first + 2, first + 3]);
+    expect([use.frameRate, use.repeat]).toEqual([4, -1]);
+  }
   expect(registerClips(scene, dog)).toEqual([]);
+});
+const verbs = VerbsSchema.parse(JSON.parse(readFileSync('src/content/verbs.json', 'utf8'))).verbs;
+it('CN-12: the using clip follows the verb (nap → lie, sit-on → sit, look-at and perch → look)', async () => {
+  const scene = await createGame();
+  registerClips(scene, addSheet(scene, 'pets/dog-sheet'));
+  expect(Object.fromEntries(verbs.map(v => [v.id, useClipKey(scene.anims, 'dog', v)]))).toEqual({
+    nap: 'pet-dog-use-lie', 'sit-on': 'pet-dog-use-sit', 'look-at': 'pet-dog-use-look', perch: 'pet-dog-use-look' });
+});
+it('CN-12: a pet whose sheet lacks the verb clip falls back to use-sit', async () => {
+  const scene = await createGame(), dog = addSheet(scene, 'pets/dog-sheet'), canvas = document.createElement('canvas');
+  canvas.width = dog.px!.w; canvas.height = dog.px!.h;
+  scene.textures.addSpriteSheet('pets/owl-sheet', canvas as unknown as HTMLImageElement, { frameWidth: 256, frameHeight: 256 });
+  expect(registerClips(scene, { id: 'pets/owl-sheet', clips: { 'use-sit': dog.clips!['use-sit'] } })).toEqual(['pet-owl-use-sit']);
+  const nap = verbs.find(v => v.id === 'nap')!;
+  expect(useClipKey(scene.anims, 'owl', nap)).toBe('pet-owl-use-sit');
+  expect(useClipKey(scene.anims, 'owl', { clip: 'use-look' })).toBe('pet-owl-use-sit');
 });
 it('registers avatar and dust keys with frameRate timing', async () => {
   const scene = await createGame();
