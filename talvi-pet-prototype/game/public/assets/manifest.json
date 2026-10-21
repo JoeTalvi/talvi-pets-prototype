@@ -108,7 +108,7 @@
         "w": 1920,
         "h": 1080
       },
-      "status": "ai-placeholder",
+      "status": "accepted",
       "origin": "asset-bot",
       "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/rooms/1792600005606-r5bg1q/candidate_003.png",
       "generator": "asset-bot/generate_image:nano-banana",
@@ -123,6 +123,9 @@
       "hash": "f0a11d73f6b943dc201034aafd66a2bd22e5ab245cb2adbe626dbc285a4b2e6d",
       "recordedAt": "2026-10-21",
       "recordedBy": "WORK-013I / TASK-082",
+      "acceptedBy": "Joe Francia",
+      "acceptedAt": "2026-10-21",
+      "acceptedReason": "Sitting 3c 2026-10-21: \"Yes, sign it as the room baseline\" (room-v2 candidate 3, DEC-040) Record: phase-3-preproduction/approvals/approval-2026-10-21-sitting-3c.md",
       "history": [
         {
           "hash": "be0be1c52394e4c4df6dbf55bf32e5891e2737b9aa460a657f9b1c70547eb786",
@@ -141,6 +144,15 @@
           "recordedAt": "2026-10-19",
           "recordedBy": "WORK-013B / TASK-063",
           "note": "WORK013B technical export, creative/runtime/device review pending; source preserved. Authored front walk-area/door alignment requires runtime review; world geometry unchanged."
+        },
+        {
+          "hash": "f0a11d73f6b943dc201034aafd66a2bd22e5ab245cb2adbe626dbc285a4b2e6d",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/rooms/1792600005606-r5bg1q/candidate_003.png",
+          "recordedAt": "2026-10-21",
+          "recordedBy": "WORK-013I / TASK-082",
+          "note": "WORK-013I room candidate 3, chosen under APPROVAL-011 (phase-3-preproduction/approvals/approval-2026-10-21-sitting-3b.md); not yet signed. prompt holds provenance.json's promptNote verbatim (the provenance records no verbatim prompt; the run directory holds only the three candidates). Room geometry (walk area, door, slots, spawn) re-authored on this floor in src/content/rooms/dog-room.json."
         }
       ],
       "note": "WORK-013I room candidate 3, chosen under APPROVAL-011 (phase-3-preproduction/approvals/approval-2026-10-21-sitting-3b.md); not yet signed. prompt holds provenance.json's promptNote verbatim (the provenance records no verbatim prompt; the run directory holds only the three candidates). Room geometry (walk area, door, slots, spawn) re-authored on this floor in src/content/rooms/dog-room.json."
