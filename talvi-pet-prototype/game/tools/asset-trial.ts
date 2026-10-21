@@ -1,4 +1,4 @@
-// Disposable TASK-064 / TASK-074 (WORK-013G) validation support. Tools normally exclude engine imports;
+// Disposable TASK-064 / TASK-074 (WORK-013G) / TASK-081 (WORK-013H) validation support. Tools normally exclude engine imports;
 // this explicitly authorized, development-only entrypoint inspects Phaser textures.
 // eslint-disable-next-line no-restricted-imports
 import Phaser from 'phaser';
@@ -24,11 +24,17 @@ const bounds = params.get('bounds') === '1';
 const clips = ['idle', 'walk', 'use', 'react'];
 const clip = clips.includes(params.get('clip') ?? '') ? params.get('clip')! : 'idle';
 const showPet = params.get('pet') !== '0';
+const showBubble = params.get('bubble') === '1';
 // TASK-080 (WORK-013H): the bubble anchor keeps the contract's margin above the measured idle head. The contract offset 236 was
 // set against the pre-re-fit sheet (Git b753fa6), whose idle frame 0 opaque top was 222 px above the base: margin 236 − 222 = 14.
 const SHEET = 'pets/dog-sheet', CONTRACT_BUBBLE_OFFSET = 236, CONTRACT_IDLE_HEAD_TOP = 222, BUBBLE_MARGIN = CONTRACT_BUBBLE_OFFSET - CONTRACT_IDLE_HEAD_TOP;
 let bubbleOffset = CONTRACT_BUBBLE_OFFSET;
-const report = { scope: 'Selected asset import and authored alignment only; no full-content or gameplay validation', phase: 'loading', phaser: Phaser.VERSION, viewport: { w: 1920, h: height }, cameraScrollY: (1080 - height) / 2, mode, guides, bounds, manifestUrl: params.get('failure') === 'manifest' ? '/assets/__asset-trial-missing-manifest.json' : '/assets/manifest.json', inputHashes: {} as Record<string, string>, assets: [] as LoadRow[], loadErrors: [] as string[], decodeErrors: [] as string[], placements: [] as Placement[], pet: { shown: showPet, clip, key: '', x: 0, y: 0, facing: '', flipX: false, origin: [0.5, 1], scale: 1, depth: 0, bubbleAnchor: { x: 0, y: 0 }, bubbleOffset: { idleHeadTop: 0, margin: BUBBLE_MARGIN, offset: 0 }, textureFrames: 0, keysRegistered: [] as string[], keysPresent: {} as Record<string, boolean>, declaredDurations: [] as number[], omitted: '' }, idleTiming: { events: [] as FrameEvent[], cycles: 0, measuredMs: [] as number[][], meanMs: [] as number[], displayFrameMs: 0 }, opaque: {} as Record<string, OpaqueBox | null>, canvasOverlaps: [] as string[], missingSlots: [] as string[], fatal: '' };
+// TASK-081 (WORK-013H, CN-10): flat, strokeless thought bubble with the panels-gallery geometry (tools/panels.css). Offsets are from
+// the anchor: the 168×128 ellipse body sits above-right and the smallest tail circle's bottom touches the anchor. The 96 px tag
+// texture is shown at the gallery's 72 px.
+const BUBBLE = { icon: 'ui/tag-soft', iconSize: 72, fill: 0xfffdf8, shadow: 0x3a2a1f, depth: 9000, body: { w: 168, h: 128, dx: 52, dy: -107 }, tail: [{ dx: 18, dy: -30, r: 12 }, { dx: 0, dy: -7, r: 7 }] };
+type BubbleReport = { shown: boolean; drawn?: boolean; anchor?: { x: number; y: number }; body?: { x: number; y: number; w: number; h: number; shape: string }; tail?: { x: number; y: number; r: number }[]; fill?: string; stroke?: string; shadow?: string; depth?: number; icon?: { id: string; x: number; y: number; w: number; h: number; native: [number, number]; offsetFromBodyCentre: [number, number] } | string };
+const report = { scope: 'Selected asset import and authored alignment only; no full-content or gameplay validation', phase: 'loading', phaser: Phaser.VERSION, viewport: { w: 1920, h: height }, cameraScrollY: (1080 - height) / 2, mode, guides, bounds, manifestUrl: params.get('failure') === 'manifest' ? '/assets/__asset-trial-missing-manifest.json' : '/assets/manifest.json', inputHashes: {} as Record<string, string>, assets: [] as LoadRow[], loadErrors: [] as string[], decodeErrors: [] as string[], placements: [] as Placement[], pet: { shown: showPet, clip, key: '', x: 0, y: 0, facing: '', flipX: false, origin: [0.5, 1], scale: 1, depth: 0, bubbleAnchor: { x: 0, y: 0 }, bubbleOffset: { idleHeadTop: 0, margin: BUBBLE_MARGIN, offset: 0 }, textureFrames: 0, keysRegistered: [] as string[], keysPresent: {} as Record<string, boolean>, declaredDurations: [] as number[], omitted: '' }, idleTiming: { events: [] as FrameEvent[], cycles: 0, measuredMs: [] as number[][], meanMs: [] as number[], displayFrameMs: 0 }, opaque: {} as Record<string, OpaqueBox | null>, bubble: { shown: showBubble } as BubbleReport, canvasOverlaps: [] as string[], missingSlots: [] as string[], fatal: '' };
 Object.assign(window, { assetTrial: report });
 const element = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const refreshReport = () => { element('report').textContent = JSON.stringify(report, null, 2); };
@@ -43,7 +49,7 @@ async function inputJson(url: string): Promise<unknown> {
 function controls(): void {
   element<HTMLSelectElement>('height').value = String(height); element<HTMLSelectElement>('mode').value = mode;
   element<HTMLInputElement>('guides').checked = guides; element<HTMLInputElement>('bounds').checked = bounds;
-  element<HTMLSelectElement>('clip').value = clip; element<HTMLInputElement>('pet').checked = showPet;
+  element<HTMLSelectElement>('clip').value = clip; element<HTMLInputElement>('pet').checked = showPet; element<HTMLInputElement>('bubble').checked = showBubble;
   element('controls').addEventListener('change', () => {
     const next = new URL(location.href);
     next.searchParams.set('height', element<HTMLSelectElement>('height').value);
@@ -52,6 +58,7 @@ function controls(): void {
     next.searchParams.set('bounds', element<HTMLInputElement>('bounds').checked ? '1' : '0');
     next.searchParams.set('clip', element<HTMLSelectElement>('clip').value);
     next.searchParams.set('pet', element<HTMLInputElement>('pet').checked ? '1' : '0');
+    next.searchParams.set('bubble', element<HTMLInputElement>('bubble').checked ? '1' : '0');
     location.assign(next);
   });
   element('reload').onclick = () => { const next = new URL(location.href); next.searchParams.delete('failure'); location.assign(next); };
@@ -77,6 +84,20 @@ function drawGuides(scene: Phaser.Scene, room: Room): void {
     g.lineStyle(3, 0xb5523f).strokeCircle(bx, by, 10).lineBetween(bx - 18, by, bx + 18, by).lineBetween(bx, by - 18, bx, by + 18);
     label(bx + 16, by - 30, `bubble anchor (${bx},${by}) = spawn y − ${bubbleOffset} (idle head top ${bubbleOffset - BUBBLE_MARGIN} + ${BUBBLE_MARGIN})`, '#b5523f');
   }
+}
+/** Want bubble: fill only (no line style anywhere), tail bottom on the anchor, icon centred in the body, depth above the Dog. */
+function drawBubble(scene: Phaser.Scene, ax: number, ay: number): void {
+  const { body, tail } = BUBBLE, cx = ax + body.dx, cy = ay + body.dy, g = scene.add.graphics().setDepth(BUBBLE.depth);
+  const shapes = (grow: number, dy: number) => { g.fillEllipse(cx, cy + dy, body.w + grow * 2, body.h + grow * 2); for (const t of tail) g.fillCircle(ax + t.dx, ay + t.dy + dy, t.r + grow); };
+  // Soft drop shadow without a blur: three widening low-alpha layers 4 px below, matching the gallery's drop-shadow(0 4px 6px).
+  for (const grow of [3, 1.5, 0]) { g.fillStyle(BUBBLE.shadow, 0.06); shapes(grow, 4); }
+  g.fillStyle(BUBBLE.fill, 1); shapes(0, 0);
+  const icon = scene.textures.exists(BUBBLE.icon) ? scene.add.image(cx, cy, BUBBLE.icon).setDisplaySize(BUBBLE.iconSize, BUBBLE.iconSize).setDepth(BUBBLE.depth + 1) : undefined;
+  Object.assign(report.bubble, {
+    drawn: true, anchor: { x: ax, y: ay }, body: { x: cx, y: cy, w: body.w, h: body.h, shape: 'ellipse' }, tail: tail.map(t => ({ x: ax + t.dx, y: ay + t.dy, r: t.r })),
+    fill: '#fffdf8', stroke: 'none', shadow: '#3a2a1f, 3 layers × alpha 0.06, offset (0, 4), grow 3/1.5/0 px', depth: BUBBLE.depth,
+    icon: icon ? { id: BUBBLE.icon, x: icon.x, y: icon.y, w: icon.displayWidth, h: icon.displayHeight, native: [icon.width, icon.height], offsetFromBodyCentre: [icon.x - cx, icon.y - cy] } : `${BUBBLE.icon} not loaded`,
+  });
 }
 /** Opaque (alpha > 0) bounding box of one texture frame, in frame pixels; measured from the decoded source image. */
 function opaqueBox(source: HTMLImageElement, fx = 0, fy = 0, fw = source.width, fh = source.height): OpaqueBox | null {
@@ -111,7 +132,7 @@ async function start(): Promise<void> {
   const manifest = AssetManifest.parse(await inputJson(report.manifestUrl));
   const room = RoomSchema.parse(await inputJson('/src/content/rooms/dog-room.json'));
   const charms = CharmsSchema.parse(await inputJson('/src/content/charms.json'));
-  const ids = [room.background, 'charms/dog-bed', 'charms/lamp', 'charms/painting', SHEET];
+  const ids = [room.background, 'charms/dog-bed', 'charms/lamp', 'charms/painting', SHEET, ...(showBubble ? [BUBBLE.icon] : [])];
   const queued: { entry: AssetEntry; row: LoadRow; blobUrl: string }[] = [];
   for (const id of ids) {
     const entry = manifest.entries.find(e => e.id === id);
@@ -163,6 +184,7 @@ async function start(): Promise<void> {
       }
       for (const id of ['charms/dog-bed', 'charms/lamp']) if (this.textures.exists(id)) report.opaque[id] = opaqueBox(this.textures.get(id).getSourceImage() as HTMLImageElement);
       this.placePet(room, manifest.entries.find(e => e.id === SHEET));
+      if (showBubble) drawBubble(this, room.petSpawn.x, room.petSpawn.y - bubbleOffset);
       if (guides) drawGuides(this, room);
       overlapReport(); report.phase = 'ready';
       const good = report.assets.filter(a => a.status === 'loaded-verified').length;
