@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "$comment": "WORK-013K / TASK-085 (APPROVAL-014): the Dog react becomes a rear-up (rise, upright on the hind legs with the tongue out, coming down, all fours). Rows 0-2 and 4-6 of the WORK-013J sheet (Git 2e1dcb5, verified by SHA-256) copied byte for byte; row 3 react built from the selected Asset-Bot candidate react-2 (JFIF data under a .png name, decoded by ffmpeg; seed 14004). Head height = ear tip to chin (where the lower jaw, or the hanging tongue in frame 2, meets the throat), measured by hand per frame on the keyed source (working/TASK-085/evidence/measurements.json): 141, 146, 153, 146 px; sourcePx is their mean. One scale for the row so the Dog keeps its size through the bounce; every frame's scaled head must be within headTolerancePx of 42 (idle frame 0). Key as use-poses-v1 (dilation 0 for the JPEG source). Run: npx tsx tools/assets/use-poses.ts --config tools/assets/react-v2.config.json --out <staging-dir>",
+  "frame": {
+    "w": 256,
+    "h": 256
+  },
+  "grid": {
+    "columns": 6,
+    "rows": 7
+  },
+  "base": {
+    "git": "2e1dcb5",
+    "path": "public/assets/pets/dog-sheet.png",
+    "sha256": "c94f333f37bb242de805e35c07d091a3dbeeec34cc65c6a1849ec36fa25d2daa",
+    "copyRows": [
+      0,
+      1,
+      2,
+      4,
+      5,
+      6
+    ]
+  },
+  "key": {
+    "backgroundMin": 240,
+    "backgroundChroma": 18,
+    "dilation": 0,
+    "holeMinArea": 40
+  },
+  "headTolerancePx": 4,
+  "poses": [
+    {
+      "clip": "react",
+      "row": 3,
+      "source": "phase-3-preproduction/production/use-poses-v1/candidates/react-2.png",
+      "sha256": "9f46b79e7aa7bf60bae9dca56b275d04233af2a0d021ae2a40cf1433e324827d",
+      "cells": 4,
+      "scale": 0.287,
+      "head": {
+        "sourcePx": 146.5,
+        "referencePx": 42,
+        "framesPx": [
+          141,
+          146,
+          153,
+          146
+        ]
+      }
+    }
+  ]
+}

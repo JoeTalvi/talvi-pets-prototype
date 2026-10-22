@@ -14,7 +14,7 @@ import { decodePixels, dimensions } from './image';
 import { flags, readJson } from './common';
 import { decodeRgba, encodePng, opaqueBox, type Box, type Rgba } from './refit';
 export interface Key { backgroundMin: number; backgroundChroma: number; dilation: number; holeMinArea: number }
-export interface Pose { clip: string; row: number; source: string; sha256: string; cells: number; exclude?: [number, number][]; scale: number; head: { sourcePx: number; referencePx: number }; standing?: { referencePx: number; tolerancePx: number } }
+export interface Pose { clip: string; row: number; source: string; sha256: string; cells: number; exclude?: [number, number][]; scale: number; head: { sourcePx: number; referencePx: number; framesPx?: number[] }; standing?: { referencePx: number; tolerancePx: number } }
 export interface Config { frame: { w: number; h: number }; grid: { columns: number; rows: number }; base: { git: string; path: string; sha256: string; copyRows: number[] }; key: Key; headTolerancePx: number; poses: Pose[] }
 const sha = (b: Uint8Array) => createHash('sha256').update(b).digest('hex');
 /** JPEG bytes (the Asset-Bot candidates are JFIF data under a .png name) decoded by ffmpeg, the tool check-assets already uses. */
@@ -181,11 +181,15 @@ export function blit(src: Rgba, dst: Rgba, sx: number, sy: number, dx: number, d
     for (let y = 0; y < h; y++)
         dst.data.set(src.data.subarray(((sy + y) * src.w + sx) * 4, ((sy + y) * src.w + sx + w) * 4), ((dy + y) * dst.w + dx) * 4);
 }
-/** The brief's scale rules: head height within headTolerancePx of the reference; a standing pose's opaque height within its tolerance. */
+/** The brief's scale rules: head height within headTolerancePx of the reference (every frame's when `head.framesPx` lists
+ * per-frame source heads, e.g. react's open mouth and head tilt); a standing pose's opaque height within its tolerance. */
 export function scaleIssues(pose: Pose, tolerance: number, frameHeights: number[]): string[] {
-    const issues: string[] = [], head = pose.head.sourcePx * pose.scale;
-    if (Math.abs(head - pose.head.referencePx) > tolerance)
-        issues.push(`${pose.clip}: head ${head.toFixed(1)} px is not within ±${tolerance} of ${pose.head.referencePx}`);
+    const issues: string[] = [], heads = pose.head.framesPx ?? [pose.head.sourcePx];
+    heads.forEach((sourcePx, i) => {
+        const head = sourcePx * pose.scale, label = pose.head.framesPx ? `${pose.clip} frame ${i}` : pose.clip;
+        if (Math.abs(head - pose.head.referencePx) > tolerance)
+            issues.push(`${label}: head ${head.toFixed(1)} px is not within ±${tolerance} of ${pose.head.referencePx}`);
+    });
     if (pose.standing && Math.abs(frameHeights[0] - pose.standing.referencePx) > pose.standing.tolerancePx)
         issues.push(`${pose.clip}: standing height ${frameHeights[0]} px is not within ±${pose.standing.tolerancePx} of ${pose.standing.referencePx}`);
     return issues;
@@ -207,7 +211,8 @@ export function buildRow(pose: Pose, config: Config, sheet: Rgba, workflowRoot: 
     if (issues.length)
         throw new Error(issues.join('; '));
     return { clip: pose.clip, row: pose.row, source: pose.source, sourceSha256: pose.sha256, exclude: pose.exclude ?? [], holesKeyed: holes, scale: pose.scale,
-        headPx: { source: pose.head.sourcePx, scaled: Math.round(pose.head.sourcePx * pose.scale * 10) / 10, reference: pose.head.referencePx }, frames };
+        headPx: { source: pose.head.sourcePx, scaled: Math.round(pose.head.sourcePx * pose.scale * 10) / 10, reference: pose.head.referencePx,
+            ...(pose.head.framesPx ? { framesSource: pose.head.framesPx, framesScaled: pose.head.framesPx.map(px => Math.round(px * pose.scale * 10) / 10) } : {}) }, frames };
 }
 /** Whole sheet: committed base rows copied, pose rows built, every other cell transparent. */
 export function buildSheet(config: Config, gameRoot: string): { png: Buffer; report: Record<string, unknown> } {

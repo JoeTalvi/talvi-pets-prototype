@@ -73,4 +73,10 @@ describe('use-poses scale rules (head height ±tolerance, standing height)', () 
         expect(scaleIssues(pose(0.42, true), 4, [117])).toEqual([]);
         expect(scaleIssues(pose(0.42, true), 4, [118])[0]).toMatch(/standing height 118 px/);
     });
+    it('checks every frame\'s head when per-frame source heads are configured (react: open mouth, head tilt)', () => {
+        const react = (scale: number): Pose => ({ ...pose(scale), clip: 'react', row: 3, head: { sourcePx: 146.5, referencePx: 42, framesPx: [141, 146, 153, 146] } });
+        expect(scaleIssues(react(0.287), 4, [])).toEqual([]);
+        expect(scaleIssues(react(0.305), 4, [])).toEqual(['react frame 2: head 46.7 px is not within ±4 of 42']);
+        expect(scaleIssues(react(0.265), 4, [])).toEqual(['react frame 0: head 37.4 px is not within ±4 of 42']);
+    });
 });
