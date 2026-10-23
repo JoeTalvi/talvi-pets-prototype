@@ -140,3 +140,13 @@ it('VERIFY-MEC-004-001 copies are unlimited and removal never changes ownership'
   expect(second.state.rooms['dog-room'].placements).toEqual({ 'floor-1': 'lamp', 'floor-2': 'lamp' });
   expect(removed.state.inventory.ownedTypeIds).toEqual(owned);
 });
+
+it('VERIFY-MEC-005-010 home-only: fern in dog-room emits no want.* for the Owl', () => {
+  const { content, state } = dogRoomDesign();
+  state.inventory.ownedTypeIds.push('fern');
+  state.pets.owl.introduced = true;
+  const result = reduce(content, deepFreeze(state), place('floor-1', 'fern'));
+  const wantEvents = result.events.filter(event => event.type.startsWith('want'));
+  expect(wantEvents.length).toBeGreaterThan(0);
+  expect(wantEvents.every(event => 'petId' in event && event.petId === 'dog')).toBe(true);
+});
