@@ -1,16 +1,29 @@
 import type { Content } from '../../content/types';
 import type { Action } from '../actions';
 import type { RuleResult, SimEvent } from '../events';
-import type { DialogueScript, GameState, PetId, WantId } from '../state';
+import type { DialogueScript, GameState, PetId, ProjectId, WantId } from '../state';
 
-/** Sources this lane builds; phaseMessage/completionMessage land with celebration (WORK-003-4). */
-export type ScriptSource = Extract<DialogueScript['source'], 'orientation' | 'intro' | 'wantAnnounce' | 'vignette'>;
+/** Sources the sim builds (`tutorial` is not built by any rule yet). */
+export type ScriptSource = Extract<DialogueScript['source'],
+  'orientation' | 'intro' | 'wantAnnounce' | 'vignette' | 'phaseMessage' | 'completionMessage'>;
+type ScriptIds = { petId?: PetId; wantId?: WantId; projectId?: ProjectId; phase?: number };
+
+/** MEC-008 §2.5 / MEC-002 §2.6: game-spoken project messages, copied from `projects.json`. */
+function projectScript(content: Content, source: 'phaseMessage' | 'completionMessage',
+  ids: ScriptIds): DialogueScript {
+  const project = content.projects.find(candidate => candidate.id === ids.projectId);
+  if (!project) throw new Error(`buildScript ${source} needs a known projectId`);
+  const lines = source === 'phaseMessage'
+    ? project.phaseMessages?.[(ids.phase ?? 0) - 1] : project.completionMessage;
+  if (!lines || lines.length === 0) throw new Error(`buildScript ${source} has no lines for "${project.id}"`);
+  return { source, speaker: { game: true }, lines: [...lines], index: 0, projectId: project.id };
+}
 
 /** MEC-008 §2.5: lines are copied from content at enqueue, so a saved script plays as saved. */
-export function buildScript(content: Content, source: ScriptSource,
-  ids: { petId?: PetId; wantId?: WantId } = {}): DialogueScript {
+export function buildScript(content: Content, source: ScriptSource, ids: ScriptIds = {}): DialogueScript {
   if (source === 'orientation')
     return { source, speaker: { game: true }, lines: [...content.dialogue.orientation], index: 0 };
+  if (source === 'phaseMessage' || source === 'completionMessage') return projectScript(content, source, ids);
   const pet = content.pets[ids.petId ?? ''];
   if (!pet) throw new Error(`buildScript ${source} needs a known petId`);
   const speaker = { petId: pet.id };

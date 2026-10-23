@@ -44,14 +44,15 @@ it.skipIf(!liveDocPresent)('VERIFY-CORE-001 drift: live core.md still declares t
     process.stdout.write('contract.test: core.md changed since the fixture was vendored; review tests/fixtures/core-contract.ts\n');
 });
 
-it('VERIFY-CORE-001 partial: selector exports cover only the delivered slice; full set remains deferred', () => {
+it('VERIFY-CORE-001 partial: selector exports are all 27 CONTRACT-SELECT names (three-set equality lands in WORK-003-5)', () => {
   const implemented = Object.keys(select).sort();
   expect(implemented).toEqual([
     'ackFloorCents', 'activeProjectId', 'activeWant', 'attentionVisible', 'boundaryCents', 'chooserTypes',
     'completeNowOffered', 'completeNowPriceCents', 'displayedPhase', 'doorEnabled', 'hudProjectId',
     'inputFrozen', 'missingWantTags', 'owedPhases', 'ownsTag', 'petUsingSlot', 'phaseOf', 'placementAt',
-    'residentPet', 'slotOf', 'starsOf', 'tagAvailability', 'typeUnlockPhase', 'wantConditions',
+    'residentPet', 'revealPopupView', 'revealProjectId', 'revealView', 'slotOf', 'starsOf', 'tagAvailability',
+    'typeUnlockPhase', 'wantConditions',
   ]);
   expect(implemented.every(name => (names.selectorNames as readonly string[]).includes(name))).toBe(true);
-  expect(names.selectorNames.length - implemented.length).toBe(3);
+  expect(names.selectorNames.length - implemented.length).toBe(0);
 });

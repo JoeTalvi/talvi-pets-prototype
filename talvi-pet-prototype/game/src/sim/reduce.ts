@@ -3,6 +3,13 @@ import type { Action, TickAction } from './actions';
 import type { RuleResult, SimEvent } from './events';
 import { stepAvatar } from './rules/avatar';
 import { afterWantActivated, stepBubbles, tapPet } from './rules/bubbles';
+import {
+  acknowledgeProject, arrivalFinished, closeReveal, collectRewards, cutsceneFinished, onStreetEntered, skipWait,
+} from './rules/celebration';
+import {
+  debugProgress, debugSetCurrent, debugSetEventInterval, debugSetSeed, debugSetting, debugSimulatePurchase,
+  debugUnlockAllTypes, reset,
+} from './rules/debug';
 import { advanceDialogue, stepScripts } from './rules/dialogue';
 import { stepDoors } from './rules/doors';
 import { stepFeed } from './rules/feed';
@@ -45,17 +52,20 @@ const payloadValid: Record<Action['type'], (action: Payload) => boolean> = {
   debugCompleteProject: action => isString(action.projectId),
   debugSetStarsVisible: action => isBoolean(action.on),
   debugSetMuted: action => isBoolean(action.on),
-  debugSetTesterLabel: action => isString(action.text),
+  debugSetTesterLabel: action => isString(action.text) && action.text.trim().length <= 40,
   reset: action => action.seed === undefined || isInteger(action.seed),
 };
 
-/** Convention 2: core §4 tick order: avatar, doors, feed, pets (4), scripts then bubbles (5).
- * WORK-003-4 inserts the street-arrival hook after doors; never reorder. */
+/** Convention 2: core §4 tick order: avatar, doors (+ the street-arrival hook), feed, pets (4),
+ * scripts then bubbles (5); never reorder. */
 type TickStep = (content: Content, state: GameState, action: TickAction,
   eventsSoFar: readonly SimEvent[]) => RuleResult;
 const tickSteps: TickStep[] = [
   (content, state, action) => ({ state: stepAvatar(content, state, action), events: [] }),
   (content, state) => stepDoors(content, state),
+  (content, state, _action, eventsSoFar) =>
+    eventsSoFar.some(event => event.type === 'scene.changed' && event.to.kind === 'street')
+      ? onStreetEntered(content, state) : { state, events: [] },
   (content, state, action) => stepFeed(content, state, action),
   stepResidentPet,
   (content, state, _action, eventsSoFar) => stepScripts(content, state, eventsSoFar, activateFirstWant),
@@ -97,20 +107,24 @@ function runPlacement(content: Content, before: GameState, outcome: SlotsResult)
   return { state: current, events };
 }
 
-const laterLane: Partial<Record<Action['type'], number>> = {};
+type Handlers = { [K in Action['type']]:
+  (content: Content, state: GameState, action: Extract<Action, { type: K }>) => RuleResult };
+const handlers: Handlers = {
+  tick: runTick, setDesignMode, advanceDialogue, tapPet,
+  placeCharm: (content, state, action) => runPlacement(content, state, applyPlace(content, state, action)),
+  removeCharm: (content, state, action) => runPlacement(content, state, applyRemove(content, state, action)),
+  acknowledgeProject, cutsceneFinished, collectRewards, skipWait, closeReveal, arrivalFinished,
+  debugSimulatePurchase, debugSetEventInterval, debugSetSeed, debugSetCurrent, debugUnlockAllTypes, reset,
+  debugJumpPhase: debugProgress, debugCompleteProject: debugProgress,
+  debugSetFeedPresentation: debugSetting, debugSetStarsVisible: debugSetting, debugSetMuted: debugSetting,
+  debugSetTesterLabel: debugSetting,
+};
 
-/** CONTRACT-ACTIONS v1.4: apply fully, or reject with `result.state === state`. */
+/** CONTRACT-ACTIONS v1.4: apply fully, or reject with `result.state === state`. Every action is handled. */
 export function reduce(content: Content, state: GameState, action: Action): RuleResult {
   const validate = payloadValid[action?.type];
   if (!validate || !validate(action as unknown as Payload))
     return { state, events: [{ type: 'action.rejected', action, reason: 'invalidPayload' }] };
-  switch (action.type) {
-    case 'tick': return runTick(content, state, action);
-    case 'setDesignMode': return setDesignMode(content, state, action);
-    case 'placeCharm': return runPlacement(content, state, applyPlace(content, state, action));
-    case 'removeCharm': return runPlacement(content, state, applyRemove(content, state, action));
-    case 'advanceDialogue': return advanceDialogue(content, state, action);
-    case 'tapPet': return tapPet(content, state, action);
-    default: throw new Error(`WORK-003-${laterLane[action.type] ?? 4} lands ${action.type}`);
-  }
+  const handle = handlers[action.type] as (content: Content, state: GameState, action: Action) => RuleResult;
+  return handle(content, state, action);
 }
