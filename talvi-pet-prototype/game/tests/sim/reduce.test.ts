@@ -50,7 +50,6 @@ describe('CONTRACT-ACTIONS v1.4 reduce', () => {
   });
 
   it.each([
-    [{ type: 'tapPet', petId: 'dog' }, 3],
     [{ type: 'acknowledgeProject', projectId: 'pet-house' }, 4], [{ type: 'reset' }, 4],
     [{ type: 'debugSimulatePurchase' }, 4], [{ type: 'collectRewards' }, 4],
   ] as [Action, number][])('CONTRACT-ACTIONS v1.4 reduce throws for an unlanded action %j', (action, lane) => {

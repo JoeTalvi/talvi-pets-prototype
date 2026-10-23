@@ -2,10 +2,13 @@ import type { Content } from '../content/types';
 import type { Action, TickAction } from './actions';
 import type { RuleResult, SimEvent } from './events';
 import { stepAvatar } from './rules/avatar';
+import { afterWantActivated, stepBubbles, tapPet } from './rules/bubbles';
 import { advanceDialogue, stepScripts } from './rules/dialogue';
 import { stepDoors } from './rules/doors';
 import { stepFeed } from './rules/feed';
 import { setDesignMode } from './rules/mode';
+import { afterRemoval, stepResidentPet } from './rules/pets';
+import { afterPlacement } from './rules/reactions';
 import { applyPlace, applyRemove, type PlacementChange, type SlotsResult } from './rules/slots';
 import { afterRoomChange } from './rules/stars';
 import { activateFirstWant, afterRoomChange as wantsAfterRoomChange } from './rules/wants';
@@ -46,20 +49,21 @@ const payloadValid: Record<Action['type'], (action: Payload) => boolean> = {
   reset: action => action.seed === undefined || isInteger(action.seed),
 };
 
-/** Convention 2: core §4 tick order. Step 5's scripts half is the last entry; later lanes insert
- * step 4 (pets) before it, append the bubble countdown after it and the street-arrival hook after
- * doors; never reorder. */
+/** Convention 2: core §4 tick order: avatar, doors, feed, pets (4), scripts then bubbles (5).
+ * WORK-003-4 inserts the street-arrival hook after doors; never reorder. */
 type TickStep = (content: Content, state: GameState, action: TickAction,
   eventsSoFar: readonly SimEvent[]) => RuleResult;
 const tickSteps: TickStep[] = [
   (content, state, action) => ({ state: stepAvatar(content, state, action), events: [] }),
   (content, state) => stepDoors(content, state),
   (content, state, action) => stepFeed(content, state, action),
+  stepResidentPet,
   (content, state, _action, eventsSoFar) => stepScripts(content, state, eventsSoFar, activateFirstWant),
+  stepBubbles,
 ];
 
-/** Convention 3: core §6.1 placement chain, run after slots writes the placement.
- * Later lanes append reactions.afterPlacement / pets.afterRemoval after the wants link. */
+/** Convention 3: core §6.1 placement chain, run after slots writes the placement:
+ * stars → wants → reactions (placed) / pets (removed) → the want-bubble reset on `want.activated`. */
 type PlacementLink = (content: Content, before: GameState, current: GameState,
   change: PlacementChange, eventsSoFar: readonly SimEvent[]) => RuleResult;
 const placementChain: PlacementLink[] = [
@@ -67,6 +71,9 @@ const placementChain: PlacementLink[] = [
     events: afterRoomChange(content, before, current, (before.scene as { roomId: RoomId }).roomId) }),
   (content, before, current, change) =>
     wantsAfterRoomChange(content, current, (before.scene as { roomId: RoomId }).roomId, change),
+  afterPlacement,
+  (content, before, current, change) => afterRemoval(content, before, current, change),
+  (content, before, current, _change, eventsSoFar) => afterWantActivated(content, before, current, eventsSoFar),
 ];
 
 function runTick(content: Content, state: GameState, action: TickAction): RuleResult {
@@ -90,7 +97,7 @@ function runPlacement(content: Content, before: GameState, outcome: SlotsResult)
   return { state: current, events };
 }
 
-const laterLane: Partial<Record<Action['type'], number>> = { tapPet: 3 };
+const laterLane: Partial<Record<Action['type'], number>> = {};
 
 /** CONTRACT-ACTIONS v1.4: apply fully, or reject with `result.state === state`. */
 export function reduce(content: Content, state: GameState, action: Action): RuleResult {
@@ -103,6 +110,7 @@ export function reduce(content: Content, state: GameState, action: Action): Rule
     case 'placeCharm': return runPlacement(content, state, applyPlace(content, state, action));
     case 'removeCharm': return runPlacement(content, state, applyRemove(content, state, action));
     case 'advanceDialogue': return advanceDialogue(content, state, action);
+    case 'tapPet': return tapPet(content, state, action);
     default: throw new Error(`WORK-003-${laterLane[action.type] ?? 4} lands ${action.type}`);
   }
 }

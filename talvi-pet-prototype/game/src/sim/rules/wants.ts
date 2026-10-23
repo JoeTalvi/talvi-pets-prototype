@@ -110,11 +110,16 @@ export function missingWantTags(content: Content, state: GameState, petId: PetId
     .filter(view => view.kind === 'tag' && !view.hidden && !view.met).map(view => view.tag!);
 }
 
+/** The want's hidden tag condition's tag, revealed or not (mec-007 §2.5 ladder row 1). */
+export function hiddenTagOf(want: Want): TagId | null {
+  const condition = want.conditions.find(candidate => candidate.kind === 'tag' && candidate.hidden === true);
+  return condition?.kind === 'tag' ? condition.tag : null;
+}
+
 /** Rule-module export for reactions (mec-007): the active want's hidden tag, revealed or not. */
 export function hiddenTagOfActiveWant(content: Content, state: GameState, petId: PetId): TagId | null {
-  const condition = activeWant(content, state, petId)?.want.conditions
-    .find(candidate => candidate.kind === 'tag' && candidate.hidden === true);
-  return condition?.kind === 'tag' ? condition.tag : null;
+  const active = activeWant(content, state, petId);
+  return active ? hiddenTagOf(active.want) : null;
 }
 
 /** MEC-009 R5: record the reveal and emit `want.hiddenRevealed` once per want. */

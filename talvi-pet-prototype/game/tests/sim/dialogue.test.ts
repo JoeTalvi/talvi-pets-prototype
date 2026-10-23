@@ -78,7 +78,7 @@ it('VERIFY-MEC-008-002 linear advance, close, then noDialogue', () => {
 
 it('VERIFY-MEC-008-003 / VERIFY-MEC-009-001 intro and want announce on first entry, never again', () => {
   const { content, entered } = enteredDogRoom();
-  const kinds = types(entered.events);
+  const kinds = types(entered.events).filter(type => !type.startsWith('pet.'));
   expect(kinds.slice(kinds.indexOf('scene.changed'))).toEqual(['scene.changed', 'dialogue.opened', 'want.activated']);
   expect(entered.events).toContainEqual({ type: 'dialogue.opened', script: { source: 'intro',
     speaker: { petId: 'dog' }, lines: content.pets.dog.lines.intro, index: 0 } });
