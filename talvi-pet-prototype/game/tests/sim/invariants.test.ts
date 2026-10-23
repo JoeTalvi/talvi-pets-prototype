@@ -2,9 +2,10 @@ import { expect, it } from 'vitest';
 import type { Content } from '../../src/content/types';
 import { pointInPolygon } from '../../src/sim/geometry';
 import { reduce } from '../../src/sim/reduce';
-import { starsOf } from '../../src/sim/select';
+import { doorEnabled, phaseOf, starsOf } from '../../src/sim/select';
 import { initialState, type GameState } from '../../src/sim/state';
 import { nextAction } from './arbitrary';
+import { validContent } from '../content/helpers';
 import { deepFreeze, squareFixture } from './helpers';
 
 /** VERIFY-CORE-003 (invariant 2, VERIFY-MEC-009-018) and VERIFY-CORE-010 (MEC-008 dialogue shape). */
@@ -31,8 +32,25 @@ function expectPetInvariants(content: Content, state: GameState): void {
   expect(state.rooms[room.id].placements[(behaviour.target as { slotId: string }).slotId]).toBeDefined();
 }
 
+/** VERIFY-CORE-002 / VERIFY-CORE-006 partial (invariants 1, 5, 6) = VERIFY-MEC-002-022. */
+function expectProjectInvariants(content: Content, state: GameState): void {
+  for (const project of content.projects) {
+    const progress = state.projects[project.id];
+    expect(progress.currentCents >= 0 && progress.currentCents <= project.goalCents).toBe(true);
+    expect(progress.acknowledgedPhase).toBeGreaterThanOrEqual(0);
+    expect(progress.acknowledgedPhase).toBeLessThanOrEqual(phaseOf(progress.currentCents, project.goalCents));
+    if (progress.complete) expect(progress.acknowledgedPhase).toBe(5);
+    const house = content.street.houses.find(candidate => candidate.projectId === project.id)!;
+    const door = content.rooms[project.interiorRoomId].doors.find(candidate => candidate.target.scene === 'street');
+    expect(doorEnabled(content, state, house.door)).toBe(progress.complete && progress.arrivalDone);
+    if (door) expect(doorEnabled(content, state, door)).toBe(true);
+  }
+  if (state.celebration !== null) expect(state.scene.kind).toBe('street');
+}
+
 function expectInvariants(content: Content, state: GameState): void {
   expectWantAndDialogueInvariants(content, state);
+  expectProjectInvariants(content, state);
   expectPetInvariants(content, state);
   if (state.mode === 'design') expect(state.scene.kind).toBe('interior');
   const polygon = state.scene.kind === 'street' ? content.street.walkArea
@@ -51,7 +69,7 @@ function expectInvariants(content: Content, state: GameState): void {
 }
 
 it.each([1, 2, 3])(
-  'VERIFY-MEC-001-015 / VERIFY-CORE-003,004,005,006,008,010 / VERIFY-MEC-009-018 partial: 500 valid tick/setDesignMode/placeCharm/removeCharm/advanceDialogue/tapPet actions at seed %s with VERIFY-CORE-011 partial pet invariants (celebration and debug families land in WORK-003-4..5)', seed => {
+  'VERIFY-MEC-001-015 / VERIFY-CORE-003,004,005,006,008,010 / VERIFY-MEC-009-018 partial: 500 valid tick/setDesignMode/placeCharm/removeCharm/advanceDialogue/tapPet/celebration/debug actions at seed %s with VERIFY-CORE-011 partial pet invariants and project invariants 1, 5, 6', seed => {
     const { content } = squareFixture(seed);
     let state = initialState(content, seed), replay = initialState(content, seed), cursor = seed;
     let sceneChanges = 0, modeChanges = 0, placements = 0, advances = 0;
@@ -75,6 +93,26 @@ it.each([1, 2, 3])(
     expect(advances).toBeGreaterThan(1);
   },
 );
+
+it('VERIFY-MEC-002-022 / VERIFY-CORE-002, VERIFY-CORE-006, VERIFY-CORE-007 partial: celebration and debug actions over seeds 1..3 keep invariants 1, 5, 6 and 7; at least one celebration.started and one arrival.finished', () => {
+  const content = validContent();
+  let celebrations = 0, arrivals = 0;
+  for (const seed of [1, 2, 3]) {
+    let state = initialState(content, seed), cursor = seed;
+    for (let index = 0; index < 1500; index++) {
+      const generated = nextAction(content, state, cursor); cursor = generated.seed;
+      const result = reduce(content, deepFreeze(state), generated.action);
+      expect(result.events.filter(event => event.type === 'action.rejected')).toEqual([]);
+      expect(JSON.parse(JSON.stringify(result.state))).toEqual(result.state);
+      expectProjectInvariants(content, result.state);
+      celebrations += result.events.filter(event => event.type === 'celebration.started').length;
+      arrivals += result.events.filter(event => event.type === 'arrival.finished').length;
+      state = result.state;
+    }
+  }
+  expect(celebrations).toBeGreaterThan(0);
+  expect(arrivals).toBeGreaterThan(0);
+});
 
 it('VERIFY-CORE-011 / VERIFY-CORE-008 / VERIFY-CORE-009 partial (pet stream): 2,000 generated actions give identical pet decisions when only feed.rngState differs', () => {
   const { content } = squareFixture(1);
