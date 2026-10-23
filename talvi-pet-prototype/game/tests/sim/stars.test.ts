@@ -124,15 +124,16 @@ it.each([1, 2, 3])('VERIFY-MEC-006-008 isolated property: 500 valid snapshot edi
   }
 });
 
+/** The Dog stays un-introduced so MEC-009 never evaluates and its vignette cannot freeze placements. */
+function scoringRoom() {
+  const room = dogRoomDesign();
+  room.state.pets.dog.introduced = false;
+  return room;
+}
+
 describe('MEC-006 through the placeCharm/removeCharm dispatch', () => {
   const place = (slotId: string, typeId: string): Action => ({ type: 'placeCharm', slotId, typeId });
   const starsEvents = (events: SimEvent[]) => events.filter(event => event.type === 'stars.changed');
-  /** The Dog stays un-introduced so MEC-009 never evaluates and its vignette cannot freeze placements. */
-  function scoringRoom() {
-    const room = dogRoomDesign();
-    room.state.pets.dog.introduced = false;
-    return room;
-  }
   function dispatch(content: Content, state: GameState, actions: Action[]): GameState {
     return actions.reduce((current, action) => reduce(content, current, action).state, state);
   }
