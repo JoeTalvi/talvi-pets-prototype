@@ -7,12 +7,14 @@ export const STORAGE_KEYS = { save: 'tpp.save', log: 'tpp.log' } as const;
 export type LogLine = { t: number; wall: string; type: string; [k: string]: unknown };
 
 /** Core §3 controller-level records (not bus events; never pass through `reduce`). */
-export type ControllerRecordType =
-  | 'session.started' | 'save.written' | 'save.discarded' | 'save.loaded' | 'log.exported' | 'log.quota'
-  | 'input.tap' | 'input.drag' | 'input.joystick' | 'asset.loadError' | 'audio.locked' | 'app.error'
-  | 'ui.revealPanel' | 'ui.debugPanel' | 'ui.chooserOpened' | 'ui.chooserClosed' | 'ui.sheetOpened'
-  | 'ui.sheetClosed' | 'ui.bubbleTapped' | 'ui.rewardTile' | 'ui.wantPanel' | 'ui.starsExplained'
-  | 'ui.rotateCurtain' | 'ui.revealCard' | 'ui.roomEditor' | 'ui.preview' | 'perf.sample';
+export const CONTROLLER_RECORD_TYPES = [
+  'session.started', 'save.written', 'save.discarded', 'save.loaded', 'log.exported', 'log.quota',
+  'input.tap', 'input.drag', 'input.joystick', 'asset.loadError', 'audio.locked', 'app.error',
+  'ui.revealPanel', 'ui.debugPanel', 'ui.chooserOpened', 'ui.chooserClosed', 'ui.sheetOpened',
+  'ui.sheetClosed', 'ui.bubbleTapped', 'ui.rewardTile', 'ui.wantPanel', 'ui.starsExplained',
+  'ui.rotateCurtain', 'ui.revealCard', 'ui.roomEditor', 'ui.preview', 'perf.sample',
+] as const;
+export type ControllerRecordType = typeof CONTROLLER_RECORD_TYPES[number];
 
 /** `session.started` payload, built by the caller (core §3). */
 export type SessionHeader = {
