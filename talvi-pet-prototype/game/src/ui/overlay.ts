@@ -4,13 +4,14 @@ import type { ViewContext } from '@view/context';
 import { createHudInterior } from './panels/hudInterior';
 import { createChooser } from './panels/chooser';
 import { createReplaceRemove } from './panels/replaceRemove';
+import { createDebugPanel, type DebugPanel } from './panels/debugPanel';
 
 export type OverlayContext = { findings: readonly Finding[]; lenient: boolean };
 export type TextParams = Record<string, string | number>;
 export type Text = (key: string, params?: TextParams) => string;
 /** The panel module API WORK-014-3/-4 and WORK-019/020 follow. */
 export type Panel = { open?(slotId: string): void; close?(reason?: string): void; destroy(): void };
-export type Panels = { hudInterior: Panel; chooser: Panel; replaceRemove: Panel };
+export type Panels = { hudInterior: Panel; chooser: Panel; replaceRemove: Panel; debugPanel: DebugPanel };
 
 /** UI strings WORK-011 proposed that `strings.json` does not carry yet (returned to WORK-021 as strings-additions.json). */
 export const FALLBACK_STRINGS: Readonly<Record<string, string>> = {
@@ -57,9 +58,10 @@ function findingsBanner(findings: readonly Finding[]): HTMLElement {
   return banner;
 }
 
-/** Presentation §8: mounted once at startup in z-order HUD < chooser < sheet; the sheet's Replace reaches the chooser through the bus. */
+/** Presentation §8: mounted once at startup in z-order HUD < chooser < sheet < debug (6); the sheet's Replace reaches the chooser through the bus. */
 export function mountPanels(panels: HTMLElement, context: ViewContext): Panels {
-  return { hudInterior: createHudInterior(panels, context), chooser: createChooser(panels, context), replaceRemove: createReplaceRemove(panels, context) };
+  const hudInterior = createHudInterior(panels, context), chooser = createChooser(panels, context), replaceRemove = createReplaceRemove(panels, context);
+  return { hudInterior, chooser, replaceRemove, debugPanel: createDebugPanel(panels, context) };
 }
 
 /** The HTML layer over the canvas: safe-area probe, findings banner (lenient), `#panels` (mounted when given a full ViewContext). */

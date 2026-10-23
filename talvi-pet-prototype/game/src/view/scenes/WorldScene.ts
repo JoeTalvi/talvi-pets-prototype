@@ -8,6 +8,7 @@ import { AvatarSprite } from '../objects/AvatarSprite';
 import { Joystick } from '../objects/Joystick';
 import { contextOf, type ViewContext } from '../context';
 import { startSceneFor } from '../startup';
+import { drawAlignment } from '../alignmentGrid';
 
 export const FADE_MS = 250;
 
@@ -17,6 +18,7 @@ export abstract class WorldScene extends Phaser.Scene {
   avatar!: AvatarSprite;
   joystick!: Joystick;
   transitioning = false;
+  alignment: Phaser.GameObjects.Graphics | null = null;
   protected unsubscribes: (() => void)[] = [];
   abstract drawWorld(): void;
   /** Interior adds its own subscriptions and per-frame syncs. */
@@ -31,6 +33,11 @@ export abstract class WorldScene extends Phaser.Scene {
     this.joystick = new Joystick(this, this.context);
     this.subscribeCommon();
     this.subscribeScene();
+    this.alignment = null;
+    this.syncAlignmentGrid();
+    const redraw = () => { this.alignment?.destroy(); this.alignment = null; this.syncAlignmentGrid(); };
+    this.scale.on(Phaser.Scale.Events.RESIZE, redraw);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.scale.off(Phaser.Scale.Events.RESIZE, redraw));
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.teardown());
     this.transitioning = true;
     this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_IN_COMPLETE, () => { this.transitioning = false; });
@@ -42,10 +49,18 @@ export abstract class WorldScene extends Phaser.Scene {
     const { store, keyboard, content } = this.context;
     const frozen = inputFrozen(content, store.getState()) || this.transitioning || this.context.debugOpen;
     this.joystick.setVisible(!frozen);
+    this.syncAlignmentGrid();
     store.dispatch({ type: 'tick', dtMs: delta, move: moveVector({ joystick: this.joystick, keyboard, frozen }) });
     if (this.transitioning) return;
     this.avatar.sync(store.getState().avatar);
     this.syncScene();
+  }
+
+  /** Debug row 18: draws or removes the crosshairs to follow `context.alignmentGrid` (view-only state). */
+  syncAlignmentGrid(): void {
+    const on = this.context.alignmentGrid === true;
+    if (on && !this.alignment) this.alignment = drawAlignment(this);
+    else if (!on && this.alignment) { this.alignment.destroy(); this.alignment = null; }
   }
 
   protected on<T extends SimEvent['type']>(type: T, fn: (event: EventOf<T>, stateAfter: GameState) => void): void {

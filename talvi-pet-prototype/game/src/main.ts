@@ -14,7 +14,8 @@ import { createGame } from '@view/game';
 import { syncOverlay } from '@view/overlaySync';
 import type { ViewContext } from '@view/context';
 import { findingsOf, hasErrors, lenientAllowed } from '@view/startup';
-import { mountOverlay } from '@ui/overlay';
+import { mountOverlay, setAlignmentGrid } from '@ui/overlay';
+import { sampleFps } from '@ui/panels/debugPanel';
 import { showContentError, showError } from '@ui/panels/errorScreen';
 import { createRotateCurtain } from '@ui/panels/rotateCurtain';
 import '@ui/styles/tokens.css';
@@ -56,7 +57,7 @@ function createKernel(content: Content): { store: Store; log: Log; context: Omit
   persistence.attach(store);
   const bus = createPresentationBus(log.record);
   const keyboard = createKeyboard();
-  return { store, log, context: { content, store, log, persistence, audio: null, bus, keyboard, debugOpen: false } };
+  return { store, log, context: { content, store, log, persistence, audio: null, bus, keyboard, debugOpen: false, headerFor, storage } };
 }
 
 /** Step 8 on `ready`: overlay sync, pointer routing, curtain, audio (attached exactly once), then `store.start()`. */
@@ -71,10 +72,13 @@ function onReady(game: Phaser.Game, root: HTMLElement, context: ViewContext): vo
     play: (id, opts) => { game.sound.play(id, opts); }, setMute: muted => { game.sound.mute = muted; }, locked: () => game.sound.locked,
   }, { available, record: context.log.record });
   context.audio = audio;
+  context.fps = () => game.loop.actualFps;
+  context.soundLocked = () => game.sound.locked;
+  context.sample = state => sampleFps(context.fps!, context.log.record, state);
   audio.attach(context.store);
   audio.start(context.store.getState());
   context.store.start();
-  if (import.meta.env.DEV) Object.assign(window, { __tpp: { game, store: context.store, content: context.content, log: context.log, context } });
+  if (import.meta.env.DEV) Object.assign(window, { __tpp: { game, store: context.store, content: context.content, log: context.log, context, sample: context.sample } });
 }
 
 function reportErrors(log: Log): void {
@@ -96,6 +100,8 @@ async function boot(): Promise<void> {
   const context: ViewContext = { ...kernel, manifest: inputs.manifest, findings: inputs.findings, lenient: inputs.lenient };
   const root = document.getElementById('overlay')!;
   mountOverlay(root, context);
+  // Dev-only `?grid=1`: the alignment grid on at boot so capture tools see it without opening the panel (WORK-014-3).
+  if (import.meta.env.DEV && new URLSearchParams(location.search).get('grid') === '1') { context.alignmentGrid = true; setAlignmentGrid(root, true); }
   const game = createGame(context);
   game.events.once('ready', () => onReady(game, root, context));
 }
