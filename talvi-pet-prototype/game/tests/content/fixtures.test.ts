@@ -9,6 +9,8 @@ import { reduce } from '../../src/sim/reduce';
 import type { GameState } from '../../src/sim/state';
 import { parseSaveValue } from '../../src/sim/state.schema';
 import { FIXTURE_DIR, generateFixture, readSteps, STEPS_DIR, stepsFiles } from '../../tools/make-fixture';
+import { loadContent } from '../../src/content/load';
+import { readContentFiles } from '../../tools/content/io';
 import { validContent } from './helpers';
 
 const content = validContent();
@@ -70,14 +72,29 @@ describe('VERIFY-TOOL-008 CLI', () => {
     expect(result.status).toBe(0);
     expect(readFileSync(out, 'utf8')).toBe(committed('save-v1.reveal.json'));
   });
-  it('VERIFY-TOOL-008 --scenario celebration-milestone writes a save at step milestone with clueIndices [1, 2, 3] (in-engine replay is WORK-021)', () => {
+  it('VERIFY-TOOL-008 --scenario celebration-milestone on the default content (src/content) writes a save at step milestone with clueIndices [1, 2, 3] (in-engine replay is WORK-021)', () => {
     const out = join(dir, 'milestone.json');
-    expect(fixture(['--scenario', 'celebration-milestone', '--content', 'tests/fixtures/content-min', '--out', out]).status).toBe(0);
+    expect(fixture(['--scenario', 'celebration-milestone', '--out', out]).status).toBe(0);
     const { celebration } = (JSON.parse(readFileSync(out, 'utf8')) as { state: GameState }).state;
     expect(celebration!.step).toBe('milestone');
     expect(clueIndices(celebration!.fromPhase, celebration!.toPhase)).toEqual([1, 2, 3]);
   });
+  it('VERIFY-TOOL-008 repeat "drain" on any action but advanceDialogue exits 1', () => {
+    const steps = join(dir, 'drain.json');
+    writeFileSync(steps, JSON.stringify({ seed: 1, steps: [{ action: { type: 'skipWait' }, repeat: 'drain' }] }));
+    const result = fixture(['--steps', steps, '--content', 'tests/fixtures/content-min']);
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('repeat "drain" applies only to advanceDialogue');
+  });
   it('VERIFY-TOOL-008 an unknown flag exits 3', () => {
     expect(fixture(['--nope']).status).toBe(3);
+  });
+});
+
+describe('VERIFY-TOOL-008 named scenarios over the real content (src/content)', async () => {
+  const real = loadContent(undefined, await readContentFiles('src/content'));
+  it.each(stepsFiles())('VERIFY-TOOL-008 %s generates over src/content and loads there without discard', name => {
+    const text = generateFixture(real, readSteps(join(STEPS_DIR, name)));
+    expect(parseSaveValue(real, JSON.parse(text))).not.toHaveProperty('discarded');
   });
 });

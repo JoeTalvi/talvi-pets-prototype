@@ -15,7 +15,7 @@
       "action": {
         "type": "advanceDialogue"
       },
-      "repeat": 2
+      "repeat": "drain"
     },
     {
       "action": {

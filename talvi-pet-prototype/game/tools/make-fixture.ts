@@ -14,7 +14,8 @@ import { readContentFiles } from './content/io';
 export const SAVED_AT = '2026-01-01T00:00:00.000Z';
 export const STEPS_DIR = 'tests/fixtures/steps';
 export const FIXTURE_DIR = 'tests/fixtures';
-export type Step = { action: Action; repeat?: number } | { set: { path: string; value: unknown } };
+/** `repeat: "drain"` (advanceDialogue only) dispatches until no dialogue is open, so steps hold on any content's scripts. */
+export type Step = { action: Action; repeat?: number | 'drain' } | { set: { path: string; value: unknown } };
 export type StepsFile = { seed: number; steps: Step[] };
 
 /** A fixture problem the tool reports with exit 1 (rejection, disallowed set, schema or invariant failure). */
@@ -44,12 +45,28 @@ function applyStep(content: Content, state: GameState, step: Step, index: number
     setPointer(next, step.set.path, structuredClone(step.set.value));
     return next;
   }
+  if (step.repeat === 'drain') return drainDialogue(content, state, step.action, index);
   let current = state;
-  for (let count = 0; count < (step.repeat ?? 1); count++) {
-    const result = reduce(content, current, step.action);
-    const rejected = result.events.find(event => event.type === 'action.rejected');
-    if (rejected) throw new FixtureError(`step ${index}: ${step.action.type} rejected: ${rejected.reason}`);
-    current = result.state;
+  for (let count = 0; count < (step.repeat ?? 1); count++) current = dispatch(content, current, step.action, index);
+  return current;
+}
+
+function dispatch(content: Content, state: GameState, action: Action, index: number): GameState {
+  const result = reduce(content, state, action);
+  const rejected = result.events.find(event => event.type === 'action.rejected');
+  if (rejected) throw new FixtureError(`step ${index}: ${action.type} rejected: ${rejected.reason}`);
+  return result.state;
+}
+
+const DRAIN_LIMIT = 100;
+
+/** Each advance still goes through `reduce`; zero advances when no dialogue is open. */
+function drainDialogue(content: Content, state: GameState, action: Action, index: number): GameState {
+  if (action.type !== 'advanceDialogue') throw new FixtureError(`step ${index}: repeat "drain" applies only to advanceDialogue`);
+  let current = state;
+  for (let count = 0; current.dialogue.current !== null; count++) {
+    if (count === DRAIN_LIMIT) throw new FixtureError(`step ${index}: dialogue still open after ${DRAIN_LIMIT} advances`);
+    current = dispatch(content, current, action, index);
   }
   return current;
 }

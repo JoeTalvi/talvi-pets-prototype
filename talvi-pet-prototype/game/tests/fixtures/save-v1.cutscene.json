@@ -80,7 +80,7 @@
         "placements": {
           "large-1": "dog-bed",
           "floor-3": "lamp",
-          "floor-5": "stool"
+          "floor-5": "fern"
         }
       },
       "owl-room": {
@@ -106,10 +106,10 @@
           "facing": "left",
           "timerMs": 0,
           "target": {
-            "slotId": "floor-5"
+            "slotId": "large-1"
           },
-          "verb": null,
-          "reaction": "like"
+          "verb": "nap",
+          "reaction": "love"
         },
         "rngState": 191035232,
         "recentTargets": [],

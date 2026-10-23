@@ -15,18 +15,30 @@
       "action": {
         "type": "advanceDialogue"
       },
-      "repeat": 2
+      "repeat": "drain"
     },
     {
       "action": {
         "type": "tick",
         "dtMs": 100,
         "move": {
-          "x": -1,
+          "x": 0,
           "y": 0
         }
       },
       "repeat": 8
+    },
+    {
+      "set": {
+        "path": "/avatar",
+        "value": {
+          "x": 385,
+          "y": 810,
+          "facing": "up",
+          "immunityMs": 0,
+          "facingCandidate": null
+        }
+      }
     },
     {
       "action": {
@@ -42,7 +54,7 @@
       "action": {
         "type": "advanceDialogue"
       },
-      "repeat": 2
+      "repeat": "drain"
     }
   ]
 }

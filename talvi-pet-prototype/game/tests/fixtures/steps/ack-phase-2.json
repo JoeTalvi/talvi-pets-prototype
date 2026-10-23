@@ -15,7 +15,7 @@
       "action": {
         "type": "advanceDialogue"
       },
-      "repeat": 2
+      "repeat": "drain"
     },
     {
       "action": {
@@ -49,7 +49,7 @@
       "action": {
         "type": "advanceDialogue"
       },
-      "repeat": 1
+      "repeat": "drain"
     }
   ]
 }
