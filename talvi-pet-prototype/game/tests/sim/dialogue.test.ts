@@ -137,7 +137,7 @@ it('VERIFY-MEC-008-005 a script enqueued while one is open is appended and opens
   expect(last.events).toEqual([{ type: 'dialogue.closed', source: 'wantAnnounce' }, { type: 'dialogue.opened', script: extra }]);
 });
 
-it('VERIFY-MEC-008-006 frozen input while a dialogue is open (tapPet is WORK-003-3)', () => {
+it('VERIFY-MEC-008-006 frozen input while a dialogue is open (the tapPet half is in bubbles.test.ts)', () => {
   const { content, state } = dogRoomDesign();
   const open = enqueueScript(state, buildScript(content, 'intro', { petId: 'dog' })).state;
   const play = { ...open, mode: 'play' as const };
