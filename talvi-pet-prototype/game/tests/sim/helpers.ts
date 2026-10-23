@@ -4,7 +4,8 @@ import type { Action, TickAction } from '../../src/sim/actions';
 import type { RuleResult, SimEvent } from '../../src/sim/events';
 import { initialState, type GameState } from '../../src/sim/state';
 import { reduce } from '../../src/sim/reduce';
-import { validContent } from '../content/helpers';
+import { loadContent } from '../../src/content/load';
+import { files, manifest, patchFiles, validContent } from '../content/helpers';
 import square from '../fixtures/room-square.json';
 
 /** FX-ROOM-SQUARE; orientation and the Dog intro are marked done so MEC-001 rows are not frozen
@@ -54,3 +55,27 @@ export function deepFreeze<T>(value: T): T {
   }
   return value;
 }
+
+/** Fork-1 in-test variant of FX-CONTENT-MIN: the Dog also likes `light` (weight 1), as design §7
+ * and the real Dog do (CONTENT v1.4 allows 2–4 likes); the fixture directory is untouched. */
+export function dogLikesLight(): Content {
+  const dog = validContent().pets.dog;
+  return loadContent(manifest, patchFiles(files(), [
+    { file: 'pets/dog.json', path: '/likes', value: [...dog.likes, { tag: 'light', weight: 1 }] },
+  ]));
+}
+
+/** `dogRoomDesign` on another content, with the Dog's first want already fulfilled (want 2 active). */
+export function designIn(content: Content, fulfilled: string[] = [], seed = 1): GameState {
+  const state = initialState(content, seed);
+  state.scene = { kind: 'interior', roomId: 'dog-room' };
+  state.mode = 'design';
+  state.session.orientationShown = true;
+  state.pets.dog.introduced = true;
+  state.pets.dog.fulfilledWantIds = [...fulfilled];
+  state.pets.dog.hearts = fulfilled.length;
+  return state;
+}
+
+export const eventsOf = <T extends SimEvent['type']>(events: readonly SimEvent[], type: T) =>
+  events.filter((event): event is Extract<SimEvent, { type: T }> => event.type === type);
