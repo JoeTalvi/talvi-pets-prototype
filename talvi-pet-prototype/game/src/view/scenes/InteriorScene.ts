@@ -1,10 +1,16 @@
 import type { Room, Slot } from '@content/schema/room';
+import { placementAt } from '@sim/select';
+import { recordPointer, type PointerSample } from '@app/input/pointerRouting';
 import { CharmSprite } from '../objects/CharmSprite';
 import { PetSprite } from '../objects/PetSprite';
+import { SlotOutline } from '../objects/SlotOutline';
 import { WorldScene } from './WorldScene';
 
 const POP_MS = 180;
 const REMOVE_FADE_MS = 120;
+
+/** The pointer fields the routing reads (a Phaser pointer, or synthetic data in jsdom — GAP-5). */
+export type ScenePointer = { id: number; worldX: number; worldY: number; downTime: number; upTime: number };
 
 /** Presentation §4 Interior: room art, charms at slot positions, the avatar and the resident pet, all from content and state. */
 export class InteriorScene extends WorldScene {
@@ -12,6 +18,9 @@ export class InteriorScene extends WorldScene {
   room!: Room;
   charms = new Map<string, CharmSprite>();
   pet?: PetSprite;
+  outlines = new Map<string, SlotOutline>();
+  private downs = new Map<number, PointerSample>();
+  private joystickPointer: number | null = null;
   private paintingErrorRecorded = false;
   constructor() { super('Interior'); }
   init(data: { roomId?: string }): void {
@@ -19,6 +28,9 @@ export class InteriorScene extends WorldScene {
     this.transitioning = false;
     this.charms = new Map();
     this.pet = undefined;
+    this.outlines = new Map();
+    this.downs = new Map();
+    this.joystickPointer = null;
   }
   drawWorld(): void {
     const { content, store } = this.context;
@@ -27,7 +39,49 @@ export class InteriorScene extends WorldScene {
     const placements = store.getState().rooms[this.roomId]?.placements ?? {};
     for (const [slotId, typeId] of Object.entries(placements)) this.placeCharm(slotId, typeId);
     this.createPet();
+    this.createOutlines();
   }
+  /** Presentation §6.2: one outline per slot, shown by `mode` (a reload in design mode shows them, MEC-001 R7). */
+  private createOutlines(): void {
+    const design = this.context.store.getState().mode === 'design';
+    for (const slot of this.room.slots) {
+      const outline = new SlotOutline(this, slot);
+      outline.setShown(design);
+      this.outlines.set(slot.id, outline);
+    }
+    this.syncOutlines();
+  }
+  /** Outline state from placements and the slot the chooser/sheet holds (`context.selectedSlotId`). */
+  syncOutlines(): void {
+    const placements = this.context.store.getState().rooms[this.roomId]?.placements ?? {};
+    const selected = this.context.selectedSlotId ?? null;
+    for (const [slotId, outline] of this.outlines) outline.setOutlineState(slotId === selected ? 'selected' : placements[slotId] ? 'filled' : 'empty');
+  }
+  private outlineAt(x: number, y: number): SlotOutline | undefined {
+    let top: SlotOutline | undefined;
+    for (const outline of this.outlines.values()) if (outline.contains(x, y) && (!top || outline.depth > top.depth)) top = outline;
+    return top;
+  }
+  /** Presentation §3.1: a pointer the joystick captured is not classified. */
+  pointerDown = (p: ScenePointer): void => {
+    if (this.joystick.active && this.joystickPointer === null) { this.joystickPointer = p.id; return; }
+    this.downs.set(p.id, { x: p.worldX, y: p.worldY, t: p.downTime });
+  };
+  /** TECH-004: record `input.tap`/`input.drag` with its target; only a tap on a visible outline opens a panel (MEC-005 R13/R14). */
+  pointerUp = (p: ScenePointer): void => {
+    if (p.id === this.joystickPointer) { this.joystickPointer = null; return; }
+    const down = this.downs.get(p.id);
+    if (!down) return;
+    this.downs.delete(p.id);
+    const up = { x: p.worldX, y: p.worldY, t: p.upTime };
+    const outline = this.outlineAt(up.x, up.y);
+    const onPet = !outline && this.pet?.getBounds().contains(up.x, up.y);
+    const target = outline ? `slot:${outline.slotId}` : onPet ? `pet:${this.pet!.petId}` : 'world';
+    const result = recordPointer(this.context.log.record, target, down, up);
+    if (!outline || result.kind !== 'tap') return;
+    const { content, store, bus } = this.context;
+    bus.emit({ type: 'slot.tapped', slotId: outline.slotId, filled: placementAt(content, store.getState(), this.roomId, outline.slotId) !== null });
+  };
   private drawBackground(): void {
     const key = this.room.background;
     if (this.textures.exists(key)) this.add.image(0, 0, key).setOrigin(0).setDepth(0);
@@ -65,22 +119,34 @@ export class InteriorScene extends WorldScene {
     }
   }
   protected subscribeScene(): void {
+    this.input.on('pointerdown', this.pointerDown); this.input.on('pointerup', this.pointerUp);
+    this.unsubscribes.push(() => { this.input.off('pointerdown', this.pointerDown); this.input.off('pointerup', this.pointerUp); });
+    this.on('mode.changed', event => {
+      for (const outline of this.outlines.values()) outline.setShown(event.mode === 'design', true);
+      this.syncOutlines();
+    });
+    this.subscribeCharms();
+    this.on('pet.phaseChanged', event => {
+      if (this.pet && event.petId === this.pet.petId) this.pet.setClip(this.pet.clipFor({ phase: event.to, verb: event.verb }));
+    });
+  }
+  private subscribeCharms(): void {
     this.on('charm.placed', event => {
       if (event.roomId !== this.roomId) return;
+      this.syncOutlines();
       const sprite = this.placeCharm(event.slotId, event.typeId);
       if (sprite) this.tweens.add({ targets: sprite, scale: { from: 0.6, to: 1 }, duration: POP_MS, ease: 'Back.easeOut' });
     });
     this.on('charm.removed', event => {
       const sprite = event.roomId === this.roomId ? this.charms.get(event.slotId) : undefined;
+      this.syncOutlines();
       if (!sprite) return;
       this.charms.delete(event.slotId);
       this.tweens.add({ targets: sprite, alpha: 0, duration: REMOVE_FADE_MS, onComplete: () => sprite.destroy() });
     });
-    this.on('pet.phaseChanged', event => {
-      if (this.pet && event.petId === this.pet.petId) this.pet.setClip(this.pet.clipFor({ phase: event.to, verb: event.verb }));
-    });
   }
   protected syncScene(): void {
+    this.syncOutlines();
     if (this.pet) this.pet.sync(this.context.store.getState().pets[this.pet.petId].behaviour);
   }
 }

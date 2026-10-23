@@ -22,6 +22,7 @@ export type ViewContext = {
   findings: Finding[];
   lenient: boolean;
   debugOpen: boolean;           // WORK-014-3's debug panel sets it; frozen input while open
+  selectedSlotId?: string | null; // the chooser/sheet sets it while open; the Interior draws that outline `selected`
 };
 
 export const REGISTRY_KEY = 'tpp';
