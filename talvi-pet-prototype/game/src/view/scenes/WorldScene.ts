@@ -9,6 +9,7 @@ import { Joystick } from '../objects/Joystick';
 import { contextOf, type ViewContext } from '../context';
 import { startSceneFor } from '../startup';
 import { drawAlignment } from '../alignmentGrid';
+import { previewLayers, type Preview } from '../preview';
 
 export const FADE_MS = 250;
 
@@ -19,6 +20,9 @@ export abstract class WorldScene extends Phaser.Scene {
   joystick!: Joystick;
   transitioning = false;
   alignment: Phaser.GameObjects.Graphics | null = null;
+  preview!: Preview;
+  /** Which TOOL-002 stage-1 layers this scene offers (Interior: four; Street: geometry). */
+  protected abstract readonly previewKind: 'interior' | 'street';
   protected unsubscribes: (() => void)[] = [];
   abstract drawWorld(): void;
   /** Interior adds its own subscriptions and per-frame syncs. */
@@ -33,6 +37,7 @@ export abstract class WorldScene extends Phaser.Scene {
     this.joystick = new Joystick(this, this.context);
     this.subscribeCommon();
     this.subscribeScene();
+    this.preview = previewLayers(this, this.context, this.previewKind);
     this.alignment = null;
     this.syncAlignmentGrid();
     const redraw = () => { this.alignment?.destroy(); this.alignment = null; this.syncAlignmentGrid(); };
@@ -50,6 +55,7 @@ export abstract class WorldScene extends Phaser.Scene {
     const frozen = inputFrozen(content, store.getState()) || this.transitioning || this.context.debugOpen;
     this.joystick.setVisible(!frozen);
     this.syncAlignmentGrid();
+    this.preview.sync();
     store.dispatch({ type: 'tick', dtMs: delta, move: moveVector({ joystick: this.joystick, keyboard, frozen }) });
     if (this.transitioning) return;
     this.avatar.sync(store.getState().avatar);
@@ -80,6 +86,7 @@ export abstract class WorldScene extends Phaser.Scene {
 
   private teardown(): void {
     for (const off of this.unsubscribes.splice(0)) off();
+    this.preview.destroy();
     this.joystick.destroy();
   }
 }

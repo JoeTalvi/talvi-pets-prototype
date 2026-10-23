@@ -2,6 +2,7 @@ import { WorldScene } from './WorldScene';
 
 /** Placeholder street (WORK-020 builds the real one): flat ground, the door rects to find the way back in. */
 export class StreetScene extends WorldScene {
+  protected readonly previewKind = 'street';
   constructor() { super('Street'); }
   init(): void { this.transitioning = false; }
   drawWorld(): void {
