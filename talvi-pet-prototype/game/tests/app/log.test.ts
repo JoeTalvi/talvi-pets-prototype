@@ -148,3 +148,102 @@ describe('VERIFY-MEC-002-023 TEST-003 log', () => {
       expect(Object.keys(line)).toEqual(expect.arrayContaining(['merchantId', 'merchantName', 'amountCents', 'changeCents', 'currentCents']));
   });
 });
+
+describe('VERIFY-MEC-006-011 stars toggle', () => {
+  it('VERIFY-MEC-006-011 partial: node half only (on-screen bar is WORK-021): hidden Stars still log stars.changed 0→4', () => {
+    const { content, state } = dogRoomDesign();
+    const { log, dispatch } = session(content, state);
+    dispatch({ type: 'debugSetStarsVisible', on: false }, { type: 'placeCharm', slotId: 'floor-1', typeId: 'lamp' });
+    expect(typed(log.lines(), 'stars.visibilityChanged')).toEqual([expect.objectContaining({ visible: false })]);
+    expect(typed(log.lines(), 'stars.changed')).toEqual([expect.objectContaining({ roomId: 'dog-room', from: 0, to: 4 })]);
+  });
+});
+
+describe('VERIFY-MEC-007-015 TEST-005 observability', () => {
+  it('VERIFY-MEC-007-015 pet.reacted lines carry petId, reaction, slotId, typeId, line, walkOver and follow their charm.placed', () => {
+    const { content, state } = dogRoomDesign();
+    const { log, store, dispatch, drain } = session(content, state);
+    dispatch({ type: 'debugUnlockAllTypes' }, { type: 'placeCharm', slotId: 'large-1', typeId: 'dog-bed' });
+    drain();
+    const tall = content.charms.types.find(type => type.tags.includes('tall') && type.sizeClass === 'small')!;
+    const slots = content.rooms['dog-room'].slots.filter(slot => slot.sizeClass === tall.sizeClass
+      && !store.getState().rooms['dog-room'].placements[slot.id]);
+    dispatch({ type: 'placeCharm', slotId: slots[0].id, typeId: tall.id });
+    drain();
+    const third = chooserTypes(content, store.getState(), slots[1].id).find(type => type.tags.includes('soft'))!;
+    dispatch({ type: 'placeCharm', slotId: slots[1].id, typeId: third.id });
+    const lines = log.lines();
+    const reactions = typed(lines, 'pet.reacted');
+    expect(reactions.length).toBeGreaterThanOrEqual(2);
+    expect(reactions.map(line => line.reaction)).toEqual(expect.arrayContaining(['love', 'dislike']));
+    for (const line of reactions) {
+      expect(Object.keys(line)).toEqual(['t', 'wall', 'type', 'petId', 'reaction', 'slotId', 'typeId', 'line', 'walkOver']);
+      expect(Number.isInteger(line.t)).toBe(true);
+      const placed = lines.findIndex(other => other.type === 'charm.placed' && other.slotId === line.slotId);
+      expect(placed).toBeGreaterThanOrEqual(0);
+      expect(placed).toBeLessThan(lines.indexOf(line));
+    }
+  });
+});
+
+describe('VERIFY-MEC-008-014 TEST-006 observability', () => {
+  it('VERIFY-MEC-008-014 vignette opened/advanced/closed then wantAnnounce bright-corner, with non-decreasing integer t', () => {
+    const { content, state } = dogRoomDesign();
+    const { log, dispatch, drain } = session(content, state);
+    dispatch({ type: 'placeCharm', slotId: 'large-1', typeId: 'dog-bed' });
+    drain();
+    const lines = log.lines().filter(line => line.type.startsWith('dialogue.'));
+    expect(nonDecreasingIntegers(lines)).toBe(true);
+    expect(lines[0]).toMatchObject({ type: 'dialogue.opened', script: { source: 'vignette', wantId: 'soft-nap' } });
+    const closed = lines.findIndex(line => line.type === 'dialogue.closed' && line.source === 'vignette');
+    const advanced = lines.slice(1, closed).map(line => line.index as number);
+    expect(lines.slice(1, closed).every(line => line.type === 'dialogue.advanced')).toBe(true);
+    expect(advanced).toEqual([...advanced].sort((a, b) => a - b));
+    expect(lines[closed + 1]).toMatchObject({ type: 'dialogue.opened', script: { source: 'wantAnnounce', wantId: 'bright-corner' } });
+  });
+});
+
+describe('VERIFY-MEC-003-009 TEST-004 engagement log (DEC-039)', () => {
+  it('VERIFY-MEC-003-009 DEC-039: ui.revealPanel open/close and celebration.started clueIndices are logged with t; nothing guess-shaped', () => {
+    const content = validContent();
+    const { log, dispatch } = session(content, owing(content, 1, 1260));
+    log.record('ui.revealPanel', { open: true });
+    log.record('ui.revealPanel', { open: false });
+    dispatch({ type: 'acknowledgeProject', projectId: 'pet-house' });
+    const lines = log.lines();
+    expect(typed(lines, 'ui.revealPanel').map(({ open, t }) => ({ open, integer: Number.isInteger(t) })))
+      .toEqual([{ open: true, integer: true }, { open: false, integer: true }]);
+    expect(typed(lines, 'celebration.started')).toEqual([expect.objectContaining({ clueIndices: [1, 2, 3], t: expect.any(Number) })]);
+    expect(lines.filter(line => line.type.includes('guess'))).toEqual([]);
+    expect(CONTROLLER_RECORD_TYPES.filter(type => type.includes('guess'))).toEqual([]);
+  });
+});
+
+describe('mec-010 §5.3 export', () => {
+  it('mec-010 §5.3 export: copy hands over the N lines as JSONL, then records log.exported {method, lines: N}', async () => {
+    const content = validContent();
+    let copied = '';
+    const clock = testClock();
+    const log = createLog({ storage: createMemoryStorage(), ringLines: content.tuning.logRingLines, now: clock.now,
+      wall: clock.wall, exporters: { copy: async text => { copied = text; } } });
+    log.start(headerFor(initialState(content, 1)));
+    log.record('ui.debugPanel', { open: true });
+    const before = log.lines();
+    await log.exportLog('copy');
+    expect(copied).toBe(before.map(line => JSON.stringify(line)).join('\n'));
+    expect(log.lines().at(-1)).toMatchObject({ type: 'log.exported', method: 'copy', lines: before.length });
+  });
+
+  it('mec-010 §5.3 export: a failing exporter records app.error and rethrows; no log.exported', async () => {
+    const content = validContent();
+    const log = createLog({ storage: createMemoryStorage(), ringLines: content.tuning.logRingLines,
+      exporters: { share: async () => { throw new Error('no share'); } } });
+    await expect(log.exportLog('share')).rejects.toThrow('no share');
+    expect(log.lines().map(line => line.type)).toEqual(['app.error']);
+  });
+
+  it('mec-010 §5.3 export: filename is tpp-log-<YYYY-MM-DD>T<HHMM>.jsonl', async () => {
+    const { exportFilename } = await import('../../src/app/log');
+    expect(exportFilename('2026-10-20T14:03:11.204Z')).toBe('tpp-log-2026-10-20T1403.jsonl');
+  });
+});
