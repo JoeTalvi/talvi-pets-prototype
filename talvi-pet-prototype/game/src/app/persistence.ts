@@ -70,7 +70,10 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     catch (error) { if (isQuota(error)) { log.recordQuota(); return; } throw error; }
     log.record('save.written', { bytes: utf8Bytes(json) });
   };
-  const changed = (state: GameState) => { pending = state; clearTimeout(timer); timer = setTimeout(flush, debounceMs); };
+  // Bounded debounce (foundation §4.4, 250 ms): every frame's tick is a state change, so a timer reset on
+  // each change would never fire during play; the first unsaved change starts the timer and later changes
+  // only replace `pending`, so the latest state is written at most `debounceMs` after any change.
+  const changed = (state: GameState) => { pending = state; timer ??= setTimeout(flush, debounceMs); };
   detach.push(onPageHide(flush));
   return {
     changed,
