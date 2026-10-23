@@ -10,7 +10,7 @@ import { deepFreeze } from './helpers';
 const real = deepFreeze(loadContent());
 const min = deepFreeze(validContent());
 
-describe('TOOL-003 coverage previews', () => {
+describe('TOOL-003 coverage previews: panel', () => {
   it('VERIFY-TOOL-003 --panel dog bright-corner --owned starter on the real strings: plant unmet with the nextPhase text, light owned, adjacent worded by tpp.want.adjacent', () => {
     const { lines, data } = panelPreview(real, { kind: 'panel', petId: 'dog', wantId: 'bright-corner', owned: 'starter' });
     expect(lines).toContain(`  ☐ Plant — ${real.strings['tpp.want.availability.nextPhase']}`);
@@ -36,6 +36,9 @@ describe('TOOL-003 coverage previews', () => {
     expect(owned.lines).toContain('  ☐ Plant (owned)');
   });
 
+});
+
+describe('TOOL-003 coverage previews: reveal, stars, misuse and CLI', () => {
   it('VERIFY-TOOL-003 --reveal pet-house prints six states; views 0..4 carry no image or name key, state 5 does', () => {
     const { data, lines } = revealPreview(real, 'pet-house');
     expect(data).toHaveLength(6);

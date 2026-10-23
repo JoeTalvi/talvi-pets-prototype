@@ -62,7 +62,8 @@ it('bad flags, unknown prefixes, unreadable inputs and deferred previews fail wi
             flag
         ], 'coverage');
         expect(r.status).toBe(3);
-        expect(r.stderr).toContain('needs the sim kernel');
+        // WORK-003-6 landed the previews; a bare preview flag is now a missing-value usage error (still exit 3).
+        expect(r.stderr).toMatch(/needs (a value|--save)/);
     }
 });
 it('schema failures exit 1 and aggregate located issues', () => {
