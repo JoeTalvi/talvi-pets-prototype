@@ -1,7 +1,7 @@
 import type { ViewContext } from '@view/context';
 import { placementAt } from '@sim/select';
 import { replaceRemove } from './templates/replaceRemove';
-import { escapeHtml, image, type TemplateOptions } from './templates/shared';
+import { image, type TemplateOptions } from './templates/shared';
 import { assetsFrom, createText, type Panel } from '../overlay';
 import { tagPills } from './chooser';
 

@@ -1,0 +1,10 @@
+{
+  "tpp.chooser.slot": "{size} slot",
+  "tpp.chooser.size.small": "Small floor",
+  "tpp.chooser.size.large": "Large floor",
+  "tpp.chooser.size.wall": "Wall",
+  "tpp.chooser.count": "{count} charms you own",
+  "tpp.chooser.scroll": "▸ scroll",
+  "tpp.common.close": "Close",
+  "tpp.hud.hearts": "♥ {hearts}"
+}
