@@ -3,6 +3,7 @@ import { RoomSchema } from '../../src/content/schema/room';
 import type { Action, TickAction } from '../../src/sim/actions';
 import type { RuleResult, SimEvent } from '../../src/sim/events';
 import { initialState, type GameState } from '../../src/sim/state';
+import { reduce } from '../../src/sim/reduce';
 import { validContent } from '../content/helpers';
 import square from '../fixtures/room-square.json';
 
@@ -17,6 +18,16 @@ export function squareFixture(seed = 1) {
   state.session.orientationShown = true;
   state.pets.dog.introduced = true;
   return { content, state };
+}
+
+/** FX-CONTENT-MIN in `dog-room`, scripts done, design mode entered through `setDesignMode`. */
+export function dogRoomDesign(seed = 1) {
+  const content = validContent();
+  const state = initialState(content, seed);
+  state.scene = { kind: 'interior', roomId: 'dog-room' };
+  state.session.orientationShown = true;
+  state.pets.dog.introduced = true;
+  return { content, state: reduce(content, state, { type: 'setDesignMode', on: true }).state };
 }
 
 export function tick(x = 0, y = 0, dtMs = 16): TickAction {
