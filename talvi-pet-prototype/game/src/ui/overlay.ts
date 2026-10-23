@@ -9,13 +9,14 @@ function findingsBanner(findings: readonly Finding[]): HTMLElement {
     background: 'rgba(181, 82, 63, 0.92)', color: '#fffaf0', font: '16px/1.3 monospace', padding: '6px 56px 6px 12px', zIndex: '9' });
   const list = document.createElement('ol'); list.style.margin = '0';
   for (const f of findings) {
-    const row = document.createElement('li'); row.textContent = `${f.ids.join(',')} · ${f.file}:${f.path} · ${f.message}`; list.append(row);
+    const row = document.createElement('li'); row.dataset.level = f.level; row.textContent = `${f.ids.join(',')} · ${f.file}:${f.path} · ${f.message}`; list.append(row);
   }
   const dismiss = document.createElement('button'); dismiss.type = 'button'; dismiss.dataset.action = 'dismiss'; dismiss.textContent = '×';
   dismiss.setAttribute('aria-label', 'Dismiss findings');
   Object.assign(dismiss.style, { position: 'absolute', top: '4px', right: '8px', fontSize: '28px', background: 'none', border: '0', color: 'inherit' });
   dismiss.addEventListener('click', () => banner.remove());
-  const title = document.createElement('strong'); title.textContent = `?lenient=1 — ${findings.length} content finding(s)`;
+  const title = document.createElement('strong'); const errors = findings.filter(f => f.level === 'error').length;
+  title.textContent = `?lenient=1 — ${errors} error(s), ${findings.length - errors} other finding(s)`;
   banner.append(title, list, dismiss);
   return banner;
 }
