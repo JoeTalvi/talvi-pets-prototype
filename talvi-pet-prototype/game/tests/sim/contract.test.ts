@@ -47,11 +47,11 @@ it.skipIf(!liveDocPresent)('VERIFY-CORE-001 drift: live core.md still declares t
 it('VERIFY-CORE-001 partial: selector exports cover only the delivered slice; full set remains deferred', () => {
   const implemented = Object.keys(select).sort();
   expect(implemented).toEqual([
-    'ackFloorCents', 'activeProjectId', 'attentionVisible', 'boundaryCents', 'chooserTypes',
+    'ackFloorCents', 'activeProjectId', 'activeWant', 'attentionVisible', 'boundaryCents', 'chooserTypes',
     'completeNowOffered', 'completeNowPriceCents', 'displayedPhase', 'doorEnabled', 'hudProjectId',
-    'inputFrozen', 'owedPhases', 'ownsTag', 'petUsingSlot', 'phaseOf', 'placementAt', 'residentPet',
-    'slotOf', 'starsOf', 'typeUnlockPhase',
+    'inputFrozen', 'missingWantTags', 'owedPhases', 'ownsTag', 'petUsingSlot', 'phaseOf', 'placementAt',
+    'residentPet', 'slotOf', 'starsOf', 'tagAvailability', 'typeUnlockPhase', 'wantConditions',
   ]);
   expect(implemented.every(name => (names.selectorNames as readonly string[]).includes(name))).toBe(true);
-  expect(names.selectorNames.length - implemented.length).toBe(7);
+  expect(names.selectorNames.length - implemented.length).toBe(3);
 });

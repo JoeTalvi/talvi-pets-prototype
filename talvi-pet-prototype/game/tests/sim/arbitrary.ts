@@ -15,12 +15,14 @@ function decorate(content: Content, state: GameState, value: number): Action {
   return { type: 'placeCharm', slotId: slot.id, typeId: choices[Math.floor(((value * 13) % 1) * choices.length)].id };
 }
 
-/** Bounded FX-ARB precursor (WORK-003-1): ticks, setDesignMode and valid placeCharm/removeCharm.
+/** Bounded FX-ARB precursor (WORK-003-1): ticks, setDesignMode and valid placeCharm/removeCharm;
+ * WORK-003-2 advances any open dialogue first, so every generated action stays valid.
  * Later lanes add their action families. Targeted motion ensures both doors and design are exercised. */
 export function nextAction(content: Content, state: GameState, seed: number): {
   action: Action; seed: number;
 } {
   const draw = mulberry32(seed);
+  if (state.dialogue.current !== null) return { action: { type: 'advanceDialogue' }, seed: draw.seed };
   if (state.scene.kind === 'interior' && draw.value < 0.2)
     return { action: { type: 'setDesignMode', on: state.mode !== 'design' }, seed: draw.seed };
   if (state.mode === 'design')
