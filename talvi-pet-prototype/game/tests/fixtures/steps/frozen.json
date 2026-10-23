@@ -1,0 +1,27 @@
+{
+  "seed": 1234,
+  "steps": [
+    {
+      "action": {
+        "type": "tick",
+        "dtMs": 0,
+        "move": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "action": {
+        "type": "advanceDialogue"
+      },
+      "repeat": 2
+    },
+    {
+      "action": {
+        "type": "debugSetEventInterval",
+        "ms": null
+      }
+    }
+  ]
+}

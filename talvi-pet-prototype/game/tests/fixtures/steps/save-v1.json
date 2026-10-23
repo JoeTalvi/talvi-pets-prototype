@@ -1,0 +1,128 @@
+{
+  "seed": 1234,
+  "steps": [
+    {
+      "action": {
+        "type": "tick",
+        "dtMs": 0,
+        "move": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "action": {
+        "type": "advanceDialogue"
+      },
+      "repeat": 2
+    },
+    {
+      "action": {
+        "type": "debugSetCurrent",
+        "projectId": "pet-house",
+        "cents": 300
+      }
+    },
+    {
+      "action": {
+        "type": "acknowledgeProject",
+        "projectId": "pet-house"
+      }
+    },
+    {
+      "action": {
+        "type": "cutsceneFinished"
+      }
+    },
+    {
+      "action": {
+        "type": "collectRewards"
+      }
+    },
+    {
+      "action": {
+        "type": "closeReveal"
+      }
+    },
+    {
+      "action": {
+        "type": "advanceDialogue"
+      },
+      "repeat": 1
+    },
+    {
+      "action": {
+        "type": "tick",
+        "dtMs": 100,
+        "move": {
+          "x": -1,
+          "y": 0
+        }
+      },
+      "repeat": 8
+    },
+    {
+      "action": {
+        "type": "tick",
+        "dtMs": 100,
+        "move": {
+          "x": 0,
+          "y": -1
+        }
+      }
+    },
+    {
+      "action": {
+        "type": "advanceDialogue"
+      },
+      "repeat": 2
+    },
+    {
+      "action": {
+        "type": "setDesignMode",
+        "on": true
+      }
+    },
+    {
+      "action": {
+        "type": "placeCharm",
+        "slotId": "large-1",
+        "typeId": "dog-bed"
+      }
+    },
+    {
+      "action": {
+        "type": "advanceDialogue"
+      },
+      "repeat": 4
+    },
+    {
+      "action": {
+        "type": "placeCharm",
+        "slotId": "floor-3",
+        "typeId": "lamp"
+      }
+    },
+    {
+      "action": {
+        "type": "placeCharm",
+        "slotId": "floor-5",
+        "typeId": "stool"
+      }
+    },
+    {
+      "action": {
+        "type": "setDesignMode",
+        "on": false
+      }
+    },
+    {
+      "action": {
+        "type": "debugSetCurrent",
+        "projectId": "pet-house",
+        "cents": 1260
+      }
+    }
+  ]
+}
