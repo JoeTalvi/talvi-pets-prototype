@@ -1,39 +1,57 @@
 import Phaser from 'phaser';
-import type { Vector } from '@app/input/keyboard';
+import { createJoystickAdapter, type JoystickAdapter } from '@app/input/joystick';
+import type { ViewContext } from '../context';
+
+const DEPTH = 9500;
+
+/** Presentation §3.2: Phaser pointers feed WORK-004-2's adapter; the knob shows centre + vector × range. */
 export class Joystick {
-  vector: Vector = { x: 0, y: 0 };
-  active = false;
-  private pointerId = -1;
+  readonly adapter: JoystickAdapter;
   private base: Phaser.GameObjects.Image;
   private knob: Phaser.GameObjects.Image;
-  constructor(private scene: Phaser.Scene) {
-    this.base = scene.add.image(220, 0, 'ui/Joystick_Base').setDisplaySize(280, 280).setAlpha(0.55).setScrollFactor(0).setDepth(2000);
-    this.knob = scene.add.image(220, 0, 'ui/Joystick_Handle').setDisplaySize(120, 120).setAlpha(0.85).setScrollFactor(0).setDepth(2001);
-    this.resize();
+  private tuning: ViewContext['content']['tuning']['joystick'];
+  private range: number;
+  constructor(private scene: Phaser.Scene, context: Pick<ViewContext, 'content' | 'log'>) {
+    const tuning = context.content.tuning.joystick;
+    this.tuning = tuning; this.range = tuning.range;
+    this.adapter = createJoystickAdapter({
+      centre: () => this.centre(), range: tuning.range, captureHalf: tuning.baseDiameter / 2,
+      record: context.log.record, now: () => performance.now(),
+    });
+    const key = (id: string) => (scene.textures.exists(id) ? id : 'missing');
+    this.base = scene.add.image(0, 0, key('ui/Joystick_Base')).setDisplaySize(tuning.baseDiameter, tuning.baseDiameter).setAlpha(0.55).setScrollFactor(0).setDepth(DEPTH);
+    this.knob = scene.add.image(0, 0, key('ui/Joystick_Handle')).setDisplaySize(tuning.knobDiameter, tuning.knobDiameter).setAlpha(0.85).setScrollFactor(0).setDepth(DEPTH + 1);
     scene.input.on('pointerdown', this.down); scene.input.on('pointermove', this.move); scene.input.on('pointerup', this.up);
-    scene.input.on('gameout', this.release); scene.game.events.on('hidden', this.release); scene.scale.on('resize', this.resize);
-    scene.events.once('shutdown', this.destroy);
+    scene.input.on('gameout', this.release); scene.game.events.on('hidden', this.release);
+    this.layout();
   }
-  private resize = () => {
-    const scale = this.scene.scale.displaySize.width / 1920;
-    const inset = document.getElementById('safe-area-probe');
-    const style = inset ? getComputedStyle(inset) : undefined;
-    const left = parseFloat(style?.paddingLeft ?? '0') / scale;
-    this.base.setPosition(220 + left, this.scene.scale.gameSize.height - 300); this.release();
-  };
-  private down = (pointer: Phaser.Input.Pointer) => {
-    if (!this.active && Math.abs(pointer.x - this.base.x) <= 140 && Math.abs(pointer.y - this.base.y) <= 140) { this.active = true; this.pointerId = pointer.id; this.move(pointer); }
-  };
-  private move = (pointer: Phaser.Input.Pointer) => {
-    if (!this.active || pointer.id !== this.pointerId) return;
-    const x = (pointer.x - this.base.x) / 80, y = (pointer.y - this.base.y) / 80;
-    const divisor = Math.max(1, Math.hypot(x, y)); this.vector = { x: x / divisor, y: y / divisor };
-    this.knob.setPosition(this.base.x + this.vector.x * 80, this.base.y + this.vector.y * 80);
-  };
-  private up = (pointer: Phaser.Input.Pointer) => { if (pointer.id === this.pointerId) this.release(); };
-  release = () => { this.active = false; this.pointerId = -1; this.vector = { x: 0, y: 0 }; this.knob.setPosition(this.base.x, this.base.y); };
-  private destroy = () => {
-    this.scene.input.off('pointerdown', this.down); this.scene.input.off('pointermove', this.move); this.scene.input.off('pointerup', this.up); this.scene.input.off('gameout', this.release);
-    this.scene.game.events.off('hidden', this.release); this.scene.scale.off('resize', this.resize);
-  };
+  /** Safe-area left inset (CSS px) converted to logical px. */
+  private centre(): { x: number; y: number } {
+    const tuning = this.tuning;
+    const scale = this.scene.scale.displaySize.width / 1920 || 1;
+    const probe = document.getElementById('safe-area-probe');
+    const left = probe ? parseFloat(getComputedStyle(probe).paddingLeft) || 0 : 0;
+    return { x: tuning.x + left / scale, y: this.scene.scale.gameSize.height - tuning.bottomOffset };
+  }
+  private layout(): void {
+    const c = this.centre(), v = this.adapter.vector;
+    this.base.setPosition(c.x, c.y); this.knob.setPosition(c.x + v.x * this.range, c.y + v.y * this.range);
+  }
+  private down = (p: Phaser.Input.Pointer) => { if (this.base.visible && this.adapter.down(p.id, p.x, p.y)) this.layout(); };
+  private move = (p: Phaser.Input.Pointer) => { this.adapter.move(p.id, p.x, p.y); this.layout(); };
+  private up = (p: Phaser.Input.Pointer) => { this.adapter.up(p.id); this.layout(); };
+  release = () => { this.adapter.release(); this.layout(); };
+  get active(): boolean { return this.adapter.active; }
+  get vector(): { x: number; y: number } { return this.adapter.vector; }
+  /** Hidden while input is frozen; hiding releases a held stick. */
+  setVisible(visible: boolean): void {
+    if (!visible && this.adapter.active) this.release();
+    if (this.base.visible !== visible) { this.base.setVisible(visible); this.knob.setVisible(visible); }
+    if (visible) this.layout();
+  }
+  destroy(): void {
+    this.adapter.release();
+    this.scene.input.off('pointerdown', this.down); this.scene.input.off('pointermove', this.move); this.scene.input.off('pointerup', this.up);
+    this.scene.input.off('gameout', this.release); this.scene.game.events.off('hidden', this.release);
+  }
 }
