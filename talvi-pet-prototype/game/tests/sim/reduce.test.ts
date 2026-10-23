@@ -49,40 +49,40 @@ describe('CONTRACT-ACTIONS v1.4 reduce', () => {
       { type: 'setDesignMode', on: true },
     ] as Action[]) expect(reduce(content, deepFreeze(state), action).state).toBe(state);
   });
+});
 
-  it('CONTRACT-ACTIONS v1.4 reduce handles all 24 actions: a minimal dispatch of each returns a RuleResult, none throws', () => {
-    const { content, state } = dogRoomDesign();
-    const minimal: Record<Action['type'], Action> = {
-      tick: tick(), setDesignMode: { type: 'setDesignMode', on: false },
-      placeCharm: { type: 'placeCharm', slotId: 'floor-1', typeId: 'lamp' }, removeCharm: { type: 'removeCharm', slotId: 'floor-1' },
-      acknowledgeProject: { type: 'acknowledgeProject', projectId: 'pet-house' }, cutsceneFinished: { type: 'cutsceneFinished' },
-      collectRewards: { type: 'collectRewards' }, skipWait: { type: 'skipWait' }, closeReveal: { type: 'closeReveal' },
-      arrivalFinished: { type: 'arrivalFinished' }, advanceDialogue: { type: 'advanceDialogue' },
-      tapPet: { type: 'tapPet', petId: 'dog' }, debugSimulatePurchase: { type: 'debugSimulatePurchase' },
-      debugSetEventInterval: { type: 'debugSetEventInterval', ms: 250 },
-      debugSetFeedPresentation: { type: 'debugSetFeedPresentation', mode: 'trickle' },
-      debugSetSeed: { type: 'debugSetSeed', seed: 7 }, debugSetCurrent: { type: 'debugSetCurrent', projectId: 'pet-house', cents: 10 },
-      debugJumpPhase: { type: 'debugJumpPhase', projectId: 'pet-house' },
-      debugCompleteProject: { type: 'debugCompleteProject', projectId: 'pet-house' },
-      debugUnlockAllTypes: { type: 'debugUnlockAllTypes' }, debugSetStarsVisible: { type: 'debugSetStarsVisible', on: false },
-      debugSetMuted: { type: 'debugSetMuted', on: true }, debugSetTesterLabel: { type: 'debugSetTesterLabel', text: ' T1 ' },
-      reset: { type: 'reset' },
-    };
-    expect(Object.keys(minimal).sort()).toEqual([...actionNames].sort());
-    for (const action of Object.values(minimal)) {
-      const result = reduce(deepFreeze(content), deepFreeze(state), action);
-      expect(Array.isArray(result.events)).toBe(true);
-      expect(JSON.parse(JSON.stringify(result.state))).toEqual(result.state);
-      const rejection = result.events.find(event => event.type === 'action.rejected');
-      if (rejection) expect(result.state).toBe(state);
-    }
-  });
+it('CONTRACT-ACTIONS v1.4 reduce handles all 24 actions: a minimal dispatch of each returns a RuleResult, none throws', () => {
+  const { content, state } = dogRoomDesign();
+  const minimal: Record<Action['type'], Action> = {
+    tick: tick(), setDesignMode: { type: 'setDesignMode', on: false },
+    placeCharm: { type: 'placeCharm', slotId: 'floor-1', typeId: 'lamp' }, removeCharm: { type: 'removeCharm', slotId: 'floor-1' },
+    acknowledgeProject: { type: 'acknowledgeProject', projectId: 'pet-house' }, cutsceneFinished: { type: 'cutsceneFinished' },
+    collectRewards: { type: 'collectRewards' }, skipWait: { type: 'skipWait' }, closeReveal: { type: 'closeReveal' },
+    arrivalFinished: { type: 'arrivalFinished' }, advanceDialogue: { type: 'advanceDialogue' },
+    tapPet: { type: 'tapPet', petId: 'dog' }, debugSimulatePurchase: { type: 'debugSimulatePurchase' },
+    debugSetEventInterval: { type: 'debugSetEventInterval', ms: 250 },
+    debugSetFeedPresentation: { type: 'debugSetFeedPresentation', mode: 'trickle' },
+    debugSetSeed: { type: 'debugSetSeed', seed: 7 }, debugSetCurrent: { type: 'debugSetCurrent', projectId: 'pet-house', cents: 10 },
+    debugJumpPhase: { type: 'debugJumpPhase', projectId: 'pet-house' },
+    debugCompleteProject: { type: 'debugCompleteProject', projectId: 'pet-house' },
+    debugUnlockAllTypes: { type: 'debugUnlockAllTypes' }, debugSetStarsVisible: { type: 'debugSetStarsVisible', on: false },
+    debugSetMuted: { type: 'debugSetMuted', on: true }, debugSetTesterLabel: { type: 'debugSetTesterLabel', text: ' T1 ' },
+    reset: { type: 'reset' },
+  };
+  expect(Object.keys(minimal).sort()).toEqual([...actionNames].sort());
+  for (const action of Object.values(minimal)) {
+    const result = reduce(deepFreeze(content), deepFreeze(state), action);
+    expect(Array.isArray(result.events)).toBe(true);
+    expect(JSON.parse(JSON.stringify(result.state))).toEqual(result.state);
+    const rejection = result.events.find(event => event.type === 'action.rejected');
+    if (rejection) expect(result.state).toBe(state);
+  }
+});
 
-  it('CONTRACT-ACTIONS v1.4 reduce rejects a tester label longer than 40 characters after trimming as invalidPayload', () => {
-    const { content, state } = dogRoomDesign();
-    const action: Action = { type: 'debugSetTesterLabel', text: `  ${'x'.repeat(41)}  ` };
-    expect(reduce(content, state, action).events).toEqual([{ type: 'action.rejected', action, reason: 'invalidPayload' }]);
-    const ok = reduce(content, state, { type: 'debugSetTesterLabel', text: `  ${'x'.repeat(40)}  ` });
-    expect(ok.state.session.testerLabel).toBe('x'.repeat(40));
-  });
+it('CONTRACT-ACTIONS v1.4 reduce rejects a tester label longer than 40 characters after trimming as invalidPayload', () => {
+  const { content, state } = dogRoomDesign();
+  const action: Action = { type: 'debugSetTesterLabel', text: `  ${'x'.repeat(41)}  ` };
+  expect(reduce(content, state, action).events).toEqual([{ type: 'action.rejected', action, reason: 'invalidPayload' }]);
+  const ok = reduce(content, state, { type: 'debugSetTesterLabel', text: `  ${'x'.repeat(40)}  ` });
+  expect(ok.state.session.testerLabel).toBe('x'.repeat(40));
 });
