@@ -1,6 +1,38 @@
-import { createPersistence, loadPosition } from './persistence';
+import { z } from 'zod';
 import { log } from './log';
 // Disposable integration support; replace with sim/store in WORK-003/004/014.
+// Spike-only persistence moved here verbatim from persistence.ts (WORK-004-1); not CONTRACT-PERSIST.
+const SpikeState = z.object({ scene: z.enum(['Interior', 'Street']), avatar: z.object({ x: z.number().finite().min(0).max(1920), y: z.number().finite().min(0).max(1080) }) });
+type SpikeState = z.infer<typeof SpikeState>;
+const Save = z.object({ schemaVersion: z.literal(1), state: SpikeState });
+const SPIKE_KEY = 'tpp.save';
+function loadPosition(): SpikeState {
+  const initial: SpikeState = { scene: 'Interior', avatar: { x: 970, y: 800 } };
+  try {
+    const raw = localStorage.getItem(SPIKE_KEY);
+    return raw ? Save.parse(JSON.parse(raw)).state : initial;
+  } catch (error) { log('save.discarded', { reason: String(error) }); return initial; }
+}
+function createPersistence() {
+  let pending: SpikeState | undefined;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const flush = () => {
+    clearTimeout(timer);
+    if (!pending) return;
+    const json = JSON.stringify({ schemaVersion: 1, state: pending });
+    try { localStorage.setItem(SPIKE_KEY, json); log('save.written', { bytes: new TextEncoder().encode(json).length }); }
+    catch (error) { log('save.failed', { reason: String(error) }); }
+    pending = undefined;
+  };
+  const hidden = () => { if (document.hidden) flush(); };
+  window.addEventListener('pagehide', flush);
+  document.addEventListener('visibilitychange', hidden);
+  return {
+    changed(state: SpikeState) { pending = structuredClone(state); clearTimeout(timer); timer = setTimeout(flush, 250); },
+    flush,
+    destroy() { flush(); window.removeEventListener('pagehide', flush); document.removeEventListener('visibilitychange', hidden); }
+  };
+}
 export const spike = { state: loadPosition(), immunityMs: 0, fading: false, persistence: createPersistence() };
 export const door = { x: 635, y: 485, w: 100, h: 125 };
 export function tickSpike(move: { x: number; y: number }, delta: number): boolean {
