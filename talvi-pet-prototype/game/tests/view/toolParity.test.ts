@@ -13,8 +13,10 @@ import { contextFor } from './sceneHarness';
 
 afterEach(() => { document.body.replaceChildren(); });
 
-const EV = '/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-021-1';
-const SAVE = `${EV}/dog-room-intro-done.real.json`;
+// Evidence comparison and write only when a run sets TPP_EVIDENCE_DIR (the tests/app/log.test.ts convention); by default the
+// test reads and writes nothing outside the worktree and asserts parity from the in-test generated save.
+const EV = process.env.TPP_EVIDENCE_DIR;
+const SAVE = EV ? `${EV}/dog-room-intro-done.real.json` : undefined;
 
 describe('VERIFY-TOOL-003 parity (WORK-021-1)', () => {
   it('VERIFY-TOOL-003 partial: --panel text equals the want panel text (jsdom, real content)', async () => {
@@ -22,9 +24,9 @@ describe('VERIFY-TOOL-003 parity (WORK-021-1)', () => {
     const content = loadContent(undefined, await readContentFiles('src/content'));
     const manifest = AssetManifest.parse(JSON.parse(readFileSync('public/assets/manifest.json', 'utf8')));
     // The real-content dog-room-intro-done save (WORK-003-5 fix 1 rule): generated here by TOOL-008's own function, and byte-equal to
-    // `npm run fixture -- --scenario dog-room-intro-done --out <EV>/dog-room-intro-done.real.json` when that evidence file exists.
+    // `npm run fixture -- --scenario dog-room-intro-done --out <EV>/dog-room-intro-done.real.json` when TPP_EVIDENCE_DIR holds that file.
     const save = generateFixture(content, readSteps('tests/fixtures/steps/dog-room-intro-done.json'));
-    if (existsSync(SAVE)) expect(save).toBe(readFileSync(SAVE, 'utf8'));
+    if (SAVE && existsSync(SAVE)) expect(save).toBe(readFileSync(SAVE, 'utf8'));
     const loaded = parseSave(content, save);
     if (!('state' in loaded)) throw new Error(`real-content save discarded: ${loaded.discarded}`);
     const state = loaded.state;
@@ -42,7 +44,7 @@ describe('VERIFY-TOOL-003 parity (WORK-021-1)', () => {
     const reward = panel.querySelector('.tpp-want-reward')?.textContent?.trim() ?? '';
     const rows = preview.lines.slice(2, 2 + preview.data.conditions.length).map(l => l.trim());
     const rewardLine = preview.lines[2 + preview.data.conditions.length].trim();
-    if (existsSync(EV)) writeFileSync(`${EV}/parity.json`, `${JSON.stringify({ save: SAVE, cliRows: rows, cliReward: rewardLine, panelPills: pills, panelNotes: notes, panelReward: reward }, null, 2)}\n`);
+    if (EV) writeFileSync(`${EV}/parity.json`, `${JSON.stringify({ save: SAVE, cliRows: rows, cliReward: rewardLine, panelPills: pills, panelNotes: notes, panelReward: reward }, null, 2)}\n`);
 
     // Assert: the VERIFY-TOOL-003 clause — plant unmet with "arrives with the next home phase" in both, light listed in both.
     expect(rows).toContain('☐ Plant — arrives with the next home phase');
