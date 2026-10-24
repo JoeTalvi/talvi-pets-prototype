@@ -1,6 +1,42 @@
 import type { Finding } from '@sim/checks/types';
+import type { AssetManifest } from '@content/schema/assets';
+import type { ViewContext } from '@view/context';
+import { createHudInterior } from './panels/hudInterior';
+import { createChooser } from './panels/chooser';
+import { createReplaceRemove } from './panels/replaceRemove';
 
 export type OverlayContext = { findings: readonly Finding[]; lenient: boolean };
+export type TextParams = Record<string, string | number>;
+export type Text = (key: string, params?: TextParams) => string;
+/** The panel module API WORK-014-3/-4 and WORK-019/020 follow. */
+export type Panel = { open?(slotId: string): void; close?(reason?: string): void; destroy(): void };
+export type Panels = { hudInterior: Panel; chooser: Panel; replaceRemove: Panel };
+
+/** UI strings WORK-011 proposed that `strings.json` does not carry yet (returned to WORK-021 as strings-additions.json). */
+export const FALLBACK_STRINGS: Readonly<Record<string, string>> = {
+  'tpp.chooser.slot': '{size} slot',
+  'tpp.chooser.size.small': 'Small floor',
+  'tpp.chooser.size.large': 'Large floor',
+  'tpp.chooser.size.wall': 'Wall',
+  'tpp.chooser.count': '{count} charms you own',
+  'tpp.chooser.scroll': '▸ scroll',
+  'tpp.common.close': 'Close',
+  'tpp.hud.hearts': '♥ {hearts}',
+};
+
+/** `content.strings[key]` first, then the fallback table, with `{param}` substitution; `[key]` when unresolved. */
+export function createText(strings: Readonly<Record<string, string>>): Text {
+  return (key, params = {}) => {
+    const raw = strings[key] ?? FALLBACK_STRINGS[key];
+    if (raw === undefined) return `[${key}]`;
+    return raw.replace(/\{(\w+)\}/g, (match, name: string) => (name in params ? String(params[name]) : match));
+  };
+}
+
+/** Template `assets` map: `id → assets/<url>` for every image row of the manifest. */
+export function assetsFrom(manifest: AssetManifest): Record<string, string> {
+  return Object.fromEntries(manifest.entries.filter(e => e.type === 'image' && e.url).map(e => [e.id, `assets/${e.url}`]));
+}
 
 /** Dev-only QT-1(a) banner: one `ids · file:path · message` row per finding, dismissible. */
 function findingsBanner(findings: readonly Finding[]): HTMLElement {
@@ -21,8 +57,13 @@ function findingsBanner(findings: readonly Finding[]): HTMLElement {
   return banner;
 }
 
-/** The HTML layer over the canvas: safe-area probe, findings banner (lenient), `#panels` for WORK-014-2/-3. */
-export function mountOverlay(root: HTMLElement, context: OverlayContext = { findings: [], lenient: false }): void {
+/** Presentation §8: mounted once at startup in z-order HUD < chooser < sheet; the sheet's Replace reaches the chooser through the bus. */
+export function mountPanels(panels: HTMLElement, context: ViewContext): Panels {
+  return { hudInterior: createHudInterior(panels, context), chooser: createChooser(panels, context), replaceRemove: createReplaceRemove(panels, context) };
+}
+
+/** The HTML layer over the canvas: safe-area probe, findings banner (lenient), `#panels` (mounted when given a full ViewContext). */
+export function mountOverlay(root: HTMLElement, context: OverlayContext | ViewContext = { findings: [], lenient: false }): Panels | null {
   root.replaceChildren();
   root.style.pointerEvents = 'none';
   root.insertAdjacentHTML('beforeend', '<h1 class="tpp-sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)">Talvi</h1><div id="safe-area-probe"></div>');
@@ -31,6 +72,7 @@ export function mountOverlay(root: HTMLElement, context: OverlayContext = { find
   const grid = document.createElement('div'); grid.id = 'alignment-grid'; grid.hidden = true;
   root.append(panels, grid);
   if (context.lenient && context.findings.length) root.append(findingsBanner(context.findings));
+  return 'store' in context ? mountPanels(panels, context) : null;
 }
 
 export function setAlignmentGrid(root: HTMLElement, enabled: boolean): void {
