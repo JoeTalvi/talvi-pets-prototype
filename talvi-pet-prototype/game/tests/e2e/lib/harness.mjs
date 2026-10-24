@@ -115,6 +115,26 @@ export async function debugClick(page, label, buttonText = null, value = undefin
   await btn.click(); await page.waitForTimeout(200);
 }
 
+/** Continuous CDP screencast streamed to JPEG files on disk (no frames held in memory); frames() → [{file, t}]. */
+export async function startStreamRecording(page, dir, { maxWidth = 1280, maxHeight = 720, quality = 70 } = {}) {
+  mkdirSync(dir, { recursive: true });
+  const cdp = await page.context().newCDPSession(page), frames = [];
+  cdp.on('Page.screencastFrame', ({ data, metadata, sessionId }) => {
+    const file = join(dir, `f${String(frames.length).padStart(6, '0')}.jpg`); writeFileSync(file, Buffer.from(data, 'base64'));
+    frames.push({ file, t: metadata.timestamp * 1000 }); cdp.send('Page.screencastFrameAck', { sessionId }).catch(() => {});
+  });
+  await cdp.send('Page.startScreencast', { format: 'jpeg', quality, everyNthFrame: 1, maxWidth, maxHeight });
+  return { frames: () => frames, between: (a, b) => frames.filter(f => f.t >= a && f.t <= b), stop: async () => { await cdp.send('Page.stopScreencast').catch(() => {}); await cdp.detach().catch(() => {}); return frames; } };
+}
+/** Joystick drag (real pointer input on the canvas): press on the base centre, move by (dx, dy) game px, hold until `test` or `ms`. */
+export async function joystickHold(page, dx, dy, test, arg = null, ms = 15000) {
+  const c = await page.evaluate(() => { const { game } = window.__tpp, k = game.scene.isActive('Interior') ? 'Interior' : 'Street', j = game.scene.getScene(k).joystick, r = game.canvas.getBoundingClientRect(), s = r.width / 1920;
+    return { x: r.left + j.base.x * s, y: r.top + j.base.y * s, s, visible: j.base.visible }; });
+  await page.mouse.move(c.x, c.y); await page.mouse.down();
+  await page.mouse.move(c.x + dx * c.s, c.y + dy * c.s, { steps: 4 });
+  try { return { ...c, reached: await until(page, test, arg, ms, 16) }; } finally { await page.mouse.up(); }
+}
+
 /** CDP screencast recorder (JPEG frames with timestamps). */
 export async function startRecording(page, { maxWidth = 1920, maxHeight = 1080, quality = 80 } = {}) {
   const cdp = await page.context().newCDPSession(page), frames = [];
@@ -133,9 +153,9 @@ export function encode(loopsDir, name, frames, meta, { maxMs = 12000, crf = 26, 
   const tmp = mkdtempSync(join(tmpdir(), `tpp-loop-${name}-`));
   const t0 = frames[0].t, kept = frames.filter(f => f.t - t0 <= maxMs);
   let list = '';
-  kept.forEach((f, i) => { const file = join(tmp, `f${String(i).padStart(5, '0')}.jpg`); writeFileSync(file, Buffer.from(f.data, 'base64'));
-    list += `file '${file}'\nduration ${((i + 1 < kept.length ? kept[i + 1].t - f.t : 100) / 1000).toFixed(6)}\n`; });
-  list += `file '${join(tmp, `f${String(kept.length - 1).padStart(5, '0')}.jpg`)}'\n`; writeFileSync(join(tmp, 'list.txt'), list);
+  const files = kept.map((f, i) => { if (f.file) return f.file; const file = join(tmp, `f${String(i).padStart(5, '0')}.jpg`); writeFileSync(file, Buffer.from(f.data, 'base64')); return file; });
+  kept.forEach((f, i) => { list += `file '${files[i]}'\nduration ${((i + 1 < kept.length ? kept[i + 1].t - f.t : 100) / 1000).toFixed(6)}\n`; });
+  list += `file '${files.at(-1)}'\n`; writeFileSync(join(tmp, 'list.txt'), list);
   const durationMs = Math.round(kept.at(-1).t - t0), sourceFps = Math.round(kept.length / Math.max(durationMs / 1000, 0.001) * 10) / 10;
   const deltas = kept.slice(1).map((f, i) => f.t - kept[i].t).sort((a, b) => a - b);
   Object.assign(sidecar, { frames: kept.length, framesDropped: frames.length - kept.length, durationMs, sourceFps, encodedFps: { mp4: fps, ...(gif ? { gif: 12 } : {}) },
