@@ -205,13 +205,14 @@ async function tapRun(report) {
     measured: { plannedMs: t.planned, logStartedToMilestoneMs: t.measuredStartedToMilestoneMs }, clipTiming: { clip: 'dust', measuredMs: t.dust.map(r => r.intervalsMs) } });
   rec = await startRecording(page);
   await page.waitForTimeout(200);
-  await dispatch(page, 'collectRewards'); await dispatch(page, 'closeReveal');
+  const endedPerf = await page.evaluate(() => { window.__tpp.store.dispatch({ type: 'collectRewards' }); window.__tpp.store.dispatch({ type: 'closeReveal' }); return performance.now(); });
   await page.waitForTimeout(1400);
   frames = await rec.stop();
   const back = await samplesOf(page), after = await read(page);
-  const endedT = after.lines.filter(l => l.type === 'celebration.ended').at(-1)?.t ?? null;
-  const panBack = { celebrationEndedT: endedT, midAtEnd: back.at(-1)?.mid, zoomAtEnd: back.at(-1)?.zoom, barGoneAt: back.find(s => !s.bar)?.t ?? null,
-    midSettledAtMs: (() => { const s = back.find(x => x.t > endedT && Math.abs(x.mid[0] - 960) < 0.5 && Math.abs(x.mid[1] - 540) < 0.5); return s && endedT ? Math.round(s.t - endedT) : null; })() };
+  const rel = s => (s ? Math.round(s.t - endedPerf) : null);
+  const panBack = { celebrationEndedLogT: after.lines.filter(l => l.type === 'celebration.ended').at(-1)?.t ?? null, endedPerf: Math.round(endedPerf),
+    firstMoveAtMs: rel(back.find(x => x.t > endedPerf && (Math.abs(x.mid[0] - 1500) > 0.5))), midSettledAtMs: rel(back.find(x => x.t > endedPerf && Math.abs(x.mid[0] - 960) < 0.5 && Math.abs(x.mid[1] - 540) < 0.5)),
+    barGoneAtMs: rel(back.find(x => x.t > endedPerf && !x.bar)), midAtEnd: back.at(-1)?.mid, zoomAtEnd: back.at(-1)?.zoom };
   const loop2 = encode('pan-back-1080', frames, FULL, { target: 'celebration.ended -> pan(960, 540, 500) and the world bar fades out 200', viewport: { width: 1920, height: 1080 },
     seededSave: 'continues the celebration-ack1-to4-tap-1080 session', note: `${NO_POPUP}: collectRewards then closeReveal at +200 ms`, measured: panBack });
   report.runs.push({ ...t, panBack, errors: errorsOf(errors, after), loops: [loop.outputs ?? loop.gap, loop2.outputs ?? loop2.gap] });
