@@ -110,6 +110,21 @@ export class InteriorScene extends WorldScene {
     this.bubble = new Bubble(this, petId, 0, textFrom(content.strings), { bubbleMs, bubbleTextMs },
       tap => this.context.bus.emit({ type: 'bubble.tapped', petId, class: tap.class, text: tap.text }));
     this.bubble.follow(this.pet.bubbleAnchor());
+    this.holdArrivalBubble(petId, pet.behaviour);
+  }
+  /**
+   * The greeting's `pet.reacted {walkOver:true}` is published during the street fade, before this scene exists (and a reload
+   * mid-walk-over has none): a `walking` behaviour that carries a `reaction` holds that bubble, with the `line` of the matching
+   * `pet.reacted` controller record when the log still has it.
+   */
+  private holdArrivalBubble(petId: string, behaviour: PetBehaviour): void {
+    if (behaviour.phase !== 'walking' || !behaviour.reaction || !this.bubble) return;
+    const record = this.context.log.lines().filter(l => l.type === 'pet.reacted' && l.petId === petId).at(-1);
+    const line = record && record.reaction === behaviour.reaction && typeof record.line === 'string' ? record.line : null;
+    const slotId = behaviour.target && 'slotId' in behaviour.target ? behaviour.target.slotId : null;
+    const name = this.context.content.pets[petId]?.name ?? petId;
+    this.bubble.hold(reactionBubble(textFrom(this.context.content.strings), name,
+      { type: 'pet.reacted', petId, reaction: behaviour.reaction, slotId, typeId: null, line, walkOver: true }));
   }
   /** Gate fork 1 / presentation §6.1 order fork 3: a pet `using` a `large` slot draws at slot depth + 1, else at its base y. */
   private applyDepthRule(behaviour: Pick<PetBehaviour, 'phase' | 'target'>): void {

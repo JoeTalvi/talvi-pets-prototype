@@ -92,6 +92,21 @@ describe('VERIFY-MEC-008-016 verb end, removal and greeting', () => {
   });
 });
 
+describe('VERIFY-MEC-008-016 greeting across the scene change', () => {
+  it('VERIFY-MEC-008-016 partial: jsdom — an Interior created mid greeting walk (the reacted event fired on the street) still shows 🎵 on {to:greeting}', async () => {
+    const { scene, state } = await designSetup({ edit: s => {
+      s.mode = 'play';
+      s.pets.dog.behaviour = { phase: 'walking', x: 800, y: 700, facing: 'left', timerMs: 0, target: { wanderPointId: 'w0' }, verb: null, reaction: 'greeting' };
+    } });
+    expect(glyph(scene)).toBeNull();
+    for (let i = 0; i < 300 && state().pets.dog.behaviour.phase !== 'greeting'; i++) tick(scene);
+    expect(state().pets.dog.behaviour.phase).toBe('greeting');
+    expect(glyph(scene)).toBe('🎵');
+    scene.bubble!.tap();
+    expect(glyph(scene)).toBe('Hello!');
+  });
+});
+
 describe('VERIFY-MEC-008-016 want bubble', () => {
   it('VERIFY-MEC-008-016 partial: want bubble — the 40 s countdown shows the tag icon 72×72; tap → tpp.bubble.want text, ui.bubbleTapped once, no tapPet', async () => {
     const { scene, context } = await designSetup({ edit: play, images: ICONS });
