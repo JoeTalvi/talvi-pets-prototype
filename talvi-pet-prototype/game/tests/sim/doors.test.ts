@@ -34,7 +34,7 @@ it('VERIFY-MEC-001-008 arrival immunity survives 400 ms in the street door, then
   expect(current.avatar.immunityMs).toBe(100);
   const returned = reduce(content, current, tick(0, 0, 100));
   expect(returned.state.scene).toEqual({ kind: 'interior', roomId: 'dog-room' });
-  expect(returned.events).toHaveLength(1);
+  expect(returned.events.filter(event => !event.type.startsWith('pet.'))).toHaveLength(1);
   expect(returned.state.avatar.immunityMs).toBe(500);
 });
 

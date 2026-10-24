@@ -78,7 +78,7 @@ it('VERIFY-MEC-008-002 linear advance, close, then noDialogue', () => {
 
 it('VERIFY-MEC-008-003 / VERIFY-MEC-009-001 intro and want announce on first entry, never again', () => {
   const { content, entered } = enteredDogRoom();
-  const kinds = types(entered.events);
+  const kinds = types(entered.events).filter(type => !type.startsWith('pet.'));
   expect(kinds.slice(kinds.indexOf('scene.changed'))).toEqual(['scene.changed', 'dialogue.opened', 'want.activated']);
   expect(entered.events).toContainEqual({ type: 'dialogue.opened', script: { source: 'intro',
     speaker: { petId: 'dog' }, lines: content.pets.dog.lines.intro, index: 0 } });
@@ -137,7 +137,7 @@ it('VERIFY-MEC-008-005 a script enqueued while one is open is appended and opens
   expect(last.events).toEqual([{ type: 'dialogue.closed', source: 'wantAnnounce' }, { type: 'dialogue.opened', script: extra }]);
 });
 
-it('VERIFY-MEC-008-006 frozen input while a dialogue is open (tapPet is WORK-003-3)', () => {
+it('VERIFY-MEC-008-006 frozen input while a dialogue is open (the tapPet half is in bubbles.test.ts)', () => {
   const { content, state } = dogRoomDesign();
   const open = enqueueScript(state, buildScript(content, 'intro', { petId: 'dog' })).state;
   const play = { ...open, mode: 'play' as const };

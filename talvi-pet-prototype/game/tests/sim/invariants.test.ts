@@ -18,8 +18,22 @@ function expectWantAndDialogueInvariants(content: Content, state: GameState): vo
   else expect(current.index >= 0 && current.index < current.lines.length).toBe(true);
 }
 
+/** VERIFY-CORE-011 partial (mec-007 §1 invariants) for the resident pet after every dispatch. */
+function expectPetInvariants(content: Content, state: GameState): void {
+  for (const pet of Object.values(state.pets)) expect(pet.recentTargets.length).toBeLessThanOrEqual(content.tuning.recentTargetsKept);
+  if (state.scene.kind !== 'interior') return;
+  const room = content.rooms[state.scene.roomId];
+  const behaviour = state.pets[room.residentPetId].behaviour;
+  expect(pointInPolygon(behaviour, room.walkArea)).toBe(true);
+  if (behaviour.phase === 'walking') expect(behaviour.target).not.toBeNull();
+  if (behaviour.phase !== 'using') return;
+  expect(behaviour.verb).not.toBeNull();
+  expect(state.rooms[room.id].placements[(behaviour.target as { slotId: string }).slotId]).toBeDefined();
+}
+
 function expectInvariants(content: Content, state: GameState): void {
   expectWantAndDialogueInvariants(content, state);
+  expectPetInvariants(content, state);
   if (state.mode === 'design') expect(state.scene.kind).toBe('interior');
   const polygon = state.scene.kind === 'street' ? content.street.walkArea
     : content.rooms[state.scene.roomId].walkArea;
@@ -37,7 +51,7 @@ function expectInvariants(content: Content, state: GameState): void {
 }
 
 it.each([1, 2, 3])(
-  'VERIFY-MEC-001-015 / VERIFY-CORE-003,004,005,006,008,010 / VERIFY-MEC-009-018 partial: 500 valid tick/setDesignMode/placeCharm/removeCharm/advanceDialogue actions at seed %s (pets, bubbles, celebration and debug families land in WORK-003-3..5)', seed => {
+  'VERIFY-MEC-001-015 / VERIFY-CORE-003,004,005,006,008,010 / VERIFY-MEC-009-018 partial: 500 valid tick/setDesignMode/placeCharm/removeCharm/advanceDialogue/tapPet actions at seed %s with VERIFY-CORE-011 partial pet invariants (celebration and debug families land in WORK-003-4..5)', seed => {
     const { content } = squareFixture(seed);
     let state = initialState(content, seed), replay = initialState(content, seed), cursor = seed;
     let sceneChanges = 0, modeChanges = 0, placements = 0, advances = 0;
@@ -61,3 +75,20 @@ it.each([1, 2, 3])(
     expect(advances).toBeGreaterThan(1);
   },
 );
+
+it('VERIFY-CORE-011 / VERIFY-CORE-008 / VERIFY-CORE-009 partial (pet stream): 2,000 generated actions give identical pet decisions when only feed.rngState differs', () => {
+  const { content } = squareFixture(1);
+  let state = initialState(content, 1), other = { ...initialState(content, 1), feed: { rngState: 99, sinceLastEventMs: 0, eventCount: 0 } };
+  let cursor = 1, petEvents = 0;
+  for (let index = 0; index < 2000; index++) {
+    const generated = nextAction(content, state, cursor); cursor = generated.seed;
+    const first = reduce(content, state, generated.action), second = reduce(content, other, generated.action);
+    const pets = (events: typeof first.events) => events.filter(event => event.type.startsWith('pet.'));
+    expect(pets(second.events)).toEqual(pets(first.events));
+    expect(second.state.pets).toEqual(first.state.pets);
+    expectPetInvariants(content, first.state);
+    petEvents += pets(first.events).length;
+    state = first.state; other = second.state;
+  }
+  expect(petEvents).toBeGreaterThan(10);
+});

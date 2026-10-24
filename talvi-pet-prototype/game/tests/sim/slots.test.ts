@@ -101,22 +101,31 @@ it('VERIFY-MEC-005-006 same-type replace applied with no stars.changed and want.
   expect(result.state).not.toBe(state);
 });
 
-it('VERIFY-MEC-005-007 partial: removing the used slot reports interruptedPetId dog (pet.verbEnded/pet.reacted land in WORK-003-3)', () => {
+it('VERIFY-MEC-005-007 removing the used slot reports interruptedPetId dog, then pet.verbEnded, pet.reacted {interrupted}, reacting', () => {
   const { content, state } = withLamp();
-  state.pets.dog.behaviour = { ...state.pets.dog.behaviour, phase: 'using', target: { slotId: 'floor-1' } };
+  state.pets.dog.behaviour = { ...state.pets.dog.behaviour, phase: 'using', target: { slotId: 'floor-1' }, verb: 'look-at' };
   const result = reduce(content, deepFreeze(state), remove('floor-1'));
   expect(result.events[0]).toEqual({ type: 'charm.removed', roomId: 'dog-room', slotId: 'floor-1',
     typeId: 'lamp', interruptedPetId: 'dog' });
+  const reacting = { ...state.pets.dog.behaviour, phase: 'reacting', timerMs: 2000, target: { slotId: 'floor-1' },
+    verb: null, reaction: 'interrupted' };
   expect(result.events.slice(1)).toEqual([{ type: 'stars.changed', roomId: 'dog-room', from: 4, to: 0, delta: -4, max: 48 },
-    softNapUnmet]);
+    softNapUnmet,
+    { type: 'pet.verbEnded', petId: 'dog', verb: 'look-at', slotId: 'floor-1' },
+    { type: 'pet.reacted', petId: 'dog', reaction: 'interrupted', slotId: 'floor-1', typeId: 'lamp', line: null, walkOver: false },
+    { type: 'pet.phaseChanged', petId: 'dog', from: 'using', to: 'reacting', target: { slotId: 'floor-1' }, verb: null, reaction: 'interrupted' }]);
   expect(placementAt(content, result.state, 'dog-room', 'floor-1')).toBeNull();
-  expect(result.state.pets).toBe(state.pets);
+  expect(result.state.pets.dog.behaviour).toEqual(reacting);
 });
 
-it('VERIFY-MEC-005-008 partial: a pet walking to the slot is not interrupted (pet idle handling lands in WORK-003-3)', () => {
+it('VERIFY-MEC-005-008 a pet walking to the slot is not interrupted: interruptedPetId null, pet.phaseChanged to idle, no pet.reacted', () => {
   const { content, state } = withLamp();
   state.pets.dog.behaviour = { ...state.pets.dog.behaviour, phase: 'walking', target: { slotId: 'floor-1' } };
-  expect(reduce(content, state, remove('floor-1')).events[0]).toMatchObject({ type: 'charm.removed', interruptedPetId: null });
+  const walking = reduce(content, deepFreeze(structuredClone(state)), remove('floor-1'));
+  expect(walking.events[0]).toMatchObject({ type: 'charm.removed', interruptedPetId: null });
+  expect(walking.events.filter(event => event.type === 'pet.reacted')).toEqual([]);
+  expect(walking.events.at(-1)).toMatchObject({ type: 'pet.phaseChanged', from: 'walking', to: 'idle', target: null });
+  expect(walking.state.pets.dog.behaviour.phase).toBe('idle');
   state.pets.dog.behaviour = { ...state.pets.dog.behaviour, phase: 'using', target: { slotId: 'floor-2' } };
   expect(reduce(content, state, remove('floor-1')).events[0]).toMatchObject({ interruptedPetId: null });
 });

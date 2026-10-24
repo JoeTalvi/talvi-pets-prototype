@@ -16,7 +16,8 @@ function decorate(content: Content, state: GameState, value: number): Action {
 }
 
 /** Bounded FX-ARB precursor (WORK-003-1): ticks, setDesignMode and valid placeCharm/removeCharm;
- * WORK-003-2 advances any open dialogue first, so every generated action stays valid.
+ * WORK-003-2 advances any open dialogue first, so every generated action stays valid;
+ * WORK-003-3 adds a valid tapPet (resident pet, no dialogue, no celebration).
  * Later lanes add their action families. Targeted motion ensures both doors and design are exercised. */
 export function nextAction(content: Content, state: GameState, seed: number): {
   action: Action; seed: number;
@@ -25,6 +26,8 @@ export function nextAction(content: Content, state: GameState, seed: number): {
   if (state.dialogue.current !== null) return { action: { type: 'advanceDialogue' }, seed: draw.seed };
   if (state.scene.kind === 'interior' && draw.value < 0.2)
     return { action: { type: 'setDesignMode', on: state.mode !== 'design' }, seed: draw.seed };
+  if (state.scene.kind === 'interior' && state.celebration === null && draw.value < 0.25)
+    return { action: { type: 'tapPet', petId: content.rooms[state.scene.roomId].residentPetId }, seed: draw.seed };
   if (state.mode === 'design')
     return draw.value < 0.75 ? { action: decorate(content, state, (draw.value - 0.2) / 0.55), seed: draw.seed }
       : { action: { type: 'tick', dtMs: 100, move: { x: 1, y: 0 } }, seed: draw.seed };

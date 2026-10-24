@@ -144,14 +144,14 @@ describe('MEC-006 through the placeCharm/removeCharm dispatch', () => {
       .toEqual([{ type: 'stars.changed', roomId: 'dog-room', from: 0, to: 4, delta: 4, max: 48 }]);
   });
 
-  it('VERIFY-MEC-006-003/004 via reduce: repeat 12 → 13, removal 13 → 9 leaves pets untouched', () => {
+  it('VERIFY-MEC-006-003/004 via reduce: repeat 12 → 13, removal 13 → 9 leaves hearts and wants untouched', () => {
     const { content, state } = scoringRoom();
     const three = dispatch(content, state, [place('large-1', 'dog-bed'), place('floor-1', 'lamp'), place('wall-1', 'painting')]);
     const repeated = reduce(content, deepFreeze(three), place('floor-2', 'lamp'));
     expect(starsEvents(repeated.events)).toEqual([{ type: 'stars.changed', roomId: 'dog-room', from: 12, to: 13, delta: 1, max: 48 }]);
     const removed = reduce(content, repeated.state, { type: 'removeCharm', slotId: 'large-1' });
     expect(starsEvents(removed.events)).toEqual([{ type: 'stars.changed', roomId: 'dog-room', from: 13, to: 9, delta: -4, max: 48 }]);
-    expect(removed.state.pets).toBe(repeated.state.pets);
+    expect(Object.values(removed.state.pets).map(pet => pet.fulfilledWantIds)).toEqual(Object.values(repeated.state.pets).map(pet => pet.fulfilledWantIds));
   });
 
   it('VERIFY-MEC-006-005/006 via reduce: one net replacement event; an equal score emits none', () => {

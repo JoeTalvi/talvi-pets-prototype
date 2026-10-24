@@ -164,8 +164,9 @@ it('VERIFY-MEC-009-013 partial: through fulfil directly (removeCharm is rejected
 it('VERIFY-MEC-009-014 the last want exhausts the pet; later placements emit no want.*', () => {
   const { content, state } = dogRoom(['soft-nap', 'bright-corner'], ['fern', 'ball'], twentyPoints);
   const result = step(content, state, place('floor-4', 'ball'));
-  expect(types(result.events).slice(-4)).toEqual(['want.fulfilled', 'heart.earned', 'dialogue.opened', 'wants.exhausted']);
-  expect(result.events.at(-1)).toEqual({ type: 'wants.exhausted', petId: 'dog' });
+  const nonPet = result.events.filter(event => !event.type.startsWith('pet.'));
+  expect(types(nonPet).slice(-4)).toEqual(['want.fulfilled', 'heart.earned', 'dialogue.opened', 'wants.exhausted']);
+  expect(nonPet.at(-1)).toEqual({ type: 'wants.exhausted', petId: 'dog' });
   expect(result.state.pets.dog.hearts).toBe(3);
   const later = step(content, closeAll(content, result.state), place('floor-5', 'vase'));
   expect(types(later.events).filter(type => type.startsWith('want'))).toEqual([]);
@@ -202,7 +203,7 @@ it('VERIFY-MEC-009-016 a want satisfied at activation completes on the next remo
   const { content, state } = dogRoom([], ['fern'], { 'floor-1': 'lamp', 'floor-2': 'fern', 'floor-5': 'vase' });
   const first = step(content, state, place('large-1', 'dog-bed'));
   expect(first.events.filter(event => event.type === 'want.fulfilled')).toHaveLength(1);
-  expect(first.events.at(-1)).toMatchObject({ type: 'want.activated', wantId: 'bright-corner' });
+  expect(first.events.filter(event => !event.type.startsWith('pet.')).at(-1)).toMatchObject({ type: 'want.activated', wantId: 'bright-corner' });
   expect(wantConditions(content, first.state, 'dog').every(view => view.met)).toBe(true);
   const removal = step(content, closeAll(content, first.state), remove('floor-5'));
   expect(removal.events).toContainEqual({ type: 'want.fulfilled', petId: 'dog', wantId: 'bright-corner', hearts: 2,
