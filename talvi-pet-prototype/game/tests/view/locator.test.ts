@@ -52,8 +52,9 @@ describe('UI-CN05 locator (ux-correction v2; DEC-038)', () => {
 describe('presentation §8 mount order (WORK-019-2)', () => {
   it('presentation §8 mount order — #panels panels in document order hudInterior, wantPanel, chooser, replaceRemove, debugPanel; Panels.wantPanel defined', async () => {
     const s = await designSetup();
-    expect([...s.root.querySelectorAll<HTMLElement>('[data-panel]')].map(c => c.dataset.panel))
-      .toEqual(['hudInterior', 'wantPanel', 'chooser', 'replaceRemove', 'debugPanel']);
+    // WORK-019-3 inserts toast and dialogue between these; the relative order of WORK-019-2's panels is what this row pins.
+    const own = ['hudInterior', 'wantPanel', 'chooser', 'replaceRemove', 'debugPanel'];
+    expect([...s.root.querySelectorAll<HTMLElement>('[data-panel]')].map(c => c.dataset.panel!).filter(p => own.includes(p))).toEqual(own);
     expect(s.panels.wantPanel).toBeDefined();
     expect(s.root.querySelector('.tpp-wantPanel')!.classList.contains('tpp-panel')).toBe(true);
   });

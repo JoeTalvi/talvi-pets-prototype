@@ -9,5 +9,6 @@
   "tpp.hud.hearts": "♥ {hearts}",
   "tpp.want.title": "WANT",
   "tpp.chooser.selected": "Selected spot",
-  "tpp.stars.deltaLoss": "−{delta} ★"
+  "tpp.stars.deltaLoss": "−{delta} ★",
+  "tpp.toast.delta": "+{change}"
 }
