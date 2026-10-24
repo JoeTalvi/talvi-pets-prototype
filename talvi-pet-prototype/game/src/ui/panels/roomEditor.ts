@@ -46,8 +46,7 @@ export function createRoomEditorPanel(root: HTMLElement, context: ViewContext): 
   const section = root.lastElementChild as HTMLElement;
   section.hidden = true;
   const ui = decorate(section, context);
-  const view = { editor: null as RoomEditor | null, off: null as (() => void) | null, findings: [] as Row[], pending: 0, errorRecorded: false,
-    stats: { lastMs: 0, meanMs: 0, maxMs: 0, runs: 0 } as CheckStats, hidden: [] as HTMLElement[], ticker: undefined as ReturnType<typeof setInterval> | undefined };
+  const view = { editor: null as RoomEditor | null, off: null as (() => void) | null, errorRecorded: false, hidden: [] as HTMLElement[], ticker: undefined as ReturnType<typeof setInterval> | undefined };
   const storage = () => context.storage ?? localStorage;
   const status = (message: string) => { ui.status.textContent = message; };
   const fail = (what: string, error: unknown) => {
@@ -57,28 +56,14 @@ export function createRoomEditorPanel(root: HTMLElement, context: ViewContext): 
     context.log.record('app.error', { message: `room editor ${what} failed: ${errorText(error)}`, stack: error instanceof Error ? error.stack ?? '' : '' });
   };
 
-  const runChecks = () => {
-    view.pending = 0;
-    const editor = view.editor; if (!editor) return;
-    const t0 = performance.now();
-    view.findings = draftFindings(context, editor.draft());
-    const ms = performance.now() - t0, s = view.stats;
-    s.runs += 1; s.lastMs = ms; s.maxMs = Math.max(s.maxMs, ms); s.meanMs += (ms - s.meanMs) / s.runs;
-    section.dataset.checkStats = JSON.stringify(s);
-    renderFindings(ui, editor, view.findings);
-  };
-  // Order escalation: once a run has exceeded one frame, later runs coalesce to one per animation frame after the commit.
-  const scheduleChecks = () => {
-    if (view.stats.maxMs <= FRAME_BUDGET_MS || typeof requestAnimationFrame !== 'function') { runChecks(); return; }
-    if (!view.pending) view.pending = requestAnimationFrame(runChecks);
-  };
+  const checks = createCheckRunner(section, context, ui, () => view.editor);
   const autosave = () => {
     const editor = view.editor; if (!editor) return;
     try { storage().setItem(draftKey(editor.draft().id), serializeRoom(editor.draft())); } catch (error) { fail('Autosave', error); }
   };
   const onChange = (cause: ChangeCause) => {
     if (cause === 'commit' || cause === 'undo' || cause === 'redo') autosave();
-    if (cause === 'commit' || cause === 'undo' || cause === 'redo' || cause === 'load') scheduleChecks();
+    if (cause === 'commit' || cause === 'undo' || cause === 'redo' || cause === 'load') checks.schedule();
     refresh();
   };
   const refresh = () => { if (view.editor) renderForms(ui, context, view.editor); };
@@ -91,14 +76,13 @@ export function createRoomEditorPanel(root: HTMLElement, context: ViewContext): 
     section.hidden = false; status('');
     hideOthers(root, section, view.hidden);
     offerRecovery(ui, context, editor, storage);
-    runChecks(); refresh();
+    checks.run(); refresh();
     view.ticker = setInterval(refresh, 500); // mirrors debug row 16 changes to `context.preview`
   }
   function close(): void {
     if (!view.editor) return;
     view.off?.(); view.off = null; view.editor = null;
-    if (view.pending && typeof cancelAnimationFrame === 'function') cancelAnimationFrame(view.pending);
-    view.pending = 0; clearInterval(view.ticker);
+    checks.cancel(); clearInterval(view.ticker);
     section.hidden = true; ui.prompt.hidden = true;
     for (const el of view.hidden.splice(0)) el.style.visibility = '';
   }
@@ -108,7 +92,34 @@ export function createRoomEditorPanel(root: HTMLElement, context: ViewContext): 
   const previous = context.onRoomEditor;
   context.onRoomEditor = editor => { previous?.(editor); if (editor) open(editor); else close(); };
   if (context.roomEditor) open(context.roomEditor);
-  return { open, close, refresh, stats: () => ({ ...view.stats }), findings: () => view.findings as Finding[], destroy() { close(); context.onRoomEditor = previous; section.remove(); } };
+  return { open, close, refresh, stats: checks.stats, findings: checks.findings, destroy() { close(); context.onRoomEditor = previous; section.remove(); } };
+}
+
+/** The findings run with its latency (order row "check latency"): zod, then the shared checks, timed with `performance.now()`. */
+function createCheckRunner(section: HTMLElement, context: ViewContext, ui: Ui, editor: () => RoomEditor | null) {
+  const s: CheckStats = { lastMs: 0, meanMs: 0, maxMs: 0, runs: 0 };
+  let findings: Row[] = [], pending = 0;
+  const run = () => {
+    pending = 0;
+    const e = editor(); if (!e) return;
+    const t0 = performance.now();
+    findings = draftFindings(context, e.draft());
+    const ms = performance.now() - t0;
+    s.runs += 1; s.lastMs = ms; s.maxMs = Math.max(s.maxMs, ms); s.meanMs += (ms - s.meanMs) / s.runs;
+    section.dataset.checkStats = JSON.stringify(s);
+    renderFindings(ui, e, findings);
+  };
+  return {
+    run,
+    // Order escalation: once a run has exceeded one frame, later runs coalesce to one per animation frame after the commit.
+    schedule() {
+      if (s.maxMs <= FRAME_BUDGET_MS || typeof requestAnimationFrame !== 'function') { run(); return; }
+      if (!pending) pending = requestAnimationFrame(run);
+    },
+    cancel() { if (pending && typeof cancelAnimationFrame === 'function') cancelAnimationFrame(pending); pending = 0; },
+    stats: (): CheckStats => ({ ...s }),
+    findings: () => findings as Finding[],
+  };
 }
 
 type Ui = { section: HTMLElement; fields: Map<string, HTMLLabelElement>; background: HTMLSelectElement; coords: HTMLElement; boxes: HTMLInputElement[];
