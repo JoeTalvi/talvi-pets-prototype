@@ -153,9 +153,10 @@ function offerRecovery(ui: Ui, context: ViewContext, editor: RoomEditor, storage
   if (raw === null) return;
   let stored: unknown, reason = '';
   try { stored = JSON.parse(raw); } catch (error) { reason = errorText(error); }
-  if (!reason && serializeRoom(stored as Room) === serializeRoom(fileRoom)) { storage().removeItem(key); return; }
+  // Schema first: serializeRoom throws on a parsable non-room value (null, a number), which must reach the Discard-only prompt.
   const parsed = reason ? null : RoomSchema.safeParse(stored);
   if (parsed && !parsed.success) reason = parsed.error.issues.map(i => `/${i.path.join('/')} ${i.message}`).join('; ');
+  if (!reason && serializeRoom(stored as Room) === serializeRoom(fileRoom)) { storage().removeItem(key); return; }
   ui.prompt.hidden = false;
   ui.prompt.querySelector('p')!.textContent = reason ? `Saved draft unreadable: ${reason}` : 'A saved draft differs from the file.';
   const resume = ui.prompt.querySelector<HTMLButtonElement>('[data-action=resume]')!, discard = ui.prompt.querySelector<HTMLButtonElement>('[data-action=discard]')!;

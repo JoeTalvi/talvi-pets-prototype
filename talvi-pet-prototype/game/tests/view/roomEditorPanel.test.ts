@@ -184,6 +184,17 @@ describe('tools TOOL-002 draft recovery', () => {
     expect(prompt.querySelector('p')!.textContent).toMatch(/^Saved draft unreadable: /);
     expect([...prompt.querySelectorAll('button')].filter(b => !b.hidden).map(b => b.textContent)).toEqual(['Discard']);
   });
+  it('tools TOOL-002 draft recovery — a parsable non-room key (null, 5, "x") opens without throwing and offers Discard only with its reason (WORK-015-2-1 A-1)', async () => {
+    for (const stored of ['null', '5', '"x"']) {
+      const s = await setup(stored);
+      expect(() => open(s)).not.toThrow();
+      const prompt = panel(s).querySelector<HTMLElement>('.tpp-editor-prompt')!;
+      expect(prompt.hidden).toBe(false);
+      expect(prompt.querySelector('p')!.textContent).toMatch(/^Saved draft unreadable: /);
+      expect([...prompt.querySelectorAll('button')].filter(b => !b.hidden).map(b => b.textContent)).toEqual(['Discard']);
+      destroyScene(); document.body.replaceChildren();
+    }
+  });
   it('tools TOOL-002 draft recovery — Revert to file clears the key and history; a storage throw records one app.error and an inline line', async () => {
     const s = await setup(); const session = open(s);
     session.commit(moveSlot('floor-3', -90, 0));
