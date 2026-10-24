@@ -3,6 +3,7 @@ import { attentionVisible, displayedPhase } from '@sim/select';
 import type { ProjectId } from '@sim/state';
 import { recordPointer, type PointerSample } from '@app/input/pointerRouting';
 import { AttentionIcon, HouseSprite } from '../objects/HouseSprite';
+import { CelebrationDirector, directorClock } from '../celebration/CelebrationDirector';
 import { depthAtBase } from '../depth';
 import { MISSING_TEXTURE } from './BootScene';
 import type { ScenePointer } from './InteriorScene';
@@ -32,6 +33,8 @@ export class StreetScene extends WorldScene {
   houses = new Map<ProjectId, HouseSprite>();
   icons = new Map<ProjectId, AttentionIcon>();
   tiles: Phaser.GameObjects.Image[] = [];
+  /** Presentation §7: built per scene start; owns the celebrating house's texture while it holds a cue (order fork 6). */
+  director: CelebrationDirector | null = null;
   private downs = new Map<number, PointerSample>();
   private joystickPointer: number | null = null;
   constructor() { super('Street'); }
@@ -42,6 +45,12 @@ export class StreetScene extends WorldScene {
     this.tiles = [];
     this.downs = new Map();
     this.joystickPointer = null;
+    this.director = null;
+  }
+  /** Presentation §4: "if `state.celebration` → `CelebrationDirector.replay(state.celebration)`" after the shared frame is built. */
+  create(): void {
+    super.create();
+    this.director!.resume(this.context.store.getState());
   }
   drawWorld(): void {
     const { street } = this.context.content;
@@ -70,6 +79,7 @@ export class StreetScene extends WorldScene {
     const state = store.getState();
     for (const [projectId, house] of this.houses) {
       house.icon.setVisible(attentionVisible(content, state, projectId));
+      if (this.director?.owns(projectId)) continue;
       const phase = displayedPhase(content, state, projectId);
       if (phase !== house.phase) house.setPhase(phase);
     }
@@ -101,6 +111,12 @@ export class StreetScene extends WorldScene {
   protected subscribeScene(): void {
     this.input.on('pointerdown', this.pointerDown); this.input.on('pointerup', this.pointerUp);
     this.unsubscribes.push(() => { this.input.off('pointerdown', this.pointerDown); this.input.off('pointerup', this.pointerUp); });
+    const director = new CelebrationDirector(this, directorClock.create(this));
+    this.director = director;
+    this.on('celebration.started', (event, state) => director.started(event, state));
+    this.on('celebration.ended', () => director.ended());
+    this.on('state.reset', () => director.cancel());
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => director.cancel());
     for (const type of REFRESH_ON) this.on(type, () => this.refreshHouses());
   }
 }
