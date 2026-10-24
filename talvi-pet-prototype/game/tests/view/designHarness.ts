@@ -15,6 +15,12 @@ export const REAL_STRINGS: Patch[] = Object.entries({
   'tpp.bubble.love': 'Just right!', 'tpp.bubble.like': 'I like this.', 'tpp.bubble.dislike': 'Not quite my thing.',
   'tpp.bubble.interrupted': 'Where did it go?', 'tpp.bubble.greeting': 'Hello!', 'tpp.bubble.want': 'Something {tag} would be lovely.',
   'tpp.bubble.wantHidden': 'Watch its reactions.', 'tpp.bubble.chatter': 'A thought to share.',
+  'tpp.hud.attention': 'A home phase is ready, step outside', 'tpp.stars.delta': '+{delta} ★',
+  'tpp.stars.explain': 'New kinds of charm fill the bar; repeats add a little.',
+  'tpp.want.availability.nextPhase': 'arrives with the next home phase', 'tpp.want.availability.laterPhase': 'arrives with a later home phase',
+  'tpp.want.availability.heart': 'unlocked by a Heart', 'tpp.want.availability.never': 'not available yet',
+  'tpp.want.adjacent': 'beside each other', 'tpp.want.hidden': '?', 'tpp.want.starsFloor': 'room ≥ {min} ★',
+  'tpp.want.rewardPrefix': 'Reward:', 'tpp.want.fulfilledFlash': 'Want fulfilled!', 'tpp.wants.exhausted': 'No more wants for now.',
 }).map(([key, value]) => ({ file: 'strings.json', path: `/${key}`, value }));
 
 export type DesignSetup = { context: ViewContext; scene: InteriorScene; root: HTMLElement; panels: Panels; state: () => GameState };

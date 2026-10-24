@@ -2,6 +2,7 @@ import type { Finding } from '@sim/checks/types';
 import type { AssetManifest } from '@content/schema/assets';
 import type { ViewContext } from '@view/context';
 import { createHudInterior } from './panels/hudInterior';
+import { createWantPanel, type WantPanel } from './panels/wantPanel';
 import { createChooser } from './panels/chooser';
 import { createReplaceRemove } from './panels/replaceRemove';
 import { createDebugPanel, type DebugPanel } from './panels/debugPanel';
@@ -11,7 +12,7 @@ export type TextParams = Record<string, string | number>;
 export type Text = (key: string, params?: TextParams) => string;
 /** The panel module API WORK-014-3/-4 and WORK-019/020 follow. */
 export type Panel = { open?(slotId: string): void; close?(reason?: string): void; destroy(): void };
-export type Panels = { hudInterior: Panel; chooser: Panel; replaceRemove: Panel; debugPanel: DebugPanel };
+export type Panels = { hudInterior: Panel; wantPanel: WantPanel; chooser: Panel; replaceRemove: Panel; debugPanel: DebugPanel };
 
 /** UI strings WORK-011 proposed that `strings.json` does not carry yet (returned to WORK-021 as strings-additions.json). */
 export const FALLBACK_STRINGS: Readonly<Record<string, string>> = {
@@ -23,6 +24,9 @@ export const FALLBACK_STRINGS: Readonly<Record<string, string>> = {
   'tpp.chooser.scroll': '▸ scroll',
   'tpp.common.close': 'Close',
   'tpp.hud.hearts': '♥ {hearts}',
+  'tpp.want.title': 'WANT',
+  'tpp.chooser.selected': 'Selected spot',
+  'tpp.stars.deltaLoss': '−{delta} ★',
 };
 
 /** `content.strings[key]` first, then the fallback table, with `{param}` substitution; `[key]` when unresolved. */
@@ -58,10 +62,11 @@ function findingsBanner(findings: readonly Finding[]): HTMLElement {
   return banner;
 }
 
-/** Presentation §8: mounted once at startup in z-order HUD < chooser < sheet < debug (6); the sheet's Replace reaches the chooser through the bus. */
+/** Presentation §8: mounted once at startup in z-order HUD < want panel < chooser < sheet < debug (6); the sheet's Replace reaches the chooser through the bus. */
 export function mountPanels(panels: HTMLElement, context: ViewContext): Panels {
-  const hudInterior = createHudInterior(panels, context), chooser = createChooser(panels, context), replaceRemove = createReplaceRemove(panels, context);
-  return { hudInterior, chooser, replaceRemove, debugPanel: createDebugPanel(panels, context) };
+  const hudInterior = createHudInterior(panels, context), wantPanel = createWantPanel(panels, context);
+  const chooser = createChooser(panels, context), replaceRemove = createReplaceRemove(panels, context);
+  return { hudInterior, wantPanel, chooser, replaceRemove, debugPanel: createDebugPanel(panels, context) };
 }
 
 /** The HTML layer over the canvas: safe-area probe, findings banner (lenient), `#panels` (mounted when given a full ViewContext). */
