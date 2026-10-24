@@ -28,6 +28,8 @@ async function setup(stored?: string): Promise<S> {
   return { ...s, storage, clipboard };
 }
 const frame = (s: DesignSetup) => s.scene.update(0, 16);
+// Under load a check run can exceed the 16.7 ms budget, after which runs coalesce to the next animation frame: await it before reading findings.
+const nextFrame = () => new Promise<void>(r => (typeof requestAnimationFrame === 'function' ? requestAnimationFrame(() => r()) : r()));
 const open = (s: DesignSetup) => { s.context.roomEditorRequested = true; frame(s); return s.scene.editor!.session()!; };
 const closeEditor = (s: DesignSetup) => { s.context.roomEditorRequested = false; frame(s); };
 const panel = (s: DesignSetup) => s.root.querySelector<HTMLElement>('[data-panel=roomEditor]')!;
@@ -115,19 +117,19 @@ describe('tools TOOL-002 findings', () => {
     const base = baseline(s, session.draft());
     expect(s.panels.roomEditor.findings()).toEqual(base);
     const atOpen = rowText(s);
-    session.commit(moveSlot('floor-3', -90, 0));
+    session.commit(moveSlot('floor-3', -90, 0)); await nextFrame();
     const warning = rows(s).find(r => r.dataset.ids === 'CHK-005-07')!;
     expect(warning.dataset.level).toBe('warning');
     expect(warning.textContent).toMatch(/\/slots\/1 · .*floor-3/);
     expect(warning.style.color).not.toBe('inherit');
     click(warning);
     expect(session.selection()).toEqual({ kind: 'slot', id: 'floor-2' });
-    session.commit(moveAnchor('floor-3', 816, 470));
+    session.commit(moveAnchor('floor-3', 816, 470)); await nextFrame();
     const errors = rows(s).filter(r => r.dataset.level === 'error').map(r => r.dataset.ids!);
     expect(errors.some(ids => ids.includes('CHK-005-03'))).toBe(true);
     expect(errors.some(ids => ids.includes('CHK-007-07'))).toBe(true);
     expect(rows(s).find(r => r.dataset.level === 'error')!.style.color).toBe('rgb(181, 82, 63)');
-    session.undo(); session.undo();
+    session.undo(); session.undo(); await nextFrame();
     expect(rowText(s)).toEqual(atOpen);
   });
   it('tools TOOL-002 findings — a non-array walkArea fails safeParse: ZOD rows only (the checks are not run)', async () => {
@@ -145,7 +147,7 @@ describe('tools TOOL-002 findings', () => {
     session.history.stage(moveSlot('floor-3', 5, 0));
     session.select({ kind: 'slot', id: 'floor-3' });
     expect(runs()).toBe(before);
-    session.commit(moveSlot('floor-3', 5, 0));
+    session.commit(moveSlot('floor-3', 5, 0)); await nextFrame();
     expect(runs()).toBe(before + 1);
     expect(JSON.parse(panel(s).dataset.checkStats!).runs).toBe(before + 1);
   });
