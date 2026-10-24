@@ -7,8 +7,8 @@ export const WORLD_BAR_DEPTH = 6500;
 /** Presentation §7.3 (sizes proposed): backing 300×140 α 0.59, five 36×96 chunks with 8 px gaps, "NN %" 26 px below. */
 export const WORLD_BAR = {
   offsetY: -40, backing: { key: 'ui/Panel_ModalDialog', w: 300, h: 140, slice: 100, alpha: 0.59 },
-  chunk: { bg: 'ui/Bar_ChunkBackground_No_Fill', fill: 'ui/Bar_ChunkFill', w: 36, h: 96, gap: 8, y: -12 },
-  label: { px: 26, y: 50, color: '#ffffff' },
+  chunk: { bg: 'ui/Bar_ChunkBackground_No_Fill', fill: 'ui/Bar_ChunkFill', w: 36, h: 96, gap: 8, y: -16 },
+  label: { px: 26, y: 46, color: '#503d2d' },
   colors: { completed: 0x1a801a, inProgress: 0x33d933, background: 0x666666 },
 } as const;
 
