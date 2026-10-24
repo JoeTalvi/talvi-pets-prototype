@@ -12,6 +12,9 @@ type Patch = { file: string; path: string; value: unknown };
 export const REAL_STRINGS: Patch[] = Object.entries({
   'tpp.hud.decorate': 'Decorate', 'tpp.hud.done': 'Done', 'tpp.stars.label': '{stars} / {max} ★',
   'tpp.chooser.empty': 'Nothing you own fits this spot yet.', 'tpp.sheet.replace': 'Replace', 'tpp.sheet.remove': 'Remove',
+  'tpp.bubble.love': 'Just right!', 'tpp.bubble.like': 'I like this.', 'tpp.bubble.dislike': 'Not quite my thing.',
+  'tpp.bubble.interrupted': 'Where did it go?', 'tpp.bubble.greeting': 'Hello!', 'tpp.bubble.want': 'Something {tag} would be lovely.',
+  'tpp.bubble.wantHidden': 'Watch its reactions.', 'tpp.bubble.chatter': 'A thought to share.',
 }).map(([key, value]) => ({ file: 'strings.json', path: `/${key}`, value }));
 
 export type DesignSetup = { context: ViewContext; scene: InteriorScene; root: HTMLElement; panels: Panels; state: () => GameState };

@@ -111,12 +111,11 @@ describe('VERIFY-PRES-002 pointer rules', () => {
     expect(linesOf(context, 'input.tap', 'input.drag')).toEqual([]);
   });
 
-  it('VERIFY-PRES-002 partial: desktop half — a tap on the Dog outside an outline targets pet:dog and dispatches nothing (tapPet is WORK-019)', async () => {
+  it('VERIFY-PRES-002 partial: desktop half — a tap on the Dog outside an outline targets pet:dog and dispatches only tapPet (WORK-019-1 hit area)', async () => {
     const { scene, context } = await designSetup({ mode: 'play' });
-    const bounds = scene.pet!.getBounds();
     const dispatch = vi.spyOn(context.store, 'dispatch');
-    pointer(scene, bounds.centerX, bounds.centerY);
+    pointer(scene, scene.pet!.x, scene.pet!.y - 50);
     expect(linesOf(context, 'input.tap')[0]).toMatchObject({ target: 'pet:dog' });
-    expect(dispatch).not.toHaveBeenCalled();
+    expect(dispatch.mock.calls).toEqual([[{ type: 'tapPet', petId: 'dog' }]]);
   });
 });
