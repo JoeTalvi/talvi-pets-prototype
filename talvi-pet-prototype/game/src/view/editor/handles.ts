@@ -51,11 +51,19 @@ function drawStatic(g: Phaser.GameObjects.Graphics, room: Room, target: HandleTa
   }
 }
 
-type Spec = { key: string; make: () => Phaser.GameObjects.GameObject & Phaser.GameObjects.Components.Depth; drag: boolean };
+type Spec = { key: string; make: () => Phaser.GameObjects.GameObject & Phaser.GameObjects.Components.Depth; drag: boolean; hit?: Phaser.Geom.Rectangle };
+/** The ghost's hit area: the Dog's 111 px base-centred square inside the 256 px frame (origin 0.5, 1), not the transparent frame. */
+const GHOST_HIT = 111;
 
 function specsFor(scene: InteriorScene, room: Room, ghost: () => { key: string; frame?: string | number }): Spec[] {
   const dot = (x: number, y: number, colour: number, r = HANDLE_R) => () => scene.add.circle(x, y, r, colour, 1).setStrokeStyle(2, 0xffffff, 1);
   const specs: Spec[] = [];
+  // Ghosts first (lowest depth) so every point handle stays on top of them.
+  for (const s of room.slots) specs.push({ key: `anchor:${s.id}`, drag: true, hit: new Phaser.Geom.Rectangle(0, 0, 0, 0), make: () => {
+    const t = ghost(), image = scene.add.image(s.anchor.x, s.anchor.y, t.key, t.frame).setOrigin(0.5, 1).setAlpha(GHOST_ALPHA).setFlipX(s.anchor.facing === 'left');
+    specs.find(x => x.key === `anchor:${s.id}`)!.hit = new Phaser.Geom.Rectangle(image.width / 2 - GHOST_HIT / 2, image.height - GHOST_HIT, GHOST_HIT, GHOST_HIT);
+    return image;
+  } });
   room.walkArea.forEach((p, i) => {
     const q = room.walkArea[(i + 1) % room.walkArea.length];
     specs.push({ key: `vertex:${i}`, make: dot(p.x, p.y, COLOURS.walk), drag: true });
@@ -66,10 +74,7 @@ function specsFor(scene: InteriorScene, room: Room, ghost: () => { key: string; 
     specs.push({ key: `doorSize:${d.id}`, make: () => scene.add.rectangle(d.rect.x + d.rect.w, d.rect.y + d.rect.h, 14, 14, COLOURS.door, 1), drag: true });
     specs.push({ key: `doorSpawn:${d.id}`, make: dot(d.spawn.x, d.spawn.y, COLOURS.door), drag: true });
   }
-  for (const s of room.slots) {
-    specs.push({ key: `anchor:${s.id}`, drag: true, make: () => { const t = ghost(); return scene.add.image(s.anchor.x, s.anchor.y, t.key, t.frame).setOrigin(0.5, 1).setAlpha(GHOST_ALPHA).setFlipX(s.anchor.facing === 'left'); } });
-    specs.push({ key: `slot:${s.id}`, make: dot(s.x, s.y, CLASS_COLOUR[s.sizeClass]), drag: true });
-  }
+  for (const s of room.slots) specs.push({ key: `slot:${s.id}`, make: dot(s.x, s.y, CLASS_COLOUR[s.sizeClass]), drag: true });
   specs.push({ key: 'petSpawn:petSpawn', make: dot(room.petSpawn.x, room.petSpawn.y, COLOURS.anchor), drag: true });
   for (const w of room.wanderPoints) specs.push({ key: `wander:${w.id}`, make: dot(w.x, w.y, COLOURS.walk), drag: true });
   return specs;
@@ -88,7 +93,8 @@ export function createHandles(scene: InteriorScene, target: HandleTarget): Handl
     specsFor(scene, room, () => ghostTexture(scene, room, missing)).forEach((spec, i) => {
       if (spec.key === skipKey) return;
       const o = spec.make().setDepth(EDITOR_DEPTH + 1 + i / 1000);
-      o.setInteractive(spec.drag ? { draggable: true } : undefined);
+      if (spec.hit) o.setInteractive({ hitArea: spec.hit, hitAreaCallback: Phaser.Geom.Rectangle.Contains, draggable: true });
+      else o.setInteractive(spec.drag ? { draggable: true } : undefined);
       o.setData('key', spec.key);
       o.on('pointerdown', (p: Phaser.Input.Pointer) => target.down(spec.key, p));
       objects.set(spec.key, o);
