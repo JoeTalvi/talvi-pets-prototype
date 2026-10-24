@@ -38,7 +38,8 @@ export class WorldProgressBar extends Phaser.GameObjects.Container {
     const { key, w, h, slice, alpha } = WORLD_BAR.backing;
     const texture = this.key(key);
     if (texture === MISSING_TEXTURE) return this.scene.add.image(0, 0, texture).setDisplaySize(w, h).setAlpha(alpha);
-    return this.scene.add.nineslice(0, 0, texture, undefined, w, h, slice, slice, slice, slice).setAlpha(alpha);
+    // Tier 1 (journal): the 100 px slices overlap inside 140 px, so the nineslice is built at 2× and scaled to 300×140.
+    return this.scene.add.nineslice(0, 0, texture, undefined, w * 2, h * 2, slice, slice, slice, slice).setScale(0.5).setAlpha(alpha);
   }
   private chunk(i: number, completed: boolean): Chunk {
     const { bg, fill, w, h, gap, y } = WORLD_BAR.chunk;
