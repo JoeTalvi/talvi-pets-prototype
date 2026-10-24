@@ -219,9 +219,9 @@ async function smokeV1(report) {
   step(run, 'Collect → exactly one rewards.collected; collecting → milestone hidden → reveal shown (fork 3 order)', count(s, 'rewards.collected') === 1 && ho.ordered && s.milestone.hidden && !s.reveal.hidden,
     { handOff: ho, rewardsCollected: count(s, 'rewards.collected') });
   const CARDS = [['1', 'Phase 2', 'clues/spectacles'], ['2', 'Phase 3', 'clues/branch-book'], ['3', 'Phase 4', 'clues/lantern']];
-  step(run, 'reveal popup: mystery shape, "Someone is moving in", cards Phase 2–4 (spectacles, branch-book placeholders; lantern real)', s.reveal.mystery === 'ui/mystery-shape' && s.reveal.mysteryImg
+  step(run, 'reveal popup: mystery shape, "Someone is moving in", cards Phase 2–4 (spectacles, branch-book, lantern all real art since a20fdda)', s.reveal.mystery === 'ui/mystery-shape' && s.reveal.mysteryImg
     && s.reveal.title === 'Someone is moving in' && eq(s.reveal.cards.map(c => [c.index, c.phase, c.icon]), CARDS) && s.reveal.cards.every(c => !c.hidden)
-    && s.reveal.cards[2].real && !s.reveal.cards[0].real && !s.reveal.cards[1].real, { reveal: s.reveal, missingAssets: s.reveal.slots });
+    && s.reveal.cards.every(c => c.real), { reveal: s.reveal, missingAssets: s.reveal.slots });
   const loop2 = encode('collect-to-reveal-1080', frames, POPUP_CROP, { target: 'Collect → icons flash 300 ms staggered 50 ms, hold 500, fade 200 → reveal popup, three cards 250 ms apart', viewport: { width: 1920, height: 1080 },
     seededSave: run.seededSave, note: 'continues the milestone-popup-in-1080 session', missingAssets: [...new Set([...still1.missingAssets, ...s.reveal.slots])], measured: ho });
   const still3 = await shot(page, 'reveal-popup-1to4-1080', 1080, 'reveal popup, mystery shape and cards Phase 2–4', run.seededSave, 'after Collect');
