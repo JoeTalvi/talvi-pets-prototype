@@ -77,6 +77,9 @@ describe('tools TOOL-002 draft', () => {
     const p = apply(dogRoom(), addWanderPoint(1, 1), addWanderPoint(2, 2), deleteWanderPoint('w1'), addWanderPoint(3, 3));
     expect(p.wanderPoints.map(x => x.id)).toEqual(['centre', 'left-corner', 'right-corner', 'w2', 'w1']);
   });
+});
+
+describe('tools TOOL-002 draft (ids, facing, history)', () => {
   it('tools TOOL-002 draft — flipFacing left↔right (anchor, petSpawn) and up↔down (door spawn)', () => {
     const d = apply(dogRoom(), flipFacing({ kind: 'anchor', id: 'floor-3' }), flipFacing({ kind: 'petSpawn' }), flipFacing({ kind: 'doorSpawn', id: 'to-street' }));
     expect([slot(d, 'floor-3').anchor.facing, d.petSpawn.facing, d.doors[0].spawn.facing]).toEqual(['left', 'right', 'up']);
