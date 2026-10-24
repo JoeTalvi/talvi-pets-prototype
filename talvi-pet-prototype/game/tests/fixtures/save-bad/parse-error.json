@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "savedAt": "2026-01-01T00:00:00.000Z",
+  "state": {
+    "schemaVersion": 1,
+    "session": {
+      "seed": 1234,
+      "eventIntervalMs": 20000,
+      "feedPresentation": "events",
+      "starsVisible": true,
+      "muted": false,
+      "testerLabel": "",
+      "orientationShown": true
+    },
+    "scene": {
+      "kind": "interior",
+      "roomId": "dog-room"
+    },
+    "avatar": {
+      "x": 500,
+      "y": 220,
+      "facing": "down",
+      "immunityMs": 500,
+      "facingCandidate": null
+    },
+    "mode": "play",
+    "dialogue": {
+      "current": null,
+      "queue": []
+    },
+    "projects": {
+      "starter-house": {
+        "currentCents": 1500,
+        "acknowledgedPhase": 5,
+        "complete": true,
+        "arrivalDone": true
+      },
+      "pet-house": {
+        "currentCents": 1260,
+        "acknowledgedPhase": 1,
+        "complete": false,
+        "arrivalDone": false
+      }
+    },
+    "feed": {
+      "rngState": 1234,
+      "sinceLastEventMs": 900,
+      "eventCount": 0
+    },
+    "celebration": null,
+    "arrival": null,
+    "inventory": {
+      "ownedTypeIds": [
+        "dog-bed",
+        "lamp",
+        "painting",
+        "stool",
+        "vase",
+        "picture",
+        "fern",
+        "ball",
+        "rug",
+        "cushion"
+      ]
+    },
+    "rooms": {
+      "dog-room": {
+     
