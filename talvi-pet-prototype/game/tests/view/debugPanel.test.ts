@@ -215,20 +215,24 @@ describe('mec-010 §3 row 14 info', () => {
 });
 
 describe('tools TOOL-006 row 15 switch', () => {
-  it('tools TOOL-006 row 15 switch — interior: records ui.roomEditor {open:true}, sets roomEditorRequested, opens nothing', async () => {
+  it('tools TOOL-006 row 15 switch — interior: records ui.roomEditor {open:true} once, sets roomEditorRequested, the editor opens (side panel visible; WORK-015-2 replaces "opens nothing")', async () => {
     const s = await setup(); open(s);
-    const before = s.root.querySelectorAll('[data-panel]:not([hidden])').length;
     click(switchIn(s.root, 'Room editor'));
     expect(s.context.roomEditorRequested).toBe(true);
     expect(switchIn(s.root, 'Room editor').getAttribute('aria-checked')).toBe('true');
+    s.scene.update(0, 16);
+    expect(s.context.roomEditor).toBeDefined();
+    expect(s.root.querySelector<HTMLElement>('[data-panel=roomEditor]')!.hidden).toBe(false);
     expect(linesOf(s.context, 'ui.roomEditor')).toEqual([{ type: 'ui.roomEditor', open: true }]);
-    expect(s.root.querySelectorAll('[data-panel]:not([hidden])').length).toBe(before);
   });
 
-  it('tools TOOL-006 row 15 switch — street: disabled with the caption "Interiors only"', async () => {
+  it('tools TOOL-006 row 15 caption — street: disabled with the literal caption "interiors only"; interior: caption hidden', async () => {
     const s = await setup(owing(content, 1, 300), 'street'); open(s);
     expect(switchIn(s.root, 'Room editor').disabled).toBe(true);
-    expect(rowOf(s.root, 'Room editor').querySelector('small')!.textContent).toBe('Interiors only');
+    const caption = rowOf(s.root, 'Room editor').querySelector('small')!;
+    expect([caption.textContent, caption.hidden]).toEqual(['interiors only', false]);
+    const t = await setup(); open(t);
+    expect(rowOf(t.root, 'Room editor').querySelector('small')!.hidden).toBe(true);
   });
 });
 

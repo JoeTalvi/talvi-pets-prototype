@@ -41,6 +41,7 @@ export type ViewContext = {
   clipboard?: { writeText(text: string): Promise<void> }; // `navigator.clipboard` when absent (debug row 17 Copy)
   preview?: PreviewFlags;       // debug row 16 / `?preview=`: TOOL-002 stage-1 layers (view-only state)
   roomEditor?: RoomEditor;      // WORK-015: the open room editor's controller (set by the Interior hook while open)
+  onRoomEditor?: (editor: RoomEditor | undefined) => void; // WORK-015-2: the side panel's open/close hook (called after attach / detach)
 };
 
 export const REGISTRY_KEY = 'tpp';
