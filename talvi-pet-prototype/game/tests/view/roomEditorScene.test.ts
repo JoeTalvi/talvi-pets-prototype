@@ -10,7 +10,7 @@ import type { InteriorScene } from '../../src/view/scenes/InteriorScene';
 import type { EditorSession } from '../../src/view/editor';
 import { noPreview } from '../../src/view/preview';
 import type { createSegmentsLayer } from '../../src/view/preview/segmentsLayer';
-import { files, manifest, patchFiles } from '../content/helpers';
+import { files, manifest } from '../content/helpers';
 import { loadContent } from '../../src/content/load';
 import { designIn } from '../sim/helpers';
 import { bootScene, contextFor, destroyScene } from './sceneHarness';
@@ -76,6 +76,9 @@ describe('tools TOOL-006 row 15 / TOOL-002 entry', () => {
     expect(linesOf(s.context, 'input.tap')).toEqual([]);
     expect(emit).not.toHaveBeenCalled();
   });
+});
+
+describe('tools TOOL-002 entry (exit, street)', () => {
   it('tools TOOL-002 entry — close restores the sprites from state and the placements to content positions', async () => {
     const s = await setup(state => { state.rooms['dog-room'].placements['floor-3'] = 'lamp'; });
     const session = open(s);
@@ -133,6 +136,9 @@ describe('tools TOOL-002 drag', () => {
     expect(session.draft().doors[0].rect.w).toBe(door.w + 7);
     expect(session.history.past).toHaveLength(4);
   });
+});
+
+describe('tools TOOL-002 drag (keys)', () => {
   it('tools TOOL-002 drag — arrows nudge 1 px, Shift 10 px; F flips; A + two slot clicks toggles both directions; Esc clears; Cmd/Ctrl+Z and Shift walk the history; keys ignored in a text field', async () => {
     const s = await setup();
     const session = open(s);
