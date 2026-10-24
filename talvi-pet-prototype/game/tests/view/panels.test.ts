@@ -3,7 +3,7 @@ import './setup';
 import { readFileSync } from 'node:fs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { destroyScene } from './sceneHarness';
-import { click, designSetup, linesOf, pointer } from './designHarness';
+import { click, designSetup, linesOf, MERGED_STRING_KEYS, pointer } from './designHarness';
 import { createText, FALLBACK_STRINGS } from '../../src/ui/overlay';
 import { sheetPosition } from '../../src/ui/panels/replaceRemove';
 import realStrings from '../../src/content/strings.json';
@@ -210,8 +210,18 @@ describe('mec-005 R8 replace', () => {
 });
 
 describe('presentation §8.2 strings fallback', () => {
-  it('presentation §8.2 strings fallback — content first, fallback table second, {param} substitution; every fallback key is in strings-additions.json', () => {
+  it('presentation §8.2 strings fallback — content first, fallback table second, {param} substitution, [key] when unresolved; after the WORK-021-1 strings merge the fallback table and strings-additions.json are both {} and every merged key resolves from the real strings.json with its lane text', () => {
     const text = createText(realStrings as Record<string, string>);
+    expect(FALLBACK_STRINGS).toEqual({});
+    const merged: Record<string, string> = {
+      'tpp.chooser.slot': '{size} slot', 'tpp.chooser.size.small': 'Small floor', 'tpp.chooser.size.large': 'Large floor', 'tpp.chooser.size.wall': 'Wall',
+      'tpp.chooser.count': '{count} charms you own', 'tpp.chooser.scroll': '▸ scroll', 'tpp.common.close': 'Close', 'tpp.hud.hearts': '♥ {hearts}',
+      'tpp.want.title': 'WANT', 'tpp.chooser.selected': 'Selected spot', 'tpp.stars.deltaLoss': '−{delta} ★', 'tpp.toast.delta': '+{change}',
+      'tpp.hud.progress': '{current} / {goal}', 'tpp.popup.rewards': 'Rewards', 'tpp.reveal.phase': 'Phase {phase}',
+    };
+    for (const [key, value] of Object.entries(merged)) expect((realStrings as Record<string, string>)[key]).toBe(value);
+    expect(Object.keys(merged)).toEqual([...MERGED_STRING_KEYS]);
+    expect(createText({})('tpp.common.close')).toBe('[tpp.common.close]');
     expect(text('tpp.hud.decorate')).toBe('Decorate');
     expect(text('tpp.chooser.count', { count: 3 })).toBe('3 charms you own');
     expect(text('tpp.stars.label', { stars: 12, max: 48 })).toBe('12 / 48 ★');

@@ -3,6 +3,7 @@ import './setup';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { GameState } from '../../src/sim/state';
 import { createText } from '../../src/ui/overlay';
+import realStrings from '../../src/content/strings.json';
 import { designSetup, linesOf } from './designHarness';
 import { destroyScene } from './sceneHarness';
 
@@ -46,8 +47,9 @@ describe('VERIFY-MEC-002-026 toast queue', () => {
     expect(toast(s).hidden).toBe(true);
   });
 
-  it('presentation §8.2 toast — tpp.toast.delta fallback "+{change}" → "+60¢"', () => {
-    expect(createText({})('tpp.toast.delta', { change: '60¢' })).toBe('+60¢');
+  it('presentation §8.2 toast — tpp.toast.delta "+{change}" → "+60¢" from the real strings.json (WORK-021-1 strings merge; was the fallback table)', () => {
+    expect(createText(realStrings as Record<string, string>)('tpp.toast.delta', { change: '60¢' })).toBe('+60¢');
+    expect(createText({})('tpp.toast.delta', { change: '60¢' })).toBe('[tpp.toast.delta]');
   });
 });
 

@@ -1,4 +1,5 @@
 import { loadContent } from '../../src/content/load';
+import realStrings from '../../src/content/strings.json';
 import type { GameState } from '../../src/sim/state';
 import { InteriorScene, type ScenePointer } from '../../src/view/scenes/InteriorScene';
 import { mountOverlay, type Panels } from '../../src/ui/overlay';
@@ -8,6 +9,8 @@ import { designIn } from '../sim/helpers';
 import { bootScene, contextFor } from './sceneHarness';
 
 type Patch = { file: string; path: string; value: unknown };
+/** The 15 keys WORK-021-1 merged from the lanes' strings-additions.json into src/content/strings.json (they were FALLBACK_STRINGS). */
+export const MERGED_STRING_KEYS = ['tpp.chooser.slot', 'tpp.chooser.size.small', 'tpp.chooser.size.large', 'tpp.chooser.size.wall', 'tpp.chooser.count', 'tpp.chooser.scroll', 'tpp.common.close', 'tpp.hud.hearts', 'tpp.want.title', 'tpp.chooser.selected', 'tpp.stars.deltaLoss', 'tpp.toast.delta', 'tpp.hud.progress', 'tpp.popup.rewards', 'tpp.reveal.phase'] as const;
 /** The real strings the acceptance rows read (FX-CONTENT-MIN's strings.json says "Fixture"). */
 export const REAL_STRINGS: Patch[] = Object.entries({
   'tpp.hud.decorate': 'Decorate', 'tpp.hud.done': 'Done', 'tpp.stars.label': '{stars} / {max} ★',
@@ -27,6 +30,8 @@ export const REAL_STRINGS: Patch[] = Object.entries({
   'buildprojects.cutscene.popup.complete.congrats': "It's finished — go and have a look.", 'buildprojects.cutscene.popup.collect': 'Collect Rewards',
   'tpp.popup.skipWait': 'Skip the wait', 'tpp.popup.skipWaitFree': 'Free in this prototype', 'tpp.reveal.popupTitle': 'Someone is moving in',
   'tpp.reveal.continue': 'Continue',
+  // WORK-021-1 strings merge: the former FALLBACK_STRINGS keys, read from the real strings.json they now live in.
+  ...Object.fromEntries(MERGED_STRING_KEYS.map(key => [key, (realStrings as Record<string, string>)[key]])),
 }).map(([key, value]) => ({ file: 'strings.json', path: `/${key}`, value }));
 
 export type DesignSetup = { context: ViewContext; scene: InteriorScene; root: HTMLElement; panels: Panels; state: () => GameState };
