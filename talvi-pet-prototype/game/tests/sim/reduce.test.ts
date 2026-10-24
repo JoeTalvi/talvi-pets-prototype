@@ -50,12 +50,12 @@ describe('CONTRACT-ACTIONS v1.4 reduce', () => {
   });
 
   it.each([
-    [{ type: 'advanceDialogue' }, 2], [{ type: 'tapPet', petId: 'dog' }, 3],
+    [{ type: 'tapPet', petId: 'dog' }, 3],
     [{ type: 'acknowledgeProject', projectId: 'pet-house' }, 4], [{ type: 'reset' }, 4],
     [{ type: 'debugSimulatePurchase' }, 4], [{ type: 'collectRewards' }, 4],
   ] as [Action, number][])('CONTRACT-ACTIONS v1.4 reduce throws for an unlanded action %j', (action, lane) => {
     const { content, state } = dogRoomDesign();
     expect(() => reduce(content, state, action)).toThrow(`WORK-003-${lane} lands ${action.type}`);
-    expect(() => reduce(content, state, action)).toThrow(/WORK-003-[234] lands/);
+    expect(() => reduce(content, state, action)).toThrow(/WORK-003-[34] lands/);
   });
 });

@@ -17,13 +17,19 @@ function expectPure<T>(state: T, result: { state: T }) {
   expect(result.state).not.toBe(state);
 }
 
-it('VERIFY-MEC-005-001 partial: charm.placed then stars.changed (want.progressed lands in WORK-003-2)', () => {
+const softNapUnmet = { type: 'want.progressed', petId: 'dog', wantId: 'soft-nap', conditions: [
+  { kind: 'tag', met: false, hidden: false, tag: 'soft', availability: 'owned' },
+  { kind: 'tag', met: false, hidden: false, tag: 'seat', availability: 'owned' },
+] };
+
+it('VERIFY-MEC-005-001 charm.placed, stars.changed, want.progressed', () => {
   const { content, state } = dogRoomDesign();
   const result = reduce(content, deepFreeze(state), place('floor-1', 'lamp'));
   expect(result.state.rooms['dog-room'].placements['floor-1']).toBe('lamp');
   expect(result.events).toEqual([
     { type: 'charm.placed', roomId: 'dog-room', slotId: 'floor-1', typeId: 'lamp', replacedTypeId: null },
     { type: 'stars.changed', roomId: 'dog-room', from: 0, to: 4, delta: 4, max: 48 },
+    softNapUnmet,
   ]);
   expectPure(state, result);
 });
@@ -75,6 +81,7 @@ it('VERIFY-MEC-005-005 replace reports replacedTypeId and one net stars.changed 
   expect(result.events).toEqual([
     { type: 'charm.placed', roomId: 'dog-room', slotId: 'floor-1', typeId: 'fern', replacedTypeId: 'lamp' },
     { type: 'stars.changed', roomId: 'dog-room', from: 8, to: 5, delta: -3, max: 48 },
+    softNapUnmet,
   ]);
 });
 
@@ -86,11 +93,11 @@ it('VERIFY-MEC-005-005 net delta: replacing a repeated copy with a new type', ()
     .toEqual([{ type: 'stars.changed', roomId: 'dog-room', from: 5, to: 8, delta: 3, max: 48 }]);
 });
 
-it('VERIFY-MEC-005-006 partial: same-type replace applied with no stars.changed (want.progressed lands in WORK-003-2)', () => {
+it('VERIFY-MEC-005-006 same-type replace applied with no stars.changed and want.progressed present', () => {
   const { content, state } = withLamp();
   const result = reduce(content, deepFreeze(state), place('floor-1', 'lamp'));
   expect(result.events).toEqual([{ type: 'charm.placed', roomId: 'dog-room', slotId: 'floor-1',
-    typeId: 'lamp', replacedTypeId: 'lamp' }]);
+    typeId: 'lamp', replacedTypeId: 'lamp' }, softNapUnmet]);
   expect(result.state).not.toBe(state);
 });
 
@@ -100,7 +107,8 @@ it('VERIFY-MEC-005-007 partial: removing the used slot reports interruptedPetId 
   const result = reduce(content, deepFreeze(state), remove('floor-1'));
   expect(result.events[0]).toEqual({ type: 'charm.removed', roomId: 'dog-room', slotId: 'floor-1',
     typeId: 'lamp', interruptedPetId: 'dog' });
-  expect(result.events.slice(1)).toEqual([{ type: 'stars.changed', roomId: 'dog-room', from: 4, to: 0, delta: -4, max: 48 }]);
+  expect(result.events.slice(1)).toEqual([{ type: 'stars.changed', roomId: 'dog-room', from: 4, to: 0, delta: -4, max: 48 },
+    softNapUnmet]);
   expect(placementAt(content, result.state, 'dog-room', 'floor-1')).toBeNull();
   expect(result.state.pets).toBe(state.pets);
 });
@@ -131,4 +139,14 @@ it('VERIFY-MEC-004-001 copies are unlimited and removal never changes ownership'
     expect(result.events.some(event => event.type === 'action.rejected')).toBe(false);
   expect(second.state.rooms['dog-room'].placements).toEqual({ 'floor-1': 'lamp', 'floor-2': 'lamp' });
   expect(removed.state.inventory.ownedTypeIds).toEqual(owned);
+});
+
+it('VERIFY-MEC-005-010 home-only: fern in dog-room emits no want.* for the Owl', () => {
+  const { content, state } = dogRoomDesign();
+  state.inventory.ownedTypeIds.push('fern');
+  state.pets.owl.introduced = true;
+  const result = reduce(content, deepFreeze(state), place('floor-1', 'fern'));
+  const wantEvents = result.events.filter(event => event.type.startsWith('want'));
+  expect(wantEvents.length).toBeGreaterThan(0);
+  expect(wantEvents.every(event => 'petId' in event && event.petId === 'dog')).toBe(true);
 });

@@ -2,11 +2,13 @@ import type { Content } from '../content/types';
 import type { Action, TickAction } from './actions';
 import type { RuleResult, SimEvent } from './events';
 import { stepAvatar } from './rules/avatar';
+import { advanceDialogue, stepScripts } from './rules/dialogue';
 import { stepDoors } from './rules/doors';
 import { stepFeed } from './rules/feed';
 import { setDesignMode } from './rules/mode';
 import { applyPlace, applyRemove, type PlacementChange, type SlotsResult } from './rules/slots';
 import { afterRoomChange } from './rules/stars';
+import { activateFirstWant, afterRoomChange as wantsAfterRoomChange } from './rules/wants';
 import type { GameState, RoomId } from './state';
 
 type Payload = Record<string, unknown>;
@@ -44,23 +46,27 @@ const payloadValid: Record<Action['type'], (action: Payload) => boolean> = {
   reset: action => action.seed === undefined || isInteger(action.seed),
 };
 
-/** Convention 2: core §4 tick order. Later lanes append steps 4 (pets) and 5 (scripts, bubbles)
- * and the street-arrival hook after doors; never reorder. */
+/** Convention 2: core §4 tick order. Step 5's scripts half is the last entry; later lanes insert
+ * step 4 (pets) before it, append the bubble countdown after it and the street-arrival hook after
+ * doors; never reorder. */
 type TickStep = (content: Content, state: GameState, action: TickAction,
   eventsSoFar: readonly SimEvent[]) => RuleResult;
 const tickSteps: TickStep[] = [
   (content, state, action) => ({ state: stepAvatar(content, state, action), events: [] }),
   (content, state) => stepDoors(content, state),
   (content, state, action) => stepFeed(content, state, action),
+  (content, state, _action, eventsSoFar) => stepScripts(content, state, eventsSoFar, activateFirstWant),
 ];
 
 /** Convention 3: core §6.1 placement chain, run after slots writes the placement.
- * Later lanes append wants.afterRoomChange, then reactions.afterPlacement / pets.afterRemoval. */
+ * Later lanes append reactions.afterPlacement / pets.afterRemoval after the wants link. */
 type PlacementLink = (content: Content, before: GameState, current: GameState,
   change: PlacementChange, eventsSoFar: readonly SimEvent[]) => RuleResult;
 const placementChain: PlacementLink[] = [
   (content, before, current) => ({ state: current,
     events: afterRoomChange(content, before, current, (before.scene as { roomId: RoomId }).roomId) }),
+  (content, before, current, change) =>
+    wantsAfterRoomChange(content, current, (before.scene as { roomId: RoomId }).roomId, change),
 ];
 
 function runTick(content: Content, state: GameState, action: TickAction): RuleResult {
@@ -84,7 +90,7 @@ function runPlacement(content: Content, before: GameState, outcome: SlotsResult)
   return { state: current, events };
 }
 
-const laterLane: Partial<Record<Action['type'], number>> = { advanceDialogue: 2, tapPet: 3 };
+const laterLane: Partial<Record<Action['type'], number>> = { tapPet: 3 };
 
 /** CONTRACT-ACTIONS v1.4: apply fully, or reject with `result.state === state`. */
 export function reduce(content: Content, state: GameState, action: Action): RuleResult {
@@ -96,6 +102,7 @@ export function reduce(content: Content, state: GameState, action: Action): Rule
     case 'setDesignMode': return setDesignMode(content, state, action);
     case 'placeCharm': return runPlacement(content, state, applyPlace(content, state, action));
     case 'removeCharm': return runPlacement(content, state, applyRemove(content, state, action));
+    case 'advanceDialogue': return advanceDialogue(content, state, action);
     default: throw new Error(`WORK-003-${laterLane[action.type] ?? 4} lands ${action.type}`);
   }
 }

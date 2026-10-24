@@ -116,6 +116,7 @@ it('MEC-002 §2.2 roundup.fired precedes the credit events and carries currentCe
   const content = validContent(), state = initialState(content, 1);
   state.projects['pet-house'].currentCents = 1499;
   state.feed.sinceLastEventMs = 19_950;
+  state.session.orientationShown = true; // the first-tick orientation (MEC-008) is not this row's subject
   const result = reduce(content, state, tick(0, 0, 100));
   expect(result.events.map(event => event.type)).toEqual(['roundup.fired', 'phase.reached', 'feed.stopped']);
   expect(result.events[0]).toMatchObject({ currentCents: 1500 });
