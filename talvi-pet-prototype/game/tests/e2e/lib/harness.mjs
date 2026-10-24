@@ -33,8 +33,8 @@ export function makeFixture(args, outDir) {
 }
 
 /** New context at 1920×height, fresh localStorage (optionally seeded once), console + page errors collected. */
-export async function boot(browser, { height = 1080, width = 1920, save = null, query = '?lenient=1', init = null } = {}) {
-  const context = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: 1, acceptDownloads: true });
+export async function boot(browser, { height = 1080, width = 1920, save = null, query = '?lenient=1', init = null, contextOptions = {} } = {}) {
+  const context = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: 1, acceptDownloads: true, ...contextOptions });
   await context.addInitScript(text => {
     if (sessionStorage.getItem('seeded')) return;
     localStorage.clear(); if (text) localStorage.setItem('tpp.save', text); sessionStorage.setItem('seeded', '1');
@@ -111,7 +111,7 @@ export async function debugClick(page, label, buttonText = null, value = undefin
   await setDebug(page, true);
   const row = page.locator('.tpp-debug-row').filter({ has: page.locator('label', { hasText: new RegExp(`^${label}$`) }) }).first();
   if (value !== undefined) await row.locator('input, select').first().fill(String(value));
-  const btn = buttonText ? row.locator('button', { hasText: buttonText }).first() : row.locator('button:not([role=switch])').first();
+  const btn = buttonText === 'switch' ? row.locator('button[role=switch]').first() : buttonText ? row.locator('button', { hasText: buttonText }).first() : row.locator('button:not([role=switch])').first();
   await btn.click(); await page.waitForTimeout(200);
 }
 
