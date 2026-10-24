@@ -4,6 +4,14 @@ import type { GameState } from './state';
 
 export { chooserTypes, ownsTag } from './rules/inventory';
 export { starsOf } from './rules/stars';
+export { slotOf, placementAt } from './rules/slots';
+export { residentPet, petUsingSlot } from './rules/pets';
+export { revealProjectId, revealView, revealPopupView } from './rules/reveal';
+export { activeWant, wantConditions, tagAvailability, missingWantTags } from './rules/wants';
+export {
+  boundaryCents, phaseOf, owedPhases, activeProjectId, hudProjectId, completeNowPriceCents,
+  completeNowOffered, ackFloorCents, attentionVisible, displayedPhase,
+} from './rules/projects';
 
 /** CONTRACT-SELECT v1.4; content-only consumers retain their original signature. */
 export function typeUnlockPhase(content: Content, typeId: string): {

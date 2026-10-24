@@ -27,12 +27,18 @@ function unionNames(path: string, alias: string): string[] {
   });
 }
 
-it('VERIFY-CORE-001 partial: exact v1.4 Action and SimEvent unions (not handler completion)', () => {
+it('VERIFY-CORE-001: three set equalities at v1.4 — Action union = 24 actions, SimEvent union = 39 events, select exports = 27 selectors; CONTRACT_VERSION 1.4', () => {
   expectTypeOf<Action['type']>().toEqualTypeOf<typeof names.actionNames[number]>();
   expectTypeOf<SimEvent['type']>().toEqualTypeOf<typeof names.eventNames[number]>();
-  expect(unionNames('src/sim/actions.ts', 'Action').sort()).toEqual([...names.actionNames].sort());
-  expect(unionNames('src/sim/events.ts', 'SimEvent').sort()).toEqual([...names.eventNames].sort());
-  expect(CONTRACT_VERSION).toBe(names.CONTRACT_VERSION);
+  const actions = new Set(unionNames('src/sim/actions.ts', 'Action'));
+  const events = new Set(unionNames('src/sim/events.ts', 'SimEvent'));
+  const selectors = new Set(Object.keys(select));
+  expect(actions).toEqual(new Set(names.actionNames));
+  expect(events).toEqual(new Set(names.eventNames));
+  expect(selectors).toEqual(new Set(names.selectorNames));
+  expect([actions.size, events.size, selectors.size]).toEqual([24, 39, 27]);
+  expect(CONTRACT_VERSION).toBe('1.4');
+  expect(names.CONTRACT_VERSION).toBe('1.4');
 });
 
 it.skipIf(!liveDocPresent)('VERIFY-CORE-001 drift: live core.md still declares the vendored version and names', () => {
@@ -42,11 +48,4 @@ it.skipIf(!liveDocPresent)('VERIFY-CORE-001 drift: live core.md still declares t
   expect(absent).toEqual([]);
   if (createHash('sha256').update(core).digest('hex') !== names.SOURCE_SHA256)
     process.stdout.write('contract.test: core.md changed since the fixture was vendored; review tests/fixtures/core-contract.ts\n');
-});
-
-it('VERIFY-CORE-001 partial: selector exports cover only the delivered slice; full set remains deferred', () => {
-  const implemented = Object.keys(select).sort();
-  expect(implemented).toEqual(['chooserTypes', 'doorEnabled', 'inputFrozen', 'ownsTag', 'starsOf', 'typeUnlockPhase']);
-  expect(implemented.every(name => (names.selectorNames as readonly string[]).includes(name))).toBe(true);
-  expect(names.selectorNames.length - implemented.length).toBe(21);
 });

@@ -49,5 +49,20 @@
   "tpp.rotate.title": "Turn your phone sideways",
   "tpp.error.title": "Something could not be loaded",
   "tpp.error.reload": "Try again",
-  "tpp.error.export": "Export details"
+  "tpp.error.export": "Export details",
+  "tpp.chooser.slot": "{size} slot",
+  "tpp.chooser.size.small": "Small floor",
+  "tpp.chooser.size.large": "Large floor",
+  "tpp.chooser.size.wall": "Wall",
+  "tpp.chooser.count": "{count} charms you own",
+  "tpp.chooser.scroll": "▸ scroll",
+  "tpp.common.close": "Close",
+  "tpp.hud.hearts": "♥ {hearts}",
+  "tpp.want.title": "WANT",
+  "tpp.chooser.selected": "Selected spot",
+  "tpp.stars.deltaLoss": "−{delta} ★",
+  "tpp.toast.delta": "+{change}",
+  "tpp.hud.progress": "{current} / {goal}",
+  "tpp.popup.rewards": "Rewards",
+  "tpp.reveal.phase": "Phase {phase}"
 }
