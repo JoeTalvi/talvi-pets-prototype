@@ -39,7 +39,6 @@ function floatDelta(stars: HTMLElement, text: Text, delta: number): HTMLElement 
   el.className = `tpp-stars-delta ${delta < 0 ? 'loss' : 'gain'}`; el.dataset.stringKey = key;
   el.textContent = text(key, { delta: Math.abs(delta) });
   el.style.color = delta < 0 ? 'var(--red)' : 'var(--olive)';
-  el.style.left = '420px'; el.style.top = '0px';
   stars.append(el);
   el.animate?.([{ transform: 'translateY(0)', opacity: 1 }, { transform: `translateY(-${HUD_TIMING.deltaRisePx}px)`, opacity: 0 }],
     { duration: HUD_TIMING.deltaMs, easing: 'ease-out', fill: 'forwards' });
