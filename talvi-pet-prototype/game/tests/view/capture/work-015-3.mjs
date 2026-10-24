@@ -28,7 +28,6 @@ const steps = [];
 let browser;
 
 const step = (id, expected, observed, ok, extra = {}) => { steps.push({ id, expected, observed, ok: !!ok, ...extra }); return !!ok; };
-const canonJson = v => JSON.stringify((function canon(x) { return Array.isArray(x) ? x.map(canon) : x && typeof x === 'object' ? Object.fromEntries(Object.keys(x).sort().map(k => [k, canon(x[k])])) : x; })(v));
 
 async function boot(height, { save = introDone, url = URL_PATH } = {}) {
   const context = await browser.newContext({ viewport: { width: 1920, height }, deviceScaleFactor: 1, acceptDownloads: true });
@@ -66,7 +65,7 @@ async function openWithE(page) {
   await page.waitForFunction(() => !!window.__tpp.context.roomEditor, null, { timeout: 5000 }); await page.waitForTimeout(400);
 }
 const read = page => page.evaluate(key => {
-  const { context, log, game, store } = window.__tpp, panel = document.querySelector('[data-panel=roomEditor]'), editor = context.roomEditor ?? null;
+  const { context, game, store } = window.__tpp, panel = document.querySelector('[data-panel=roomEditor]'), editor = context.roomEditor ?? null;
   const interior = game.scene.isActive('Interior') ? game.scene.getScene('Interior') : null;
   const rows = panel ? [...panel.querySelectorAll('.tpp-editor-findings li')].map(li => ({ ids: li.dataset.ids, level: li.dataset.level, color: li.style.color, text: li.textContent })) : [];
   const slot = (room, id) => { const o = room?.slots.find(x => x.id === id); return o ? { x: o.x, y: o.y, anchor: o.anchor, adjacent: o.adjacent } : null; };
