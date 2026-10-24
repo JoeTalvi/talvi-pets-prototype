@@ -296,7 +296,10 @@ async function nudgeLoopFix1(page, report) {
   await page.evaluate(() => window.__tpp.store.dispatch({ type: 'debugSetCurrent', projectId: 'pet-house', cents: 1200 }));
   await page.waitForTimeout(500);
   const panelOpen = await page.evaluate(() => [...document.querySelectorAll('.tpp-debugPanel')].some(p => !p.hidden && p.getBoundingClientRect().width > 0));
-  const box = await page.evaluate(() => { const r = document.querySelector('.tpp-hudStreet').getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width, h: r.height }; });
+  // The HUD strip spans the full width; the crop is the bar itself (label row + five chunks) so a ≤ 480 px GIF keeps the fill readable.
+  const box = await page.evaluate(() => { const rs = ['.tpp-project-label', '.tpp-chunks'].map(q => document.querySelector(`.tpp-hudStreet ${q}`).getBoundingClientRect());
+    const x = Math.min(...rs.map(r => r.left)), y = Math.min(...rs.map(r => r.top));
+    return { x, y, w: Math.max(...rs.map(r => r.right)) - x, h: Math.max(...rs.map(r => r.bottom)) - y }; });
   const crop = { x: Math.max(0, Math.floor(box.x) - 8), y: Math.max(0, Math.floor(box.y) - 8) };
   Object.assign(crop, { w: Math.min(1920 - crop.x, Math.ceil(box.w) + 16) & ~1, h: Math.min(1080 - crop.y, Math.ceil(box.h) + 16) & ~1 });
   await sampleBar(page);
@@ -307,7 +310,7 @@ async function nudgeLoopFix1(page, report) {
   const frames = await rec.stop(), durations = await barDurations(page), state = await read(page);
   const loop = encode('hud-bar-nudge-fix1', frames, crop, { target: 'three events-arm nudges of the street HUD bar (300 ms each), bar unobstructed', viewport: { width: 1920, height: 1080 },
     seededSave: 'street-ack1-owed3.real.json after the celebration driven through the store, then debugSetCurrent 1200', hudBox: box, debugPanelOpen: panelOpen,
-    note: 'fix round 1 (review F-2): debug panel closed for the whole recording; debugSimulatePurchase ×3 (≈ 1.5 s apart) through window.__tpp.store from 1200 ¢, so the fill grows inside chunk 5; GIF crop = the .tpp-hudStreet box + 8 px', roundups: durations, hud: state.hud });
+    note: 'fix round 1 (review F-2): debug panel closed for the whole recording; debugSimulatePurchase ×3 (≈ 1.5 s apart) through window.__tpp.store from 1200 ¢, so the fill grows inside chunk 5; GIF crop = the label row ∪ .tpp-chunks box + 8 px', roundups: durations, hud: state.hud });
   report.nudge = { durations, hud: state.hud, debugPanelOpen: panelOpen, crop, loop: loop.outputs ?? loop.gap };
 }
 async function glideLoop(page, report) {
