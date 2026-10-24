@@ -1,5 +1,6 @@
 import type Phaser from 'phaser';
 import type { Point } from '@content/schema/common';
+import type { Room } from '@content/schema/room';
 import type { ViewContext } from '../context';
 
 /** TOOL-002 stage 1 layer names (debug row 16, `ui.preview {layer}`). */
@@ -44,4 +45,10 @@ export function spawnArrow(g: Phaser.GameObjects.Graphics, p: Point & { facing: 
   g.fillStyle(colour, 1).fillCircle(p.x, p.y, 6);
   g.lineStyle(3, colour, 1).lineBetween(p.x, p.y, p.x + dx * 24, p.y + dy * 24);
   g.fillTriangle(p.x + dx * 36, p.y + dy * 36, p.x + dx * 24 - dy * 6, p.y + dy * 24 - dx * 6, p.x + dx * 24 + dy * 6, p.y + dy * 24 + dx * 6);
+}
+
+/** The room the interior layers draw: the room editor's draft while it is open (`shownRoom()`), else the content room. */
+export function roomOf(scene: Phaser.Scene): Room {
+  const s = scene as unknown as { room: Room; shownRoom?: () => Room };
+  return s.shownRoom?.() ?? s.room;
 }

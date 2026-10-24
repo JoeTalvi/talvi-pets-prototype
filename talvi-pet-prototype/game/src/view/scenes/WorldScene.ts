@@ -52,7 +52,7 @@ export abstract class WorldScene extends Phaser.Scene {
   /** Foundation §4.2 frame: arbitrate input → `tick` → sync sprites from state. */
   update(_time: number, delta: number): void {
     const { store, keyboard, content } = this.context;
-    const frozen = inputFrozen(content, store.getState()) || this.transitioning || this.context.debugOpen;
+    const frozen = inputFrozen(content, store.getState()) || this.transitioning || this.context.debugOpen || this.context.roomEditor?.open === true;
     this.joystick.setVisible(!frozen);
     this.syncAlignmentGrid();
     this.preview.sync();

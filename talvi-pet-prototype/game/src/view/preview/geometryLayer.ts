@@ -3,7 +3,7 @@ import type { Point } from '@content/schema/common';
 import type { Room } from '@content/schema/room';
 import type { Street } from '@content/schema/street';
 import type { ViewContext } from '../context';
-import { BAND, COLOURS, LABEL_STYLE, objectBag, PREVIEW_DEPTH, spawnArrow, type PreviewLayer } from './layer';
+import { BAND, COLOURS, LABEL_STYLE, objectBag, PREVIEW_DEPTH, roomOf, spawnArrow, type PreviewLayer } from './layer';
 
 type Bag = ReturnType<typeof objectBag>;
 type Rect = { x: number; y: number; w: number; h: number };
@@ -73,7 +73,7 @@ export function createGeometryLayer(kind: 'interior' | 'street'): PreviewLayer &
     show(scene, context) {
       const g = bag.add(scene.add.graphics().setDepth(PREVIEW_DEPTH));
       band(g);
-      if (kind === 'interior') drawRoom(scene, bag, g, (scene as unknown as { room: Room }).room);
+      if (kind === 'interior') drawRoom(scene, bag, g, roomOf(scene));
       else drawStreet(scene, bag, g, context.content.street);
       joystick = joystickRect(scene, bag, context);
     },

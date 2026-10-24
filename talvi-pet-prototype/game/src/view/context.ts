@@ -11,6 +11,7 @@ import type { PresentationBus } from '@app/presentationBus';
 import type { Keyboard } from '@app/input/keyboard';
 import type { SessionHeader } from '@app/log';
 import type { PreviewFlags } from './preview/layer';
+import type { RoomEditor } from './editor';
 
 export type FpsState = 'idle' | 'walking';
 export type FpsSample = { state: FpsState; windowMs: number; fpsMean: number; fpsMin: number };
@@ -39,6 +40,7 @@ export type ViewContext = {
   reload?: () => void;          // `location.reload` when absent (debug row 17 Load)
   clipboard?: { writeText(text: string): Promise<void> }; // `navigator.clipboard` when absent (debug row 17 Copy)
   preview?: PreviewFlags;       // debug row 16 / `?preview=`: TOOL-002 stage-1 layers (view-only state)
+  roomEditor?: RoomEditor;      // WORK-015: the open room editor's controller (set by the Interior hook while open)
 };
 
 export const REGISTRY_KEY = 'tpp';

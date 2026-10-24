@@ -6,6 +6,7 @@ import { PetSprite } from '../objects/PetSprite';
 import { Bubble, chatterBubble, reactionBubble, textFrom, verbBubble, wantBubble } from '../objects/Bubble';
 import type { PetBehaviour } from '@sim/state';
 import { SlotOutline } from '../objects/SlotOutline';
+import { createEditorHook, type EditorHook } from '../editor';
 import { WorldScene } from './WorldScene';
 
 const POP_MS = 180;
@@ -22,6 +23,8 @@ export class InteriorScene extends WorldScene {
   pet?: PetSprite;
   bubble?: Bubble;
   outlines = new Map<string, SlotOutline>();
+  /** WORK-015 room editor hook (row 15 / `E`). */
+  editor: EditorHook | null = null;
   private downs = new Map<number, PointerSample>();
   private joystickPointer: number | null = null;
   private paintingErrorRecorded = false;
@@ -36,7 +39,10 @@ export class InteriorScene extends WorldScene {
     this.outlines = new Map();
     this.downs = new Map();
     this.joystickPointer = null;
+    this.editor = null;
   }
+  /** The room the preview layers draw: the editor's draft while it is open, else the content room. */
+  shownRoom(): Room { return this.editor?.draft() ?? this.room; }
   drawWorld(): void {
     const { content, store } = this.context;
     this.room = content.rooms[this.roomId];
@@ -69,11 +75,13 @@ export class InteriorScene extends WorldScene {
   }
   /** Presentation §3.1: a pointer the joystick captured is not classified. */
   pointerDown = (p: ScenePointer): void => {
+    if (this.editor?.session()) return;
     if (this.joystick.active && this.joystickPointer === null) { this.joystickPointer = p.id; return; }
     this.downs.set(p.id, { x: p.worldX, y: p.worldY, t: p.downTime });
   };
   /** TECH-004: record `input.tap`/`input.drag` with its target; only a tap on a visible outline opens a panel (MEC-005 R13/R14). */
   pointerUp = (p: ScenePointer): void => {
+    if (this.editor?.session()) { this.downs.delete(p.id); return; }
     if (p.id === this.joystickPointer) { this.joystickPointer = null; return; }
     const down = this.downs.get(p.id);
     if (!down) return;
@@ -172,6 +180,8 @@ export class InteriorScene extends WorldScene {
       else if (event.to !== 'walking') this.bubble?.dropPending();
     });
     this.subscribeBubbles();
+    this.editor = createEditorHook(this);
+    this.unsubscribes.push(() => { this.editor?.destroy(); });
   }
   /** mec-008 §2.1 / MEC-007 §3 consumers: every bubble fact comes from an event payload (the view computes no taste). */
   private subscribeBubbles(): void {
@@ -213,6 +223,7 @@ export class InteriorScene extends WorldScene {
     });
   }
   protected syncScene(deltaMs: number): void {
+    this.editor?.sync();
     this.syncOutlines();
     if (!this.pet) return;
     this.pet.sync(this.context.store.getState().pets[this.pet.petId].behaviour);

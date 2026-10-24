@@ -3,7 +3,7 @@ import type { Slot } from '@content/schema/room';
 import type { ViewContext } from '../context';
 import type { CharmSprite } from '../objects/CharmSprite';
 import type { InteriorScene } from '../scenes/InteriorScene';
-import { objectBag, type PreviewLayer } from './layer';
+import { objectBag, roomOf, type PreviewLayer } from './layer';
 
 /** The largest loaded charm texture of a size class by frame area (first in content order on a tie); `missing` when none is loaded. */
 export function fillTextureFor(scene: Phaser.Scene, context: ViewContext, sizeClass: Slot['sizeClass']): string {
@@ -32,7 +32,7 @@ export function createFillLayer(): PreviewLayer & { sprites: Map<string, CharmSp
     objects: bag.objects, sprites, rehide, hide, destroy: hide,
     show(target, context) {
       scene = target as InteriorScene;
-      for (const slot of scene.room.slots) {
+      for (const slot of roomOf(scene).slots) {
         const sprite = bag.add(scene.charmSprite(slot, fillTextureFor(scene, context, slot.sizeClass)));
         sprite.setDepth(slot.depthOverride ?? slot.y);
         sprites.set(slot.id, sprite);
