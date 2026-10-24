@@ -102,11 +102,17 @@ function setSlotField(d: Room, s: Slot, field: string, value: unknown): boolean 
   return false;
 }
 /**
- * The forms' edits (WORK-015-2): `name` | `background` | `residentPetId` | `slots.<id>.<field>` with field `id` (rename rewrites
+ * The forms' edits (WORK-015-2): `name` | `background` | `residentPetId` | `wanderPoints.<id>.id` | `slots.<id>.<field>` with field `id` (rename rewrites
  * every `adjacent` entry, order fork 2: nothing outside the room), `sizeClass`, `wall`, `depthOverride` (blank = key absent), `anchor.facing`.
  */
 export const setField = (path: string, value: unknown): Op => d => {
   if (ROOM_FIELDS.has(path)) { (d as Record<string, unknown>)[path] = String(value); return; }
+  const w = /^wanderPoints\.([^.]+)\.id$/.exec(path);
+  if (w) {
+    const point = d.wanderPoints.find(p => p.id === w[1]), next = String(value);
+    if (!point || !next || d.wanderPoints.some(p => p.id === next)) return false;
+    point.id = next; return;
+  }
   const m = /^slots\.([^.]+)\.(.+)$/.exec(path);
   const s = m ? slotOf(d, m[1]) : undefined;
   if (!m || !s) return false;
@@ -124,6 +130,8 @@ export type History = {
   commit(op: Op): boolean;
   undo(): boolean;
   redo(): boolean;
+  /** Resume / Revert (WORK-015-2): the draft becomes `room`, history empty. */
+  reset(room: Room): void;
 };
 
 export function createHistory(initial: Room, limit = HISTORY_LIMIT): History {
@@ -144,5 +152,6 @@ export function createHistory(initial: Room, limit = HISTORY_LIMIT): History {
     },
     undo() { this.cancelStage(); const prev = past.pop(); if (!prev) return false; future.push(current); current = prev; return true; },
     redo() { this.cancelStage(); const next = future.pop(); if (!next) return false; past.push(current); current = next; return true; },
+    reset(room) { base = null; past.length = 0; future.length = 0; current = cloneRoom(room); },
   };
 }

@@ -155,6 +155,8 @@ function renderRows(context: ViewContext, row: (name: string) => HTMLElement, vi
   const preview = context.preview ?? noPreview();
   previewBoxes(row).forEach((box, i) => { box.checked = preview[PREVIEW_LAYERS[i]]; });
   switchOf(row('Room editor')).disabled = state.scene.kind !== 'interior';
+  const roomCaption = row('Room editor').querySelector('small')!; // mec-010 §3 row 15: the literal caption on the street only
+  roomCaption.textContent = 'interiors only'; roomCaption.hidden = state.scene.kind === 'interior';
   const press = (b: HTMLButtonElement, on: boolean) => b.setAttribute('aria-pressed', String(on));
   const [playtest, frozen] = buttonsOf(row('Event interval'));
   press(playtest, state.session.eventIntervalMs === content.tuning.eventIntervalMs); press(frozen, state.session.eventIntervalMs === null);
