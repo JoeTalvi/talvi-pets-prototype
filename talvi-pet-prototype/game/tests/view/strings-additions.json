@@ -10,5 +10,6 @@
   "tpp.want.title": "WANT",
   "tpp.chooser.selected": "Selected spot",
   "tpp.stars.deltaLoss": "−{delta} ★",
-  "tpp.toast.delta": "+{change}"
+  "tpp.toast.delta": "+{change}",
+  "tpp.hud.progress": "{current} / {goal}"
 }

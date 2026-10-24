@@ -28,11 +28,11 @@ describe('VERIFY-PRES-008 replay boot', () => {
     expect(replays[0]).toMatchObject({ replay: true, projectId: 'pet-house', fromPhase: 1, toPhase: 4 });
   });
 
-  it('presentation §4 Street placeholder draws one faint rect per street door and no houses', async () => {
+  it('presentation §4 StreetScene at the replay boot (WORK-020-1 replaces the WORK-014 placeholder title) — no door rects, one HouseSprite per street house at displayedPhase', async () => {
     const content = validContent();
-    const scene = await bootScene(StreetScene, contextFor(content, (parseSaveValue(content, JSON.parse(fixtureText('save-v1.milestone.json'))) as { state: GameState }).state));
-    const doors = scene.children.list.filter(c => c.type === 'Rectangle' && (c as Phaser.GameObjects.Rectangle).fillAlpha === 0.25) as Phaser.GameObjects.Rectangle[];
-    expect(doors.map(d => [d.x, d.y, d.width, d.height])).toEqual(content.street.houses.map(h => [h.door.rect.x, h.door.rect.y, h.door.rect.w, h.door.rect.h]));
-    expect(scene.children.list.filter(c => c.type === 'Image' && String((c as Phaser.GameObjects.Image).texture.key).startsWith('houses/'))).toHaveLength(0);
+    const scene = await bootScene(StreetScene, contextFor(content, (parseSaveValue(content, JSON.parse(fixtureText('save-v1.milestone.json'))) as { state: GameState }).state), {}, ['houses/fixture']);
+    expect(scene.children.list.filter(c => c.type === 'Rectangle')).toHaveLength(0);
+    expect([...scene.houses.keys()]).toEqual(content.street.houses.map(h => h.projectId));
+    expect([...scene.houses.values()].map(h => h.phase)).toEqual([5, 4]);
   });
 });

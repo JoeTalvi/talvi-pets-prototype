@@ -2,6 +2,7 @@ import type { Finding } from '@sim/checks/types';
 import type { AssetManifest } from '@content/schema/assets';
 import type { ViewContext } from '@view/context';
 import { createHudInterior } from './panels/hudInterior';
+import { createHudStreet, type HudStreet } from './panels/hudStreet';
 import { createToast, type Toast } from './panels/toast';
 import { createWantPanel, type WantPanel } from './panels/wantPanel';
 import { createDialogue, type Dialogue } from './panels/dialogue';
@@ -14,7 +15,7 @@ export type TextParams = Record<string, string | number>;
 export type Text = (key: string, params?: TextParams) => string;
 /** The panel module API WORK-014-3/-4 and WORK-019/020 follow. */
 export type Panel = { open?(slotId: string): void; close?(reason?: string): void; destroy(): void };
-export type Panels = { hudInterior: Panel; toast: Toast; wantPanel: WantPanel; dialogue: Dialogue; chooser: Panel; replaceRemove: Panel; debugPanel: DebugPanel };
+export type Panels = { hudInterior: Panel; hudStreet: HudStreet; toast: Toast; wantPanel: WantPanel; dialogue: Dialogue; chooser: Panel; replaceRemove: Panel; debugPanel: DebugPanel };
 
 /** UI strings WORK-011 proposed that `strings.json` does not carry yet (returned to WORK-021 as strings-additions.json). */
 export const FALLBACK_STRINGS: Readonly<Record<string, string>> = {
@@ -30,6 +31,7 @@ export const FALLBACK_STRINGS: Readonly<Record<string, string>> = {
   'tpp.chooser.selected': 'Selected spot',
   'tpp.stars.deltaLoss': '−{delta} ★',
   'tpp.toast.delta': '+{change}',
+  'tpp.hud.progress': '{current} / {goal}',
 };
 
 /** `content.strings[key]` first, then the fallback table, with `{param}` substitution; `[key]` when unresolved. */
@@ -67,10 +69,11 @@ function findingsBanner(findings: readonly Finding[]): HTMLElement {
 
 /** Presentation §8: mounted once at startup in z-order HUD < toast < want panel, dialogue < chooser < sheet < debug (6); the sheet's Replace reaches the chooser through the bus. */
 export function mountPanels(panels: HTMLElement, context: ViewContext): Panels {
-  const hudInterior = createHudInterior(panels, context), toast = createToast(panels, context), wantPanel = createWantPanel(panels, context);
+  // Order fork 5: hudStreet mounts before debugPanel so its mount-time `.tpp-debug-entry` scan binds the street entry once.
+  const hudInterior = createHudInterior(panels, context), hudStreet = createHudStreet(panels, context), toast = createToast(panels, context), wantPanel = createWantPanel(panels, context);
   const dialogue = createDialogue(panels, context);
   const chooser = createChooser(panels, context), replaceRemove = createReplaceRemove(panels, context);
-  return { hudInterior, toast, wantPanel, dialogue, chooser, replaceRemove, debugPanel: createDebugPanel(panels, context) };
+  return { hudInterior, hudStreet, toast, wantPanel, dialogue, chooser, replaceRemove, debugPanel: createDebugPanel(panels, context) };
 }
 
 /** The HTML layer over the canvas: safe-area probe, findings banner (lenient), `#panels` (mounted when given a full ViewContext). */
