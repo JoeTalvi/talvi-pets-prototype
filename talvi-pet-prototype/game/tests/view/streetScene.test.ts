@@ -90,8 +90,9 @@ describe('presentation §4 StreetScene', () => {
   });
 });
 
+const title = 'VERIFY-MEC-002-028 partial: street part, jsdom (Chrome in work-020-1.mjs; iPhone not-run (user, play session); interior badge is WORK-019-2) — ';
+
 describe('VERIFY-MEC-002-028 street attention icon and house tap', () => {
-  const title = 'VERIFY-MEC-002-028 partial: street part, jsdom (Chrome in work-020-1.mjs; iPhone not-run (user, play session); interior badge is WORK-019-2) — ';
 
   it(`${title}icon at attentionAnchor depth 6000 iff attentionVisible; never on the Starter House`, async () => {
     const content = validContent();
@@ -124,6 +125,9 @@ describe('VERIFY-MEC-002-028 street attention icon and house tap', () => {
     expect(context.store.getState().celebration).toMatchObject({ projectId: 'pet-house', fromPhase: 1, toPhase: 4 });
   });
 
+});
+
+describe('VERIFY-MEC-002-028 street icon hidden states', () => {
   it(`${title}owed 0, celebration set, dialogue open or arrival set → icon hidden, a house tap is 'world' and dispatches nothing; the Starter House tap is 'world'`, async () => {
     const content = validContent();
     const cases: [string, (s: GameState) => void][] = [
