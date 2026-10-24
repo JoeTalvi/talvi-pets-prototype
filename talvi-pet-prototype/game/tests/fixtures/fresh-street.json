@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "savedAt": "2026-01-01T00:00:00.000Z",
+  "state": {
+    "schemaVersion": 1,
+    "session": {
+      "seed": 1234,
+      "eventIntervalMs": 20000,
+      "feedPresentation": "events",
+      "starsVisible": true,
+      "muted": false,
+      "testerLabel": "",
+      "orientationShown": false
+    },
+    "scene": {
+      "kind": "street"
+    },
+    "avatar": {
+      "x": 960,
+      "y": 900,
+      "facing": "down",
+      "immunityMs": 0,
+      "facingCandidate": null
+    },
+    "mode": "play",
+    "dialogue": {
+      "current": null,
+      "queue": []
+    },
+    "projects": {
+      "starter-house": {
+        "currentCents": 1500,
+        "acknowledgedPhase": 5,
+        "complete": true,
+        "arrivalDone": true
+      },
+      "pet-house": {
+        "currentCents": 0,
+        "acknowledgedPhase": 0,
+        "complete": false,
+        "arrivalDone": false
+      }
+    },
+    "feed": {
+      "rngState": 1234,
+      "sinceLastEventMs": 0,
+      "eventCount": 0
+    },
+    "celebration": null,
+    "arrival": null,
+    "inventory": {
+      "ownedTypeIds": [
+        "dog-bed",
+        "lamp",
+        "painting",
+        "stool",
+        "vase",
+        "picture"
+      ]
+    },
+    "rooms": {
+      "dog-room": {
+        "placements": {}
+      },
+      "owl-room": {
+        "placements": {}
+      }
+    },
+    "pets": {
+      "dog": {
+        "hearts": 0,
+        "fulfilledWantIds": [],
+        "revealedHiddenTags": {},
+        "verbs": [
+          "nap",
+          "look-at"
+        ],
+        "introduced": false,
+        "behaviour": {
+          "phase": "idle",
+          "x": 800,
+          "y": 700,
+          "facing": "left",
+          "timerMs": 3000,
+          "target": null,
+          "verb": null,
+          "reaction": null
+        },
+        "rngState": 2654436715,
+        "recentTargets": [],
+        "wantBubbleInMs": 40000
+      },
+      "owl": {
+        "hearts": 0,
+        "fulfilledWantIds": [],
+        "revealedHiddenTags": {},
+        "verbs": [
+          "perch",
+          "look-at"
+        ],
+        "introduced": false,
+        "behaviour": {
+          "phase": "idle",
+          "x": 800,
+          "y": 700,
+          "facing": "left",
+          "timerMs": 3000,
+          "target": null,
+          "verb": null,
+          "reaction": null
+        },
+        "rngState": 1013905312,
+        "recentTargets": [],
+        "wantBubbleInMs": 40000
+      }
+    }
+  }
+}

@@ -1,132 +1,167 @@
-import { expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import type { Content } from '../../src/content/types';
+import type { Action } from '../../src/sim/actions';
+import type { SimEvent } from '../../src/sim/events';
 import { pointInPolygon } from '../../src/sim/geometry';
+import { checkInvariants } from '../../src/sim/invariants';
 import { reduce } from '../../src/sim/reduce';
-import { doorEnabled, phaseOf, starsOf } from '../../src/sim/select';
+import { starsOf } from '../../src/sim/select';
 import { initialState, type GameState } from '../../src/sim/state';
 import { nextAction } from './arbitrary';
 import { validContent } from '../content/helpers';
-import { deepFreeze, squareFixture } from './helpers';
+import { deepFreeze, dogRoomDesign } from './helpers';
 
-/** VERIFY-CORE-003 (invariant 2, VERIFY-MEC-009-018) and VERIFY-CORE-010 (MEC-008 dialogue shape). */
-function expectWantAndDialogueInvariants(content: Content, state: GameState): void {
-  for (const [petId, pet] of Object.entries(state.pets)) {
-    expect(pet.hearts).toBe(pet.fulfilledWantIds.length);
-    expect(pet.fulfilledWantIds).toEqual(content.pets[petId].wants.slice(0, pet.fulfilledWantIds.length).map(want => want.id));
-  }
-  const { current, queue } = state.dialogue;
-  if (current === null) expect(queue).toHaveLength(0);
-  else expect(current.index >= 0 && current.index < current.lines.length).toBe(true);
-}
+const SEEDS = [1, 2, 3] as const;
+const STEPS = 500;
+const REACHED = ['charm.placed', 'charm.removed', 'want.fulfilled', 'celebration.started', 'arrival.finished',
+  'dialogue.opened', 'scene.changed', 'debug.applied'] as const;
 
-/** VERIFY-CORE-011 partial (mec-007 §1 invariants) for the resident pet after every dispatch. */
-function expectPetInvariants(content: Content, state: GameState): void {
-  for (const pet of Object.values(state.pets)) expect(pet.recentTargets.length).toBeLessThanOrEqual(content.tuning.recentTargetsKept);
-  if (state.scene.kind !== 'interior') return;
-  const room = content.rooms[state.scene.roomId];
-  const behaviour = state.pets[room.residentPetId].behaviour;
-  expect(pointInPolygon(behaviour, room.walkArea)).toBe(true);
-  if (behaviour.phase === 'walking') expect(behaviour.target).not.toBeNull();
-  if (behaviour.phase !== 'using') return;
-  expect(behaviour.verb).not.toBeNull();
-  expect(state.rooms[room.id].placements[(behaviour.target as { slotId: string }).slotId]).toBeDefined();
-}
-
-/** VERIFY-CORE-002 / VERIFY-CORE-006 partial (invariants 1, 5, 6) = VERIFY-MEC-002-022. */
-function expectProjectInvariants(content: Content, state: GameState): void {
-  for (const project of content.projects) {
-    const progress = state.projects[project.id];
-    expect(progress.currentCents >= 0 && progress.currentCents <= project.goalCents).toBe(true);
-    expect(progress.acknowledgedPhase).toBeGreaterThanOrEqual(0);
-    expect(progress.acknowledgedPhase).toBeLessThanOrEqual(phaseOf(progress.currentCents, project.goalCents));
-    if (progress.complete) expect(progress.acknowledgedPhase).toBe(5);
-    const house = content.street.houses.find(candidate => candidate.projectId === project.id)!;
-    const door = content.rooms[project.interiorRoomId].doors.find(candidate => candidate.target.scene === 'street');
-    expect(doorEnabled(content, state, house.door)).toBe(progress.complete && progress.arrivalDone);
-    if (door) expect(doorEnabled(content, state, door)).toBe(true);
-  }
-  if (state.celebration !== null) expect(state.scene.kind).toBe('street');
-}
-
-function expectInvariants(content: Content, state: GameState): void {
-  expectWantAndDialogueInvariants(content, state);
-  expectProjectInvariants(content, state);
-  expectPetInvariants(content, state);
-  if (state.mode === 'design') expect(state.scene.kind).toBe('interior');
-  const polygon = state.scene.kind === 'street' ? content.street.walkArea
-    : content.rooms[state.scene.roomId].walkArea;
-  expect(pointInPolygon(state.avatar, polygon)).toBe(true);
-  expect(state.avatar.immunityMs).toBeGreaterThanOrEqual(0);
+/** Invariant 4 recomputed in the test, independently of both `starsOf` and `checkInvariants`. */
+function expectStarsRecomputed(content: Content, state: GameState): void {
   for (const [roomId, room] of Object.entries(state.rooms)) {
-    for (const [slotId, typeId] of Object.entries(room.placements)) {
-      expect(state.inventory.ownedTypeIds).toContain(typeId);
-      const slot = content.rooms[roomId].slots.find(candidate => candidate.id === slotId)!;
-      expect(content.charms.types.find(type => type.id === typeId)!.sizeClass).toBe(slot.sizeClass);
-    }
     const values = Object.values(room.placements);
-    expect(starsOf(content, state, roomId)).toEqual({ points: values.length + new Set(values).size * 3, max: 4 * 12 });
+    const distinct = new Set(values).size;
+    const points = distinct * content.tuning.starsFirstCopy + (values.length - distinct) * content.tuning.starsRepeat;
+    expect(starsOf(content, state, roomId)).toEqual({ points, max: 4 * 12 });
   }
 }
 
-it.each([1, 2, 3])(
-  'VERIFY-MEC-001-015 / VERIFY-CORE-003,004,005,006,008,010 / VERIFY-MEC-009-018 partial: 500 valid tick/setDesignMode/placeCharm/removeCharm/advanceDialogue/tapPet/celebration/debug actions at seed %s with VERIFY-CORE-011 partial pet invariants and project invariants 1, 5, 6', seed => {
-    const { content } = squareFixture(seed);
-    let state = initialState(content, seed), replay = initialState(content, seed), cursor = seed;
-    let sceneChanges = 0, modeChanges = 0, placements = 0, advances = 0;
-    for (let index = 0; index < 500; index++) {
-      const generated = nextAction(content, state, cursor); cursor = generated.seed;
-      const first = reduce(content, deepFreeze(state), generated.action);
-      const second = reduce(content, deepFreeze(replay), generated.action);
-      expect(second).toEqual(first);
-      expect(JSON.parse(JSON.stringify(first.state))).toEqual(first.state);
-      expect(first.events.some(event => event.type === 'action.rejected')).toBe(false);
-      expectInvariants(content, first.state);
-      sceneChanges += first.events.filter(event => event.type === 'scene.changed').length;
-      modeChanges += first.events.filter(event => event.type === 'mode.changed').length;
-      placements += first.events.filter(event => event.type === 'charm.placed').length;
-      advances += generated.action.type === 'advanceDialogue' ? 1 : 0;
-      state = first.state; replay = second.state;
-    }
-    expect(sceneChanges).toBeGreaterThan(2);
-    expect(modeChanges).toBeGreaterThan(2);
-    expect(placements).toBeGreaterThan(20);
-    expect(advances).toBeGreaterThan(1);
-  },
-);
+type Run = { counts: Record<string, number>; actions: Action[] };
 
-it('VERIFY-MEC-002-022 / VERIFY-CORE-002, VERIFY-CORE-006, VERIFY-CORE-007 partial: celebration and debug actions over seeds 1..3 keep invariants 1, 5, 6 and 7; at least one celebration.started and one arrival.finished', () => {
-  const content = validContent();
-  let celebrations = 0, arrivals = 0;
-  for (const seed of [1, 2, 3]) {
-    let state = initialState(content, seed), cursor = seed;
-    for (let index = 0; index < 1500; index++) {
-      const generated = nextAction(content, state, cursor); cursor = generated.seed;
-      const result = reduce(content, deepFreeze(state), generated.action);
-      expect(result.events.filter(event => event.type === 'action.rejected')).toEqual([]);
-      expect(JSON.parse(JSON.stringify(result.state))).toEqual(result.state);
-      expectProjectInvariants(content, result.state);
-      celebrations += result.events.filter(event => event.type === 'celebration.started').length;
-      arrivals += result.events.filter(event => event.type === 'arrival.finished').length;
-      state = result.state;
+/** FX-ARB: one seed × 500 generated actions through two reducers, every core §8 property after every step. */
+function runArbitrary(content: Content, seed: number): Run {
+  let state = initialState(content, seed), replay = initialState(content, seed), cursor = seed;
+  const counts: Record<string, number> = Object.fromEntries(REACHED.map(type => [type, 0]));
+  const actions: Action[] = [];
+  for (let index = 0; index < STEPS; index++) {
+    const generated = nextAction(content, state, cursor); cursor = generated.seed;
+    actions.push(generated.action);
+    const first = reduce(content, deepFreeze(state), generated.action);
+    const second = reduce(content, deepFreeze(replay), generated.action);
+    expect(second).toEqual(first);
+    expect(JSON.parse(JSON.stringify(first.state))).toEqual(first.state);
+    expect(first.events.filter(event => event.type === 'action.rejected')).toEqual([]);
+    expect(checkInvariants(content, first.state)).toEqual([]);
+    expectStarsRecomputed(content, first.state);
+    if (first.state.scene.kind === 'interior') {
+      const room = content.rooms[first.state.scene.roomId];
+      expect(pointInPolygon(first.state.pets[room.residentPetId].behaviour, room.walkArea)).toBe(true);
     }
+    for (const event of first.events) if (event.type in counts) counts[event.type]++;
+    state = first.state; replay = second.state;
   }
-  expect(celebrations).toBeGreaterThan(0);
-  expect(arrivals).toBeGreaterThan(0);
+  return { counts, actions };
+}
+
+const reached = (run: Run, type: typeof REACHED[number]) => run.counts[type] > 0;
+
+describe('FX-ARB harness (FX-CONTENT-MIN, seeds 1..3 × 500 actions)', () => {
+  const content = validContent();
+  const runs = new Map(SEEDS.map(seed => [seed, runArbitrary(content, seed)]));
+  const all = [...runs.values()];
+
+  it.each(SEEDS)('VERIFY-CORE-002..011 FX-ARB seed %s: checkInvariants → [] after every step, two reducers deep-equal (states and events), JSON round trip, stars recomputed, pet inside walkArea; every family reached, reset ≤ 1 %', seed => {
+    const run = runs.get(seed)!;
+    const resets = run.actions.filter(action => action.type === 'reset').length;
+    process.stdout.write(`FX-ARB seed ${seed}: ${JSON.stringify(run.counts)} resets ${resets}\n`);
+    for (const type of REACHED) expect(run.counts[type], type).toBeGreaterThan(0);
+    expect(resets).toBeLessThanOrEqual(STEPS / 100);
+  });
+  it('VERIFY-CORE-002 = VERIFY-MEC-002-022: invariant 1 (0 ≤ ack ≤ phaseOf ≤ 5, 0 ≤ cents ≤ goal) held over 3 × 500 steps with celebrations', () => {
+    expect(all.every(run => run.actions.length === STEPS && reached(run, 'celebration.started'))).toBe(true);
+  });
+  it('VERIFY-CORE-003 = VERIFY-MEC-009-018: invariant 2 (hearts = fulfilled prefix of wants) held; every seed fulfilled a want', () => {
+    expect(all.every(run => reached(run, 'want.fulfilled'))).toBe(true);
+  });
+  it('VERIFY-CORE-004 = VERIFY-MEC-005-011: invariant 3 (placements owned, size class matches) held through placements and removals', () => {
+    expect(all.every(run => reached(run, 'charm.placed') && reached(run, 'charm.removed'))).toBe(true);
+  });
+  it('VERIFY-CORE-005 = VERIFY-MEC-006-008: invariant 4 recomputed in the test equals starsOf, max = 4 × 12', () => {
+    expect(all.every(run => reached(run, 'charm.placed'))).toBe(true);
+  });
+  it('VERIFY-CORE-006 = VERIFY-MEC-001-015: invariant 5 (celebration ⇒ street, design ⇒ interior) held across scene changes', () => {
+    expect(all.every(run => reached(run, 'scene.changed'))).toBe(true);
+  });
+  it('VERIFY-CORE-007: invariant 6 (complete ⇒ ack 5; door ⇔ complete && arrivalDone) held through an arrival per seed', () => {
+    expect(all.every(run => reached(run, 'arrival.finished'))).toBe(true);
+  });
+  it('VERIFY-CORE-010: invariant 9 (dialogue shape) held through dialogues per seed', () => {
+    expect(all.every(run => reached(run, 'dialogue.opened'))).toBe(true);
+  });
 });
 
-it('VERIFY-CORE-011 / VERIFY-CORE-008 / VERIFY-CORE-009 partial (pet stream): 2,000 generated actions give identical pet decisions when only feed.rngState differs', () => {
-  const { content } = squareFixture(1);
-  let state = initialState(content, 1), other = { ...initialState(content, 1), feed: { rngState: 99, sinceLastEventMs: 0, eventCount: 0 } };
+function feedOf(content: Content, state: GameState, moves: { x: number; y: number }[]) {
+  const fired: SimEvent[] = [];
+  let current = state;
+  for (const move of moves) {
+    const result = reduce(content, current, { type: 'tick', dtMs: 100, move });
+    fired.push(...result.events.filter(event => event.type === 'roundup.fired'));
+    current = result.state;
+  }
+  return { fired, rngState: current.feed.rngState };
+}
+
+it('VERIFY-CORE-009 (feed, = VERIFY-MEC-002-003): same seed + different player actions → identical roundup.fired sequence and feed.rngState', () => {
+  const content = validContent();
+  const fresh = initialState(content, 7);
+  const start = { ...fresh, session: { ...fresh.session, orientationShown: true, eventIntervalMs: 500 } };
+  const still = feedOf(content, start, Array.from({ length: 300 }, () => ({ x: 0, y: 0 })));
+  const walking = feedOf(content, start, Array.from({ length: 300 }, (_, index) => ({ x: Math.cos(index), y: Math.sin(index) })));
+  expect(still.fired.length).toBeGreaterThan(5);
+  expect(walking).toEqual(still);
+});
+
+it('VERIFY-CORE-009 (pets, = VERIFY-MEC-007-014) / VERIFY-CORE-008 / VERIFY-CORE-011: same actions + different seed → identical pet decision sequence', () => {
+  const { content, state: start } = dogRoomDesign(1);
+  const reseeded = { ...start, session: { ...start.session, seed: 2 }, feed: initialState(content, 2).feed };
+  let state: GameState = { ...start, mode: 'play' }, other: GameState = { ...reseeded, mode: 'play' };
   let cursor = 1, petEvents = 0;
   for (let index = 0; index < 2000; index++) {
-    const generated = nextAction(content, state, cursor); cursor = generated.seed;
+    const generated = nextAction(content, state, cursor, false); cursor = generated.seed;
     const first = reduce(content, state, generated.action), second = reduce(content, other, generated.action);
-    const pets = (events: typeof first.events) => events.filter(event => event.type.startsWith('pet.'));
+    const pets = (events: SimEvent[]) => events.filter(event => event.type.startsWith('pet.'));
     expect(pets(second.events)).toEqual(pets(first.events));
     expect(second.state.pets).toEqual(first.state.pets);
-    expectPetInvariants(content, first.state);
+    expect(checkInvariants(content, first.state)).toEqual([]);
     petEvents += pets(first.events).length;
     state = first.state; other = second.state;
   }
   expect(petEvents).toBeGreaterThan(10);
+});
+
+/** A reachable valid state: FX-CONTENT-MIN Dog room, Lamp placed through `reduce`, back in play mode. */
+function validRoomState(): { content: Content; state: GameState } {
+  const { content, state } = dogRoomDesign(1);
+  const placed = reduce(content, state, { type: 'placeCharm', slotId: 'floor-1', typeId: 'lamp' }).state;
+  return { content, state: reduce(content, placed, { type: 'setDesignMode', on: false }).state };
+}
+
+const breakers: [number, string, (state: GameState) => void][] = [
+  [1, 'acknowledgedPhase above phaseOf', state => { state.projects['pet-house'].acknowledgedPhase = 3; }],
+  [2, 'hearts ≠ fulfilledWantIds.length', state => { state.pets.dog.hearts = 1; }],
+  [3, 'placed type not owned', state => { state.inventory.ownedTypeIds = state.inventory.ownedTypeIds.filter(id => id !== 'lamp'); }],
+  [5, 'design mode on the street', state => { state.scene = { kind: 'street' }; }],
+  [6, 'complete with acknowledgedPhase 4', state => {
+    Object.assign(state.projects['pet-house'], { currentCents: 1500, acknowledgedPhase: 4, complete: true });
+  }],
+  [7, 'an undefined field (not plain JSON)', state => { (state.session as { testerLabel?: string }).testerLabel = undefined; }],
+  [9, 'queue without a current script', state => {
+    state.dialogue.queue = [{ source: 'intro', speaker: { petId: 'dog' }, lines: ['Hi'], index: 0 }];
+  }],
+  [10, 'resident pet outside walkArea', state => { state.pets.dog.behaviour.x = -1000; }],
+];
+
+it('core §8 invariant checkInvariants on a valid reachable state → []', () => {
+  const { content, state } = validRoomState();
+  expect(checkInvariants(deepFreeze(content), deepFreeze(state))).toEqual([]);
+});
+
+it.each(breakers)('core §8 invariant %s violation (%s) yields exactly one message naming it', (number, _label, edit) => {
+  const { content, state } = validRoomState();
+  const broken = structuredClone(state);
+  if (number === 5) broken.mode = 'design';
+  edit(broken);
+  const messages = checkInvariants(content, deepFreeze(broken));
+  expect(messages).toHaveLength(1);
+  expect(messages[0]).toMatch(new RegExp(`^invariant ${number}: `));
 });

@@ -11,7 +11,8 @@ function decorate(content: Content, state: GameState, value: number): Action {
   const slot = slots[Math.floor(value * slots.length)];
   const filled = state.rooms[roomId].placements[slot.id] !== undefined;
   const choices = chooserTypes(content, state, slot.id);
-  if (filled && (value * 7) % 1 < 0.3) return { type: 'removeCharm', slotId: slot.id };
+  if (filled && ((value * 7) % 1 < 0.3 || choices.length === 0)) return { type: 'removeCharm', slotId: slot.id };
+  if (choices.length === 0) return { type: 'setDesignMode', on: false };
   return { type: 'placeCharm', slotId: slot.id, typeId: choices[Math.floor(((value * 13) % 1) * choices.length)].id };
 }
 
@@ -35,7 +36,10 @@ function debugAction(content: Content, state: GameState, value: number): Action 
   if (value < 0.6 && !atGoal) return { type: 'debugCompleteProject', projectId: project.id };
   if (value < 0.65 && !atGoal) return { type: 'debugJumpPhase', projectId: project.id };
   if (value < 0.75) return { type: 'debugSetEventInterval', ms: value < 0.7 ? null : 250 + Math.floor(value * 20000) };
-  if (value < 0.85) return { type: 'debugUnlockAllTypes' };
+  if (value < 0.8) return { type: 'debugUnlockAllTypes' };
+  if (value < 0.82) return { type: 'debugSetFeedPresentation', mode: value < 0.81 ? 'trickle' : 'events' };
+  if (value < 0.84) return { type: 'debugSetSeed', seed: Math.floor(value * 100000) };
+  if (value < 0.85) return { type: 'debugSetTesterLabel', text: `tester-${Math.floor(value * 1000)}` };
   return value < 0.92 ? { type: 'debugSetStarsVisible', on: value < 0.88 } : { type: 'debugSetMuted', on: value < 0.96 };
 }
 
