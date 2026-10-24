@@ -23,7 +23,8 @@
     "log": "tsx tools/log-reader.ts",
     "fixture": "tsx tools/make-fixture.ts",
     "deploy": "npm run build && wrangler deploy",
-    "asset:ledger": "tsx tools/asset-ledger.ts"
+    "asset:ledger": "tsx tools/asset-ledger.ts",
+    "smoke": "node tests/e2e/smoke.mjs"
   },
   "dependencies": {
     "phaser": "4.2.1",
