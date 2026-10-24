@@ -6,5 +6,8 @@
   "tpp.chooser.count": "{count} charms you own",
   "tpp.chooser.scroll": "▸ scroll",
   "tpp.common.close": "Close",
-  "tpp.hud.hearts": "♥ {hearts}"
+  "tpp.hud.hearts": "♥ {hearts}",
+  "tpp.want.title": "WANT",
+  "tpp.chooser.selected": "Selected spot",
+  "tpp.stars.deltaLoss": "−{delta} ★"
 }
