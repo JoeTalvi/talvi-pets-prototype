@@ -128,7 +128,7 @@ describe('VERIFY-MEC-002-028 street attention icon and house tap', () => {
 });
 
 describe('VERIFY-MEC-002-028 street icon hidden states', () => {
-  it(`${title}owed 0, celebration set, dialogue open or arrival set → icon hidden, a house tap is 'world' and dispatches nothing; the Starter House tap is 'world'`, async () => {
+  it(`${title}owed 0, celebration set or arrival set → icon hidden, a house tap is 'world' and dispatches nothing; the Starter House tap is 'world'`, async () => {
     const content = validContent();
     const cases: [string, (s: GameState) => void][] = [
       ['owed 0', s => { s.projects['pet-house'].acknowledgedPhase = 4; }],
@@ -144,6 +144,23 @@ describe('VERIFY-MEC-002-028 street icon hidden states', () => {
       expect(linesOf(context, 'action.rejected', 'celebration.started')).toEqual([]);
       destroyScene();
     }
+  });
+
+  it(`${title}dialogue open on the street (selector verbatim, order fork 1: attentionVisible ignores dialogue) → icon stays visible; an icon tap and a house tap each record input.tap {target:'house:pet-house'} and dispatch one acknowledgeProject, rejected dialogueOpen; no celebration`, async () => {
+    const content = validContent();
+    const state = owing(content, 1, 1260);
+    state.dialogue.current = { source: 'orientation', speaker: { game: true }, lines: ['Hello.'], index: 0 };
+    const { context, scene } = await street(content, state);
+    expect(scene.icons.get('pet-house')!.visible).toBe(true);
+    tapAt(scene, 1370, 410); tapAt(scene, 1360, 800);
+    expect(linesOf(context, 'input.tap').map(l => l.target)).toEqual(['house:pet-house', 'house:pet-house']);
+    expect(linesOf(context, 'action.rejected')).toEqual([
+      { type: 'action.rejected', action: { type: 'acknowledgeProject', projectId: 'pet-house' }, reason: 'dialogueOpen' },
+      { type: 'action.rejected', action: { type: 'acknowledgeProject', projectId: 'pet-house' }, reason: 'dialogueOpen' },
+    ]);
+    expect(linesOf(context, 'celebration.started')).toEqual([]);
+    expect(context.store.getState().celebration).toBeNull();
+    expect(scene.icons.get('pet-house')!.visible).toBe(true);
   });
 
   it(`${title}phase.reached while standing on the street (owed 0 → 1) shows the icon and starts nothing`, async () => {
