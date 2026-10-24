@@ -21,6 +21,7 @@ export const REAL_STRINGS: Patch[] = Object.entries({
   'tpp.want.availability.heart': 'unlocked by a Heart', 'tpp.want.availability.never': 'not available yet',
   'tpp.want.adjacent': 'beside each other', 'tpp.want.hidden': '?', 'tpp.want.starsFloor': 'room ≥ {min} ★',
   'tpp.want.rewardPrefix': 'Reward:', 'tpp.want.fulfilledFlash': 'Want fulfilled!', 'tpp.wants.exhausted': 'No more wants for now.',
+  'tpp.dialogue.continue': 'Tap to continue', 'tpp.dialogue.gameName': 'Talvi', 'tpp.toast.roundup': '{merchant} {amount} → {change} to {cause}',
 }).map(([key, value]) => ({ file: 'strings.json', path: `/${key}`, value }));
 
 export type DesignSetup = { context: ViewContext; scene: InteriorScene; root: HTMLElement; panels: Panels; state: () => GameState };
