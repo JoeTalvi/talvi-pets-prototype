@@ -1996,6 +1996,86 @@
       "recordedBy": "WORK-018-1 / TASK-122",
       "history": [],
       "note": "WORK-018-1 M1 batch under DEC-040 (APPROVAL-010); chosen candidate_003.png of 3 (silhouette: pass — round wooden frame around a painted face with hour marks and hands reads art (framed picture) and clock; the painted flower band on the frame carries the 'painted' brief; straight-on wall piece); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-005 play session (TECH-018 item 2); not status accepted"
+    },
+    {
+      "id": "clues/branch-book",
+      "type": "image",
+      "url": "clues/branch-book.png",
+      "px": {
+        "w": 256,
+        "h": 256
+      },
+      "status": "ai-placeholder",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/clues/1792803113120-3bsf3d/candidate_002.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 18210,
+      "prompt": "One closed cream book with a brown spine resting on a short tree branch. The book is the dominant mass; the branch beneath it is the only added clue. Simple three-quarter object view, spare internal marks, cream and brown only, no words, no glow, no frame, plain white background. Entire isolated object with comfortable margin.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/style/reward_icon_lantern.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts.worktrees/talvi-pets-prototype-RUN-001/WORK-018-1/talvi-pet-prototype/game/public/assets/clues/feather-book.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/clue-branch-book.png"
+      ],
+      "postProcess": "Decode: /opt/homebrew/bin/ffmpeg -v error -y -i /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/clues/1792803113120-3bsf3d/candidate_002.png -sws_flags accurate_rnd+full_chroma_int -pix_fmt rgb24 /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1/decoded/clues/branch-book.png (raw SHA-256 da522191958575b6440fe1e4486703e413b16dc067985ea03099d41955c50bcd; decoded SHA-256 8c76690809cea12fe440d1556cc211db1b7166f1d7a95aea5082277018a41003). Icon recipe: <EV>/recipes/prepare-clues.mjs SHA-256 59858a4cb555672df9f3a35dfebd7a26d0df687460024fea24662f83abc47139 (disposable copy of phase-3-preproduction/production/representatives-v1/prepare-icons.mjs; only import, sources, specs and output paths changed; Chrome canvas): whole image; flood border-connected near-white (min>=240, spread<=18) as exterior; keep-region dilation 2 px; exterior alpha from luma (/15) with white unmatte; trim; uniform fit with 8 px margin centred in 256x256; sourceBounds [38, 30, 985, 996], scale 0.248190, bounds [10, 8, 245, 247]; report <EV>/staging/final/clues-export-report.json. Pre-quant export SHA-256 28ecd94d59889e6380fd956f0323e8f88a502000486aa24e441da1e891b03357 (over 60 KB) -> pngquant 3.0.3 --quality 90-100 --speed 1 --nofs --force --output <final> 128 <prequant> (palette + tRNS). Final SHA-256 9f630a5d0bc6a87b53adbf61e955b3d32331b3268fe7fe2c3cb764cf9065f480. <EV> = /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1",
+      "batch": "charms-m1",
+      "hash": "9f630a5d0bc6a87b53adbf61e955b3d32331b3268fe7fe2c3cb764cf9065f480",
+      "recordedAt": "2026-10-23",
+      "recordedBy": "WORK-018-1 / TASK-122",
+      "history": [],
+      "note": "WORK-018-1 M1 batch under DEC-040 (APPROVAL-010); chosen candidate_002.png of 3 (clue pre-check: pass — closed cream book with brown spine dominant, visibly resting on a branch (the secondary clue); 001/003 put the branch behind the book rather than under it); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-005 play session (TECH-018 item 2); not status accepted"
+    },
+    {
+      "id": "clues/moth",
+      "type": "image",
+      "url": "clues/moth.png",
+      "px": {
+        "w": 256,
+        "h": 256
+      },
+      "status": "ai-placeholder",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/clues/1792803128196-ace3qk/candidate_001.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 18220,
+      "prompt": "One moth with open wings resting on a short bare branch. The moth is the dominant object; the bare branch is the only added clue. No owl, no bird, no eyes, no face other than the moth's. Simple three-quarter object view, spare internal marks, cream and brown only, no words, no glow, no frame, plain white background. Entire isolated object with comfortable margin.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/style/reward_icon_lantern.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts.worktrees/talvi-pets-prototype-RUN-001/WORK-018-1/talvi-pet-prototype/game/public/assets/clues/feather-book.png"
+      ],
+      "postProcess": "Decode: /opt/homebrew/bin/ffmpeg -v error -y -i /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/clues/1792803128196-ace3qk/candidate_001.png -sws_flags accurate_rnd+full_chroma_int -pix_fmt rgb24 /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1/decoded/clues/moth.png (raw SHA-256 8dbbc64e7da59e6b408c7ab786bc140f9220e4fbdee83aaa0459d96d27b03536; decoded SHA-256 3dabbf4db86eaf1a21194f5238d14f967b651bc421f5611275fc090302ad3e60). Icon recipe: <EV>/recipes/prepare-clues.mjs SHA-256 59858a4cb555672df9f3a35dfebd7a26d0df687460024fea24662f83abc47139 (disposable copy of phase-3-preproduction/production/representatives-v1/prepare-icons.mjs; only import, sources, specs and output paths changed; Chrome canvas): whole image; flood border-connected near-white (min>=240, spread<=18) as exterior; keep-region dilation 2 px; exterior alpha from luma (/15) with white unmatte; trim; uniform fit with 8 px margin centred in 256x256; sourceBounds [49, 34, 974, 989], scale 0.251046, bounds [12, 8, 243, 247]; report <EV>/staging/final/clues-export-report.json. Pre-quant export SHA-256 89c87e4e6a158a80af143c3e37b9f2264ffbaa1845faddf319c42ec1a31d9e01 (over 60 KB) -> pngquant 3.0.3 --quality 90-100 --speed 1 --nofs --force --output <final> 128 <prequant> (palette + tRNS). Final SHA-256 b4247fa6b96b81432d803ad2eed835bb998e165019e95bc4e53c3afca1a5533c. <EV> = /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1",
+      "batch": "charms-m1",
+      "hash": "b4247fa6b96b81432d803ad2eed835bb998e165019e95bc4e53c3afca1a5533c",
+      "recordedAt": "2026-10-23",
+      "recordedBy": "WORK-018-1 / TASK-122",
+      "history": [],
+      "note": "WORK-018-1 M1 batch under DEC-040 (APPROVAL-010); chosen candidate_001.png of 3 (clue pre-check: pass — open-winged moth resting on a bare branch; DEC-033 R checked: no owl, no bird, no eyes in the dark in any of the three candidates; 001 is the only one where the moth actually rests on the branch); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-005 play session (TECH-018 item 2); not status accepted"
+    },
+    {
+      "id": "clues/spectacles",
+      "type": "image",
+      "url": "clues/spectacles.png",
+      "px": {
+        "w": 256,
+        "h": 256
+      },
+      "status": "ai-placeholder",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/clues/1792803097439-d3j3ig/candidate_003.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 18200,
+      "prompt": "One pair of round wire spectacles resting between two pressed leaves. The spectacles are the dominant object; the two flat pressed leaves are the only added clue. Simple three-quarter object view, spare internal marks, cream and brown only, no words, no glow, no frame, plain white background. Entire isolated object with comfortable margin.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/style/reward_icon_lantern.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts.worktrees/talvi-pets-prototype-RUN-001/WORK-018-1/talvi-pet-prototype/game/public/assets/clues/feather-book.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/clue-spectacles.png"
+      ],
+      "postProcess": "Decode: /opt/homebrew/bin/ffmpeg -v error -y -i /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/clues/1792803097439-d3j3ig/candidate_003.png -sws_flags accurate_rnd+full_chroma_int -pix_fmt rgb24 /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1/decoded/clues/spectacles.png (raw SHA-256 e38d4a768267884e6e810ed7641ac869b9ec43545913bf2ec217cf03f51fb4cd; decoded SHA-256 9b55cfba77abe531966ce55283b41e5b5bcf84feabd71df6ff307f86fb1d9382). Icon recipe: <EV>/recipes/prepare-clues.mjs SHA-256 59858a4cb555672df9f3a35dfebd7a26d0df687460024fea24662f83abc47139 (disposable copy of phase-3-preproduction/production/representatives-v1/prepare-icons.mjs; only import, sources, specs and output paths changed; Chrome canvas): whole image; flood border-connected near-white (min>=240, spread<=18) as exterior; keep-region dilation 2 px; exterior alpha from luma (/15) with white unmatte; trim; uniform fit with 8 px margin centred in 256x256; sourceBounds [41, 277, 982, 818], scale 0.254777, bounds [8, 59, 247, 196]; report <EV>/staging/final/clues-export-report.json. No pngquant (57669 B <= 60 KB). Final SHA-256 e234d04708c64f5f789e57f72c07947550258afdeec157c2b6a42eb9d9ef9734. <EV> = /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1",
+      "batch": "charms-m1",
+      "hash": "e234d04708c64f5f789e57f72c07947550258afdeec157c2b6a42eb9d9ef9734",
+      "recordedAt": "2026-10-23",
+      "recordedBy": "WORK-018-1 / TASK-122",
+      "history": [],
+      "note": "WORK-018-1 M1 batch under DEC-040 (APPROVAL-010); chosen candidate_003.png of 3 (clue pre-check: pass — round wire spectacles dominant, two pressed leaves as the single secondary clue; cream/brown finish matching feather-book and the Lantern; cleanest contour of the three); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-005 play session (TECH-018 item 2); not status accepted"
     }
   ]
 }
