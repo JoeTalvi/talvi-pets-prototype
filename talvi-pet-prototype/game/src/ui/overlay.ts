@@ -21,24 +21,8 @@ export type Panel = { open?(slotId: string): void; close?(reason?: string): void
 export type Panels = { hudInterior: Panel; hudStreet: HudStreet; toast: Toast; wantPanel: WantPanel; dialogue: Dialogue; chooser: Panel; replaceRemove: Panel;
   milestonePopup: MilestonePopup; revealPopup: RevealPopup; debugPanel: DebugPanel; roomEditor: RoomEditorPanel };
 
-/** UI strings WORK-011 proposed that `strings.json` does not carry yet (returned to WORK-021 as strings-additions.json). */
-export const FALLBACK_STRINGS: Readonly<Record<string, string>> = {
-  'tpp.chooser.slot': '{size} slot',
-  'tpp.chooser.size.small': 'Small floor',
-  'tpp.chooser.size.large': 'Large floor',
-  'tpp.chooser.size.wall': 'Wall',
-  'tpp.chooser.count': '{count} charms you own',
-  'tpp.chooser.scroll': '▸ scroll',
-  'tpp.common.close': 'Close',
-  'tpp.hud.hearts': '♥ {hearts}',
-  'tpp.want.title': 'WANT',
-  'tpp.chooser.selected': 'Selected spot',
-  'tpp.stars.deltaLoss': '−{delta} ★',
-  'tpp.toast.delta': '+{change}',
-  'tpp.hud.progress': '{current} / {goal}',
-  'tpp.popup.rewards': 'Rewards',
-  'tpp.reveal.phase': 'Phase {phase}',
-};
+/** UI strings a lane proposed that `strings.json` does not carry yet; emptied by WORK-021-1's strings merge (every key now resolves from `strings.json`). */
+export const FALLBACK_STRINGS: Readonly<Record<string, string>> = {};
 
 /** `content.strings[key]` first, then the fallback table, with `{param}` substitution; `[key]` when unresolved. */
 export function createText(strings: Readonly<Record<string, string>>): Text {
