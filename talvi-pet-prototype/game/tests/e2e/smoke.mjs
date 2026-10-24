@@ -5,7 +5,7 @@
 import { existsSync } from 'node:fs';
 import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { base, evidenceRoot, sha, launch, boot, waitScene, lines, getState, count, first, strip, eq, until, waitLine, tapSlot, holdUntil, steer,
+import { base, evidenceRoot, sha, launch, boot, waitScene, lines, getState, count, first, strip, until, waitLine, tapSlot, holdUntil, steer,
   debugClick, setDebug, domRead, makeFixture, createSteps, writeJson } from './lib/harness.mjs';
 
 const { steps, step } = createSteps();

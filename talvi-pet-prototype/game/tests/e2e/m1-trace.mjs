@@ -4,7 +4,7 @@
 // (keyboard, joystick drag, taps on the canvas and the panels); window.__tpp only to read. One continuous CDP screencast (1280×720) is
 // streamed to disk; the ten beat loops are cut from it by wall-time marks and trace-full is the whole stream at 960×540.
 // Writes trace-report.json, trace-log.jsonl, storage-reads.json, loops/*, captures/*. Exit 0 iff every beat is ok.
-import { mkdtempSync, rmSync, readFileSync, statSync } from 'node:fs';
+import { mkdtempSync, rmSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { base, evidenceRoot, sha, launch, boot, waitScene, lines, getState, count, first, strip, eq, until, waitLine, tapSlot, holdUntil, steer,
@@ -397,7 +397,6 @@ try {
   await r1.page.waitForFunction(() => window.__tpp && window.__tpp.game.scene.getScenes(true).some(s => ['Street', 'Interior'].includes(s.scene.key)), null, { timeout: 30000 });
   const reloaded = await r1.page.evaluate(() => ({ state: window.__tpp.store.getState(), loaded: window.__tpp.log.lines().filter(l => l.type === 'save.loaded' || l.type === 'save.discarded') }));
   await r1.context.close();
-  const keys = ['rooms', 'pets', 'projects', 'stars', 'ownedTypeIds', 'unlockedTypeIds', 'wants', 'scene', 'seed', 'schemaVersion'];
   const cmp = Object.fromEntries(Object.keys(saved.state ?? {}).map(k => [k, eq(saved.state[k], reloaded.state[k])]));
   const mid = report.midCelebrationSave;
   const r2 = await boot(browser, { height: 1080, save: mid });

@@ -5,13 +5,12 @@
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { base, evidenceRoot, sha, launch, boot, waitScene, lines, getState, count, first, strip, eq, until, waitLine, tapSlot, slotPoint, tapWorld, holdUntil, steer,
+import { base, evidenceRoot, sha, launch, boot, waitScene, lines, getState, count, first, strip, eq, until, waitLine, tapSlot, holdUntil, steer,
   setDebug, debugClick, domRead, shot, makeFixture, writeJson, GAME_DIR, WORK } from './lib/harness.mjs';
 
 const rowsDir = join(evidenceRoot, 'rows'), capturesDir = join(evidenceRoot, 'captures');
 const m5Dir = join(evidenceRoot, '..', 'MILESTONE-005');
 const only = process.argv[2] ? process.argv[2].split(',') : null;
-const NOT_DEVICE = 'not-run (user, play session)';
 let browser;
 const saves = {};
 const save = name => (saves[name] ??= name.endsWith('.steps') ? makeFixture(['--steps', name.startsWith('tests/') ? name + '.json' : `tests/view/capture/${name}.json`]).text : makeFixture(['--scenario', name]).text);
@@ -276,8 +275,9 @@ async function mec005() {
   await steer(page, 907, 665, () => { const a = window.__tpp.store.getState().avatar; return Math.abs(a.x - 907) < 30 && a.y >= 660; }, 12000);
   await page.waitForTimeout(250); const front = await readAv(); const fPng = await still(page, 'depth-front-1080', { seededSave: 'save-v1.real.json', note: 'avatar in front of the lamp at floor-3', front });
   const wallSlots = Object.keys(depths).filter(k => k.startsWith('wall-')), floorSlots = Object.keys(depths).filter(k => !k.startsWith('wall-'));
-  const r14 = row('VERIFY-MEC-005-014', 'Chrome', behind.avatar.depth === behind.avatar.y && behind.avatar.depth < behind.lamp && front.avatar.depth === front.avatar.y && front.avatar.depth > front.lamp && (wallSlots.length === 0 || wallSlots.every(ws => floorSlots.every(fs => depths[ws] !== undefined))) ? 'pass' : 'fail',
-    'wall charm above a floor charm; avatar depth = base y each sampled frame, behind and in front of the lamp', { charmDepths: depths, behind, front, wallSlotsPlaced: wallSlots, note: wallSlots.length ? 'wall charm depths listed' : 'save-v1 places no wall charm: the wall-above-floor half is read in the content walk (unit 5) wall still' }, [bPng, fPng]);
+  const r14 = row('VERIFY-MEC-005-014', 'Chrome', behind.avatar.depth === behind.avatar.y && behind.avatar.depth < behind.lamp && front.avatar.depth === front.avatar.y && front.avatar.depth > front.lamp ? 'pass' : 'fail',
+    'wall charm above a floor charm; avatar depth = base y each sampled frame, behind and in front of the lamp', { charmDepths: depths, behind, front, wallSlotsPlaced: wallSlots, floorSlotsPlaced: floorSlots }, [bPng, fPng, 'captures/content-walk-wall-1080-001.png'],
+    'partial: the avatar front/behind half is asserted; the "wall charm above a floor charm" clause is a recorded gap here (save-v1 places no wall charm) — the content walk wall stills show wall and floor charms together (depths in rows/asset-008.json), not asserted');
   rowFile('mec-005', [r13, r14, r16, row('VERIFY-MEC-005-013/-014/-016', 'iPhone', 'not-run', 'device', null, [], 'user, play session')]);
   await w.context.close();
 }
@@ -333,8 +333,6 @@ async function mec008009() {
     const ev = (await lines(page)).slice(n); per.push({ tap: name, at: p, elementAtPoint: at, before: cur && { source: cur.source, index: cur.index }, transitions: ev.filter(l => l.type === 'dialogue.advanced' || l.type === 'dialogue.closed').length, world: ev.filter(l => ['input.tap', 'pet.tapped', 'ui.chooserOpened', 'mode.changed'].includes(l.type)).map(strip) });
   }
   await w.context.close();
-  const bubbleTypes = t ? null : null;
-  const tl = t?.beats ?? [];
   const vig = beatOf(t, '1:00 vignette'), greet = beatOf(t, '0:30 greeting'), like = beatOf(t, '2:00 Decorate → floor-3'), bed = beatOf(t, '1:00 the Dog walks');
   rowFile('mec-008', [
     row('VERIFY-MEC-008-015', 'Chrome', vig?.ok && box0.dialogue.visible && atActive.dialogue.visible && s0.dialogue.current?.index === 0 ? 'pass' : 'fail', 'hidden until reacting + 2,000 ms, ≤ 7,000 ms after charm.placed (the trace); reload shows the box at once (save-v1.vignette)',
@@ -481,7 +479,50 @@ async function traceRows() {
   rowFile('pres-009', [row('VERIFY-PRES-009', 'ENV-JSDOM', pres009.length && pres009.every(l => /✓|passed/.test(l) || !/×|failed/.test(l)) ? 'pass' : 'fail', 'pass (the suite at this head)', { titles: pres009 }, ['test.txt'])]);
 }
 
-const UNITS = { pres001, pres002, pres006, pres008, pres012, mec002, mec004, mec005, mec006, mec008009, mec010, contentWalk, tool003, traceRows };
+// ---- WORK-020-3 fork 6: real reward and clue art in both popups, stills under evidence/MILESTONE-005 (global next NNN) ---------------------
+async function realArt() {
+  const { readdirSync } = await import('node:fs');
+  const nextN = () => Math.max(0, ...readdirSync(m5Dir).map(f => Number(f.match(/-(\d{3})\.(png|json)$/)?.[1] ?? 0))) + 1;
+  const m5Shot = async (page, point, meta) => {
+    const n = String(nextN()).padStart(3, '0'), png = join(m5Dir, `work-021-2-${point}-1080-${n}.png`);
+    await page.screenshot({ path: png });
+    const dom = await domRead(page);
+    writeJson(png.replace(/\.png$/, '.json'), { kind: 'screenshot', milestone: 'MILESTONE-005', work: WORK, point: `work-021-2-${point}-1080`, sequence: Number(n), sha, captured_at: new Date().toISOString(), viewport: { width: 1920, height: 1080 },
+      tool: 'playwright-library', version: browser.version(), target: `${base}/?lenient=1`, ...meta, milestone_dom: dom.milestone, reveal_dom: dom.reveal, missingAssets: [...(dom.milestone.visible ? dom.milestone.assetSlots : []), ...(dom.reveal.visible ? dom.reveal.assetSlots : [])] });
+    return { png, dom };
+  };
+  const out = [];
+  // 1 → 4 from the replayed save-v1.milestone
+  let w = await open('save-v1.milestone'); let { page } = w;
+  await waitScene(page, 'Street');
+  await until(page, () => !document.querySelector('.tpp-milestonePopup').hidden, null, 8000);
+  out.push({ point: 'milestone-popup-1to4', ...(await m5Shot(page, 'milestone-popup-1to4', { seededSave: 'save-v1.milestone.real.json', note: 'milestone popup 1 → 4 (replay), six real-art tiles' })) });
+  await page.locator('.tpp-milestonePopup .tpp-collect').click(); await until(page, () => !document.querySelector('.tpp-revealPopup').hidden, null, 8000); await page.waitForTimeout(1200);
+  out.push({ point: 'reveal-popup-1to4', ...(await m5Shot(page, 'reveal-popup-1to4', { seededSave: 'save-v1.milestone.real.json', note: 'reveal popup 1 → 4: spectacles, branch-book, lantern' })) });
+  await w.context.close();
+  // 0 → 1 from street-near-phase1 + debug purchases + the icon tap
+  w = await open('street-near-phase1.steps', { scene: 'Street' }); page = w.page;
+  let n = 0; await setDebug(page, true);
+  while (n < 40 && !(await lines(page, 'phase.reached')).length) { await debugClick(page, 'Simulate a purchase'); n++; }
+  await setDebug(page, false);
+  await until(page, () => window.__tpp.game.scene.getScene('Street').houses.get('pet-house').icon.visible, null, 3000);
+  const ic = await page.evaluate(() => { const st = window.__tpp.game.scene.getScene('Street'), h = st.houses.get('pet-house'), cam = st.cameras.main, r = window.__tpp.game.canvas.getBoundingClientRect(), k = r.width / 1920; return { x: r.left + (h.icon.x - cam.scrollX) * k, y: r.top + (h.icon.y - cam.scrollY) * k }; });
+  await page.mouse.click(ic.x, ic.y, { delay: 40 });
+  await until(page, () => !document.querySelector('.tpp-milestonePopup').hidden, null, 20000); await page.waitForTimeout(500);
+  out.push({ point: 'milestone-popup-0to1', ...(await m5Shot(page, 'milestone-popup-0to1', { seededSave: 'street-near-phase1 (real) + debug "Simulate a purchase" until phase.reached {1}', note: 'milestone popup 0 → 1: fern, perch-branch, live Skip price' })) });
+  await page.locator('.tpp-milestonePopup .tpp-collect').click(); await until(page, () => !document.querySelector('.tpp-revealPopup').hidden, null, 8000); await page.waitForTimeout(1200);
+  out.push({ point: 'reveal-popup-0to1', ...(await m5Shot(page, 'reveal-popup-0to1', { seededSave: 'street-near-phase1 (real) + debug purchases', note: 'reveal popup 0 → 1: card 1 feather-book' })) });
+  await w.context.close();
+  const want = { 'milestone-popup-1to4': d => d.milestone.tiles.length === 6, 'reveal-popup-1to4': d => eq(d.reveal.cards.map(c => c.icon), ['clues/spectacles', 'clues/branch-book', 'clues/lantern']) && d.reveal.cards.every(c => c.real),
+    'milestone-popup-0to1': d => eq(d.milestone.tiles, ['fern', 'perch-branch']), 'reveal-popup-0to1': d => eq(d.reveal.cards.map(c => c.icon), ['clues/feather-book']) && d.reveal.cards.every(c => c.real) };
+  const res = out.map(o => { const slots = o.point.startsWith('milestone') ? o.dom.milestone.assetSlots : o.dom.reveal.assetSlots; return { point: o.point, png: o.png, assetSlots: slots, content: want[o.point](o.dom), pass: slots.length === 0 && want[o.point](o.dom), tiles: o.dom.milestone.tiles, cards: o.dom.reveal.cards }; });
+  const rr = existsSync(join(evidenceRoot, 'rerun', 'WORK-020-3', 'smoke.json')) ? JSON.parse(readFileSync(join(evidenceRoot, 'rerun', 'WORK-020-3', 'smoke.json'), 'utf8')) : null;
+  rowFile('real-art', [row('WORK-020-3 fork 6 (real reward and clue art in the popups)', 'Chrome (integration-level)', res.every(r => r.pass) ? 'pass' : 'fail',
+    'zero .tpp-asset-slot inside .tpp-milestonePopup and .tpp-revealPopup (spectacles, branch-book, lantern for 1 → 4; fern, perch-branch and feather-book for 0 → 1); missingAssets empty',
+    { stills: res, rerunMissingAssets: rr ? rr.runs.map(r => ({ run: r.run, missingAssets: r.missingAssets })) : 'rerun smoke.json absent' }, [...res.map(r => r.png), 'rerun/WORK-020-3/smoke.json'])]);
+}
+
+const UNITS = { realArt, pres001, pres002, pres006, pres008, pres012, mec002, mec004, mec005, mec006, mec008009, mec010, contentWalk, tool003, traceRows };
 browser = await launch();
 const errors = {};
 try {
