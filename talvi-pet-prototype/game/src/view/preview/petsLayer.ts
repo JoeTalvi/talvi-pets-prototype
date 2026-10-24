@@ -1,6 +1,6 @@
 import type Phaser from 'phaser';
 import type { InteriorScene } from '../scenes/InteriorScene';
-import { objectBag, type PreviewLayer } from './layer';
+import { objectBag, roomOf, type PreviewLayer } from './layer';
 
 export const PETS_ALPHA = 0.6;
 
@@ -11,9 +11,10 @@ export function createPetsLayer(): PreviewLayer {
     objects: bag.objects, hide: bag.clear, destroy: bag.clear,
     show(target) {
       const scene = target as InteriorScene;
-      const sheet = `pets/${scene.room.residentPetId}-sheet`;
+      const room = roomOf(scene);
+      const sheet = `pets/${room.residentPetId}-sheet`;
       const { key, frame } = scene.pet?.idleFrameTexture() ?? (scene.textures.exists(sheet) ? { key: sheet, frame: 0 } : { key: 'missing', frame: undefined });
-      const points = [...scene.room.slots.map(s => s.anchor), scene.room.petSpawn];
+      const points = [...room.slots.map(s => s.anchor), room.petSpawn];
       for (const anchor of points) {
         const image: Phaser.GameObjects.Image = bag.add(scene.add.image(anchor.x, anchor.y, key, frame));
         image.setOrigin(0.5, 1).setFlipX(anchor.facing === 'left').setAlpha(PETS_ALPHA).setDepth(anchor.y);

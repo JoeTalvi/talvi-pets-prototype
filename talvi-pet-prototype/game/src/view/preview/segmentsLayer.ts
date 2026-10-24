@@ -2,7 +2,7 @@ import type Phaser from 'phaser';
 import type { Point } from '@content/schema/common';
 import type { Room } from '@content/schema/room';
 import { segmentInPolygon } from '@sim/geometry';
-import { COLOURS, LABEL_STYLE, objectBag, PREVIEW_DEPTH, type PreviewLayer } from './layer';
+import { COLOURS, LABEL_STYLE, objectBag, PREVIEW_DEPTH, roomOf, type PreviewLayer } from './layer';
 
 export type Segment = { a: Point; b: Point; inside: boolean };
 
@@ -23,7 +23,7 @@ export function createSegmentsLayer(): PreviewLayer & { segments: Segment[]; lab
   return {
     objects: bag.objects, segments, hide, destroy: hide, label: () => text,
     show(target) {
-      const room = (target as unknown as { room: Room }).room;
+      const room = roomOf(target);
       segments.push(...segmentsOf(room));
       const g: Phaser.GameObjects.Graphics = bag.add(target.add.graphics().setDepth(PREVIEW_DEPTH));
       for (const s of segments) {

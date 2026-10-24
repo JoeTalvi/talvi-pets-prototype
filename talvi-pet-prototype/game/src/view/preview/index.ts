@@ -4,7 +4,7 @@ import { outlinePoints } from '../objects/SlotOutline';
 import type { InteriorScene } from '../scenes/InteriorScene';
 import { createFillLayer } from './fillLayer';
 import { createGeometryLayer } from './geometryLayer';
-import { COLOURS, noPreview, PREVIEW_DEPTH, PREVIEW_LAYERS, type PreviewFlags, type PreviewLayer, type PreviewLayerName } from './layer';
+import { COLOURS, noPreview, PREVIEW_DEPTH, PREVIEW_LAYERS, roomOf, type PreviewFlags, type PreviewLayer, type PreviewLayerName } from './layer';
 import { createPetsLayer } from './petsLayer';
 import { createSegmentsLayer } from './segmentsLayer';
 
@@ -23,6 +23,8 @@ export type Preview = {
   /** Slot polygon strokes at α .5 shown in play mode while fill/pets/geometry is on (design mode's SlotOutline owns them otherwise). */
   readonly outlineStroke: Phaser.GameObjects.Graphics | null;
   sync(): void;
+  /** WORK-015: rebuild the shown layers (and the slot strokes) from `roomOf(scene)` after a room-editor edit. */
+  rebuild(): void;
   destroy(): void;
 };
 
@@ -32,12 +34,12 @@ export function layersFor(kind: 'interior' | 'street'): Partial<Record<PreviewLa
   return { fill: createFillLayer(), pets: createPetsLayer(), geometry: createGeometryLayer('interior'), segments: createSegmentsLayer() };
 }
 
-function slotStroke(scene: InteriorScene): Phaser.GameObjects.Graphics {
-  const g = scene.add.graphics().setDepth(PREVIEW_DEPTH).setVisible(false);
-  g.lineStyle(3, COLOURS.slot, 0.5);
-  for (const slot of scene.room.slots) { const points = outlinePoints(slot); g.strokePoints([...points, points[0]]); }
+function strokeSlots(scene: InteriorScene, g: Phaser.GameObjects.Graphics): Phaser.GameObjects.Graphics {
+  g.clear().lineStyle(3, COLOURS.slot, 0.5);
+  for (const slot of roomOf(scene).slots) { const points = outlinePoints(slot); g.strokePoints([...points, points[0]]); }
   return g;
 }
+const slotStroke = (scene: InteriorScene) => strokeSlots(scene, scene.add.graphics().setDepth(PREVIEW_DEPTH).setVisible(false));
 
 /** TOOL-002 stage 1: follows `context.preview` each frame (a poll in `update`, so a scene change restores the flags); view-only, never dispatches. */
 export function previewLayers(scene: Phaser.Scene, context: ViewContext, kind: 'interior' | 'street'): Preview {
@@ -58,6 +60,10 @@ export function previewLayers(scene: Phaser.Scene, context: ViewContext, kind: '
   sync();
   return {
     layers, outlineStroke, sync,
+    rebuild() {
+      for (const name of shown) { layers[name]!.hide(); layers[name]!.show(scene, context); }
+      if (outlineStroke) strokeSlots(scene as InteriorScene, outlineStroke);
+    },
     destroy() { for (const layer of Object.values(layers)) layer.destroy(); shown.clear(); outlineStroke?.destroy(); },
   };
 }
