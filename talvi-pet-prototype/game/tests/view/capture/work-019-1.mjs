@@ -1,6 +1,6 @@
 // WORK-019-1 motion loops, stills and pet state reads (Playwright library, pinned chromium-1243 by executablePath; no install).
 //   node tests/view/capture/work-019-1.mjs <dog-room-intro-done.real.json> <street-at-door.real.json>
-//   (dev server on 5196 with ?lenient=1; TPP_BASE / TPP_EVIDENCE override)
+//   (dev server on 5196 with ?lenient=1; TPP_BASE / TPP_EVIDENCE override; TPP_POINTS=greetingFix1 runs only the named points and writes pet-report-<points>.json)
 // Loops: CDP Page.startScreencast JPEG frames with their timestamps -> system ffmpeg -> H.264 MP4 (full frame) + palette GIF (480 crop).
 // Every fact in pet-report.json is read from window.__tpp (log lines, store state, the Interior's sprites); nothing is assumed.
 // No dialogue box is drawn in this lane (WORK-019-3); where a script is open the state read says so and nothing drains it unless noted.
@@ -33,7 +33,7 @@ const lookSave = edited('use-look-wall-2', s => {
 const wantSave = edited('want-bubble', s => { s.pets.dog.wantBubbleInMs = 1500; idleAt(s); });
 
 let browser;
-async function boot(height, save) {
+async function boot(height, save, beforeGoto = null) {
   const context = await browser.newContext({ viewport: { width: 1920, height }, deviceScaleFactor: 1 });
   await context.addInitScript(text => {
     if (sessionStorage.getItem('seeded')) return;
@@ -42,6 +42,8 @@ async function boot(height, save) {
   const page = await context.newPage(), errors = { consoleErrors: [], pageErrors: [] };
   page.on('console', m => { if (m.type() === 'error') errors.consoleErrors.push(m.text().slice(0, 400)); });
   page.on('pageerror', e => errors.pageErrors.push(String(e)));
+  const hooked = beforeGoto ? await beforeGoto(page) : null;
+  if (hooked) Object.assign(errors, { hooked });
   await page.goto(`${base}/?lenient=1`);
   return { context, page, errors };
 }
@@ -100,7 +102,7 @@ async function startRecording(page) {
   const cdp = await page.context().newCDPSession(page), frames = [];
   cdp.on('Page.screencastFrame', ({ data, metadata, sessionId }) => { frames.push({ data, t: metadata.timestamp * 1000 }); cdp.send('Page.screencastFrameAck', { sessionId }).catch(() => {}); });
   await cdp.send('Page.startScreencast', { format: 'jpeg', quality: 85, everyNthFrame: 1, maxWidth: 1920, maxHeight: 1080 });
-  return { stop: async () => { await cdp.send('Page.stopScreencast'); await cdp.detach().catch(() => {}); return frames; } };
+  return { count: () => frames.length, stop: async () => { await cdp.send('Page.stopScreencast'); await cdp.detach().catch(() => {}); return frames; } };
 }
 /** MP4 (libx264 yuv420p +faststart, ≤ 10 s) and a ≤ 480 px crop GIF at 12 fps; a failed encode leaves ≤ 24 PNG frames as a recorded gap. */
 function encode(name, frames, crop, meta) {
@@ -112,7 +114,7 @@ function encode(name, frames, crop, meta) {
   list += `file '${join(tmp, `f${String(kept.length - 1).padStart(5, '0')}.jpg`)}'\n`; writeFileSync(join(tmp, 'list.txt'), list);
   const durationMs = Math.round(kept.at(-1).t - t0);
   const sidecar = { kind: 'loop', milestone: 'MILESTONE-005', work: 'WORK-019-1', point: name, captured_at: new Date().toISOString(), frames: kept.length, durationMs,
-    fps: Math.round(kept.length / (durationMs / 1000) * 10) / 10, tool: 'cdp-screencast+ffmpeg', ffmpeg: ffVersion, binary: executablePath, chromiumVersion: browser.version(), ...meta,
+    fps: Math.round(kept.length / (durationMs / 1000) * 10) / 10, sourceFps: Math.round(kept.length / (durationMs / 1000) * 10) / 10, encodedFps: { mp4: 30, gif: 12 }, tool: 'cdp-screencast+ffmpeg', ffmpeg: ffVersion, binary: executablePath, chromiumVersion: browser.version(), ...meta,
     gifCrop: crop };
   try {
     const input = ['-y', '-hide_banner', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', join(tmp, 'list.txt')];
@@ -157,6 +159,37 @@ async function greeting(report) {
   const frames = await rec.stop(), end = await read(page);
   const loop = encode('greeting-walk', frames, cropAround(end.behaviour.x, end.behaviour.y, 1080), { target: 'street door -> fade -> Interior; Dog walks from petSpawn to the nearest wander point, 🎵 on arrival, then idle', viewport: { width: 1920, height: 1080 }, seededSave: 'street-at-door.real.json', note: 'KeyW held 300 ms at the Starter House door; dialogue drawn by no panel in this lane' });
   report.greeting = { still, atBubble, end, loop: loop.outputs ?? loop.gap, errors };
+  await context.close();
+}
+
+/** Per-frame page samples (poststep): scene, camera fade, sim phase and the drawn pet, stamped in page time and wall time. */
+const sampleFrames = page => page.addInitScript(() => {
+  window.__samples = [];
+  const attach = () => { if (!window.__tpp?.game) return setTimeout(attach, 0); window.__tpp.game.events.on('poststep', () => {
+    const { store, game } = window.__tpp, s = store.getState(), key = ['Street', 'Interior'].find(k => game.scene.isActive(k)) ?? null;
+    const scene = key ? game.scene.getScene(key) : null, cam = scene?.cameras.main, pet = key === 'Interior' ? scene.pet : null;
+    window.__samples.push({ t: Math.round(performance.now()), wall: Date.now(), active: key, transitioning: scene?.transitioning ?? null,
+      fadeRunning: cam ? cam.fadeEffect.isRunning : null, fadeOutDirection: cam ? cam.fadeEffect.direction : null, fadeProgress: cam ? Math.round(cam.fadeEffect.progress * 100) / 100 : null, fadeAlpha: cam ? Math.round(cam.fadeEffect.alpha * 100) / 100 : null,
+      phase: s.pets.dog.behaviour.phase, simX: Math.round(s.pets.dog.behaviour.x), simY: Math.round(s.pets.dog.behaviour.y),
+      drawnX: pet ? Math.round(pet.x) : null, drawnY: pet ? Math.round(pet.y) : null, bubble: scene?.bubble?.current?.()?.text ?? null });
+  }); };
+  attach();
+});
+/** Fix round 1 (review B-1): the screencast's first frame is on the Street before KeyW; samples time the fade against the walk. */
+async function greetingFix1(report) {
+  // The street-at-door seed changes scene on its own ~300 ms after boot (no key needed), so the screencast and the
+  // per-frame sampler start before navigation; the loop's first frames are the Street.
+  let rec = null;
+  const { context, page, errors } = await boot(1080, streetAtDoor, async page => { await sampleFrames(page); rec = await startRecording(page); return true; });
+  await page.waitForFunction(() => window.__tpp?.game?.scene.isActive('Interior'), null, { timeout: 15000 });
+  const atBubble = await until(page, s => s.bubble?.current?.text === '🎵', 9000);
+  await until(page, s => s.behaviour.phase === 'idle', 6000);
+  await page.waitForTimeout(4000);
+  const frames = (await rec.stop()).filter(f => f.data.length > 2000), end = await read(page), samples = await page.evaluate(() => window.__samples);
+  const loop = encode('greeting-walk-fix1', frames, cropAround(end.behaviour.x, end.behaviour.y, 1080), { viewport: { width: 1920, height: 1080 }, seededSave: 'street-at-door.real.json',
+    firstFrameWall: Math.round(frames[0].t), firstSampleWall: samples[0]?.wall ?? null,
+    note: 'screencast and sampler started before navigation; no key pressed: the seed enters the house by itself; dialogue drawn by no panel in this lane' });
+  report.greetingFix1 = { atBubble, end, samples, loop: loop.outputs ?? loop.gap, sidecar: join(loops, 'greeting-walk-fix1.json'), errors };
   await context.close();
 }
 
@@ -232,11 +265,14 @@ async function want(report) {
 browser = await chromium.launch({ headless: true, executablePath });
 const report = { work: 'WORK-019-1', base, browser: browser.version(), captured_at: new Date().toISOString() };
 try {
-  for (const [name, fn] of [['greeting', greeting], ['useLie1080', r => useLie(r, 1080)], ['useLie823', r => useLie(r, 823)], ['useLook', useLook], ['reactLike', reactLike], ['want', want]]) {
+  const points = process.env.TPP_POINTS?.split(',') ?? null;
+  for (const [name, fn] of [['greetingFix1', greetingFix1], ['greeting', greeting], ['useLie1080', r => useLie(r, 1080)], ['useLie823', r => useLie(r, 823)], ['useLook', useLook], ['reactLike', reactLike], ['want', want]]) {
+    if (points ? !points.includes(name) : name === 'greetingFix1') continue;
     try { await fn(report); } catch (error) { report[`${name}Error`] = String(error).slice(0, 600); }
   }
 } finally {
   await browser.close();
   rmSync(tmpRoot, { recursive: true, force: true });
-  writeFileSync(join(lane, 'pet-report.json'), `${JSON.stringify(report, null, 2)}\n`);
+  const reportName = process.env.TPP_POINTS ? `pet-report-${process.env.TPP_POINTS.replace(/,/g, '-')}.json` : 'pet-report.json';
+  writeFileSync(join(lane, reportName), `${JSON.stringify(report, null, 2)}\n`);
 }
