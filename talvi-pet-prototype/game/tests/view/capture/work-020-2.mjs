@@ -180,7 +180,6 @@ async function closeDebug(page) { await page.locator('.tpp-debugPanel button.tpp
 async function simulate(page) { await debugRow(page, 'Simulate a purchase').locator('button').first().click(); await page.waitForTimeout(120); }
 const tapHouse = async page => { const s = await read(page); await page.mouse.click(s.house.icon.page.x, s.house.icon.page.y, { delay: 40 }); return s; };
 const waitStep = (page, step, ms = 15000) => page.waitForFunction(step => window.__tpp.store.getState().celebration?.step === step, step, { timeout: ms });
-const dispatch = (page, type) => page.evaluate(type => window.__tpp.store.dispatch({ type }), type);
 const samplesOf = page => page.evaluate(() => window.__samples.splice(0));
 const perfOf = page => page.evaluate(() => window.__perf);
 const errorsOf = (errors, state) => ({ ...errors, assetLoadErrors: state.lines.filter(l => l.type === 'asset.loadError'), appErrors: state.lines.filter(l => l.type === 'app.error') });
