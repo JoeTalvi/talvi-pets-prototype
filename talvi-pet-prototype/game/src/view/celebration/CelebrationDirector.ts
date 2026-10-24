@@ -215,7 +215,8 @@ export class CelebrationDirector {
     this.clear();
     this.heldKey = null;
     this.panBackPending = false;
-    this.scene.tweens.killAll();
-    this.camera.resetFX();
+    // On SHUTDOWN the scene's tween manager and cameras may already be shut down (they listen first).
+    this.scene.tweens?.killAll();
+    this.scene.cameras?.main?.resetFX();
   }
 }

@@ -9,13 +9,16 @@ export const FLASH_DEPTH = 9000;
 export const CONFETTI_TINTS = [0xb5523f, 0xd9a441, 0x6f7f3f, 0x6b8fb5, 0xc98ba1];
 export const CONFETTI_COUNT = 60;
 
-/** Generates `confetti` once (white, tinted per particle). */
+/** Generates `confetti` once (white, tinted per particle) from a filled canvas: `Graphics.generateTexture` needs a renderer HEADLESS lacks (journal). */
 export function ensureConfettiTexture(scene: Phaser.Scene): void {
   if (scene.textures.exists(CONFETTI_TEXTURE)) return;
-  const g = scene.make.graphics({}, false);
-  g.fillStyle(0xffffff, 1).fillRect(0, 0, 8, 12);
-  g.generateTexture(CONFETTI_TEXTURE, 8, 12);
-  g.destroy();
+  const canvas = document.createElement('canvas');
+  canvas.width = 8; canvas.height = 12;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('confetti: no 2d context for the 8×12 texture');
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, 8, 12);
+  if (!scene.textures.addCanvas(CONFETTI_TEXTURE, canvas)) throw new Error('confetti: texture not added');
 }
 
 /** Presentation §7.4 confetti: one `explode(60)` over the completed sprite bounds; gravity 600, lifespan 1500–3000, rotate 0–360. */
