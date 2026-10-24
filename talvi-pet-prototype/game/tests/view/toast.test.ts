@@ -87,11 +87,11 @@ describe('VERIFY-MEC-010-015 trickle arm', () => {
   });
 });
 
-describe('presentation §8 mount order (WORK-019-3)', () => {
-  it('presentation §8 mount order (WORK-019-3) — #panels: hudInterior, toast, wantPanel, dialogue, chooser, replaceRemove, debugPanel; Panels.dialogue and Panels.toast defined', async () => {
+describe('presentation §8 mount order (WORK-019-3, WORK-020-1)', () => {
+  it('presentation §8 mount order (WORK-019-3, WORK-020-1) — #panels: hudInterior, hudStreet, toast, wantPanel, dialogue, chooser, replaceRemove, debugPanel; Panels.dialogue and Panels.toast defined', async () => {
     const s = await designSetup();
     expect([...s.root.querySelectorAll<HTMLElement>('[data-panel]')].map(c => c.dataset.panel))
-      .toEqual(['hudInterior', 'toast', 'wantPanel', 'dialogue', 'chooser', 'replaceRemove', 'debugPanel']);
+      .toEqual(['hudInterior', 'hudStreet', 'toast', 'wantPanel', 'dialogue', 'chooser', 'replaceRemove', 'debugPanel']);
     expect([typeof s.panels.dialogue.isDeferred, typeof s.panels.toast.queued]).toEqual(['function', 'function']);
   });
 });
