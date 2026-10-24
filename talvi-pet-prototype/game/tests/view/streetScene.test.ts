@@ -86,7 +86,7 @@ describe('presentation §4 StreetScene', () => {
     context.preview = { fill: false, pets: false, geometry: true, segments: false };
     const scene = await bootScene(StreetScene, context, {}, ['houses/fixture']);
     scene.preview.sync();
-    expect(scene.children.list.some(c => c.depth === PREVIEW_DEPTH && c.visible)).toBe(true);
+    expect((scene.children.list as unknown as { depth: number; visible: boolean }[]).some(c => c.depth === PREVIEW_DEPTH && c.visible)).toBe(true);
   });
 });
 
