@@ -18,7 +18,8 @@ import { files, patchFiles } from '../content/helpers';
 import { fixtureText } from '../app/helpers';
 import { owing } from '../sim/helpers';
 import { addTexture, bootScene, contextFor, destroyScene, realManifest } from './sceneHarness';
-import { linesOf } from './designHarness';
+import { linesOf, REAL_STRINGS } from './designHarness';
+import { mountOverlay } from '../../src/ui/overlay';
 
 /** A manual DirectorClock: `advance(ms)` runs due callbacks in time order (HEADLESS jsdom does not advance Phaser's clock or camera effects). */
 function manualClock(): DirectorClock & { advance(ms: number): void; t: number } {
@@ -315,5 +316,41 @@ describe('fork 6 house texture ownership', () => {
     scene.context.store.dispatch({ type: 'collectRewards' });
     scene.context.store.dispatch({ type: 'closeReveal' });
     expect(house.texture.key).toBe('houses/fx-5');
+  });
+});
+
+describe('VERIFY-PRES-008 replay (popup half, WORK-020-3)', () => {
+  const title = 'VERIFY-PRES-008 partial: jsdom + Chrome (iPhone not run) — director half (WORK-020-2) and popup half: ';
+  /** FX-SAVE-V1-CEL-* over the distinct-stage content-min variant with REAL_STRINGS; the overlay mounts before the scene, as main.ts. */
+  async function replay(name: string) {
+    const content = loadContent(undefined, patchFiles(files(), [{ file: 'street.json', path: '/houses/1/stageSprites', value: FX }, ...REAL_STRINGS]));
+    const context = contextFor(content, fixtureState(content, name));
+    const host = document.createElement('div'); document.body.append(host);
+    mountOverlay(host, context);
+    const scene = await bootScene(StreetScene, context, {}, IMAGES);
+    const q = (sel: string) => host.querySelector<HTMLElement>(sel)!;
+    return { content, context, scene, host, house: scene.houses.get('pet-house')!, milestone: q('.tpp-milestonePopup'), reveal: q('.tpp-revealPopup') };
+  }
+  it(`${title}FX-SAVE-V1-CEL-milestone — the milestone popup open at mount ("Coming along!", tiles in unlockedTypeIds order), still exactly one after store.start(); camera framed, house fx-5; nothing dispatched`, async () => {
+    const r = await replay('save-v1.milestone.json');
+    const ids = r.context.store.getState().celebration!.unlockedTypeIds;
+    expect([r.milestone.hidden, r.milestone.dataset.state, r.milestone.querySelector('.tpp-heading')!.textContent]).toEqual([false, 'normal', 'Coming along!']);
+    expect([...r.milestone.querySelectorAll<HTMLElement>('.tpp-reward-tile')].map(t => t.dataset.typeId)).toEqual(ids);
+    r.context.store.start();
+    clock.advance(10_000);
+    expect(r.host.querySelectorAll('[data-panel="milestonePopup"]:not([hidden]), [data-panel="revealPopup"]:not([hidden])')).toHaveLength(1);
+    expect(r.milestone.querySelectorAll('.tpp-reward-tile')).toHaveLength(ids.length);
+    const cam = r.scene.cameras.main, b = r.house.getBounds();
+    expect(Math.abs(cam.midPoint.x - b.centerX) <= 1 && Math.abs(cam.midPoint.y - b.centerY) <= 1).toBe(true);
+    expect([cam.zoom, r.house.texture.key]).toEqual([1, FX[r.context.store.getState().celebration!.toPhase]]);
+    expect(linesOf(r.context, 'action.rejected', 'celebration.stepped')).toEqual([]);
+  });
+  it(`${title}FX-SAVE-V1-CEL-reveal — the reveal popup open at mount with three cards, the milestone popup hidden; store.start() keeps one`, async () => {
+    const r = await replay('save-v1.reveal.json');
+    expect([r.milestone.hidden, r.reveal.hidden, r.reveal.querySelectorAll('.tpp-clue:not([hidden])').length]).toEqual([true, false, 3]);
+    r.context.store.start();
+    expect([r.milestone.hidden, r.reveal.hidden, r.reveal.querySelectorAll('.tpp-clue').length]).toEqual([true, false, 3]);
+    expect(r.house.texture.key).toBe(FX[r.context.store.getState().celebration!.toPhase]);
+    expect(linesOf(r.context, 'action.rejected')).toEqual([]);
   });
 });
