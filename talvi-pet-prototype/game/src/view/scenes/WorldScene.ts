@@ -27,7 +27,7 @@ export abstract class WorldScene extends Phaser.Scene {
   abstract drawWorld(): void;
   /** Interior adds its own subscriptions and per-frame syncs. */
   protected subscribeScene(): void {}
-  protected syncScene(): void {}
+  protected syncScene(deltaMs: number): void { void deltaMs; }
 
   create(): void {
     this.context = contextOf(this);
@@ -59,7 +59,7 @@ export abstract class WorldScene extends Phaser.Scene {
     store.dispatch({ type: 'tick', dtMs: delta, move: moveVector({ joystick: this.joystick, keyboard, frozen }) });
     if (this.transitioning) return;
     this.avatar.sync(store.getState().avatar);
-    this.syncScene();
+    this.syncScene(delta);
   }
 
   /** Debug row 18: draws or removes the crosshairs to follow `context.alignmentGrid` (view-only state). */

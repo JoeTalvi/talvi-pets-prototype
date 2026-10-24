@@ -3,6 +3,8 @@ import { placementAt } from '@sim/select';
 import { recordPointer, type PointerSample } from '@app/input/pointerRouting';
 import { CharmSprite } from '../objects/CharmSprite';
 import { PetSprite } from '../objects/PetSprite';
+import { Bubble, chatterBubble, reactionBubble, textFrom, verbBubble, wantBubble } from '../objects/Bubble';
+import type { PetBehaviour } from '@sim/state';
 import { SlotOutline } from '../objects/SlotOutline';
 import { WorldScene } from './WorldScene';
 
@@ -18,6 +20,7 @@ export class InteriorScene extends WorldScene {
   room!: Room;
   charms = new Map<string, CharmSprite>();
   pet?: PetSprite;
+  bubble?: Bubble;
   outlines = new Map<string, SlotOutline>();
   private downs = new Map<number, PointerSample>();
   private joystickPointer: number | null = null;
@@ -29,6 +32,7 @@ export class InteriorScene extends WorldScene {
     this.transitioning = false;
     this.charms = new Map();
     this.pet = undefined;
+    this.bubble = undefined;
     this.outlines = new Map();
     this.downs = new Map();
     this.joystickPointer = null;
@@ -76,10 +80,16 @@ export class InteriorScene extends WorldScene {
     this.downs.delete(p.id);
     const up = { x: p.worldX, y: p.worldY, t: p.upTime };
     const outline = this.outlineAt(up.x, up.y);
-    const onPet = !outline && this.pet?.getBounds().contains(up.x, up.y);
-    const target = outline ? `slot:${outline.slotId}` : onPet ? `pet:${this.pet!.petId}` : 'world';
+    const onBubble = !outline && this.bubble?.contains(up.x, up.y) === true;
+    const onPet = !outline && !onBubble && this.pet?.hitContains(up.x, up.y) === true;
+    const petId = this.pet?.petId ?? '';
+    const target = outline ? `slot:${outline.slotId}` : onBubble ? `bubble:${petId}` : onPet ? `pet:${petId}` : 'world';
     const result = recordPointer(this.context.log.record, target, down, up);
-    if (!outline || result.kind !== 'tap') return;
+    if (result.kind !== 'tap') return;
+    // Order fork 5: a bubble tap is tap-to-text only; a tap on the pet itself dispatches `tapPet` (mec-008 §2.3).
+    if (onBubble) { this.bubble!.tap(); return; }
+    if (onPet) { this.context.store.dispatch({ type: 'tapPet', petId }); return; }
+    if (!outline) return;
     const { content, store, bus } = this.context;
     bus.emit({ type: 'slot.tapped', slotId: outline.slotId, filled: placementAt(content, store.getState(), this.roomId, outline.slotId) !== null });
   };
@@ -95,6 +105,17 @@ export class InteriorScene extends WorldScene {
     if (!pet) return;
     const entry = manifest.entries.find(e => e.id === content.pets[petId]?.sheet);
     this.pet = new PetSprite(this, petId, content.verbs, entry, pet.behaviour);
+    this.applyDepthRule(pet.behaviour);
+    const { bubbleMs, bubbleTextMs } = content.tuning;
+    this.bubble = new Bubble(this, petId, 0, textFrom(content.strings), { bubbleMs, bubbleTextMs },
+      tap => this.context.bus.emit({ type: 'bubble.tapped', petId, class: tap.class, text: tap.text }));
+    this.bubble.follow(this.pet.bubbleAnchor());
+  }
+  /** Gate fork 1 / presentation §6.1 order fork 3: a pet `using` a `large` slot draws at slot depth + 1, else at its base y. */
+  private applyDepthRule(behaviour: Pick<PetBehaviour, 'phase' | 'target'>): void {
+    const target = behaviour.target && 'slotId' in behaviour.target ? behaviour.target.slotId : null;
+    const slot = behaviour.phase === 'using' && target ? this.room.slots.find(s => s.id === target) : undefined;
+    this.pet?.setDepthOverride(slot?.sizeClass === 'large' ? (slot.depthOverride ?? slot.y) + 1 : null);
   }
   /** MEC-005 R13/R15: a charm at its slot position, origin (0.5, 1), depth = depthOverride ?? y. */
   placeCharm(slotId: string, typeId: string): CharmSprite | undefined {
@@ -129,7 +150,36 @@ export class InteriorScene extends WorldScene {
     });
     this.subscribeCharms();
     this.on('pet.phaseChanged', event => {
-      if (this.pet && event.petId === this.pet.petId) this.pet.setClip(this.pet.clipFor({ phase: event.to, verb: event.verb }));
+      if (!this.pet || event.petId !== this.pet.petId) return;
+      this.pet.setClip(this.pet.clipFor({ phase: event.to, verb: event.verb, reaction: event.reaction }));
+      this.applyDepthRule({ phase: event.to, target: event.target });
+      if (event.to === 'reacting' || event.to === 'greeting') this.bubble?.releasePending();
+      else if (event.to !== 'walking') this.bubble?.dropPending();
+    });
+    this.subscribeBubbles();
+  }
+  /** mec-008 §2.1 / MEC-007 §3 consumers: every bubble fact comes from an event payload (the view computes no taste). */
+  private subscribeBubbles(): void {
+    const { content } = this.context;
+    const text = textFrom(content.strings);
+    const mine = (petId: string) => this.bubble && this.bubble.petId === petId ? this.bubble : undefined;
+    const name = (petId: string) => content.pets[petId]?.name ?? petId;
+    this.on('pet.reacted', event => {
+      const bubble = mine(event.petId);
+      const shown = reactionBubble(text, name(event.petId), event);
+      // Q11(a): the ladder grade after a verb ends arrives as `pet.reacted {walkOver:false}` and shows at once.
+      if (event.walkOver) bubble?.hold(shown); else bubble?.show(shown);
+    });
+    this.on('pet.verbStarted', event => {
+      const shown = verbBubble(content, name(event.petId), event.verb);
+      if (shown) mine(event.petId)?.show(shown);
+    });
+    this.on('pet.verbEnded', event => { mine(event.petId)?.clearClass('verb'); });
+    // Q12(a): a want whose unmet tags are all hidden arrives as `tag: null` and shows ❓.
+    this.on('pet.wantBubble', event => { mine(event.petId)?.show(wantBubble(content, text, name(event.petId), event.tag)); });
+    this.on('pet.tapped', event => {
+      const bubble = event.bubble.kind === 'want' ? wantBubble(content, text, name(event.petId), event.bubble.tag) : chatterBubble(event.bubble.line);
+      mine(event.petId)?.show(bubble);
     });
   }
   private subscribeCharms(): void {
@@ -147,8 +197,11 @@ export class InteriorScene extends WorldScene {
       this.tweens.add({ targets: sprite, alpha: 0, duration: REMOVE_FADE_MS, onComplete: () => sprite.destroy() });
     });
   }
-  protected syncScene(): void {
+  protected syncScene(deltaMs: number): void {
     this.syncOutlines();
-    if (this.pet) this.pet.sync(this.context.store.getState().pets[this.pet.petId].behaviour);
+    if (!this.pet) return;
+    this.pet.sync(this.context.store.getState().pets[this.pet.petId].behaviour);
+    this.bubble?.follow(this.pet.bubbleAnchor());
+    this.bubble?.update(deltaMs);
   }
 }
