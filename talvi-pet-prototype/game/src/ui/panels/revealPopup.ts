@@ -34,9 +34,14 @@ export function createRevealPopup(root: HTMLElement, context: ViewContext, miles
   section.dataset.state = 'normal';
   const clues = section.querySelector<HTMLElement>('.tpp-popup-clues')!;
   const proceed = section.querySelector<HTMLButtonElement>('.tpp-collect')!;
-  let timers: ReturnType<typeof setTimeout>[] = [];
-  let generation = 0;
-  const hide = () => { generation++; for (const t of timers) clearTimeout(t); timers = []; section.hidden = true; delete section.dataset.completes; };
+  let timers: ReturnType<typeof setTimeout>[] = [], generation = 0, fading: Animation | null = null;
+  const hide = () => { generation++; for (const t of timers) clearTimeout(t); timers = []; fading?.cancel(); fading = null; section.hidden = true; delete section.dataset.completes; };
+  /** Presentation §8.2 fade-out on `celebration.ended`; state.reset and destroy still hide at once. */
+  const fadeOut = () => {
+    if (section.hidden || typeof section.animate !== 'function') { hide(); return; }
+    proceed.disabled = true; fading = section.animate([{ opacity: 1 }, { opacity: 0 }], { duration: POPUP_FADE_MS, fill: 'forwards' });
+    timers.push(setTimeout(hide, POPUP_FADE_MS));
+  };
   /** `live`: cards enter `revealCardStaggerMs` apart; a reload shows everything at once (mec-003 §3.3). */
   const open = (state: GameState, live: boolean) => {
     const view = revealPopupView(content, state);
@@ -63,7 +68,7 @@ export function createRevealPopup(root: HTMLElement, context: ViewContext, miles
       milestone.afterHidden(() => { if (at === generation) open(store.getState(), true); });
     }),
     store.subscribe('celebration.started', (event, after) => { if (event.replay) open(after, false); }),
-    store.subscribe('celebration.ended', hide),
+    store.subscribe('celebration.ended', fadeOut),
     store.subscribe('state.reset', hide),
   ];
   open(store.getState(), false);

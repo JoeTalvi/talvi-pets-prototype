@@ -7,7 +7,7 @@ import type { GameState } from '../../src/sim/state';
 import type { Action } from '../../src/sim/actions';
 import { parseSaveValue } from '../../src/sim/state.schema';
 import { mountOverlay } from '../../src/ui/overlay';
-import { collectMs, skipLabel } from '../../src/ui/panels/milestonePopup';
+import { collectMs, POPUP_FADE_MS, skipLabel } from '../../src/ui/panels/milestonePopup';
 import { files, manifest, patchFiles } from '../content/helpers';
 import { fixtureText } from '../app/helpers';
 import { owing } from '../sim/helpers';
@@ -162,6 +162,22 @@ describe('mec-003 §3.3 reveal popup', () => {
     expect([p.milestone.hidden, p.reveal.hidden, p.state().celebration]).toEqual([true, true, null]);
   });
 
+});
+
+describe('presentation §8.2 reveal popup fade-out', () => {
+  it(`mec-003 §3.3 reveal popup ${H}celebration.ended fades the reveal popup out over POPUP_FADE_MS before hiding it (WORK-020-3-1 A-3)`, () => {
+    const cancel = vi.fn(), animate = vi.fn(() => ({ cancel }) as unknown as Animation);
+    const p = atMilestone();
+    click(p.milestone.querySelector('.tpp-collect'));
+    vi.advanceTimersByTime(collectMs(p.tiles().length));
+    p.reveal.animate = animate;
+    click(p.reveal.querySelector('.tpp-collect'));
+    expect(linesOf(p.context, 'celebration.ended')).toHaveLength(1);
+    expect(animate).toHaveBeenCalledWith([{ opacity: 1 }, { opacity: 0 }], { duration: POPUP_FADE_MS, fill: 'forwards' });
+    expect(p.reveal.hidden).toBe(false);
+    vi.advanceTimersByTime(POPUP_FADE_MS);
+    expect([p.reveal.hidden, cancel.mock.calls.length]).toEqual([true, 1]);
+  });
 });
 
 describe('mec-003 §3.3 reveal popup on reload', () => {
