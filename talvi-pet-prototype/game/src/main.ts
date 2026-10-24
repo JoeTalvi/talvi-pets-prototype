@@ -13,6 +13,7 @@ import { createAudio } from '@app/audio';
 import { createGame } from '@view/game';
 import { syncOverlay } from '@view/overlaySync';
 import type { ViewContext } from '@view/context';
+import { previewFlagsFrom } from '@view/preview';
 import { findingsOf, hasErrors, lenientAllowed } from '@view/startup';
 import { mountOverlay, setAlignmentGrid } from '@ui/overlay';
 import { sampleFps } from '@ui/panels/debugPanel';
@@ -102,6 +103,9 @@ async function boot(): Promise<void> {
   mountOverlay(root, context);
   // Dev-only `?grid=1`: the alignment grid on at boot so capture tools see it without opening the panel (WORK-014-3).
   if (import.meta.env.DEV && new URLSearchParams(location.search).get('grid') === '1') { context.alignmentGrid = true; setAlignmentGrid(root, true); }
+  // Dev-only `?preview=fill,pets,geometry,segments`: layer flags at boot (not toggles, so nothing is recorded).
+  const preview = import.meta.env.DEV ? previewFlagsFrom(location.search) : null;
+  if (preview) context.preview = preview;
   const game = createGame(context);
   game.events.once('ready', () => onReady(game, root, context));
 }

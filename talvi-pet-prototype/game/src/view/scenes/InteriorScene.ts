@@ -22,6 +22,7 @@ export class InteriorScene extends WorldScene {
   private downs = new Map<number, PointerSample>();
   private joystickPointer: number | null = null;
   private paintingErrorRecorded = false;
+  protected readonly previewKind = 'interior';
   constructor() { super('Interior'); }
   init(data: { roomId?: string }): void {
     this.roomId = data.roomId ?? '';
@@ -106,7 +107,8 @@ export class InteriorScene extends WorldScene {
     this.charms.set(slotId, sprite);
     return sprite;
   }
-  private charmSprite(slot: Slot, key: string): CharmSprite {
+  /** A charm image at the slot (wall paintings projected); the fill preview layer reuses it. */
+  charmSprite(slot: Slot, key: string): CharmSprite {
     if (key !== 'charms/painting' || !slot.wall) return new CharmSprite(this, slot.x, slot.y, key);
     const sourceHash = this.context.manifest.entries.find(e => e.id === key)?.hash ?? '';
     try { return new CharmSprite(this, slot.x, slot.y, key, { side: slot.wall, sourceHash }); }

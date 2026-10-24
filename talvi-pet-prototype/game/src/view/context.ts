@@ -10,6 +10,7 @@ import type { Audio } from '@app/audio';
 import type { PresentationBus } from '@app/presentationBus';
 import type { Keyboard } from '@app/input/keyboard';
 import type { SessionHeader } from '@app/log';
+import type { PreviewFlags } from './preview/layer';
 
 export type FpsState = 'idle' | 'walking';
 export type FpsSample = { state: FpsState; windowMs: number; fpsMean: number; fpsMin: number };
@@ -37,6 +38,7 @@ export type ViewContext = {
   storage?: Storage;            // `tpp.save`/`tpp.log` storage (debug row 17); localStorage when absent
   reload?: () => void;          // `location.reload` when absent (debug row 17 Load)
   clipboard?: { writeText(text: string): Promise<void> }; // `navigator.clipboard` when absent (debug row 17 Copy)
+  preview?: PreviewFlags;       // debug row 16 / `?preview=`: TOOL-002 stage-1 layers (view-only state)
 };
 
 export const REGISTRY_KEY = 'tpp';

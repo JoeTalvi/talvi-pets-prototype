@@ -6,12 +6,13 @@ import { parseSave, STORAGE_KEYS } from '@app/persistence';
 import type { ViewContext, FpsSample, FpsState } from '@view/context';
 import { debugPanel } from './templates/debugPanel';
 import { setAlignmentGrid } from '../overlay';
+import { noPreview, PREVIEW_LAYERS } from '@view/preview/layer';
 
 export type DebugPanel = { open(): void; close(): void; toggle(): void; refresh(): void; destroy(): void };
 
 export const ERROR_MS = 3000;
 const PROJECT_ROWS = ['Simulate a purchase', 'Set current progress', 'Jump to next phase', 'Complete project'];
-const LATER_ROWS = ['Tester label', 'Export log', 'Preview layers']; // WORK-025 (11, 13) and WORK-014-4 (16)
+const LATER_ROWS = ['Tester label', 'Export log']; // WORK-025 (11, 13)
 
 /** Verification §5/§7 GAP-4 sampler: ten 1 s reads of the fps getter, then one `perf.sample` record. */
 export async function sampleFps(fps: () => number, record: (type: 'perf.sample', payload: FpsSample) => void,
@@ -57,6 +58,8 @@ function rowsOf(section: HTMLElement): Map<string, HTMLElement> {
 const buttonsOf = (row: HTMLElement) => [...row.querySelectorAll<HTMLButtonElement>('button:not([role=switch])')];
 const switchOf = (row: HTMLElement) => row.querySelector<HTMLButtonElement>('button[role=switch]')!;
 const inputOf = (row: HTMLElement) => row.querySelector<HTMLInputElement>('input')!;
+/** Row 16's four checkboxes, in template order: Fill every slot, Pets at anchors, Geometry, Segments. */
+const previewBoxes = (row: (name: string) => HTMLElement) => [...row('Preview layers').querySelectorAll<HTMLInputElement>('input[type=checkbox]')];
 
 /** mec-010 §7: the rejection or adjustment text under the row for 3 s (`role=alert`). */
 function showRowError(target: HTMLElement, message: string): void {
@@ -149,6 +152,8 @@ function renderRows(context: ViewContext, row: (name: string) => HTMLElement, vi
   check('Mute SFX', state.session.muted);
   check('Room editor', context.roomEditorRequested === true);
   check('Alignment grid', context.alignmentGrid === true);
+  const preview = context.preview ?? noPreview();
+  previewBoxes(row).forEach((box, i) => { box.checked = preview[PREVIEW_LAYERS[i]]; });
   switchOf(row('Room editor')).disabled = state.scene.kind !== 'interior';
   const press = (b: HTMLButtonElement, on: boolean) => b.setAttribute('aria-pressed', String(on));
   const [playtest, frozen] = buttonsOf(row('Event interval'));
@@ -248,6 +253,18 @@ function bindViewSwitches(b: Binding): void {
   });
 }
 
+/** Row 16: TOOL-002 stage-1 layers; each change sets `context.preview[layer]` and records `ui.preview {layer, on}` once. */
+function bindPreview(b: Binding): void {
+  const { context, row, listen, refresh } = b;
+  previewBoxes(row).forEach((box, i) => listen(box, () => {
+    const layer = PREVIEW_LAYERS[i], flags = context.preview ?? noPreview();
+    if (flags[layer] === box.checked) return;
+    context.preview = { ...flags, [layer]: box.checked };
+    context.log.record('ui.preview', { layer, on: box.checked });
+    refresh();
+  }));
+}
+
 /** Row 17: Load through `parseSave` (nothing written on a refusal), Copy the current `tpp.save` (TOOL-006, TOOL-008). */
 function bindFixture(b: Binding): void {
   const { context, row, listen, showError } = b;
@@ -284,6 +301,7 @@ function bindRows(b: Binding): void {
   bindDispatchRows(b);
   bindReset(b);
   bindViewSwitches(b);
+  bindPreview(b);
   bindFixture(b);
   b.listen(b.extras.sample, () => {
     if (!b.context.sample) { b.showError('Alignment grid', 'fps sampler unavailable (dev build only)'); return; }
