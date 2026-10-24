@@ -18,6 +18,8 @@ const ffmpeg = '/opt/homebrew/bin/ffmpeg';
 const lane = join(evidence, 'WORK-020-1'), captures = join(lane, 'captures'), loops = join(lane, 'loops'), tmpRoot = join(lane, 'tmp');
 for (const dir of [captures, loops]) mkdirSync(dir, { recursive: true });
 const [ackPath, nearPath, introPath] = process.argv.slice(2);
+// TPP_FIX1=1: only the 1080 attention session, ending in hud-bar-nudge-fix1 (no stills rewritten) and street-report-fix1.json.
+const fix1 = process.env.TPP_FIX1 === '1';
 const ackSave = readFileSync(ackPath, 'utf8'), nearSave = readFileSync(nearPath, 'utf8'), introDone = readFileSync(introPath, 'utf8');
 const ffVersion = execFileSync(ffmpeg, ['-version']).toString().split('\n')[0];
 const RECORDS = ['input.tap', 'input.drag', 'action.rejected', 'roundup.fired', 'phase.reached', 'celebration.started', 'celebration.stepped', 'celebration.ended',
@@ -242,10 +244,11 @@ async function barDurations(page) {
 }
 
 async function attention(report) {
-  for (const height of [823, 1080]) {
+  for (const height of fix1 ? [1080] : [823, 1080]) {
     const { context, page, errors } = await boot(height, ackSave);
     await waitScene(page, 'Street');
-    const a = await shot(page, `street-attention-${height}`, height, 'ack 1, owed 3: house lv2, "$12.60 / $15.00", attention icon at (1500, 300) (screen 2)', 'street-ack1-owed3.real.json', 'no celebration');
+    // The fix-1 run keeps the TASK-137 stills: it reads state without writing a PNG.
+    const a = fix1 ? { png: null, state: await read(page) } : await shot(page, `street-attention-${height}`, height, 'ack 1, owed 3: house lv2, "$12.60 / $15.00", attention icon at (1500, 300) (screen 2)', 'street-ack1-owed3.real.json', 'no celebration');
     report[`attention${height}`] = { still: a.png, state: a.state, errors };
     if (height === 1080) await tapAndBar(page, a.state, report);
     else await context.close();
@@ -269,6 +272,7 @@ async function tapAndBar(page, before, report) {
     frozenAfterTap: tapped.hud.frozen, hudStyleAfterTap: tapped.hud.style, iconAfterTap: tapped.street.houses.find(h => h.projectId === 'pet-house').icon.visible,
     drivenThroughStore: ends, dialogueAdvancesDrained: drained, frozenAfterEnd: after.hud.frozen, endLines: after.lines.filter(l => l.type === 'celebration.ended' || l.type === 'celebration.stepped'),
     houseAfter: after.street.houses.find(h => h.projectId === 'pet-house'), note: 'no CelebrationDirector/popups in this lane: cutsceneFinished, collectRewards, closeReveal dispatched through window.__tpp.store' };
+  if (fix1) return nudgeLoopFix1(page, report);
   await nudgeLoop(page, report);
   await glideLoop(page, report);
 }
@@ -285,6 +289,26 @@ async function nudgeLoop(page, report) {
     seededSave: 'street-ack1-owed3.real.json after the celebration driven through the store', note: 'debug panel open (Simulate a purchase ×3, ≈ 1 s apart); GIF crops the HUD bar', roundups: durations, hud: state.hud });
   report.nudge = { durations, hud: state.hud, loop: loop.outputs ?? loop.gap };
   await closeDebug(page);
+}
+/** Review WORK-020-1-1 F-2: the debug panel stays closed (purchases fire through window.__tpp.store) and the crop is measured from the whole HUD bar. */
+async function nudgeLoopFix1(page, report) {
+  // The ack-4 floor (1200): chunk 5 starts empty and three round-ups (1–99 ¢ each) cannot reach the 1500 goal.
+  await page.evaluate(() => window.__tpp.store.dispatch({ type: 'debugSetCurrent', projectId: 'pet-house', cents: 1200 }));
+  await page.waitForTimeout(500);
+  const panelOpen = await page.evaluate(() => [...document.querySelectorAll('.tpp-debugPanel')].some(p => !p.hidden && p.getBoundingClientRect().width > 0));
+  const box = await page.evaluate(() => { const r = document.querySelector('.tpp-hudStreet').getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width, h: r.height }; });
+  const crop = { x: Math.max(0, Math.floor(box.x) - 8), y: Math.max(0, Math.floor(box.y) - 8) };
+  Object.assign(crop, { w: Math.min(1920 - crop.x, Math.ceil(box.w) + 16) & ~1, h: Math.min(1080 - crop.y, Math.ceil(box.h) + 16) & ~1 });
+  await sampleBar(page);
+  const rec = await startRecording(page);
+  await page.waitForTimeout(1500);
+  for (let i = 0; i < 3; i++) { await page.evaluate(() => window.__tpp.store.dispatch({ type: 'debugSimulatePurchase' })); await page.waitForTimeout(1500); }
+  await page.waitForTimeout(1000);
+  const frames = await rec.stop(), durations = await barDurations(page), state = await read(page);
+  const loop = encode('hud-bar-nudge-fix1', frames, crop, { target: 'three events-arm nudges of the street HUD bar (300 ms each), bar unobstructed', viewport: { width: 1920, height: 1080 },
+    seededSave: 'street-ack1-owed3.real.json after the celebration driven through the store, then debugSetCurrent 1200', hudBox: box, debugPanelOpen: panelOpen,
+    note: 'fix round 1 (review F-2): debug panel closed for the whole recording; debugSimulatePurchase ×3 (≈ 1.5 s apart) through window.__tpp.store from 1200 ¢, so the fill grows inside chunk 5; GIF crop = the .tpp-hudStreet box + 8 px', roundups: durations, hud: state.hud });
+  report.nudge = { durations, hud: state.hud, debugPanelOpen: panelOpen, crop, loop: loop.outputs ?? loop.gap };
 }
 async function glideLoop(page, report) {
   // Back to the ack-4 floor (1200) first so two round-ups (1–99 ¢ each) cannot reach the goal during the loop.
@@ -305,11 +329,12 @@ async function glideLoop(page, report) {
 browser = await chromium.launch({ headless: true, executablePath });
 const report = { work: 'WORK-020-1', base, sha, browser: browser.version(), captured_at: new Date().toISOString() };
 try {
-  for (const [name, fn] of [['idle', idle], ['attention', attention], ['doors', doors], ['preview', preview]]) {
+  const runs = fix1 ? [['attention', attention]] : [['idle', idle], ['attention', attention], ['doors', doors], ['preview', preview]];
+  for (const [name, fn] of runs) {
     try { await fn(report); } catch (error) { report[`${name}Error`] = String(error).slice(0, 800); }
   }
 } finally {
   await browser.close();
   rmSync(tmpRoot, { recursive: true, force: true });
-  writeFileSync(join(lane, 'street-report.json'), `${JSON.stringify(report, null, 2)}\n`);
+  writeFileSync(join(lane, fix1 ? 'street-report-fix1.json' : 'street-report.json'), `${JSON.stringify(report, null, 2)}\n`);
 }
