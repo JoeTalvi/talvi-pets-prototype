@@ -56,22 +56,30 @@ async function bootStep(browser) {
 
 async function doorStep(page) {
   const left = await holdUntil(page, 'KeyA', () => window.__tpp.store.getState().avatar.x <= 420);
+  // One clock (review B-1): page performance.now() for every end. A store listener stamps scene.changed as it is emitted, and a
+  // rAF watcher started before KeyW stamps Interior active and the end of its camera fade-in. The log's t is session-relative and is not used here.
+  await page.evaluate(() => {
+    const at = window.__tppDoorTiming = { sceneChanged: null, interiorActive: null, fadeInDone: null };
+    const off = window.__tpp.store.subscribeAll(event => { if (event.type === 'scene.changed' && at.sceneChanged === null) { at.sceneChanged = performance.now(); off(); } });
+    const watch = () => {
+      const scenes = window.__tpp.game.scene;
+      if (at.sceneChanged !== null && at.interiorActive === null && scenes.isActive('Interior')) at.interiorActive = performance.now();
+      if (at.interiorActive !== null && !scenes.getScene('Interior').cameras.main.fadeEffect?.isRunning) { at.fadeInDone = performance.now(); return; }
+      requestAnimationFrame(watch);
+    };
+    requestAnimationFrame(watch);
+  });
   const tKeys = Date.now();
   const inRoom = await holdUntil(page, 'KeyW', () => window.__tpp.store.getState().scene.kind === 'interior');
-  const fade = await page.evaluate(async () => {
-    const changed = window.__tpp.log.lines().find(l => l.type === 'scene.changed');
-    while (!window.__tpp.game.scene.isActive('Interior')) await new Promise(r => requestAnimationFrame(r));
-    const interiorAt = performance.now();
-    const cam = window.__tpp.game.scene.getScene('Interior').cameras.main;
-    // fade-in done when the camera fade effect is no longer running
-    while (cam.fadeEffect?.isRunning) await new Promise(r => requestAnimationFrame(r));
-    return { sceneChanged: changed ?? null, interiorActiveAt: interiorAt, visibleAt: performance.now() };
-  });
-  const sc = fade.sceneChanged, visibleMs = sc ? Math.round(fade.visibleAt - sc.t) : null;
+  await until(page, () => window.__tppDoorTiming.fadeInDone !== null, null, 5000);
+  const at = await page.evaluate(() => window.__tppDoorTiming);
+  const sc = (await lines(page)).find(l => l.type === 'scene.changed') ?? null;
   step('door: KeyA/KeyW to starter-front → scene.changed {to: interior dog-room}', left && inRoom && sc?.to?.kind === 'interior' && sc.to.roomId === 'dog-room', 'scene.changed to interior dog-room', { reachedX420: left, inRoom, keysMs: Date.now() - tKeys, sceneChanged: strip(sc) });
-  const activeMs = sc ? Math.round(fade.interiorActiveAt - sc.t) : null;
-  step('door: t(scene.changed) → Interior active ≈ 500 ms (fade-out 250 + swap); fade-in end recorded', activeMs !== null && activeMs >= 400 && activeMs <= 600, '400 ≤ ms(scene.changed → Interior active) ≤ 600',
-    { msSceneChangedToInteriorActive: activeMs, msSceneChangedToFadeInDone: visibleMs });
+  const since = end => (at.sceneChanged !== null && end !== null ? Math.round(end - at.sceneChanged) : null);
+  const visibleMs = since(at.fadeInDone), activeMs = since(at.interiorActive);
+  // PRES-005: scene.changed → room visible ≈ 500 ms (±1 frame); window 500 ± 100 ms covers the frame plus headless rAF jitter. Interior active recorded, not gated.
+  step('door: scene.changed → room visible (Interior fade-in end) ≈ 500 ms, one clock; Interior active recorded', visibleMs !== null && visibleMs >= 400 && visibleMs <= 600, '400 ≤ ms(scene.changed → Interior fade-in end) ≤ 600 (performance.now() both ends)',
+    { clock: 'performance.now', msSceneChangedToFadeInDone: visibleMs, msSceneChangedToInteriorActive: activeMs });
 }
 
 async function placementStep(page) {
