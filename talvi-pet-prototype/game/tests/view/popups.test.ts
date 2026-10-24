@@ -161,7 +161,11 @@ describe('mec-003 §3.3 reveal popup', () => {
     expect(linesOf(p.context, 'celebration.ended')).toHaveLength(1);
     expect([p.milestone.hidden, p.reveal.hidden, p.state().celebration]).toEqual([true, true, null]);
   });
-  it(`${t}celebration.ended fades the reveal popup out over POPUP_FADE_MS before hiding it (WORK-020-3-1 A-3)`, () => {
+
+});
+
+describe('presentation §8.2 reveal popup fade-out', () => {
+  it(`mec-003 §3.3 reveal popup ${H}celebration.ended fades the reveal popup out over POPUP_FADE_MS before hiding it (WORK-020-3-1 A-3)`, () => {
     const cancel = vi.fn(), animate = vi.fn(() => ({ cancel }) as unknown as Animation);
     const p = atMilestone();
     click(p.milestone.querySelector('.tpp-collect'));
@@ -174,7 +178,6 @@ describe('mec-003 §3.3 reveal popup', () => {
     vi.advanceTimersByTime(POPUP_FADE_MS);
     expect([p.reveal.hidden, cancel.mock.calls.length]).toEqual([true, 1]);
   });
-
 });
 
 describe('mec-003 §3.3 reveal popup on reload', () => {

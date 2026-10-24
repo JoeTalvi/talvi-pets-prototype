@@ -34,15 +34,12 @@ export function createRevealPopup(root: HTMLElement, context: ViewContext, miles
   section.dataset.state = 'normal';
   const clues = section.querySelector<HTMLElement>('.tpp-popup-clues')!;
   const proceed = section.querySelector<HTMLButtonElement>('.tpp-collect')!;
-  let timers: ReturnType<typeof setTimeout>[] = [];
-  let generation = 0;
-  let fading: Animation | null = null;
+  let timers: ReturnType<typeof setTimeout>[] = [], generation = 0, fading: Animation | null = null;
   const hide = () => { generation++; for (const t of timers) clearTimeout(t); timers = []; fading?.cancel(); fading = null; section.hidden = true; delete section.dataset.completes; };
   /** Presentation §8.2 fade-out on `celebration.ended`; state.reset and destroy still hide at once. */
   const fadeOut = () => {
     if (section.hidden || typeof section.animate !== 'function') { hide(); return; }
-    proceed.disabled = true;
-    fading = section.animate([{ opacity: 1 }, { opacity: 0 }], { duration: POPUP_FADE_MS, fill: 'forwards' });
+    proceed.disabled = true; fading = section.animate([{ opacity: 1 }, { opacity: 0 }], { duration: POPUP_FADE_MS, fill: 'forwards' });
     timers.push(setTimeout(hide, POPUP_FADE_MS));
   };
   /** `live`: cards enter `revealCardStaggerMs` apart; a reload shows everything at once (mec-003 §3.3). */
