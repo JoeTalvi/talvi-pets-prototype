@@ -10,7 +10,7 @@ export const FALLBACK_BUBBLE_OFFSET = 125;
 const BUBBLE_MARGIN = 14;
 
 type Pose = Pick<PetBehaviour, 'x' | 'y' | 'facing'>;
-export type ClipInput = { phase: PetBehaviour['phase']; verb: string | null };
+export type ClipInput = { phase: PetBehaviour['phase']; verb: string | null; reaction?: PetBehaviour['reaction'] };
 
 /** First row of a frame with any non-zero alpha, or null when the pixels cannot be read (HEADLESS). */
 function opaqueTop(source: CanvasImageSource, sx: number, sy: number, w: number, h: number): number | null {
@@ -38,6 +38,8 @@ export function measureBubbleOffset(scene: Phaser.Scene, entry: AssetEntry | und
 export class PetSprite extends Phaser.GameObjects.Sprite {
   readonly bubbleOffset: number;
   readonly bubbleOffsetMeasured: boolean;
+  /** Gate fork 1 draw-above rule: while `using` a `large` slot the scene sets slot depth + 1; null = depth at base y. */
+  private depthOverride: number | null = null;
   constructor(scene: Phaser.Scene, readonly petId: string, private verbs: readonly Verb[], entry: AssetEntry | undefined, behaviour: PetBehaviour) {
     const key = `pets/${petId}-sheet`;
     super(scene, behaviour.x, behaviour.y, scene.textures.exists(key) ? key : 'missing', 0);
@@ -49,11 +51,20 @@ export class PetSprite extends Phaser.GameObjects.Sprite {
     this.setClip(this.clipFor(behaviour));
   }
   sync(pose: Pose): void {
-    this.setPosition(pose.x, pose.y).setFlipX(pose.facing === 'left').setDepth(depthAtBase(pose.y));
+    this.setPosition(pose.x, pose.y).setFlipX(pose.facing === 'left').setDepth(this.depthOverride ?? depthAtBase(pose.y));
   }
+  setDepthOverride(depth: number | null): void {
+    this.depthOverride = depth;
+    this.setDepth(depth ?? depthAtBase(this.y));
+  }
+  /** WORK-013K: `reacting` with love/like plays the rear-up `react`; dislike/interrupted, greeting and idle stay `idle`. */
   clipFor(input: ClipInput): string {
     const sheet = `pets/${this.petId}-sheet`;
     if (input.phase === 'walking') return clipKey(sheet, 'walk')!;
+    if (input.phase === 'reacting' && (input.reaction === 'love' || input.reaction === 'like')) {
+      const react = clipKey(sheet, 'react')!;
+      if (this.scene.anims.exists(react)) return react;
+    }
     const verb = input.phase === 'using' ? this.verbs.find(v => v.id === input.verb) : undefined;
     if (verb) return useClipKey(this.scene.anims, this.petId, verb);
     return clipKey(sheet, 'idle')!;
@@ -62,6 +73,11 @@ export class PetSprite extends Phaser.GameObjects.Sprite {
     if (this.scene.anims.exists(key)) this.play(key, true);
   }
   bubbleAnchor(): { x: number; y: number } { return { x: this.x, y: this.y - this.bubbleOffset }; }
+  /** Review WORK-014-2-1 A-2: a base-centred square of the pet's standing size (offset − margin; 111 for the Dog), not the 256 px frame. */
+  hitContains(x: number, y: number): boolean {
+    const size = this.bubbleOffset - BUBBLE_MARGIN;
+    return Math.abs(x - this.x) <= size / 2 && y <= this.y && y >= this.y - size;
+  }
   /** Frame 0 of the idle clip for still previews (WORK-014-4 pets-at-anchors, WORK-019). */
   idleFrameTexture(): { key: string; frame: string | number } {
     const idle = this.scene.anims.get(this.clipFor({ phase: 'idle', verb: null }));
