@@ -6,6 +6,7 @@ export { chooserTypes, ownsTag } from './rules/inventory';
 export { starsOf } from './rules/stars';
 export { slotOf, placementAt } from './rules/slots';
 export { residentPet, petUsingSlot } from './rules/pets';
+export { revealProjectId, revealView, revealPopupView } from './rules/reveal';
 export { activeWant, wantConditions, tagAvailability, missingWantTags } from './rules/wants';
 export {
   boundaryCents, phaseOf, owedPhases, activeProjectId, hudProjectId, completeNowPriceCents,

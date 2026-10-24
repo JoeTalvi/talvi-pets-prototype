@@ -4,6 +4,7 @@ import type { SimEvent } from '../../src/sim/events';
 import { reduce } from '../../src/sim/reduce';
 import { mulberry32 } from '../../src/sim/rng';
 import { generateRoundup } from '../../src/sim/rules/feed';
+import { activeProjectId } from '../../src/sim/select';
 import { initialState, type GameState } from '../../src/sim/state';
 import { validContent } from '../content/helpers';
 import { advance, deepFreeze, tick } from './helpers';
@@ -95,13 +96,54 @@ it('VERIFY-MEC-002-004 draw order: r1 picks the merchant, r2 the amount', () => 
   }
 });
 
-it('VERIFY-MEC-002-006 partial: synthetic eventIntervalMs = null banks no time over 20 min (debugSetEventInterval form lands in WORK-003-4)', () => {
-  const content = validContent(), state = initialState(content, 1);
-  state.session.eventIntervalMs = null;
-  const result = advance(reduce, content, deepFreeze(state), 20 * 60 * 1000);
+it('VERIFY-MEC-002-006 frozen feed: debugSetEventInterval {ms:null} then 20 min of ticks fires nothing and the clock stays 0', () => {
+  const content = validContent();
+  const frozen = reduce(content, initialState(content, 1), { type: 'debugSetEventInterval', ms: null }).state;
+  const result = advance(reduce, content, deepFreeze(frozen), 20 * 60 * 1000);
   expect(fired(result.events)).toEqual([]);
   expect(result.state.feed.sinceLastEventMs).toBe(0);
-  expect(result.state.feed).toEqual(state.feed);
+  expect(result.state.feed).toEqual(frozen.feed);
+});
+
+it('VERIFY-MEC-002-005 goal cap: debugSetCurrent 1490 then ticks → 1500, phase.reached 5, one feed.stopped, then silence', () => {
+  const content = validContent();
+  const set = reduce(content, initialState(content, 1), { type: 'debugSetCurrent', projectId: 'pet-house', cents: 1490 }).state;
+  const result = advance(reduce, content, set, 20_000);
+  expect(fired(result.events)).toHaveLength(1);
+  expect(result.state.projects['pet-house'].currentCents).toBe(1500);
+  expect(result.events.filter(event => event.type === 'phase.reached')).toEqual([
+    { type: 'phase.reached', projectId: 'pet-house', phase: 5, currentCents: 1500 }]);
+  expect(result.events.filter(event => event.type === 'feed.stopped')).toHaveLength(1);
+  expect(activeProjectId(content, result.state)).toBeNull();
+  expect(advance(reduce, content, result.state, 60_000).events.filter(event => event.type !== 'dialogue.opened')).toEqual([]);
+});
+
+it('VERIFY-MEC-002-007 interval change: at 19 s, {ms:250} resets the clock; the first event is on the third 100 ms tick; {ms:100} is invalidInterval', () => {
+  const content = validContent();
+  const waited = advance(reduce, content, initialState(content, 1), 19_000).state;
+  expect(waited.feed.sinceLastEventMs).toBe(19_000);
+  const changed = reduce(content, waited, { type: 'debugSetEventInterval', ms: 250 }).state;
+  expect(changed.feed.sinceLastEventMs).toBe(0);
+  const ticks = [1, 2, 3].reduce<{ state: GameState; counts: number[] }>((acc) => {
+    const result = reduce(content, acc.state, tick(0, 0, 100));
+    return { state: result.state, counts: [...acc.counts, fired(result.events).length] };
+  }, { state: changed, counts: [] });
+  expect(ticks.counts).toEqual([0, 0, 1]);
+  const tooFast: Action = { type: 'debugSetEventInterval', ms: 100 };
+  expect(reduce(content, changed, tooFast).events).toEqual([{ type: 'action.rejected', action: tooFast, reason: 'invalidInterval' }]);
+});
+
+it('VERIFY-MEC-002-020 debugSimulatePurchase on a frozen feed: one round-up, eventCount + 1, clock untouched; noActiveProject at the goal', () => {
+  const content = validContent();
+  const frozen = reduce(content, initialState(content, 1), { type: 'debugSetEventInterval', ms: null }).state;
+  const action: Action = { type: 'debugSimulatePurchase' };
+  const result = reduce(content, deepFreeze(frozen), action);
+  expect(result.events[0]).toEqual({ type: 'debug.applied', action });
+  expect(fired(result.events)).toHaveLength(1);
+  expect(result.state.feed.eventCount).toBe(frozen.feed.eventCount + 1);
+  expect(result.state.feed.sinceLastEventMs).toBe(frozen.feed.sinceLastEventMs);
+  const done = reduce(content, frozen, { type: 'debugCompleteProject', projectId: 'pet-house' }).state;
+  expect(reduce(content, done, action).events).toEqual([{ type: 'action.rejected', action, reason: 'noActiveProject' }]);
 });
 
 it('MEC-002 §2.2 the feed stops banking time once no project is active', () => {

@@ -6,7 +6,9 @@ import {
 } from '../../src/sim/select';
 import { initialState, type GameState } from '../../src/sim/state';
 import { validContent } from '../content/helpers';
-import { deepFreeze } from './helpers';
+import type { Action } from '../../src/sim/actions';
+import { reduce } from '../../src/sim/reduce';
+import { ack, act, deepFreeze, owing, run } from './helpers';
 
 const celebration = (step: 'cutscene' | 'milestone' | 'reveal', extra: Partial<NonNullable<GameState['celebration']>> = {}) => ({
   projectId: 'pet-house', fromPhase: 0, toPhase: 2, completes: false, unlockedTypeIds: [],
@@ -84,4 +86,44 @@ it('MEC-002 §2.1/§2.6 complete-now price, offer, ack floor and displayed phase
   expect(displayedPhase(content, { ...state, celebration: celebration('milestone') }, 'pet-house')).toBe(2);
   expect(displayedPhase(content, { ...state, celebration: celebration('reveal') }, 'pet-house')).toBe(2);
   expect(displayedPhase(content, { ...state, celebration: celebration('reveal') }, 'starter-house')).toBe(5);
+});
+
+const setCurrent = (cents: number): Action => ({ type: 'debugSetCurrent', projectId: 'pet-house', cents });
+
+it('VERIFY-MEC-002-008 debugSetCurrent 1260 from 0: four phase.reached 1..4 at 1260, acknowledgedPhase 0, owedPhases 4', () => {
+  const content = validContent();
+  const result = reduce(content, deepFreeze(initialState(content, 1)), setCurrent(1260));
+  expect(result.events).toEqual([{ type: 'debug.applied', action: setCurrent(1260) },
+    ...[1, 2, 3, 4].map(phase => ({ type: 'phase.reached', projectId: 'pet-house', phase, currentCents: 1260 }))]);
+  expect(result.state.projects['pet-house'].acknowledgedPhase).toBe(0);
+  expect(owedPhases(content, result.state, 'pet-house')).toBe(4);
+});
+
+it('VERIFY-MEC-002-018 debug floor: ack 2 raises 100 to 600; during a toPhase-4 celebration 700 → 1200; invariant 1 after collect', () => {
+  const content = validContent();
+  const atTwo = owing(content, 2, 600);
+  const raised = reduce(content, atTwo, setCurrent(100));
+  expect(raised.state.projects['pet-house'].currentCents).toBe(600);
+  expect(raised.events[0]).toEqual({ type: 'debug.applied', action: setCurrent(100), adjusted: { field: 'cents', requested: 100, applied: 600 } });
+  const { state, results } = run(content, owing(content, 2, 1260), [ack, setCurrent(700), act('cutsceneFinished'), act('collectRewards')]);
+  expect(results[0].state.celebration!.toPhase).toBe(4);
+  expect(results[1].state.projects['pet-house'].currentCents).toBe(1200);
+  expect(results[1].events[0]).toMatchObject({ adjusted: { field: 'cents', requested: 700, applied: 1200 } });
+  const progress = state.projects['pet-house'];
+  expect(progress.acknowledgedPhase).toBe(4);
+  expect(progress.acknowledgedPhase).toBeLessThanOrEqual(phaseOf(progress.currentCents, 1500));
+});
+
+it('VERIFY-MEC-002-019 debugJumpPhase 310 → 600 (one phase.reached 2); debugCompleteProject → 1500 (3, 4, 5, feed.stopped); again alreadyComplete', () => {
+  const content = validContent();
+  const jump: Action = { type: 'debugJumpPhase', projectId: 'pet-house' };
+  const complete: Action = { type: 'debugCompleteProject', projectId: 'pet-house' };
+  const { results } = run(content, owing(content, 0, 310), [jump, complete, complete]);
+  expect(results[0].state.projects['pet-house'].currentCents).toBe(600);
+  expect(results[0].events.slice(1)).toEqual([{ type: 'phase.reached', projectId: 'pet-house', phase: 2, currentCents: 600 }]);
+  expect(results[1].state.projects['pet-house'].currentCents).toBe(1500);
+  expect(results[1].events.slice(1)).toEqual([
+    ...[3, 4, 5].map(phase => ({ type: 'phase.reached', projectId: 'pet-house', phase, currentCents: 1500 })),
+    { type: 'feed.stopped', reason: 'noActiveProject' }]);
+  expect(results[2].events).toEqual([{ type: 'action.rejected', action: complete, reason: 'alreadyComplete' }]);
 });

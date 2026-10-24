@@ -1,3 +1,4 @@
+import { expect } from 'vitest';
 import type { Content } from '../../src/content/types';
 import { RoomSchema } from '../../src/content/schema/room';
 import type { Action, TickAction } from '../../src/sim/actions';
@@ -79,3 +80,27 @@ export function designIn(content: Content, fulfilled: string[] = [], seed = 1): 
 
 export const eventsOf = <T extends SimEvent['type']>(events: readonly SimEvent[], type: T) =>
   events.filter((event): event is Extract<SimEvent, { type: T }> => event.type === type);
+
+/** FX-CONTENT-MIN on the street with orientation done; Pet House at `ack` / `cents` (cents via debugSetCurrent). */
+export function owing(content: Content, ack: number, cents: number): GameState {
+  const state = initialState(content, 1);
+  state.session.orientationShown = true;
+  state.projects['pet-house'].acknowledgedPhase = ack as GameState['projects'][string]['acknowledgedPhase'];
+  return reduce(content, state, { type: 'debugSetCurrent', projectId: 'pet-house', cents }).state;
+}
+
+/** Dispatch each action on frozen inputs, asserting JSON-plainness; returns every result. */
+export function run(content: Content, state: GameState, actions: Action[]): { state: GameState; results: RuleResult[] } {
+  const results: RuleResult[] = [];
+  let current = state;
+  for (const action of actions) {
+    const result = reduce(deepFreeze(content), deepFreeze(current), action);
+    expect(JSON.parse(JSON.stringify(result.state))).toEqual(result.state);
+    results.push(result); current = result.state;
+  }
+  return { state: current, results };
+}
+
+export const act = (type: 'cutsceneFinished' | 'collectRewards' | 'skipWait' | 'closeReveal' | 'arrivalFinished') =>
+  ({ type }) as Action;
+export const ack: Action = { type: 'acknowledgeProject', projectId: 'pet-house' };

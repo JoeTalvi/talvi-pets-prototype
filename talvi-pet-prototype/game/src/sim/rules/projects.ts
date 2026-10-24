@@ -3,7 +3,7 @@ import type { Project } from '../../content/schema/project';
 import type { RuleResult, SimEvent } from '../events';
 import type { GameState, ProjectId } from '../state';
 
-function projectOf(content: Content, projectId: ProjectId): Project {
+export function projectOf(content: Content, projectId: ProjectId): Project {
   const project = content.projects.find(candidate => candidate.id === projectId);
   if (!project) throw new Error(`Unknown project id "${projectId}"`);
   return project;
