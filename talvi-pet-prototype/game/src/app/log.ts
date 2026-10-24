@@ -131,13 +131,3 @@ export function createLog(options: LogOptions): Log {
     destroy() { for (const off of detach) off(); detach.clear(); writeMirror(); },
   };
 }
-
-/* Spike compatibility (WORK-001): `src/main.ts` and the spike scenes import `log`/`logs` until
- * WORK-014 deletes the spike. Behaviour is the spike's own; new code uses `createLog`. */
-export const logs: { type: string; t: number; [key: string]: unknown }[] = [];
-export function log(type: string, fields: Record<string, unknown> = {}): void {
-  const line = { type, t: performance.now(), ...fields };
-  logs.push(line);
-  if (logs.length > 5000) logs.shift();
-  console.info(JSON.stringify(line));
-}
