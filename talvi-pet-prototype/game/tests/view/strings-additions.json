@@ -11,5 +11,7 @@
   "tpp.chooser.selected": "Selected spot",
   "tpp.stars.deltaLoss": "−{delta} ★",
   "tpp.toast.delta": "+{change}",
-  "tpp.hud.progress": "{current} / {goal}"
+  "tpp.hud.progress": "{current} / {goal}",
+  "tpp.popup.rewards": "Rewards",
+  "tpp.reveal.phase": "Phase {phase}"
 }

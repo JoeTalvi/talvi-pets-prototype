@@ -22,6 +22,11 @@ export const REAL_STRINGS: Patch[] = Object.entries({
   'tpp.want.adjacent': 'beside each other', 'tpp.want.hidden': '?', 'tpp.want.starsFloor': 'room ≥ {min} ★',
   'tpp.want.rewardPrefix': 'Reward:', 'tpp.want.fulfilledFlash': 'Want fulfilled!', 'tpp.wants.exhausted': 'No more wants for now.',
   'tpp.dialogue.continue': 'Tap to continue', 'tpp.dialogue.gameName': 'Talvi', 'tpp.toast.roundup': '{merchant} {amount} → {change} to {cause}',
+  'buildprojects.cutscene.popup.progress.title': 'Coming along!', 'buildprojects.cutscene.popup.complete.title': 'Project Complete!',
+  'buildprojects.cutscene.popup.progress.congrats': "Another milestone down. Here's what you've earned so far.",
+  'buildprojects.cutscene.popup.complete.congrats': "It's finished — go and have a look.", 'buildprojects.cutscene.popup.collect': 'Collect Rewards',
+  'tpp.popup.skipWait': 'Skip the wait', 'tpp.popup.skipWaitFree': 'Free in this prototype', 'tpp.reveal.popupTitle': 'Someone is moving in',
+  'tpp.reveal.continue': 'Continue',
 }).map(([key, value]) => ({ file: 'strings.json', path: `/${key}`, value }));
 
 export type DesignSetup = { context: ViewContext; scene: InteriorScene; root: HTMLElement; panels: Panels; state: () => GameState };

@@ -66,7 +66,7 @@ describe('core §9 Q7(a)', () => {
   });
 
   it('core §9 Q7(a) toast held while a celebration is open; state.reset clears the queue', async () => {
-    const s = await setup(st => { st.celebration = { projectId: 'pet-house', fromPhase: 0, toPhase: 1, step: 'milestone' } as unknown as GameState['celebration']; });
+    const s = await setup(st => { st.celebration = { projectId: 'pet-house', fromPhase: 0, toPhase: 1, step: 'milestone', completes: false, unlockedTypeIds: [], skipTaken: false }; });
     fireRoundups(s, 1);
     expect([toast(s).hidden, s.panels.toast.queued()]).toEqual([true, 1]);
     s.context.store.dispatch({ type: 'reset' });
@@ -87,11 +87,11 @@ describe('VERIFY-MEC-010-015 trickle arm', () => {
   });
 });
 
-describe('presentation §8 mount order (WORK-019-3, WORK-020-1)', () => {
-  it('presentation §8 mount order (WORK-019-3, WORK-020-1) — #panels: hudInterior, hudStreet, toast, wantPanel, dialogue, chooser, replaceRemove, debugPanel; Panels.dialogue and Panels.toast defined', async () => {
+describe('presentation §8 mount order (WORK-019-3, WORK-020-1, WORK-020-3)', () => {
+  it('presentation §8 mount order (WORK-019-3, WORK-020-1, WORK-020-3) — #panels: hudInterior, hudStreet, toast, wantPanel, dialogue, chooser, replaceRemove, milestonePopup, revealPopup, debugPanel; Panels.dialogue and Panels.toast defined', async () => {
     const s = await designSetup();
     expect([...s.root.querySelectorAll<HTMLElement>('[data-panel]')].map(c => c.dataset.panel))
-      .toEqual(['hudInterior', 'hudStreet', 'toast', 'wantPanel', 'dialogue', 'chooser', 'replaceRemove', 'debugPanel']);
+      .toEqual(['hudInterior', 'hudStreet', 'toast', 'wantPanel', 'dialogue', 'chooser', 'replaceRemove', 'milestonePopup', 'revealPopup', 'debugPanel']);
     expect([typeof s.panels.dialogue.isDeferred, typeof s.panels.toast.queued]).toEqual(['function', 'function']);
   });
 });
