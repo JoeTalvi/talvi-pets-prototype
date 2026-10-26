@@ -22,7 +22,8 @@ const mode = params.get('mode') === 'room' ? 'room' : 'fill';
 const guides = params.get('guides') !== '0';
 const bounds = params.get('bounds') === '1';
 // CN-12 (WORK-013J): row 2 `use` became `use-sit`; rows 4 and 5 add `use-lie` and `use-look`.
-const clips = ['idle', 'walk', 'use-sit', 'react', 'use-lie', 'use-look'];
+// WORK-022-1 (gate fork Q-A): the Owl sheet adds `use-perch` in row 6; `?sheet=pets/owl-sheet` inspects it on the Dog room's petSpawn.
+const clips = ['idle', 'walk', 'use-sit', 'react', 'use-lie', 'use-look', 'use-perch'];
 const clip = clips.includes(params.get('clip') ?? '') ? params.get('clip')! : 'idle';
 const showPet = params.get('pet') !== '0';
 const showBubble = params.get('bubble') === '1';
@@ -30,7 +31,7 @@ const showBubble = params.get('bubble') === '1';
 const atSlot = params.get('at') ?? '';
 // TASK-080 (WORK-013H): the bubble anchor keeps the contract's margin above the measured idle head. The contract offset 236 was
 // set against the pre-re-fit sheet (Git b753fa6), whose idle frame 0 opaque top was 222 px above the base: margin 236 − 222 = 14.
-const SHEET = 'pets/dog-sheet', CONTRACT_BUBBLE_OFFSET = 236, CONTRACT_IDLE_HEAD_TOP = 222, BUBBLE_MARGIN = CONTRACT_BUBBLE_OFFSET - CONTRACT_IDLE_HEAD_TOP;
+const SHEET = params.get('sheet') ?? 'pets/dog-sheet', CONTRACT_BUBBLE_OFFSET = 236, CONTRACT_IDLE_HEAD_TOP = 222, BUBBLE_MARGIN = CONTRACT_BUBBLE_OFFSET - CONTRACT_IDLE_HEAD_TOP;
 let bubbleOffset = CONTRACT_BUBBLE_OFFSET;
 // TASK-081 (WORK-013H, CN-10): flat, strokeless thought bubble with the panels-gallery geometry (tools/panels.css). Offsets are from
 // the anchor: the 168×128 ellipse body sits above-right and the smallest tail circle's bottom touches the anchor. The 96 px tag
@@ -52,7 +53,7 @@ async function inputJson(url: string): Promise<unknown> {
 function controls(): void {
   element<HTMLSelectElement>('height').value = String(height); element<HTMLSelectElement>('mode').value = mode;
   element<HTMLInputElement>('guides').checked = guides; element<HTMLInputElement>('bounds').checked = bounds;
-  element<HTMLSelectElement>('clip').value = clip; element<HTMLInputElement>('pet').checked = showPet; element<HTMLInputElement>('bubble').checked = showBubble;
+  element<HTMLSelectElement>('clip').value = clip; element<HTMLSelectElement>('sheet').value = SHEET; element<HTMLInputElement>('pet').checked = showPet; element<HTMLInputElement>('bubble').checked = showBubble;
   element('controls').addEventListener('change', () => {
     const next = new URL(location.href);
     next.searchParams.set('height', element<HTMLSelectElement>('height').value);
@@ -60,6 +61,7 @@ function controls(): void {
     next.searchParams.set('guides', element<HTMLInputElement>('guides').checked ? '1' : '0');
     next.searchParams.set('bounds', element<HTMLInputElement>('bounds').checked ? '1' : '0');
     next.searchParams.set('clip', element<HTMLSelectElement>('clip').value);
+    next.searchParams.set('sheet', element<HTMLSelectElement>('sheet').value);
     next.searchParams.set('pet', element<HTMLInputElement>('pet').checked ? '1' : '0');
     next.searchParams.set('bubble', element<HTMLInputElement>('bubble').checked ? '1' : '0');
     location.assign(next);
