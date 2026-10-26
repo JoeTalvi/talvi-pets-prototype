@@ -2525,6 +2525,25 @@
       "recordedBy": "WORK-022-1 / TASK-172",
       "history": [],
       "note": "WORK-022-1 M2 Owl batch under DEC-040; bust of the APPROVAL-018 A-2 body (identity reference working/TASK-167/candidates/raw/A-2.png, not ledgered); the parent of pets/owl-silhouette (ledger rule (4)); crop verdict (DEC-033 R card-5 tease) at the MILESTONE-006 play session; not status accepted"
+    },
+    {
+      "id": "pets/owl-silhouette",
+      "type": "image",
+      "url": "pets/owl-silhouette.png",
+      "px": {
+        "w": 600,
+        "h": 600
+      },
+      "status": "ai-placeholder",
+      "origin": "derived",
+      "source": "pets/owl-portrait",
+      "postProcess": "alpha copied pixel for pixel from pets/owl-portrait (SHA-256 9663eb182f631b8120842a745c14192fc00db4c3ab80078e096685b0a9505ea6, decoded by ffmpeg 8.1.2 to straight RGBA), RGB flat #3a2a1f, 8-bit RGBA PNG; phase-4-build/runs/RUN-002/evidence/WORK-022-1/recipes/derive-owl-silhouette.mjs SHA-256 40235d20b867d18ffc6108e3d9250c8c67ae00e54b3d2253651ca240f2965331; --verify: alpha channels byte-identical, alpha IoU 1.0 (228126 opaque px; phase-4-build/runs/RUN-002/evidence/WORK-022-1/silhouette-iou.json); 10112 B, SHA-256 62d0b95e6b134a8e141b6e14097c2dff4d8a7a3e89509dc3db168daac138fb06.",
+      "batch": "owl-m2",
+      "hash": "62d0b95e6b134a8e141b6e14097c2dff4d8a7a3e89509dc3db168daac138fb06",
+      "recordedAt": "2026-10-26",
+      "recordedBy": "WORK-022-1 / TASK-172",
+      "history": [],
+      "note": "DEC-033 R: derived from the portrait alpha, never generated; shown only in the card-5 state (revealPopup/revealPanel silhouette state); ui/mystery-shape stays through phases 1-4; status inherits pets/owl-portrait (ai-placeholder); not status accepted"
     }
   ]
 }
