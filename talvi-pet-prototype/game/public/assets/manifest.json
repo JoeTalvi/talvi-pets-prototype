@@ -2544,6 +2544,34 @@
       "recordedBy": "WORK-022-1 / TASK-172",
       "history": [],
       "note": "DEC-033 R: derived from the portrait alpha, never generated; shown only in the card-5 state (revealPopup/revealPanel silhouette state); ui/mystery-shape stays through phases 1-4; status inherits pets/owl-portrait (ai-placeholder); not status accepted"
+    },
+    {
+      "id": "rooms/owl-room",
+      "type": "image",
+      "url": "rooms/owl-room.jpg",
+      "px": {
+        "w": 1920,
+        "h": 1080
+      },
+      "status": "ai-placeholder",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/rooms/1793046287626-cefiny/candidate_002.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 16880,
+      "prompt": "An empty room interior for a small pet, drawn exactly like the reference room: the same isometric three-quarter view with two back walls meeting at a centre corner and an open wooden plank floor diamond in front, the same wall height, a plain open doorway on the left wall at the same place and size as the reference, one small square window on the right wall at the same place and size as the reference, simple skirting boards. The room about 1.5x larger in width and depth than the first reference, doorway and window at reference size, walls and floor about 85% of the image height, the room centred on a plain neutral paper background with the floor's front corner near the bottom edge. This is the owl's quiet evening room: cooler pale grey-green plaster walls, soft dusk-blue light in the window, the same restrained warm wood floor, doorway trim and window frame, a little darker and quieter than the dog's room. Completely empty: no furniture, no books, no shelves, no bed, no rug, no lamp, no perch, no plants, no props, no animals, no text, no people.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/production/pet_house_lv3.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/concepts/v1/room-a.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts.worktrees/talvi-pets-prototype-RUN-002/WORK-022-1/talvi-pet-prototype/game/public/assets/rooms/dog-room.jpg",
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/style/owl_in_room.png"
+      ],
+      "postProcess": "Full-frame uniform fit as rooms/dog-room: the whole 1376x768 source scaled by 1920/1376 (1.39535) to 1920x1072, centred at y 4.19 (bandTop 0, bandHeight 1080; no band fit: the phone-band clipping of the back and front floor corners follows the accepted Dog room, APPROVAL-011 / art bible v1.4; lane FORK); sampled neutral exterior paper rgb(234,235,225) outside the source-image room contour [[683,14],[1087,238],[1086,526],[691,754],[291,527],[293,236]] (six extreme points of the non-paper mask padded 4 px) with a 3px keep and 6px feather; Chrome canvas JPEG quality 0.8 (Google Chrome 156.0.8078.48); recipe game/tools/assets/export-refinements.mjs + owl-room-v1.config.json (SHA-256 442d1e08d73e8f0eb7b8ed8fcbaa1b2e16c6f3da430627f18fca6d9e777734aa); preserved source phase-4-build/runs/RUN-002/evidence/WORK-022-1/candidates/room-2.png SHA-256 beff93741e66391667753c6dc130d7dbac18670b6535986c7afd245a8a50be43; 129632 B, SHA-256 d584644813ef742475b85414308b2fb8351e5d7f4e2dba455fcd7065aef37020. Measured on the export (phase-4-build/runs/RUN-002/evidence/WORK-022-1/room-measurements.json): wall top y 28, back corner (963,386), floor diamond left (436,700) / front (974,1053) / right (1496,690), door foot rect {640,548,70,55} (dx -22, dy -3 from the Dog room's to-street rect), door opening {630,335,90,240}, window {1170,260,130,220}.",
+      "batch": "owl-m2",
+      "hash": "d584644813ef742475b85414308b2fb8351e5d7f4e2dba455fcd7065aef37020",
+      "recordedAt": "2026-10-26",
+      "recordedBy": "WORK-022-1 / TASK-172",
+      "history": [],
+      "note": "room-v2 recipe; the Owl's quiet evening room from the carried direction note (same composition class as rooms/dog-room: two back walls, floor diamond, left-wall doorway, right-wall window; cooler plaster, dusk window, empty floor, no inferred furniture); geometry (walk area, door, slots, floorY, seats) to be measured by WORK-024-2 on this art; owl-room.json still points at rooms/dog-room until then; taste verdict at the MILESTONE-006 play session; not status accepted"
     }
   ]
 }
