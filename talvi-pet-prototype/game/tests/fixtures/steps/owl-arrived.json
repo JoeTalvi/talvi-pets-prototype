@@ -1,0 +1,77 @@
+{
+  "seed": 1234,
+  "steps": [
+    {
+      "action": {
+        "type": "tick",
+        "dtMs": 0,
+        "move": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "action": {
+        "type": "advanceDialogue"
+      },
+      "repeat": "drain"
+    },
+    {
+      "action": {
+        "type": "debugSetCurrent",
+        "projectId": "pet-house",
+        "cents": 1500
+      }
+    },
+    {
+      "action": {
+        "type": "acknowledgeProject",
+        "projectId": "pet-house"
+      }
+    },
+    {
+      "action": {
+        "type": "cutsceneFinished"
+      }
+    },
+    {
+      "action": {
+        "type": "collectRewards"
+      }
+    },
+    {
+      "action": {
+        "type": "closeReveal"
+      }
+    },
+    {
+      "action": {
+        "type": "advanceDialogue"
+      },
+      "repeat": "drain"
+    },
+    {
+      "action": {
+        "type": "arrivalFinished"
+      }
+    },
+    {
+      "action": {
+        "type": "tick",
+        "dtMs": 100,
+        "move": {
+          "x": 1,
+          "y": -0.2
+        }
+      },
+      "repeat": 6
+    },
+    {
+      "action": {
+        "type": "advanceDialogue"
+      },
+      "repeat": "drain"
+    }
+  ]
+}

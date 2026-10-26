@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest';
 import { stepDoors } from '../../src/sim/rules/doors';
-import { applySceneRules } from '../../src/sim/rules/scene';
+import { reduce } from '../../src/sim/reduce';
 import { doorEnabled } from '../../src/sim/select';
 import { initialState } from '../../src/sim/state';
 import { deepFreeze, squareFixture, tick } from './helpers';
@@ -8,11 +8,11 @@ import { deepFreeze, squareFixture, tick } from './helpers';
 it('VERIFY-MEC-001-007 qualified: R3 rejects y94 overshoot; 16 ms reaches the door and swaps', () => {
   const { content, state } = squareFixture();
   state.avatar.y = 130;
-  const overshoot = applySceneRules(content, deepFreeze(state), tick(0, -1, 50));
+  const overshoot = reduce(content, deepFreeze(state), tick(0, -1, 50));
   expect(overshoot.state.avatar.y).toBe(130);
   expect(overshoot.state.scene).toEqual(state.scene);
   expect(overshoot.events).toEqual([]);
-  const crossing = applySceneRules(content, state, tick(0, -1));
+  const crossing = reduce(content, state, tick(0, -1));
   expect(crossing.state.scene).toEqual({ kind: 'street' });
   expect(crossing.state.avatar).toEqual({ ...content.street.houses[0].door.spawn,
     immunityMs: 500, facingCandidate: null });
@@ -24,17 +24,17 @@ it('VERIFY-MEC-001-007 qualified: R3 rejects y94 overshoot; 16 ms reaches the do
 it('VERIFY-MEC-001-008 arrival immunity survives 400 ms in the street door, then expires', () => {
   const { content, state } = squareFixture();
   state.avatar.y = 130;
-  let current = applySceneRules(content, state, tick(0, -1)).state;
+  let current = reduce(content, state, tick(0, -1)).state;
   for (let index = 0; index < 4; index++) {
-    const result = applySceneRules(content, current, tick(0, -1, 100));
+    const result = reduce(content, current, tick(0, -1, 100));
     expect(result.events).toEqual([]);
     expect(result.state.scene).toEqual({ kind: 'street' });
     current = result.state;
   }
   expect(current.avatar.immunityMs).toBe(100);
-  const returned = applySceneRules(content, current, tick(0, 0, 100));
+  const returned = reduce(content, current, tick(0, 0, 100));
   expect(returned.state.scene).toEqual({ kind: 'interior', roomId: 'dog-room' });
-  expect(returned.events).toHaveLength(1);
+  expect(returned.events.filter(event => !event.type.startsWith('pet.'))).toHaveLength(1);
   expect(returned.state.avatar.immunityMs).toBe(500);
 });
 
@@ -89,4 +89,14 @@ it('MEC-001 invalid content cannot silently place the avatar at an unrelated spa
   state.avatar.y = 110;
   content.rooms['dog-room'].doors[0].target.doorId = 'missing';
   expect(() => stepDoors(content, state)).toThrow('Unresolved target door missing');
+});
+
+it('play-session (2026-10-26, "Wait for tap"): stepping out with a phase owed does not start a celebration', () => {
+  const { content, state } = squareFixture();
+  state.avatar.y = 130;
+  const owed = reduce(content, state, { type: 'debugSetCurrent', projectId: 'pet-house', cents: 400 }).state;
+  const out = reduce(content, owed, tick(0, -1));
+  expect(out.state.scene).toEqual({ kind: 'street' });
+  expect(out.state.celebration).toBeNull();
+  expect(out.events.map(event => event.type)).not.toContain('celebration.started');
 });

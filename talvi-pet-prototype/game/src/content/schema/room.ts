@@ -4,7 +4,9 @@ import { AssetId } from './assets';
 export const SlotSchema = z.object({
     id: Id, sizeClass: SizeClassSchema, x: z.number(), y: z.number(), wall: z.enum([
         'left', 'right'
-    ]).optional(), depthOverride: z.number().optional(), anchor: AnchorSchema, adjacent: z.array(Id)
+    ]).optional(), depthOverride: z.number().optional(), anchor: AnchorSchema, adjacent: z.array(Id),
+    // Wall slots: the y where the wall meets the floor below the slot, for charms that stand on the floor.
+    floorY: z.number().optional()
 }).superRefine((s, ctx) => {
     if (s.sizeClass === 'wall' && !s.wall)
         ctx.addIssue({

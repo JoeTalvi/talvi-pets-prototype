@@ -253,7 +253,7 @@
         "w": 160,
         "h": 192
       },
-      "status": "ai-placeholder",
+      "status": "accepted",
       "origin": "asset-bot",
       "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792440299690-q10gf8/candidate_001.png",
       "generator": "asset-bot/generate_image:nano-banana",
@@ -268,6 +268,9 @@
       "hash": "46aa575040c0dc6e898d9aa46e70c9ee9c22d9a70cd151d4f67a6d776c83d9be",
       "recordedAt": "2026-10-19",
       "recordedBy": "WORK-013B / TASK-063",
+      "acceptedBy": "the user (play session)",
+      "acceptedAt": "2026-10-26",
+      "acceptedReason": "Accepted at the M1 play session Q3 (all assets approved). Record: phase-3-preproduction/approvals/approval-2026-10-26-m1-charms.md",
       "history": [
         {
           "hash": "bf8c7973b94c514647bef15e691aa54114a455a477c17d284528abc3deee473f",
@@ -277,6 +280,15 @@
           "recordedAt": "2026-10-17",
           "recordedBy": "TASK-022 / WORK-001",
           "note": "Phase 1 Asset-Bot original: runs/generate-image/charm-lamp/1792069539224-cyg5me/candidate_001.png; single-frame integration stopgap, not creative approval"
+        },
+        {
+          "hash": "46aa575040c0dc6e898d9aa46e70c9ee9c22d9a70cd151d4f67a6d776c83d9be",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792440299690-q10gf8/candidate_001.png",
+          "recordedAt": "2026-10-19",
+          "recordedBy": "WORK-013B / TASK-063",
+          "note": "WORK013B technical export, creative/runtime/device review pending; source preserved. Proportional fit yields30px side margins (contract <=8 unmet); no distortion applied. Coordinator TASK068: technical proportional-fit exception recorded in assets.md at revision135, exact export hash reviewed by TASK065. Creative/context/device acceptance remains pending."
         }
       ],
       "note": "WORK013B technical export, creative/runtime/device review pending; source preserved. Proportional fit yields30px side margins (contract <=8 unmet); no distortion applied. Coordinator TASK068: technical proportional-fit exception recorded in assets.md at revision135, exact export hash reviewed by TASK065. Creative/context/device acceptance remains pending."
@@ -1044,7 +1056,7 @@
         "w": 128,
         "h": 128
       },
-      "status": "ai-placeholder",
+      "status": "accepted",
       "origin": "asset-bot",
       "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792440333096-u3le6h/candidate_001.png",
       "generator": "asset-bot/generate_image:nano-banana",
@@ -1059,7 +1071,20 @@
       "hash": "8dcb5496879c2d681f61ad140ae333732d1afe7fcc4f54bd7566e4c5739b7698",
       "recordedAt": "2026-10-19",
       "recordedBy": "WORK-013B / TASK-063",
-      "history": [],
+      "acceptedBy": "the user (play session)",
+      "acceptedAt": "2026-10-26",
+      "acceptedReason": "Accepted at the M1 play session Q3 (all assets approved). Record: phase-3-preproduction/approvals/approval-2026-10-26-m1-charms.md",
+      "history": [
+        {
+          "hash": "8dcb5496879c2d681f61ad140ae333732d1afe7fcc4f54bd7566e4c5739b7698",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792440333096-u3le6h/candidate_001.png",
+          "recordedAt": "2026-10-19",
+          "recordedBy": "WORK-013B / TASK-063",
+          "note": "WORK013B technical export, creative/runtime/device review pending; source preserved. Proportional fit yields10px side margins (contract <=8 unmet); no distortion applied. Coordinator TASK068: technical proportional-fit exception recorded in assets.md at revision135, exact export hash reviewed by TASK065. Creative/context/device acceptance remains pending."
+        }
+      ],
       "note": "WORK013B technical export, creative/runtime/device review pending; source preserved. Proportional fit yields10px side margins (contract <=8 unmet); no distortion applied. Coordinator TASK068: technical proportional-fit exception recorded in assets.md at revision135, exact export hash reviewed by TASK065. Creative/context/device acceptance remains pending."
     },
     {
@@ -1599,6 +1624,799 @@
         }
       ],
       "note": "Drawing from the WORK-008 Asset-Bot nano-banana concept clue-nano (seed 8501, run candidate in source; preserved copy phase-3-preproduction/production/representatives-v1/sources/accepted/clue-nano.png, same SHA256), concept approval phase-3-preproduction/approvals/APPROVAL-004-concepts.md; no new generation. Byte-identical in representatives-v1 and v2. User visual acceptance: phase-3-preproduction/approvals/approval-2026-10-20-representative-visuals.md. In-engine contextual and device verdicts pending; not status accepted."
+    },
+    {
+      "id": "charms/ball",
+      "type": "image",
+      "url": "charms/ball.png",
+      "px": {
+        "w": 160,
+        "h": 192
+      },
+      "status": "accepted",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802687091-wgxnhp/candidate_002.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 18130,
+      "prompt": "One well-loved round toy ball for a dog, slightly scuffed, with a simple curved stripe around it. Three-quarter view from the front-left as in the furniture references, resting on the floor. Single complete isolated object, centred, generous margin, plain white background, no floor, no cast shadow, no room, no pet, no text, no extra objects.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/production/pet_house_lv3.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/concepts/v1/charms-nano.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/charm-ball.png"
+      ],
+      "postProcess": "Decode: /opt/homebrew/bin/ffmpeg -v error -y -i /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802687091-wgxnhp/candidate_002.png -sws_flags accurate_rnd+full_chroma_int -pix_fmt rgb24 /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1/decoded/charms/ball.png (raw SHA-256 af2d1220d9f2146df4e366c1ef23716f23237f8fcc597f4bc8e2439d03b470eb; decoded SHA-256 01b2277248f0c8277feee409553ede18be09739fb22e51b6439e8722e0b57c24). Key/fit: game/tools/assets/export-refinements.mjs (Chrome 155.0.8059.85) with config <EV>/recipes/charms-m1.export.config.json SHA-256 595d5cb50b37b8f34b8d17b989476043cd394a7052351c44594127fea3ea02a4; boundary-connected white flood backgroundMin 240 / backgroundChroma 18, enclosed near-white kept opaque, keep-region dilation 0 (halo check vs 2 on the fern, recipes/halo/), exterior luma alpha + white unmatte, trim, uniform max-fit bottom-centred in fit box 160x36; exporter sourceBounds [84, 221, 817, 969], scale 0.048064, bounds [62, 0, 97, 35], bottomGap 0, centerOffset 0, corners [0, 0, 0, 0]; fit PNG SHA-256 00aa41b397ad46c64188e5cb0625f5b669178c793794aba6f1db5b435b9c5ce0. lossless pad: ffmpeg -v error -y -i <EV>/staging/fit/charms/ball.png -vf \"format=rgba,pad=160:192:(ow-iw)/2:oh-ih:color=black@0.0\" -pix_fmt rgba <EV>/staging/final/charms/ball.png; final SHA-256 b7cadd771c797b79c7ac868894f20569da6aba44bb06fc2d49962a7ef1b65a9c. H_t (art bible v1.4 Dog-scale rule, Dog 111 px at idle): 36 px (minimum legible size). <EV> = /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1",
+      "batch": "charms-m1",
+      "hash": "b7cadd771c797b79c7ac868894f20569da6aba44bb06fc2d49962a7ef1b65a9c",
+      "recordedAt": "2026-10-23",
+      "recordedBy": "WORK-018-1 / TASK-122",
+      "acceptedBy": "the user (play session)",
+      "acceptedAt": "2026-10-26",
+      "acceptedReason": "Accepted at the M1 play session Q3 (all assets approved). Record: phase-3-preproduction/approvals/approval-2026-10-26-m1-charms.md",
+      "history": [
+        {
+          "hash": "b7cadd771c797b79c7ac868894f20569da6aba44bb06fc2d49962a7ef1b65a9c",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802687091-wgxnhp/candidate_002.png",
+          "recordedAt": "2026-10-23",
+          "recordedBy": "WORK-018-1 / TASK-122",
+          "note": "WORK-018-1 M1 batch under DEC-040 (APPROVAL-010); chosen candidate_002.png of 3 (silhouette: pass — round ball with a curved seam stripe reads toy (ball) without colour; muted red, clean edge, no shadow); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-005 play session (TECH-018 item 2); not status accepted"
+        }
+      ],
+      "note": "WORK-018-1 M1 batch under DEC-040 (APPROVAL-010); chosen candidate_002.png of 3 (silhouette: pass — round ball with a curved seam stripe reads toy (ball) without colour; muted red, clean edge, no shadow); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-005 play session (TECH-018 item 2); not status accepted"
+    },
+    {
+      "id": "charms/bookshelf",
+      "type": "image",
+      "url": "charms/bookshelf.png",
+      "px": {
+        "w": 144,
+        "h": 245
+      },
+      "status": "accepted",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1793034476139-sle62n/candidate_001.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 18410,
+      "prompt": "One tall upright wooden bookcase mounted flat against a wall, drawn in isometric view for the LEFT wall of an isometric room like the room reference: its front face is parallel to that wall, so the top and bottom edges of the bookcase slope upward from left to right at the same angle as the left wall's floor line, and only the front face and a thin right-hand side edge are visible. Simple wood frame, four shelves with rows of colourful books and a small jar, about twice as tall as it is wide. Single complete isolated object, centred, generous margin, plain white background, no wall, no floor, no cast shadow, no room, no pet, no text, no extra objects.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/production/pet_house_lv3.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/charm-bookshelf.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts.worktrees/talvi-pets-prototype-RUN-001/run/talvi-pet-prototype/game/public/assets/rooms/dog-room.jpg"
+      ],
+      "postProcess": "Decode: /opt/homebrew/bin/ffmpeg -v error -y -i /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1793034476139-sle62n/candidate_001.png -sws_flags accurate_rnd+full_chroma_int -pix_fmt rgb24 /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/charm-fixes-2026-10-26/decoded/charms/bookshelf.png | Key and fit: tools/assets/export-refinements.mjs with /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/charm-fixes-2026-10-26/recipes/charms-redraw.export.config.json (backgroundMin 240, chroma 18, dilation 0), fit box 128x245 (about 2/3 of the ~367 px wall height at the wall slots), ffmpeg pad to the type canvas 144x245 bottom-centred (charms.json canvas override); ffmpeg pad bottom-centred (lossless). Wall pieces are drawn for the left wall; InteriorScene mirrors them on right-wall slots.",
+      "batch": "charms-m1-fixes",
+      "hash": "25a6c75e7edc49506feccfe4109064fc229a0da7243650066ae62c9fc947479d",
+      "recordedAt": "2026-10-26",
+      "recordedBy": "charm-fixes-2026-10-26 (user-directed, play-session Q3)",
+      "acceptedBy": "the user (play session)",
+      "acceptedAt": "2026-10-26",
+      "acceptedReason": "Accepted at the M1 play session Q3 (all assets approved). Record: phase-3-preproduction/approvals/approval-2026-10-26-m1-charms.md",
+      "history": [
+        {
+          "hash": "d811d618c1e512e504d0bf02fbca2238643cb8e281f64d305cb34a81c388f611",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802779041-xqqyku/candidate_002.png",
+          "recordedAt": "2026-10-23",
+          "recordedBy": "WORK-018-1 / TASK-122",
+          "note": "WORK-018-1 M1 batch under DEC-040 (APPROVAL-010); chosen candidate_002.png of 3 (silhouette: pass — tall narrow upright wood frame with three shelves of books reads tall (upright shelf) without colour; straight-on wall piece, strongest vertical proportion of the three); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-005 play session (TECH-018 item 2); not status accepted"
+        },
+        {
+          "hash": "25a6c75e7edc49506feccfe4109064fc229a0da7243650066ae62c9fc947479d",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1793034476139-sle62n/candidate_001.png",
+          "recordedAt": "2026-10-26",
+          "recordedBy": "charm-fixes-2026-10-26 (user-directed, play-session Q3)",
+          "note": "Redrawn per the user's play-session Q3 verdict 2026-10-26 (candidate_001 of 2; generations 55-62 of the raised 72 budget); ai-placeholder until accepted."
+        }
+      ],
+      "note": "Redrawn per the user's play-session Q3 verdict 2026-10-26 (candidate_001 of 2; generations 55-62 of the raised 72 budget); ai-placeholder until accepted."
+    },
+    {
+      "id": "charms/cushion",
+      "type": "image",
+      "url": "charms/cushion.png",
+      "px": {
+        "w": 160,
+        "h": 192
+      },
+      "status": "accepted",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802668101-4bv24p/candidate_002.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 18120,
+      "prompt": "One plump square floor cushion for a pet: thick soft squashy padding with a gentle dip pressed into the middle and a tufted button at its centre, rounded puffy edges and visible thick side. Three-quarter view from the front-left as in the furniture references, resting on the floor. Single complete isolated object, centred, generous margin, plain white background, no floor, no cast shadow, no room, no pet, no text, no extra objects.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/production/pet_house_lv3.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/concepts/v1/charms-nano.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/charm-cushion.png"
+      ],
+      "postProcess": "Decode: /opt/homebrew/bin/ffmpeg -v error -y -i /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802668101-4bv24p/candidate_002.png -sws_flags accurate_rnd+full_chroma_int -pix_fmt rgb24 /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1/decoded/charms/cushion.png (raw SHA-256 d45d319235f3684d87acaf51ca4e74654d43f82f01c027f13f0bc1f6dedb74b4; decoded SHA-256 426a72002edd608d8ca30452d04393974f54e9187c3f1b4017dc11adfd9aa04b). Key/fit: game/tools/assets/export-refinements.mjs (Chrome 155.0.8059.85) with config <EV>/recipes/charms-m1.export.config.json SHA-256 595d5cb50b37b8f34b8d17b989476043cd394a7052351c44594127fea3ea02a4; boundary-connected white flood backgroundMin 240 / backgroundChroma 18, enclosed near-white kept opaque, keep-region dilation 0 (halo check vs 2 on the fern, recipes/halo/), exterior luma alpha + white unmatte, trim, uniform max-fit bottom-centred in fit box 160x45; exporter sourceBounds [40, 284, 850, 924], scale 0.070203, bounds [52, 0, 107, 44], bottomGap 0, centerOffset 0, corners [0, 0, 0, 0]; fit PNG SHA-256 c23fffa928460a703bfe9e8851e3894bd487eaf016becf4d76ee39e24a14f61a. lossless pad: ffmpeg -v error -y -i <EV>/staging/fit/charms/cushion.png -vf \"format=rgba,pad=160:192:(ow-iw)/2:oh-ih:color=black@0.0\" -pix_fmt rgba <EV>/staging/final/charms/cushion.png; final SHA-256 431bb3f214c1fae554d318c19ac9076cc2528d3edfc2ec74880124cf90c0c1a1. H_t (art bible v1.4 Dog-scale rule, Dog 111 px at idle): 45 px. <EV> = /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1 | Rescale 2026-10-26 (user play-session Q3 verdict): same decoded source re-exported through tools/assets/export-refinements.mjs with evidence/charm-fixes-2026-10-26/recipes/charms-rescale.export.config.json, H_t 45 -> 113 (x2.5), then ffmpeg pad to 160x192 bottom-centred (lossless).",
+      "batch": "charms-m1",
+      "hash": "d42c8a83b6fef7efed8286aa40a22da5c53e8f49361ac11197dda125c44394e2",
+      "recordedAt": "2026-10-26",
+      "recordedBy": "charm-fixes-2026-10-26 (user-directed, play-session Q3)",
+      "acceptedBy": "the user (play session)",
+      "acceptedAt": "2026-10-26",
+      "acceptedReason": "Accepted at the M1 play session Q3 (all assets approved). Record: phase-3-preproduction/approvals/approval-2026-10-26-m1-charms.md",
+      "history": [
+        {
+          "hash": "431bb3f214c1fae554d318c19ac9076cc2528d3edfc2ec74880124cf90c0c1a1",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802668101-4bv24p/candidate_002.png",
+          "recordedAt": "2026-10-23",
+          "recordedBy": "WORK-018-1 / TASK-122",
+          "note": "WORK-018-1 M1 batch under DEC-040 (APPROVAL-010); chosen candidate_002.png of 3 (silhouette: pass — thick square padded pad with tufted dip and puffy rounded edges reads soft (cushion) without colour; chosen over the cream 001/003 because muted clay fill keys cleanly off white and matches the bed's upholstery); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-005 play session (TECH-018 item 2); not status accepted"
+        },
+        {
+          "hash": "d42c8a83b6fef7efed8286aa40a22da5c53e8f49361ac11197dda125c44394e2",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802668101-4bv24p/candidate_002.png",
+          "recordedAt": "2026-10-26",
+          "recordedBy": "charm-fixes-2026-10-26 (user-directed, play-session Q3)",
+          "note": "Rescaled per the user's play-session Q3 verdict 2026-10-26; same art, larger on screen; still ai-placeholder until accepted."
+        }
+      ],
+      "note": "Rescaled per the user's play-session Q3 verdict 2026-10-26; same art, larger on screen; still ai-placeholder until accepted."
+    },
+    {
+      "id": "charms/fern",
+      "type": "image",
+      "url": "charms/fern.png",
+      "px": {
+        "w": 160,
+        "h": 192
+      },
+      "status": "accepted",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802610016-upkzom/candidate_002.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 18110,
+      "prompt": "One potted fern: a generous spray of arching green fronds rising and fanning out from a simple round clay pot, so the plant clearly reads as a leafy plant. Three-quarter view from the front-left as in the furniture references, resting on the floor. Single complete isolated object, centred, generous margin, plain white background, no floor, no cast shadow, no room, no pet, no text, no extra objects.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/production/pet_house_lv3.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/concepts/v1/charms-nano.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/charm-fern.png"
+      ],
+      "postProcess": "Decode: /opt/homebrew/bin/ffmpeg -v error -y -i /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802610016-upkzom/candidate_002.png -sws_flags accurate_rnd+full_chroma_int -pix_fmt rgb24 /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1/decoded/charms/fern.png (raw SHA-256 11baa1ab7d821fc3881607d1c96014f8200b1a1cf6d0ad524fdc843216a7833f; decoded SHA-256 4bef122e83d12c2d7e2d6e5be91f1fdec9a79b597893b3c54a451dfc772b94a7). Key/fit: game/tools/assets/export-refinements.mjs (Chrome 155.0.8059.85) with config <EV>/recipes/charms-m1.export.config.json SHA-256 595d5cb50b37b8f34b8d17b989476043cd394a7052351c44594127fea3ea02a4; boundary-connected white flood backgroundMin 240 / backgroundChroma 18, enclosed near-white kept opaque, keep-region dilation 0 (halo check vs 2 on the fern, recipes/halo/), exterior luma alpha + white unmatte, trim, uniform max-fit bottom-centred in fit box 160x100; exporter sourceBounds [32, 159, 892, 962], scale 0.124378, bounds [26, 0, 133, 99], bottomGap 0, centerOffset 0, corners [0, 0, 0, 0]; fit PNG SHA-256 ffeba4f5feb76a5d5b1a33782691e4422ff146fb3d34d56db320ca80ace12c32. lossless pad: ffmpeg -v error -y -i <EV>/staging/fit/charms/fern.png -vf \"format=rgba,pad=160:192:(ow-iw)/2:oh-ih:color=black@0.0\" -pix_fmt rgba <EV>/staging/final/charms/fern.png; final SHA-256 20cdbeb3e7234909564e702a27177ce64afe384095c665067de19bac4ff09f90. H_t (art bible v1.4 Dog-scale rule, Dog 111 px at idle): 100 px (a floor plant just under the Dog). <EV> = /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1",
+      "batch": "charms-m1",
+      "hash": "20cdbeb3e7234909564e702a27177ce64afe384095c665067de19bac4ff09f90",
+      "recordedAt": "2026-10-23",
+      "recordedBy": "WORK-018-1 / TASK-122",
+      "acceptedBy": "the user (play session)",
+      "acceptedAt": "2026-10-26",
+      "acceptedReason": "Accepted at the M1 play session Q3 (all assets approved). Record: phase-3-preproduction/approvals/approval-2026-10-26-m1-charms.md",
+      "history": [
+        {
+          "hash": "20cdbeb3e7234909564e702a27177ce64afe384095c665067de19bac4ff09f90",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802610016-upkzom/candidate_002.png",
+          "recordedAt": "2026-10-23",
+          "recordedBy": "WORK-018-1 / TASK-122",
+          "note": "WORK-018-1 M1 batch under DEC-040 (APPROVAL-010); chosen candidate_002.png of 3 (silhouette: pass — arching frond spray above a round clay pot reads plant (sprout) without colour; fullest symmetric spray, clean white ground, no shadow); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-005 play session (TECH-018 item 2); not status accepted"
+        }
+      ],
+      "note": "WORK-018-1 M1 batch under DEC-040 (APPROVAL-010); chosen candidate_002.png of 3 (silhouette: pass — arching frond spray above a round clay pot reads plant (sprout) without colour; fullest symmetric spray, clean white ground, no shadow); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-005 play session (TECH-018 item 2); not status accepted"
+    },
+    {
+      "id": "charms/food-bowl",
+      "type": "image",
+      "url": "charms/food-bowl.png",
+      "px": {
+        "w": 160,
+        "h": 192
+      },
+      "status": "accepted",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802702834-jozk1d/candidate_001.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 18140,
+      "prompt": "One sturdy round pet food bowl with a thick rim and visible outer side, heaped with kibble inside. Three-quarter view from the front-left as in the furniture references, resting on the floor. Single complete isolated object, centred, generous margin, plain white background, no floor, no cast shadow, no room, no pet, no text, no extra objects.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/production/pet_house_lv3.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/concepts/v1/charms-nano.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/charm-food-bowl.png"
+      ],
+      "postProcess": "Decode: /opt/homebrew/bin/ffmpeg -v error -y -i /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802702834-jozk1d/candidate_001.png -sws_flags accurate_rnd+full_chroma_int -pix_fmt rgb24 /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1/decoded/charms/food-bowl.png (raw SHA-256 6750c2bd2da3c23d52985389cf9ca1de998b7af2dc075815a9e366d45b51ca06; decoded SHA-256 23646acf3e60bfc005a4d58245b5f5caf30fd7ad272739e926507e3f3c18f983). Key/fit: game/tools/assets/export-refinements.mjs (Chrome 155.0.8059.85) with config <EV>/recipes/charms-m1.export.config.json SHA-256 595d5cb50b37b8f34b8d17b989476043cd394a7052351c44594127fea3ea02a4; boundary-connected white flood backgroundMin 240 / backgroundChroma 18, enclosed near-white kept opaque, keep-region dilation 0 (halo check vs 2 on the fern, recipes/halo/), exterior luma alpha + white unmatte, trim, uniform max-fit bottom-centred in fit box 160x40; exporter sourceBounds [65, 341, 830, 922], scale 0.068729, bounds [54, 0, 105, 39], bottomGap 0, centerOffset 0, corners [0, 0, 0, 0]; fit PNG SHA-256 299da31163c54530106a3bf68276207fe4f34ee5bd7d610b7978037105bbd2b5. lossless pad: ffmpeg -v error -y -i <EV>/staging/fit/charms/food-bowl.png -vf \"format=rgba,pad=160:192:(ow-iw)/2:oh-ih:color=black@0.0\" -pix_fmt rgba <EV>/staging/final/charms/food-bowl.png; final SHA-256 59835d764c4f26a667f1ca5ea3ff871b8802f3933f561ee472b4845900da8681. H_t (art bible v1.4 Dog-scale rule, Dog 111 px at idle): 40 px. <EV> = /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1",
+      "batch": "charms-m1",
+      "hash": "59835d764c4f26a667f1ca5ea3ff871b8802f3933f561ee472b4845900da8681",
+      "recordedAt": "2026-10-23",
+      "recordedBy": "WORK-018-1 / TASK-122",
+      "acceptedBy": "the user (play session)",
+      "acceptedAt": "2026-10-26",
+      "acceptedReason": "Accepted at the M1 play session Q3 (all assets approved). Record: phase-3-preproduction/approvals/approval-2026-10-26-m1-charms.md",
+      "history": [
+        {
+          "hash": "59835d764c4f26a667f1ca5ea3ff871b8802f3933f561ee472b4845900da8681",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802702834-jozk1d/candidate_001.png",
+          "recordedAt": "2026-10-23",
+          "recordedBy": "WORK-018-1 / TASK-122",
+          "note": "WORK-018-1 M1 batch under DEC-040 (APPROVAL-010); chosen candidate_001.png of 3 (silhouette: pass — round bowl with thick rim, visible side and foot, heaped kibble reads food (bowl) without colour; 003 rejected (textured off-white paper ground, not keyable)); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-005 play session (TECH-018 item 2); not status accepted"
+        }
+      ],
+      "note": "WORK-018-1 M1 batch under DEC-040 (APPROVAL-010); chosen candidate_001.png of 3 (silhouette: pass — round bowl with thick rim, visible side and foot, heaped kibble reads food (bowl) without colour; 003 rejected (textured off-white paper ground, not keyable)); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-005 play session (TECH-018 item 2); not status accepted"
+    },
+    {
+      "id": "charms/hanging-plant",
+      "type": "image",
+      "url": "charms/hanging-plant.png",
+      "px": {
+        "w": 128,
+        "h": 128
+      },
+      "status": "accepted",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802978203-9stytg/candidate_003.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 18230,
+      "prompt": "One small woven basket fixed to the wall on a simple wooden bracket, with leafy green trailing vines spilling over the rim and hanging down below it. Seen straight on, as a picture hung on a wall. Single complete isolated object, centred, generous margin, plain white background, no wall, no cast shadow, no room, no pet, no text, no extra objects.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/production/pet_house_lv3.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/concepts/v1/charms-nano.png"
+      ],
+      "postProcess": "Decode: /opt/homebrew/bin/ffmpeg -v error -y -i /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802978203-9stytg/candidate_003.png -sws_flags accurate_rnd+full_chroma_int -pix_fmt rgb24 /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1/decoded/charms/hanging-plant.png (raw SHA-256 3fb2d409632b7378d48ea9d2e9c4c3fcb97c1138f5d6da3ab793659a119e27fb; decoded SHA-256 8eb1e9730fecac1d1b11ee5bf6dd3c71ee51ea728ea655b95efc1ee1c30e267b). Key/fit: game/tools/assets/export-refinements.mjs (Chrome 155.0.8059.85) with config <EV>/recipes/charms-m1.export.config.json SHA-256 595d5cb50b37b8f34b8d17b989476043cd394a7052351c44594127fea3ea02a4; boundary-connected white flood backgroundMin 240 / backgroundChroma 18, enclosed near-white kept opaque, keep-region dilation 0 (halo check vs 2 on the fern, recipes/halo/), exterior luma alpha + white unmatte, trim, uniform max-fit bottom-centred in fit box 128x128; exporter sourceBounds [162, 156, 826, 938], scale 0.163474, bounds [10, 0, 117, 127], bottomGap 0, centerOffset 0, corners [0, 0, 0, 0]; fit PNG SHA-256 759dd3644b54bb6a76e5065a3d99982a4237af23fac370050f086db9a591713f. no pad (fit box equals the class canvas); final SHA-256 759dd3644b54bb6a76e5065a3d99982a4237af23fac370050f086db9a591713f. H_t (art bible v1.4 Dog-scale rule, Dog 111 px at idle): wall class max-fit 128x128 (painting precedent; wall pictures keep their size). <EV> = /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1",
+      "batch": "charms-m1",
+      "hash": "759dd3644b54bb6a76e5065a3d99982a4237af23fac370050f086db9a591713f",
+      "recordedAt": "2026-10-23",
+      "recordedBy": "WORK-018-1 / TASK-122",
+      "acceptedBy": "the user (play session)",
+      "acceptedAt": "2026-10-26",
+      "acceptedReason": "Accepted at the M1 play session Q3 (all assets approved). Record: phase-3-preproduction/approvals/approval-2026-10-26-m1-charms.md",
+      "history": [
+        {
+          "hash": "759dd3644b54bb6a76e5065a3d99982a4237af23fac370050f086db9a591713f",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802978203-9stytg/candidate_003.png",
+          "recordedAt": "2026-10-23",
+          "recordedBy": "WORK-018-1 / TASK-122",
+          "note": "WORK-018-1 M1 batch under DEC-040 (APPROVAL-010); chosen candidate_003.png of 3 (silhouette: pass — woven basket on a wall bracket with leaves trailing below reads plant and wall-mounted; re-chosen after keying: candidate_001 left opaque white pockets between vines and bracket (the recipe keeps enclosed near-white opaque), candidate_003 keys clean with the same recipe; bracket seen from the side but the piece reads wall-hung); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-005 play session (TECH-018 item 2); not status accepted"
+        }
+      ],
+      "note": "WORK-018-1 M1 batch under DEC-040 (APPROVAL-010); chosen candidate_003.png of 3 (silhouette: pass — woven basket on a wall bracket with leaves trailing below reads plant and wall-mounted; re-chosen after keying: candidate_001 left opaque white pockets between vines and bracket (the recipe keeps enclosed near-white opaque), candidate_003 keys clean with the same recipe; bracket seen from the side but the piece reads wall-hung); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-005 play session (TECH-018 item 2); not status accepted"
+    },
+    {
+      "id": "charms/lamp-planter",
+      "type": "image",
+      "url": "charms/lamp-planter.png",
+      "px": {
+        "w": 160,
+        "h": 192
+      },
+      "status": "accepted",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802861097-qy9m5t/candidate_002.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 18180,
+      "prompt": "One lamp planter: a leafy potted plant and a small table lamp with an opaque cream shade sharing one wide wooden base, the leaves on one side and the shaded lamp on the other, so both the plant and the light clearly read. Three-quarter view from the front-left as in the furniture references, resting on the floor. Single complete isolated object, centred, generous margin, plain white background, no floor, no cast shadow, no room, no pet, no text, no extra objects.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/production/pet_house_lv3.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/concepts/v1/charms-nano.png"
+      ],
+      "postProcess": "Decode: /opt/homebrew/bin/ffmpeg -v error -y -i /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802861097-qy9m5t/candidate_002.png -sws_flags accurate_rnd+full_chroma_int -pix_fmt rgb24 /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1/decoded/charms/lamp-planter.png (raw SHA-256 7a49815caf4d2dc70c59310f5447d4bdef92961a153ea1aaa1de7c89be80b6f5; decoded SHA-256 a3f15dba54bf161097ad412d7fc8a1ba360cac7c37354eec0127589ed184e747). Key/fit: game/tools/assets/export-refinements.mjs (Chrome 155.0.8059.85) with config <EV>/recipes/charms-m1.export.config.json SHA-256 595d5cb50b37b8f34b8d17b989476043cd394a7052351c44594127fea3ea02a4; boundary-connected white flood backgroundMin 240 / backgroundChroma 18, enclosed near-white kept opaque, keep-region dilation 0 (halo check vs 2 on the fern, recipes/halo/), exterior luma alpha + white unmatte, trim, uniform max-fit bottom-centred in fit box 160x130; exporter sourceBounds [57, 147, 819, 1067], scale 0.141151, bounds [26, 0, 133, 129], bottomGap 0, centerOffset 0, corners [0, 0, 0, 0]; fit PNG SHA-256 601f72055f507431879b96d292bb5233634ce3b7ef2f1d1aa38e0c0511ee11b2. lossless pad: ffmpeg -v error -y -i <EV>/staging/fit/charms/lamp-planter.png -vf \"format=rgba,pad=160:192:(ow-iw)/2:oh-ih:color=black@0.0\" -pix_fmt rgba <EV>/staging/final/charms/lamp-planter.png; final SHA-256 57455c095ac41c6da9f780150c97f9c0a49c658cb8276cbed414aa969ebf40ac. H_t (art bible v1.4 Dog-scale rule, Dog 111 px at idle): 130 px (just above the Dog). <EV> = /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1",
+      "batch": "charms-m1",
+      "hash": "57455c095ac41c6da9f780150c97f9c0a49c658cb8276cbed414aa969ebf40ac",
+      "recordedAt": "2026-10-23",
+      "recordedBy": "WORK-018-1 / TASK-122",
+      "acceptedBy": "the user (play session)",
+      "acceptedAt": "2026-10-26",
+      "acceptedReason": "Accepted at the M1 play session Q3 (all assets approved). Record: phase-3-preproduction/approvals/approval-2026-10-26-m1-charms.md",
+      "history": [
+        {
+          "hash": "57455c095ac41c6da9f780150c97f9c0a49c658cb8276cbed414aa969ebf40ac",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802861097-qy9m5t/candidate_002.png",
+          "recordedAt": "2026-10-23",
+          "recordedBy": "WORK-018-1 / TASK-122",
+          "note": "WORK-018-1 M1 batch under DEC-040 (APPROVAL-010); chosen candidate_002.png of 3 (silhouette: pass — leafy plant (plant=sprout) and a shade-stem-foot lamp (light=lamp) rising from one shared wooden planter base; both tags read without colour; opaque shade, no visible bulb); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-005 play session (TECH-018 item 2); not status accepted"
+        }
+      ],
+      "note": "WORK-018-1 M1 batch under DEC-040 (APPROVAL-010); chosen candidate_002.png of 3 (silhouette: pass — leafy plant (plant=sprout) and a shade-stem-foot lamp (light=lamp) rising from one shared wooden planter base; both tags read without colour; opaque shade, no visible bulb); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-005 play session (TECH-018 item 2); not status accepted"
+    },
+    {
+      "id": "charms/lantern",
+      "type": "image",
+      "url": "charms/lantern.png",
+      "px": {
+        "w": 160,
+        "h": 192
+      },
+      "status": "accepted",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792803024965-qwbv0c/candidate_001.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 18240,
+      "prompt": "One small floor lantern with a carrying handle on top, a simple wooden frame with glass panes and a lit candle inside giving a warm steady glow, clearly a light. Three-quarter view from the front-left as in the furniture references, resting on the floor. Single complete isolated object, centred, generous margin, plain white background, no floor, no cast shadow, no room, no pet, no text, no extra objects.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/production/pet_house_lv3.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/concepts/v1/charms-nano.png"
+      ],
+      "postProcess": "Decode: /opt/homebrew/bin/ffmpeg -v error -y -i /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792803024965-qwbv0c/candidate_001.png -sws_flags accurate_rnd+full_chroma_int -pix_fmt rgb24 /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1/decoded/charms/lantern.png (raw SHA-256 aca556a5620aabc983b7dec6ffa00b14b8d2736866c1209b49e46393fd1b98ff; decoded SHA-256 a0c9468b78f0933dc586a40221c91945a12ac070e36bb8768ecc504b8df311a0). Key/fit: game/tools/assets/export-refinements.mjs (Chrome 155.0.8059.85) with config <EV>/recipes/charms-m1.export.config.json SHA-256 595d5cb50b37b8f34b8d17b989476043cd394a7052351c44594127fea3ea02a4; boundary-connected white flood backgroundMin 240 / backgroundChroma 18, enclosed near-white kept opaque, keep-region dilation 0 (halo check vs 2 on the fern, recipes/halo/), exterior luma alpha + white unmatte, trim, uniform max-fit bottom-centred in fit box 160x55; exporter sourceBounds [188, 132, 701, 1032], scale 0.061043, bounds [64, 0, 95, 54], bottomGap 0, centerOffset 0, corners [0, 0, 0, 0]; fit PNG SHA-256 bff1b5f92ce2a77a2aba5d01d38f65f51aaf7f24d068e706fba11580f4a593ab. lossless pad: ffmpeg -v error -y -i <EV>/staging/fit/charms/lantern.png -vf \"format=rgba,pad=160:192:(ow-iw)/2:oh-ih:color=black@0.0\" -pix_fmt rgba <EV>/staging/final/charms/lantern.png; final SHA-256 03f53c49dc45063a83bcab2b9d3d4251aa175b162369d4b2c63a926aa3dae0ca. H_t (art bible v1.4 Dog-scale rule, Dog 111 px at idle): 55 px. <EV> = /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1 | Rescale 2026-10-26 (user play-session Q3 verdict): same decoded source re-exported through tools/assets/export-refinements.mjs with evidence/charm-fixes-2026-10-26/recipes/charms-rescale.export.config.json, H_t 55 -> 110 (x2), then ffmpeg pad to 160x192 bottom-centred (lossless).",
+      "batch": "charms-m1",
+      "hash": "28550960400f80a5a3a2947e0ec5efe7f5a8289f643a2ef8e6c83a903a7201ee",
+      "recordedAt": "2026-10-26",
+      "recordedBy": "charm-fixes-2026-10-26 (user-directed, play-session Q3)",
+      "acceptedBy": "the user (play session)",
+      "acceptedAt": "2026-10-26",
+      "acceptedReason": "Accepted at the M1 play session Q3 (all assets approved). Record: phase-3-preproduction/approvals/approval-2026-10-26-m1-charms.md",
+      "history": [
+        {
+          "hash": "03f53c49dc45063a83bcab2b9d3d4251aa175b162369d4b2c63a926aa3dae0ca",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792803024965-qwbv0c/candidate_001.png",
+          "recordedAt": "2026-10-23",
+          "recordedBy": "WORK-018-1 / TASK-122",
+          "note": "WORK-018-1 M1 batch under DEC-040 (APPROVAL-010); chosen candidate_001.png of 3 (silhouette: pass — handled box lantern with a candle and warm glow reads light without colour (handle + candle flame silhouette); simplest frame, warm wood matches the lamp's stem/foot); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-005 play session (TECH-018 item 2); not status accepted"
+        },
+        {
+          "hash": "28550960400f80a5a3a2947e0ec5efe7f5a8289f643a2ef8e6c83a903a7201ee",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792803024965-qwbv0c/candidate_001.png",
+          "recordedAt": "2026-10-26",
+          "recordedBy": "charm-fixes-2026-10-26 (user-directed, play-session Q3)",
+          "note": "Rescaled per the user's play-session Q3 verdict 2026-10-26; same art, larger on screen; still ai-placeholder until accepted."
+        }
+      ],
+      "note": "Rescaled per the user's play-session Q3 verdict 2026-10-26; same art, larger on screen; still ai-placeholder until accepted."
+    },
+    {
+      "id": "charms/perch-branch",
+      "type": "image",
+      "url": "charms/perch-branch.png",
+      "px": {
+        "w": 128,
+        "h": 128
+      },
+      "status": "accepted",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1793034476322-155c9x/candidate_001.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 18420,
+      "prompt": "One broad natural tree branch fixed to a wall on two simple wooden brackets, sturdy enough for a bird to perch on, with a few small leaves at its tip. Drawn in isometric view for the LEFT wall of an isometric room like the room reference: the branch runs along that wall, so it slopes upward from left to right at the same angle as the left wall's floor line, and the brackets are seen at that angle too. Single complete isolated object, centred, generous margin, plain white background, no wall, no floor, no cast shadow, no room, no pet, no text, no extra objects.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/production/pet_house_lv3.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/charm-perch-branch.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts.worktrees/talvi-pets-prototype-RUN-001/run/talvi-pet-prototype/game/public/assets/rooms/dog-room.jpg"
+      ],
+      "postProcess": "Decode: /opt/homebrew/bin/ffmpeg -v error -y -i /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1793034476322-155c9x/candidate_001.png -sws_flags accurate_rnd+full_chroma_int -pix_fmt rgb24 /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/charm-fixes-2026-10-26/decoded/charms/perch-branch.png | Key and fit: tools/assets/export-refinements.mjs with /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/charm-fixes-2026-10-26/recipes/charms-redraw.export.config.json (backgroundMin 240, chroma 18, dilation 0), max-fit 128x128; ffmpeg pad bottom-centred (lossless). Wall pieces are drawn for the left wall; InteriorScene mirrors them on right-wall slots.",
+      "batch": "charms-m1-fixes",
+      "hash": "9df1a88526cdb7b78455b61f8d103c10b4ec748fb721e7260508ce44606b9fcb",
+      "recordedAt": "2026-10-26",
+      "recordedBy": "charm-fixes-2026-10-26 (user-directed, play-session Q3)",
+      "acceptedBy": "the user (play session)",
+      "acceptedAt": "2026-10-26",
+      "acceptedReason": "Accepted at the M1 play session Q3 (all assets approved). Record: phase-3-preproduction/approvals/approval-2026-10-26-m1-charms.md",
+      "history": [
+        {
+          "hash": "4421ae5ecf721e12c5114c8f04c1107b609d82d1c286e67bd0498fe2d2d23cd1",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802795759-5wlizg/candidate_002.png",
+          "recordedAt": "2026-10-23",
+          "recordedBy": "WORK-018-1 / TASK-122",
+          "note": "WORK-018-1 M1 batch under DEC-040 (APPROVAL-010); chosen candidate_002.png of 3 (silhouette: pass (with note) — broad branch on two wall brackets reads a high wall perch; the content tag tall is carried by wall mounting/height rather than an upright form (same reading as the Phase 1 identity render); straight-on, clean ground); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-005 play session (TECH-018 item 2); not status accepted"
+        },
+        {
+          "hash": "9df1a88526cdb7b78455b61f8d103c10b4ec748fb721e7260508ce44606b9fcb",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1793034476322-155c9x/candidate_001.png",
+          "recordedAt": "2026-10-26",
+          "recordedBy": "charm-fixes-2026-10-26 (user-directed, play-session Q3)",
+          "note": "Redrawn per the user's play-session Q3 verdict 2026-10-26 (candidate_001 of 2; generations 55-62 of the raised 72 budget); ai-placeholder until accepted."
+        }
+      ],
+      "note": "Redrawn per the user's play-session Q3 verdict 2026-10-26 (candidate_001 of 2; generations 55-62 of the raised 72 budget); ai-placeholder until accepted."
+    },
+    {
+      "id": "charms/reading-chair",
+      "type": "image",
+      "url": "charms/reading-chair.png",
+      "px": {
+        "w": 320,
+        "h": 256
+      },
+      "status": "accepted",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792803043394-p54mb3/candidate_002.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 18250,
+      "prompt": "One deep padded reading armchair: plump soft seat cushion, thick rounded padded arms and a high soft back, upholstered in muted warm fabric on short wooden feet, with room to curl up. Three-quarter view from the front-left as in the furniture references, resting on the floor. Single complete isolated object, centred, generous margin, plain white background, no floor, no cast shadow, no room, no pet, no text, no extra objects.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/production/pet_house_lv3.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/concepts/v1/charms-nano.png"
+      ],
+      "postProcess": "Decode: /opt/homebrew/bin/ffmpeg -v error -y -i /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792803043394-p54mb3/candidate_002.png -sws_flags accurate_rnd+full_chroma_int -pix_fmt rgb24 /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1/decoded/charms/reading-chair.png (raw SHA-256 e491974e6cea104726bf853d3483046e516649a4ebff9b3379aab1a943d487a7; decoded SHA-256 98c2e55032201a6b32de854227ad2ff4d1e31d0df21bab5c7dace9bd0106b9bd). Key/fit: game/tools/assets/export-refinements.mjs (Chrome 155.0.8059.85) with config <EV>/recipes/charms-m1.export.config.json SHA-256 595d5cb50b37b8f34b8d17b989476043cd394a7052351c44594127fea3ea02a4; boundary-connected white flood backgroundMin 240 / backgroundChroma 18, enclosed near-white kept opaque, keep-region dilation 0 (halo check vs 2 on the fern, recipes/halo/), exterior luma alpha + white unmatte, trim, uniform max-fit bottom-centred in fit box 320x170; exporter sourceBounds [56, 28, 1144, 878], scale 0.199765, bounds [51, 0, 268, 169], bottomGap 0, centerOffset 0, corners [0, 0, 0, 0]; fit PNG SHA-256 e7fa0bdd01e026ac9b75aa255c9f35b27ef66e2dd52abf51969bf94b9d476cfe. lossless pad: ffmpeg -v error -y -i <EV>/staging/fit/charms/reading-chair.png -vf \"format=rgba,pad=320:256:(ow-iw)/2:oh-ih:color=black@0.0\" -pix_fmt rgba <EV>/staging/final/charms/reading-chair.png; final SHA-256 a5c36c828cdd62ca19da77649c68ca886d152b9d8c1198341cd846f0073ad4de. H_t (art bible v1.4 Dog-scale rule, Dog 111 px at idle): 170 px (large; a deep chair stands well above the 111 px Dog). <EV> = /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1",
+      "batch": "charms-m1",
+      "hash": "a5c36c828cdd62ca19da77649c68ca886d152b9d8c1198341cd846f0073ad4de",
+      "recordedAt": "2026-10-23",
+      "recordedBy": "WORK-018-1 / TASK-122",
+      "acceptedBy": "the user (play session)",
+      "acceptedAt": "2026-10-26",
+      "acceptedReason": "Accepted at the M1 play session Q3 (all assets approved). Record: phase-3-preproduction/approvals/approval-2026-10-26-m1-charms.md",
+      "history": [
+        {
+          "hash": "a5c36c828cdd62ca19da77649c68ca886d152b9d8c1198341cd846f0073ad4de",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792803043394-p54mb3/candidate_002.png",
+          "recordedAt": "2026-10-23",
+          "recordedBy": "WORK-018-1 / TASK-122",
+          "note": "WORK-018-1 M1 batch under DEC-040 (APPROVAL-010); chosen candidate_002.png of 3 (silhouette: pass — deep armchair with rounded padded arms, high soft back and a plump seat cushion reads seat (chair) and soft; clay upholstery with cream cushion matches the accepted dog-bed palette; widest seat 'room to curl up'); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-005 play session (TECH-018 item 2); not status accepted"
+        }
+      ],
+      "note": "WORK-018-1 M1 batch under DEC-040 (APPROVAL-010); chosen candidate_002.png of 3 (silhouette: pass — deep armchair with rounded padded arms, high soft back and a plump seat cushion reads seat (chair) and soft; clay upholstery with cream cushion matches the accepted dog-bed palette; widest seat 'room to curl up'); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-005 play session (TECH-018 item 2); not status accepted"
+    },
+    {
+      "id": "charms/rug",
+      "type": "image",
+      "url": "charms/rug.png",
+      "px": {
+        "w": 160,
+        "h": 192
+      },
+      "status": "accepted",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802760388-uk5e9d/candidate_002.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 18150,
+      "prompt": "One small oval woven rug lying flat, thick soft pile with a simple woven border pattern and short fringed ends, visibly a soft mat to lie on. Three-quarter view from the front-left as in the furniture references, resting on the floor. Single complete isolated object, centred, generous margin, plain white background, no floor, no cast shadow, no room, no pet, no text, no extra objects.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/production/pet_house_lv3.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/concepts/v1/charms-nano.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/charm-rug.png"
+      ],
+      "postProcess": "Decode: /opt/homebrew/bin/ffmpeg -v error -y -i /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802760388-uk5e9d/candidate_002.png -sws_flags accurate_rnd+full_chroma_int -pix_fmt rgb24 /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1/decoded/charms/rug.png (raw SHA-256 cfa84a151fa5abe718e34875288d4069b527e952f2a68378612638d891c11433; decoded SHA-256 4a0f4c94f19033a843f361c5680bc3b203dc7211779818a42737ba8602d543cf). Key/fit: game/tools/assets/export-refinements.mjs (Chrome 155.0.8059.85) with config <EV>/recipes/charms-m1.export.config.json SHA-256 595d5cb50b37b8f34b8d17b989476043cd394a7052351c44594127fea3ea02a4; boundary-connected white flood backgroundMin 240 / backgroundChroma 18, enclosed near-white kept opaque, keep-region dilation 0 (halo check vs 2 on the fern, recipes/halo/), exterior luma alpha + white unmatte, trim, uniform max-fit bottom-centred in fit box 160x60; exporter sourceBounds [96, 164, 1111, 755], scale 0.101351, bounds [29, 0, 130, 59], bottomGap 0, centerOffset 0, corners [0, 0, 0, 0]; fit PNG SHA-256 e3915b453898d115a0858a0bf872264f4d1bde50a47d2459ae85257d436a0638. lossless pad: ffmpeg -v error -y -i <EV>/staging/fit/charms/rug.png -vf \"format=rgba,pad=160:192:(ow-iw)/2:oh-ih:color=black@0.0\" -pix_fmt rgba <EV>/staging/final/charms/rug.png; final SHA-256 bebb363efb8d8c8240c82ec2bbf59477d285133c4ed8b319c646be0f4d3211b2. H_t (art bible v1.4 Dog-scale rule, Dog 111 px at idle): 60 px (102 px wide, about the Dog's length). <EV> = /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1 | Rescale 2026-10-26 (user play-session Q3 verdict): same decoded source re-exported through tools/assets/export-refinements.mjs with evidence/charm-fixes-2026-10-26/recipes/charms-rescale.export.config.json, fit box 160x60 -> 144x192, width-limited 102x60 -> 144x84 (x1.41, the largest fit in the 160x192 canvas; user chose max fit over a wider canvas), then ffmpeg pad to 160x192 bottom-centred (lossless).",
+      "batch": "charms-m1",
+      "hash": "204f6f89ba48ec2e17b424581e0d966f53bf900555603cac1db69aa4d23d1933",
+      "recordedAt": "2026-10-26",
+      "recordedBy": "charm-fixes-2026-10-26 (user-directed, play-session Q3)",
+      "acceptedBy": "the user (play session)",
+      "acceptedAt": "2026-10-26",
+      "acceptedReason": "Accepted at the M1 play session Q3 (all assets approved). Record: phase-3-preproduction/approvals/approval-2026-10-26-m1-charms.md",
+      "history": [
+        {
+          "hash": "bebb363efb8d8c8240c82ec2bbf59477d285133c4ed8b319c646be0f4d3211b2",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802760388-uk5e9d/candidate_002.png",
+          "recordedAt": "2026-10-23",
+          "recordedBy": "WORK-018-1 / TASK-122",
+          "note": "WORK-018-1 M1 batch under DEC-040 (APPROVAL-010); chosen candidate_002.png of 3 (silhouette: pass — flat oval woven mat with fringed ends and a border band reads soft (low woven rug) without colour; the red border gives a keyable outer contour (001/003 are cream-on-white edge)); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-005 play session (TECH-018 item 2); not status accepted"
+        },
+        {
+          "hash": "204f6f89ba48ec2e17b424581e0d966f53bf900555603cac1db69aa4d23d1933",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802760388-uk5e9d/candidate_002.png",
+          "recordedAt": "2026-10-26",
+          "recordedBy": "charm-fixes-2026-10-26 (user-directed, play-session Q3)",
+          "note": "Rescaled per the user's play-session Q3 verdict 2026-10-26; same art, larger on screen; still ai-placeholder until accepted."
+        }
+      ],
+      "note": "Rescaled per the user's play-session Q3 verdict 2026-10-26; same art, larger on screen; still ai-placeholder until accepted."
+    },
+    {
+      "id": "charms/stool",
+      "type": "image",
+      "url": "charms/stool.png",
+      "px": {
+        "w": 160,
+        "h": 192
+      },
+      "status": "accepted",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802894530-r20ved/candidate_002.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 18200,
+      "prompt": "One low round wooden stool: a plain wooden seat on three short sturdy splayed legs, no cushion, a simple seat to sit on. Three-quarter view from the front-left as in the furniture references, resting on the floor. Single complete isolated object, centred, generous margin, plain white background, no floor, no cast shadow, no room, no pet, no text, no extra objects.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/production/pet_house_lv3.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/concepts/v1/charms-nano.png"
+      ],
+      "postProcess": "Decode: /opt/homebrew/bin/ffmpeg -v error -y -i /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802894530-r20ved/candidate_002.png -sws_flags accurate_rnd+full_chroma_int -pix_fmt rgb24 /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1/decoded/charms/stool.png (raw SHA-256 780dbd7ed1b382a19f97fd69ebb58dd3f9f44d93c622394ef29ecdd5a3ed672e; decoded SHA-256 40996e5c4ac88cd92405930892231aac932ca9b2f99510bea0cfa9c50cffce66). Key/fit: game/tools/assets/export-refinements.mjs (Chrome 155.0.8059.85) with config <EV>/recipes/charms-m1.export.config.json SHA-256 595d5cb50b37b8f34b8d17b989476043cd394a7052351c44594127fea3ea02a4; boundary-connected white flood backgroundMin 240 / backgroundChroma 18, enclosed near-white kept opaque, keep-region dilation 0 (halo check vs 2 on the fern, recipes/halo/), exterior luma alpha + white unmatte, trim, uniform max-fit bottom-centred in fit box 160x65; exporter sourceBounds [134, 338, 761, 968], scale 0.103011, bounds [48, 0, 111, 64], bottomGap 0, centerOffset 0, corners [0, 0, 0, 0]; fit PNG SHA-256 a43130d1358502bc271cc3738fafb43a061773032fe45fbfaf55c734a202bfe2. lossless pad: ffmpeg -v error -y -i <EV>/staging/fit/charms/stool.png -vf \"format=rgba,pad=160:192:(ow-iw)/2:oh-ih:color=black@0.0\" -pix_fmt rgba <EV>/staging/final/charms/stool.png; final SHA-256 e2aa8a0024bb3ad59fad39e0f5af319dc3676f10b1691262f803016d468aea01. H_t (art bible v1.4 Dog-scale rule, Dog 111 px at idle): 65 px (seat height for the 111 px Dog). <EV> = /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1 | Rescale 2026-10-26 (user play-session Q3 verdict): same decoded source re-exported through tools/assets/export-refinements.mjs with evidence/charm-fixes-2026-10-26/recipes/charms-rescale.export.config.json, H_t 65 -> 130 (x2), then ffmpeg pad to 160x192 bottom-centred (lossless).",
+      "batch": "charms-m1",
+      "hash": "20db00ec73b26f1357456999ca0fa3fc0222178e65c1a6d0c31b51365e1752de",
+      "recordedAt": "2026-10-26",
+      "recordedBy": "charm-fixes-2026-10-26 (user-directed, play-session Q3)",
+      "acceptedBy": "the user (play session)",
+      "acceptedAt": "2026-10-26",
+      "acceptedReason": "Accepted at the M1 play session Q3 (all assets approved). Record: phase-3-preproduction/approvals/approval-2026-10-26-m1-charms.md",
+      "history": [
+        {
+          "hash": "e2aa8a0024bb3ad59fad39e0f5af319dc3676f10b1691262f803016d468aea01",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802894530-r20ved/candidate_002.png",
+          "recordedAt": "2026-10-23",
+          "recordedBy": "WORK-018-1 / TASK-122",
+          "note": "WORK-018-1 M1 batch under DEC-040 (APPROVAL-010); chosen candidate_002.png of 3 (silhouette: pass — round wooden seat on short splayed legs reads seat without colour; lowest, most stool-like proportion; no cushion so it does not read soft); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-005 play session (TECH-018 item 2); not status accepted"
+        },
+        {
+          "hash": "20db00ec73b26f1357456999ca0fa3fc0222178e65c1a6d0c31b51365e1752de",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802894530-r20ved/candidate_002.png",
+          "recordedAt": "2026-10-26",
+          "recordedBy": "charm-fixes-2026-10-26 (user-directed, play-session Q3)",
+          "note": "Rescaled per the user's play-session Q3 verdict 2026-10-26; same art, larger on screen; still ai-placeholder until accepted."
+        }
+      ],
+      "note": "Rescaled per the user's play-session Q3 verdict 2026-10-26; same art, larger on screen; still ai-placeholder until accepted."
+    },
+    {
+      "id": "charms/tall-lamp",
+      "type": "image",
+      "url": "charms/tall-lamp.png",
+      "px": {
+        "w": 160,
+        "h": 192
+      },
+      "status": "accepted",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1793034471748-dmjxoy/candidate_001.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 18400,
+      "prompt": "One slender tall standing floor lamp: an opaque cream fabric shade held high on a long thin wooden pole, rising from a small round wooden base. Nothing else: no plant, no leaves, no pot, no table. The lamp clearly reads tall and thin. Three-quarter view from the front-left as in the furniture references, resting on the floor. Single complete isolated object, centred, generous margin, plain white background, no floor, no cast shadow, no room, no pet, no text, no extra objects.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/production/pet_house_lv3.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/concepts/v1/charms-nano.png"
+      ],
+      "postProcess": "Decode: /opt/homebrew/bin/ffmpeg -v error -y -i /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1793034471748-dmjxoy/candidate_001.png -sws_flags accurate_rnd+full_chroma_int -pix_fmt rgb24 /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/charm-fixes-2026-10-26/decoded/charms/tall-lamp.png | Key and fit: tools/assets/export-refinements.mjs with /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/charm-fixes-2026-10-26/recipes/charms-redraw.export.config.json (backgroundMin 240, chroma 18, dilation 0), fit box 160x192 (H_t 192).",
+      "batch": "charms-m1-fixes",
+      "hash": "645079b5a1bd806ab71e79d5d076e689effbb6ce8545a71232c77b6e08f55c30",
+      "recordedAt": "2026-10-26",
+      "recordedBy": "charm-fixes-2026-10-26 (user-directed, play-session Q3)",
+      "acceptedBy": "the user (play session)",
+      "acceptedAt": "2026-10-26",
+      "acceptedReason": "Accepted at the M1 play session Q3 (all assets approved). Record: phase-3-preproduction/approvals/approval-2026-10-26-m1-charms.md",
+      "history": [
+        {
+          "hash": "e2600cae2906f065ecad4139bf909ded70c3ba824d71e8b41efdec3bd87495e8",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802878470-arv2pz/candidate_001.png",
+          "recordedAt": "2026-10-23",
+          "recordedBy": "WORK-018-1 / TASK-122",
+          "note": "WORK-018-1 M1 batch under DEC-040 (APPROVAL-010); chosen candidate_001.png of 3 (silhouette: pass — long thin pole with opaque shade high above a low leafy pot reads light and tall; 002 rejected (bulb fitting visible through the open top, the art-bible lamp error)); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-005 play session (TECH-018 item 2); not status accepted"
+        },
+        {
+          "hash": "645079b5a1bd806ab71e79d5d076e689effbb6ce8545a71232c77b6e08f55c30",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1793034471748-dmjxoy/candidate_001.png",
+          "recordedAt": "2026-10-26",
+          "recordedBy": "charm-fixes-2026-10-26 (user-directed, play-session Q3)",
+          "note": "Redrawn per the user's play-session Q3 verdict 2026-10-26 (candidate_001 of 2; generations 55-62 of the raised 72 budget); ai-placeholder until accepted."
+        }
+      ],
+      "note": "Redrawn per the user's play-session Q3 verdict 2026-10-26 (candidate_001 of 2; generations 55-62 of the raised 72 budget); ai-placeholder until accepted."
+    },
+    {
+      "id": "charms/toy-basket",
+      "type": "image",
+      "url": "charms/toy-basket.png",
+      "px": {
+        "w": 160,
+        "h": 192
+      },
+      "status": "accepted",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802945377-8lwtqu/candidate_002.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 18210,
+      "prompt": "One woven wicker toy basket, open at the top, with a couple of small balls, a little rope toy and a squeaky toy peeking out over the rim, clearly a basket of toys. Three-quarter view from the front-left as in the furniture references, resting on the floor. Single complete isolated object, centred, generous margin, plain white background, no floor, no cast shadow, no room, no pet, no text, no extra objects.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/production/pet_house_lv3.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/concepts/v1/charms-nano.png"
+      ],
+      "postProcess": "Decode: /opt/homebrew/bin/ffmpeg -v error -y -i /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802945377-8lwtqu/candidate_002.png -sws_flags accurate_rnd+full_chroma_int -pix_fmt rgb24 /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1/decoded/charms/toy-basket.png (raw SHA-256 51f556384bd823bb426d75ed2d6f681734c3bb3981b1cbebfd33a1b535f82e99; decoded SHA-256 e830a211bfdded10f9de9b2cda1fad4962d5655049b16c319675a0f50e395b90). Key/fit: game/tools/assets/export-refinements.mjs (Chrome 155.0.8059.85) with config <EV>/recipes/charms-m1.export.config.json SHA-256 595d5cb50b37b8f34b8d17b989476043cd394a7052351c44594127fea3ea02a4; boundary-connected white flood backgroundMin 240 / backgroundChroma 18, enclosed near-white kept opaque, keep-region dilation 0 (halo check vs 2 on the fern, recipes/halo/), exterior luma alpha + white unmatte, trim, uniform max-fit bottom-centred in fit box 160x70; exporter sourceBounds [51, 172, 837, 1096], scale 0.075676, bounds [50, 0, 109, 69], bottomGap 0, centerOffset 0, corners [0, 0, 0, 0]; fit PNG SHA-256 f1b353c423c222731581cb5fe67dd61d1ef79a7795dfe10043693f3b659dca10. lossless pad: ffmpeg -v error -y -i <EV>/staging/fit/charms/toy-basket.png -vf \"format=rgba,pad=160:192:(ow-iw)/2:oh-ih:color=black@0.0\" -pix_fmt rgba <EV>/staging/final/charms/toy-basket.png; final SHA-256 e28aef00b430caa34535b030fefc2b36c5a86f93129d425f10de463ae3bc4cc1. H_t (art bible v1.4 Dog-scale rule, Dog 111 px at idle): 70 px. <EV> = /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1 | Rescale 2026-10-26 (user play-session Q3 verdict): same decoded source re-exported through tools/assets/export-refinements.mjs with evidence/charm-fixes-2026-10-26/recipes/charms-rescale.export.config.json, H_t 70 -> 140 (x2), then ffmpeg pad to 160x192 bottom-centred (lossless).",
+      "batch": "charms-m1",
+      "hash": "189bf0625164d430410d35f8d62bdc61ed829fe589183840c175df572395d28e",
+      "recordedAt": "2026-10-26",
+      "recordedBy": "charm-fixes-2026-10-26 (user-directed, play-session Q3)",
+      "acceptedBy": "the user (play session)",
+      "acceptedAt": "2026-10-26",
+      "acceptedReason": "Accepted at the M1 play session Q3 (all assets approved). Record: phase-3-preproduction/approvals/approval-2026-10-26-m1-charms.md",
+      "history": [
+        {
+          "hash": "e28aef00b430caa34535b030fefc2b36c5a86f93129d425f10de463ae3bc4cc1",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802945377-8lwtqu/candidate_002.png",
+          "recordedAt": "2026-10-23",
+          "recordedBy": "WORK-018-1 / TASK-122",
+          "note": "WORK-018-1 M1 batch under DEC-040 (APPROVAL-010); chosen candidate_002.png of 3 (silhouette: pass — open woven basket with two round balls and a toy duck and rope over the rim reads toy (ball) in silhouette; toys most legible of the three at small size); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-005 play session (TECH-018 item 2); not status accepted"
+        },
+        {
+          "hash": "189bf0625164d430410d35f8d62bdc61ed829fe589183840c175df572395d28e",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802945377-8lwtqu/candidate_002.png",
+          "recordedAt": "2026-10-26",
+          "recordedBy": "charm-fixes-2026-10-26 (user-directed, play-session Q3)",
+          "note": "Rescaled per the user's play-session Q3 verdict 2026-10-26; same art, larger on screen; still ai-placeholder until accepted."
+        }
+      ],
+      "note": "Rescaled per the user's play-session Q3 verdict 2026-10-26; same art, larger on screen; still ai-placeholder until accepted."
+    },
+    {
+      "id": "charms/wall-clock",
+      "type": "image",
+      "url": "charms/wall-clock.png",
+      "px": {
+        "w": 128,
+        "h": 128
+      },
+      "status": "accepted",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1793034476526-pm3lcn/candidate_001.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 18430,
+      "prompt": "One round wall clock: a painted cream clock face with simple hour marks and two hands, in a plain round wooden frame with a small painted flower motif. Drawn in isometric view hanging flat on the LEFT wall of an isometric room like the room reference: the round clock is foreshortened into a tilted ellipse whose long axis slopes upward from left to right at the same angle as the left wall's floor line, with a thin sliver of the frame's right-hand edge visible. Single complete isolated object, centred, generous margin, plain white background, no wall, no floor, no cast shadow, no room, no pet, no text, no extra objects.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/production/pet_house_lv3.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/concepts/v1/charms-nano.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts.worktrees/talvi-pets-prototype-RUN-001/run/talvi-pet-prototype/game/public/assets/rooms/dog-room.jpg"
+      ],
+      "postProcess": "Decode: /opt/homebrew/bin/ffmpeg -v error -y -i /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1793034476526-pm3lcn/candidate_001.png -sws_flags accurate_rnd+full_chroma_int -pix_fmt rgb24 /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/charm-fixes-2026-10-26/decoded/charms/wall-clock.png | Key and fit: tools/assets/export-refinements.mjs with /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/charm-fixes-2026-10-26/recipes/charms-redraw.export.config.json (backgroundMin 240, chroma 18, dilation 0), max-fit 128x128; ffmpeg pad bottom-centred (lossless). Wall pieces are drawn for the left wall; InteriorScene mirrors them on right-wall slots.",
+      "batch": "charms-m1-fixes",
+      "hash": "77bde08219e1c9aa822501cd95ab1229140c219f21718c0f0c95a8818656b7d9",
+      "recordedAt": "2026-10-26",
+      "recordedBy": "charm-fixes-2026-10-26 (user-directed, play-session Q3)",
+      "acceptedBy": "the user (play session)",
+      "acceptedAt": "2026-10-26",
+      "acceptedReason": "Accepted at the M1 play session Q3 (all assets approved). Record: phase-3-preproduction/approvals/approval-2026-10-26-m1-charms.md",
+      "history": [
+        {
+          "hash": "43fc3cb061466b5a83a2d5b4bab11e0d63ef1b02da508254489eef35e4752339",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1792802962240-596f3g/candidate_003.png",
+          "recordedAt": "2026-10-23",
+          "recordedBy": "WORK-018-1 / TASK-122",
+          "note": "WORK-018-1 M1 batch under DEC-040 (APPROVAL-010); chosen candidate_003.png of 3 (silhouette: pass — round wooden frame around a painted face with hour marks and hands reads art (framed picture) and clock; the painted flower band on the frame carries the 'painted' brief; straight-on wall piece); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-005 play session (TECH-018 item 2); not status accepted"
+        },
+        {
+          "hash": "77bde08219e1c9aa822501cd95ab1229140c219f21718c0f0c95a8818656b7d9",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1793034476526-pm3lcn/candidate_001.png",
+          "recordedAt": "2026-10-26",
+          "recordedBy": "charm-fixes-2026-10-26 (user-directed, play-session Q3)",
+          "note": "Redrawn per the user's play-session Q3 verdict 2026-10-26 (candidate_001 of 2; generations 55-62 of the raised 72 budget); ai-placeholder until accepted."
+        }
+      ],
+      "note": "Redrawn per the user's play-session Q3 verdict 2026-10-26 (candidate_001 of 2; generations 55-62 of the raised 72 budget); ai-placeholder until accepted."
+    },
+    {
+      "id": "clues/branch-book",
+      "type": "image",
+      "url": "clues/branch-book.png",
+      "px": {
+        "w": 256,
+        "h": 256
+      },
+      "status": "accepted",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/clues/1792803113120-3bsf3d/candidate_002.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 18210,
+      "prompt": "One closed cream book with a brown spine resting on a short tree branch. The book is the dominant mass; the branch beneath it is the only added clue. Simple three-quarter object view, spare internal marks, cream and brown only, no words, no glow, no frame, plain white background. Entire isolated object with comfortable margin.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/style/reward_icon_lantern.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts.worktrees/talvi-pets-prototype-RUN-001/WORK-018-1/talvi-pet-prototype/game/public/assets/clues/feather-book.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/clue-branch-book.png"
+      ],
+      "postProcess": "Decode: /opt/homebrew/bin/ffmpeg -v error -y -i /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/clues/1792803113120-3bsf3d/candidate_002.png -sws_flags accurate_rnd+full_chroma_int -pix_fmt rgb24 /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1/decoded/clues/branch-book.png (raw SHA-256 da522191958575b6440fe1e4486703e413b16dc067985ea03099d41955c50bcd; decoded SHA-256 8c76690809cea12fe440d1556cc211db1b7166f1d7a95aea5082277018a41003). Icon recipe: <EV>/recipes/prepare-clues.mjs SHA-256 59858a4cb555672df9f3a35dfebd7a26d0df687460024fea24662f83abc47139 (disposable copy of phase-3-preproduction/production/representatives-v1/prepare-icons.mjs; only import, sources, specs and output paths changed; Chrome canvas): whole image; flood border-connected near-white (min>=240, spread<=18) as exterior; keep-region dilation 2 px; exterior alpha from luma (/15) with white unmatte; trim; uniform fit with 8 px margin centred in 256x256; sourceBounds [38, 30, 985, 996], scale 0.248190, bounds [10, 8, 245, 247]; report <EV>/staging/final/clues-export-report.json. Pre-quant export SHA-256 28ecd94d59889e6380fd956f0323e8f88a502000486aa24e441da1e891b03357 (over 60 KB) -> pngquant 3.0.3 --quality 90-100 --speed 1 --nofs --force --output <final> 128 <prequant> (palette + tRNS). Final SHA-256 9f630a5d0bc6a87b53adbf61e955b3d32331b3268fe7fe2c3cb764cf9065f480. <EV> = /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1",
+      "batch": "charms-m1",
+      "hash": "9f630a5d0bc6a87b53adbf61e955b3d32331b3268fe7fe2c3cb764cf9065f480",
+      "recordedAt": "2026-10-23",
+      "recordedBy": "WORK-018-1 / TASK-122",
+      "acceptedBy": "the user (play session)",
+      "acceptedAt": "2026-10-26",
+      "acceptedReason": "Accepted at the M1 play session Q3 (all assets approved). Record: phase-3-preproduction/approvals/approval-2026-10-26-m1-charms.md",
+      "history": [
+        {
+          "hash": "9f630a5d0bc6a87b53adbf61e955b3d32331b3268fe7fe2c3cb764cf9065f480",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/clues/1792803113120-3bsf3d/candidate_002.png",
+          "recordedAt": "2026-10-23",
+          "recordedBy": "WORK-018-1 / TASK-122",
+          "note": "WORK-018-1 M1 batch under DEC-040 (APPROVAL-010); chosen candidate_002.png of 3 (clue pre-check: pass — closed cream book with brown spine dominant, visibly resting on a branch (the secondary clue); 001/003 put the branch behind the book rather than under it); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-005 play session (TECH-018 item 2); not status accepted"
+        }
+      ],
+      "note": "WORK-018-1 M1 batch under DEC-040 (APPROVAL-010); chosen candidate_002.png of 3 (clue pre-check: pass — closed cream book with brown spine dominant, visibly resting on a branch (the secondary clue); 001/003 put the branch behind the book rather than under it); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-005 play session (TECH-018 item 2); not status accepted"
+    },
+    {
+      "id": "clues/moth",
+      "type": "image",
+      "url": "clues/moth.png",
+      "px": {
+        "w": 256,
+        "h": 256
+      },
+      "status": "accepted",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/clues/1792803128196-ace3qk/candidate_001.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 18220,
+      "prompt": "One moth with open wings resting on a short bare branch. The moth is the dominant object; the bare branch is the only added clue. No owl, no bird, no eyes, no face other than the moth's. Simple three-quarter object view, spare internal marks, cream and brown only, no words, no glow, no frame, plain white background. Entire isolated object with comfortable margin.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/style/reward_icon_lantern.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts.worktrees/talvi-pets-prototype-RUN-001/WORK-018-1/talvi-pet-prototype/game/public/assets/clues/feather-book.png"
+      ],
+      "postProcess": "Decode: /opt/homebrew/bin/ffmpeg -v error -y -i /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/clues/1792803128196-ace3qk/candidate_001.png -sws_flags accurate_rnd+full_chroma_int -pix_fmt rgb24 /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1/decoded/clues/moth.png (raw SHA-256 8dbbc64e7da59e6b408c7ab786bc140f9220e4fbdee83aaa0459d96d27b03536; decoded SHA-256 3dabbf4db86eaf1a21194f5238d14f967b651bc421f5611275fc090302ad3e60). Icon recipe: <EV>/recipes/prepare-clues.mjs SHA-256 59858a4cb555672df9f3a35dfebd7a26d0df687460024fea24662f83abc47139 (disposable copy of phase-3-preproduction/production/representatives-v1/prepare-icons.mjs; only import, sources, specs and output paths changed; Chrome canvas): whole image; flood border-connected near-white (min>=240, spread<=18) as exterior; keep-region dilation 2 px; exterior alpha from luma (/15) with white unmatte; trim; uniform fit with 8 px margin centred in 256x256; sourceBounds [49, 34, 974, 989], scale 0.251046, bounds [12, 8, 243, 247]; report <EV>/staging/final/clues-export-report.json. Pre-quant export SHA-256 89c87e4e6a158a80af143c3e37b9f2264ffbaa1845faddf319c42ec1a31d9e01 (over 60 KB) -> pngquant 3.0.3 --quality 90-100 --speed 1 --nofs --force --output <final> 128 <prequant> (palette + tRNS). Final SHA-256 b4247fa6b96b81432d803ad2eed835bb998e165019e95bc4e53c3afca1a5533c. <EV> = /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1",
+      "batch": "charms-m1",
+      "hash": "b4247fa6b96b81432d803ad2eed835bb998e165019e95bc4e53c3afca1a5533c",
+      "recordedAt": "2026-10-23",
+      "recordedBy": "WORK-018-1 / TASK-122",
+      "acceptedBy": "the user (play session)",
+      "acceptedAt": "2026-10-26",
+      "acceptedReason": "Accepted at the M1 play session Q3 (all assets approved). Record: phase-3-preproduction/approvals/approval-2026-10-26-m1-charms.md",
+      "history": [
+        {
+          "hash": "b4247fa6b96b81432d803ad2eed835bb998e165019e95bc4e53c3afca1a5533c",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/clues/1792803128196-ace3qk/candidate_001.png",
+          "recordedAt": "2026-10-23",
+          "recordedBy": "WORK-018-1 / TASK-122",
+          "note": "WORK-018-1 M1 batch under DEC-040 (APPROVAL-010); chosen candidate_001.png of 3 (clue pre-check: pass — open-winged moth resting on a bare branch; DEC-033 R checked: no owl, no bird, no eyes in the dark in any of the three candidates; 001 is the only one where the moth actually rests on the branch); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-005 play session (TECH-018 item 2); not status accepted"
+        }
+      ],
+      "note": "WORK-018-1 M1 batch under DEC-040 (APPROVAL-010); chosen candidate_001.png of 3 (clue pre-check: pass — open-winged moth resting on a bare branch; DEC-033 R checked: no owl, no bird, no eyes in the dark in any of the three candidates; 001 is the only one where the moth actually rests on the branch); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-005 play session (TECH-018 item 2); not status accepted"
+    },
+    {
+      "id": "clues/spectacles",
+      "type": "image",
+      "url": "clues/spectacles.png",
+      "px": {
+        "w": 256,
+        "h": 256
+      },
+      "status": "accepted",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/clues/1792803097439-d3j3ig/candidate_003.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 18200,
+      "prompt": "One pair of round wire spectacles resting between two pressed leaves. The spectacles are the dominant object; the two flat pressed leaves are the only added clue. Simple three-quarter object view, spare internal marks, cream and brown only, no words, no glow, no frame, plain white background. Entire isolated object with comfortable margin.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/style/reward_icon_lantern.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts.worktrees/talvi-pets-prototype-RUN-001/WORK-018-1/talvi-pet-prototype/game/public/assets/clues/feather-book.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/clue-spectacles.png"
+      ],
+      "postProcess": "Decode: /opt/homebrew/bin/ffmpeg -v error -y -i /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/clues/1792803097439-d3j3ig/candidate_003.png -sws_flags accurate_rnd+full_chroma_int -pix_fmt rgb24 /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1/decoded/clues/spectacles.png (raw SHA-256 e38d4a768267884e6e810ed7641ac869b9ec43545913bf2ec217cf03f51fb4cd; decoded SHA-256 9b55cfba77abe531966ce55283b41e5b5bcf84feabd71df6ff307f86fb1d9382). Icon recipe: <EV>/recipes/prepare-clues.mjs SHA-256 59858a4cb555672df9f3a35dfebd7a26d0df687460024fea24662f83abc47139 (disposable copy of phase-3-preproduction/production/representatives-v1/prepare-icons.mjs; only import, sources, specs and output paths changed; Chrome canvas): whole image; flood border-connected near-white (min>=240, spread<=18) as exterior; keep-region dilation 2 px; exterior alpha from luma (/15) with white unmatte; trim; uniform fit with 8 px margin centred in 256x256; sourceBounds [41, 277, 982, 818], scale 0.254777, bounds [8, 59, 247, 196]; report <EV>/staging/final/clues-export-report.json. No pngquant (57669 B <= 60 KB). Final SHA-256 e234d04708c64f5f789e57f72c07947550258afdeec157c2b6a42eb9d9ef9734. <EV> = /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-001/evidence/WORK-018-1",
+      "batch": "charms-m1",
+      "hash": "e234d04708c64f5f789e57f72c07947550258afdeec157c2b6a42eb9d9ef9734",
+      "recordedAt": "2026-10-23",
+      "recordedBy": "WORK-018-1 / TASK-122",
+      "acceptedBy": "the user (play session)",
+      "acceptedAt": "2026-10-26",
+      "acceptedReason": "Accepted at the M1 play session Q3 (all assets approved). Record: phase-3-preproduction/approvals/approval-2026-10-26-m1-charms.md",
+      "history": [
+        {
+          "hash": "e234d04708c64f5f789e57f72c07947550258afdeec157c2b6a42eb9d9ef9734",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/clues/1792803097439-d3j3ig/candidate_003.png",
+          "recordedAt": "2026-10-23",
+          "recordedBy": "WORK-018-1 / TASK-122",
+          "note": "WORK-018-1 M1 batch under DEC-040 (APPROVAL-010); chosen candidate_003.png of 3 (clue pre-check: pass — round wire spectacles dominant, two pressed leaves as the single secondary clue; cream/brown finish matching feather-book and the Lantern; cleanest contour of the three); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-005 play session (TECH-018 item 2); not status accepted"
+        }
+      ],
+      "note": "WORK-018-1 M1 batch under DEC-040 (APPROVAL-010); chosen candidate_003.png of 3 (clue pre-check: pass — round wire spectacles dominant, two pressed leaves as the single secondary clue; cream/brown finish matching feather-book and the Lantern; cleanest contour of the three); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-005 play session (TECH-018 item 2); not status accepted"
     }
   ]
 }

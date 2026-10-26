@@ -39,7 +39,8 @@
       "tags": [
         "soft"
       ],
-      "sprite": "charms/cushion"
+      "sprite": "charms/cushion",
+      "seat": { "y": 62 }
     },
     {
       "id": "ball",
@@ -79,7 +80,8 @@
       "tags": [
         "soft"
       ],
-      "sprite": "charms/rug"
+      "sprite": "charms/rug",
+      "seat": { "y": 18 }
     },
     {
       "id": "bookshelf",
@@ -89,7 +91,9 @@
       "tags": [
         "tall"
       ],
-      "sprite": "charms/bookshelf"
+      "sprite": "charms/bookshelf",
+      "canvas": { "w": 144, "h": 245 },
+      "standsOnFloor": true
     },
     {
       "id": "perch-branch",
@@ -115,7 +119,7 @@
     {
       "id": "tall-lamp",
       "name": "Tall Lamp",
-      "description": "A slender standing lamp with light above the leaves.",
+      "description": "A slender standing lamp that casts its light high across the room.",
       "sizeClass": "small",
       "tags": [
         "light",
@@ -131,7 +135,8 @@
       "tags": [
         "seat"
       ],
-      "sprite": "charms/stool"
+      "sprite": "charms/stool",
+      "seat": { "y": 100 }
     },
     {
       "id": "toy-basket",

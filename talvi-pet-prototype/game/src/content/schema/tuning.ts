@@ -17,6 +17,8 @@ export const TuningSchema = z.object({
     bubbleTextMs: z.number(),
     toastMs: z.number(),
     fulfilmentUseHoldMs: z.number(),
+    // Play-session Q6: the pet waits this long after entry before its greeting walk, so the walk is seen after the door fade.
+    greetingDelayMs: z.number().nonnegative().default(0),
     recentTargetPenalty: z.number(),
     recentTargetsKept: z.number(),
     hiddenSlotFromWant: z.number(),

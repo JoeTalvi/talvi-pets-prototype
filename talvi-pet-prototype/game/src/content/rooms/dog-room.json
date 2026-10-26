@@ -156,7 +156,7 @@
       "y": 930,
       "anchor": {
         "x": 970,
-        "y": 940,
+        "y": 900,
         "facing": "left"
       },
       "adjacent": [
@@ -175,7 +175,8 @@
         "y": 691,
         "facing": "left"
       },
-      "adjacent": []
+      "adjacent": [],
+      "floorY": 687
     },
     {
       "id": "wall-2",
@@ -189,7 +190,8 @@
         "y": 533,
         "facing": "left"
       },
-      "adjacent": []
+      "adjacent": [],
+      "floorY": 510
     },
     {
       "id": "wall-3",
@@ -203,7 +205,8 @@
         "y": 546,
         "facing": "right"
       },
-      "adjacent": []
+      "adjacent": [],
+      "floorY": 495
     },
     {
       "id": "wall-4",
@@ -217,7 +220,8 @@
         "y": 709,
         "facing": "right"
       },
-      "adjacent": []
+      "adjacent": [],
+      "floorY": 676
     }
   ],
   "wanderPoints": [

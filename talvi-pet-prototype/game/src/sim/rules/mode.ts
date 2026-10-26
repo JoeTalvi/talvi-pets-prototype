@@ -9,7 +9,8 @@ export function setDesignMode(_content: Content, state: GameState,
   const reason = typeof action.on !== 'boolean' ? 'invalidPayload'
     : action.on === (state.mode === 'design') ? 'noChange'
     : state.scene.kind !== 'interior' ? 'notInterior'
-    : state.dialogue.current !== null ? 'dialogueOpen'
+    // Play-session Q17: leaving Decorate stays allowed while a dialogue is pending (the want story waits for the nap).
+    : action.on && state.dialogue.current !== null ? 'dialogueOpen'
     : action.on && state.celebration !== null ? 'celebrationActive'
     : action.on && state.arrival !== null ? 'arrivalActive' : null;
   if (reason) return { state, events: [{ type: 'action.rejected', action, reason }] };

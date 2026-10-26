@@ -67,9 +67,23 @@ describe('check-assets VERIFY-ASSET-001 honours the same list', () => {
         expect(run(retired, new Map([['charms/fern', 'WORK-018']]))).toEqual(['error']);
     });
 });
-it('the shipped list parses: 21 later-batch IDs, each labelled WORK-018 or WORK-022', () => {
+it('the shipped list parses: 3 later-batch IDs (the Owl batch), each labelled WORK-022', () => {
     const known = readKnownMissing('tools/known-missing-assets.json');
-    expect(known.size).toBe(21);
-    expect(new Set(known.values())).toEqual(new Set(['WORK-018', 'WORK-022']));
-    expect(JSON.parse(readFileSync('tools/known-missing-assets.json', 'utf8')).assets).toHaveLength(21);
+    expect(known.size).toBe(3);
+    expect(new Set(known.values())).toEqual(new Set(['WORK-022']));
+    expect(JSON.parse(readFileSync('tools/known-missing-assets.json', 'utf8')).assets).toHaveLength(3);
+});
+describe('check-assets VERIFY-ASSET-002 per-type canvas (play-session Q3, 2026-10-26)', () => {
+    const run = (px: { w: number; h: number }) => {
+        const contentDir = mkdtempSync(join(dir, 'canvas-'));
+        writeFileSync(join(contentDir, 'charms.json'), JSON.stringify({ types: [{ id: 'bookshelf', sizeClass: 'wall', sprite: 'charms/bookshelf', canvas: { w: 192, h: 256 } }] }));
+        const m = AssetManifest.parse({ ...manifest, entries: manifest.entries.map(e => e.id === 'charms/bookshelf' ? { ...e, px } : e) });
+        const out: string[] = [];
+        contentChecks(m, contentDir, (id, _level, _path, message) => { if (id === '002') out.push(message); });
+        return out;
+    };
+    it('accepts a sprite that matches the type canvas and rejects the class canvas', () => {
+        expect(run({ w: 192, h: 256 })).toEqual([]);
+        expect(run({ w: 128, h: 128 })).toEqual(['charms/bookshelf: canvas differs from the type canvas 192×256']);
+    });
 });

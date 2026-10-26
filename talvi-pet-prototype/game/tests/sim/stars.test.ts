@@ -1,11 +1,15 @@
-import { expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
+import type { Content } from '../../src/content/types';
+import type { Action } from '../../src/sim/actions';
+import type { SimEvent } from '../../src/sim/events';
+import { reduce } from '../../src/sim/reduce';
 import { ContentError } from '../../src/content/load';
 import { afterRoomChange } from '../../src/sim/rules/stars';
 import { starsOf } from '../../src/sim/select';
 import { mulberry32 } from '../../src/sim/rng';
 import { initialState, type GameState } from '../../src/sim/state';
 import { validContent } from '../content/helpers';
-import { deepFreeze } from './helpers';
+import { deepFreeze, dogRoomDesign } from './helpers';
 
 // Synthetic before/after placement snapshots: the full placement dispatch is not implemented here.
 function withPlacements(state: GameState, placements: Record<string, string>): GameState {
@@ -118,4 +122,67 @@ it.each([1, 2, 3])('VERIFY-MEC-006-008 isolated property: 500 valid snapshot edi
     expect(JSON.parse(JSON.stringify(next))).toEqual(next);
     state = next;
   }
+});
+
+/** The Dog stays un-introduced so MEC-009 never evaluates and its vignette cannot freeze placements. */
+function scoringRoom() {
+  const room = dogRoomDesign();
+  room.state.pets.dog.introduced = false;
+  return room;
+}
+
+describe('MEC-006 through the placeCharm/removeCharm dispatch', () => {
+  const place = (slotId: string, typeId: string): Action => ({ type: 'placeCharm', slotId, typeId });
+  const starsEvents = (events: SimEvent[]) => events.filter(event => event.type === 'stars.changed');
+  function dispatch(content: Content, state: GameState, actions: Action[]): GameState {
+    return actions.reduce((current, action) => reduce(content, current, action).state, state);
+  }
+
+  it('VERIFY-MEC-006-002 via reduce: first copy 0 → 4', () => {
+    const { content, state } = scoringRoom();
+    expect(starsEvents(reduce(content, deepFreeze(state), place('large-1', 'dog-bed')).events))
+      .toEqual([{ type: 'stars.changed', roomId: 'dog-room', from: 0, to: 4, delta: 4, max: 48 }]);
+  });
+
+  it('VERIFY-MEC-006-003/004 via reduce: repeat 12 → 13, removal 13 → 9 leaves hearts and wants untouched', () => {
+    const { content, state } = scoringRoom();
+    const three = dispatch(content, state, [place('large-1', 'dog-bed'), place('floor-1', 'lamp'), place('wall-1', 'painting')]);
+    const repeated = reduce(content, deepFreeze(three), place('floor-2', 'lamp'));
+    expect(starsEvents(repeated.events)).toEqual([{ type: 'stars.changed', roomId: 'dog-room', from: 12, to: 13, delta: 1, max: 48 }]);
+    const removed = reduce(content, repeated.state, { type: 'removeCharm', slotId: 'large-1' });
+    expect(starsEvents(removed.events)).toEqual([{ type: 'stars.changed', roomId: 'dog-room', from: 13, to: 9, delta: -4, max: 48 }]);
+    expect(Object.values(removed.state.pets).map(pet => pet.fulfilledWantIds)).toEqual(Object.values(repeated.state.pets).map(pet => pet.fulfilledWantIds));
+  });
+
+  it('VERIFY-MEC-006-005/006 via reduce: one net replacement event; an equal score emits none', () => {
+    const { content, state } = scoringRoom();
+    state.inventory.ownedTypeIds.push('fern');
+    const before = dispatch(content, state, [place('floor-1', 'lamp'), place('floor-2', 'fern')]);
+    expect(starsEvents(reduce(content, deepFreeze(before), place('floor-1', 'fern')).events))
+      .toEqual([{ type: 'stars.changed', roomId: 'dog-room', from: 8, to: 5, delta: -3, max: 48 }]);
+    expect(starsEvents(reduce(content, before, place('floor-1', 'stool')).events)).toEqual([]);
+  });
+
+  it('VERIFY-MEC-006-007 via reduce: twelve compatible distinct types reach 48 (two wall types added in-test)', () => {
+    const { content, state } = scoringRoom();
+    const wall = content.charms.types.find(type => type.id === 'painting')!;
+    content.charms.types.push({ ...wall, id: 'wall-fixture-a' }, { ...wall, id: 'wall-fixture-b' });
+    state.inventory.ownedTypeIds = content.charms.types.map(type => type.id);
+    const used = new Set<string>();
+    const actions = content.rooms['dog-room'].slots.map(slot => {
+      const type = content.charms.types.find(type => type.sizeClass === slot.sizeClass && !used.has(type.id))!;
+      used.add(type.id);
+      return place(slot.id, type.id);
+    });
+    expect(starsOf(content, dispatch(content, state, actions), 'dog-room')).toEqual({ points: 48, max: 48 });
+  });
+
+  it('VERIFY-MEC-006-010/013 via reduce: a disliked tall charm scores like any type; owl-room unchanged', () => {
+    const { content, state } = scoringRoom();
+    state.inventory.ownedTypeIds.push('tall-lamp');
+    const owlBefore = starsOf(content, state, 'owl-room');
+    const result = reduce(content, state, place('floor-1', 'tall-lamp'));
+    expect(starsEvents(result.events)).toEqual([{ type: 'stars.changed', roomId: 'dog-room', from: 0, to: 4, delta: 4, max: 48 }]);
+    expect(starsOf(content, result.state, 'owl-room')).toEqual(owlBefore);
+  });
 });

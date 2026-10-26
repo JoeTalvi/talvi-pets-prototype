@@ -38,9 +38,9 @@
       "door": {
         "id": "starter-front",
         "rect": {
-          "x": 370,
-          "y": 780,
-          "w": 100,
+          "x": 145,
+          "y": 800,
+          "w": 110,
           "h": 50
         },
         "target": {
@@ -49,8 +49,8 @@
           "doorId": "to-street"
         },
         "spawn": {
-          "x": 420,
-          "y": 860,
+          "x": 400,
+          "y": 900,
           "facing": "down"
         }
       },
@@ -64,12 +64,12 @@
           "y": 910
         },
         {
-          "x": 420,
-          "y": 860
+          "x": 200,
+          "y": 900
         },
         {
-          "x": 420,
-          "y": 805
+          "x": 200,
+          "y": 825
         }
       ]
     },
@@ -127,722 +127,87 @@
   "groundTiles": [
     {
       "sprite": "world/tile-grass-base",
-      "x": -960,
-      "y": -540
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -640,
-      "y": -540
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -320,
-      "y": -540
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 0,
-      "y": -540
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 320,
-      "y": -540
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 640,
-      "y": -540
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 960,
-      "y": -540
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1280,
-      "y": -540
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1600,
-      "y": -540
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1920,
-      "y": -540
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 2240,
-      "y": -540
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 2560,
-      "y": -540
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -960,
-      "y": -327
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -640,
-      "y": -327
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -320,
-      "y": -327
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 0,
-      "y": -327
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 320,
-      "y": -327
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 640,
-      "y": -327
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 960,
-      "y": -327
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1280,
-      "y": -327
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1600,
-      "y": -327
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1920,
-      "y": -327
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 2240,
-      "y": -327
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 2560,
-      "y": -327
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -960,
-      "y": -114
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -640,
-      "y": -114
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -320,
-      "y": -114
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 0,
-      "y": -114
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 320,
-      "y": -114
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 640,
-      "y": -114
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 960,
-      "y": -114
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1280,
-      "y": -114
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1600,
-      "y": -114
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1920,
-      "y": -114
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 2240,
-      "y": -114
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 2560,
-      "y": -114
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -960,
-      "y": 99
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -640,
-      "y": 99
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -320,
-      "y": 99
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 0,
-      "y": 99
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 320,
-      "y": 99
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 640,
-      "y": 99
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 960,
-      "y": 99
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1280,
-      "y": 99
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1600,
-      "y": 99
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1920,
-      "y": 99
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 2240,
-      "y": 99
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 2560,
-      "y": 99
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -960,
-      "y": 312
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -640,
-      "y": 312
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -320,
-      "y": 312
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 0,
-      "y": 312
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 320,
-      "y": 312
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 640,
-      "y": 312
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 960,
-      "y": 312
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1280,
-      "y": 312
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1600,
-      "y": 312
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1920,
-      "y": 312
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 2240,
-      "y": 312
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 2560,
-      "y": 312
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -960,
-      "y": 525
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -640,
-      "y": 525
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -320,
-      "y": 525
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 0,
-      "y": 525
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 320,
-      "y": 525
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 640,
-      "y": 525
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 960,
-      "y": 525
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1280,
-      "y": 525
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1600,
-      "y": 525
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1920,
-      "y": 525
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 2240,
-      "y": 525
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 2560,
-      "y": 525
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -960,
-      "y": 738
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -640,
-      "y": 738
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -320,
-      "y": 738
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 0,
-      "y": 738
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 320,
-      "y": 738
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 640,
-      "y": 738
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 960,
-      "y": 738
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1280,
-      "y": 738
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1600,
-      "y": 738
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1920,
-      "y": 738
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 2240,
-      "y": 738
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 2560,
-      "y": 738
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -960,
-      "y": 951
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -640,
-      "y": 951
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -320,
-      "y": 951
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 0,
-      "y": 951
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 320,
-      "y": 951
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 640,
-      "y": 951
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 960,
-      "y": 951
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1280,
-      "y": 951
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1600,
-      "y": 951
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1920,
-      "y": 951
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 2240,
-      "y": 951
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 2560,
-      "y": 951
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -960,
-      "y": 1164
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -640,
-      "y": 1164
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -320,
-      "y": 1164
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 0,
-      "y": 1164
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 320,
-      "y": 1164
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 640,
-      "y": 1164
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 960,
-      "y": 1164
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1280,
-      "y": 1164
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1600,
-      "y": 1164
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1920,
-      "y": 1164
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 2240,
-      "y": 1164
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 2560,
-      "y": 1164
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -960,
-      "y": 1377
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -640,
-      "y": 1377
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -320,
-      "y": 1377
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 0,
-      "y": 1377
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 320,
-      "y": 1377
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 640,
-      "y": 1377
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 960,
-      "y": 1377
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1280,
-      "y": 1377
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1600,
-      "y": 1377
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1920,
-      "y": 1377
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 2240,
-      "y": 1377
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 2560,
-      "y": 1377
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -960,
-      "y": 1590
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -640,
-      "y": 1590
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -320,
-      "y": 1590
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 0,
-      "y": 1590
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 320,
-      "y": 1590
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 640,
-      "y": 1590
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 960,
-      "y": 1590
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1280,
-      "y": 1590
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1600,
-      "y": 1590
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1920,
-      "y": 1590
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 2240,
-      "y": 1590
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 2560,
-      "y": 1590
-    },
-    {
-      "sprite": "world/tile-grass-base",
       "x": -1120,
       "y": -646.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -800,
+      "x": -882,
       "y": -646.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -480,
+      "x": -644,
       "y": -646.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -160,
+      "x": -406,
       "y": -646.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 160,
+      "x": -168,
       "y": -646.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 480,
+      "x": 70,
       "y": -646.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 800,
+      "x": 308,
       "y": -646.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 1120,
+      "x": 546,
       "y": -646.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 1440,
+      "x": 784,
       "y": -646.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 1760,
+      "x": 1022,
       "y": -646.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 2080,
+      "x": 1260,
       "y": -646.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 2400,
+      "x": 1498,
+      "y": -646.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1736,
+      "y": -646.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1974,
+      "y": -646.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2212,
+      "y": -646.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2450,
+      "y": -646.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2688,
       "y": -646.5
     },
     {
@@ -852,653 +217,3413 @@
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -1120,
-      "y": -433.5
+      "x": -1001,
+      "y": -587
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -800,
-      "y": -433.5
+      "x": -763,
+      "y": -587
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -480,
-      "y": -433.5
+      "x": -525,
+      "y": -587
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -160,
-      "y": -433.5
+      "x": -287,
+      "y": -587
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 160,
-      "y": -433.5
+      "x": -49,
+      "y": -587
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 480,
-      "y": -433.5
+      "x": 189,
+      "y": -587
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 800,
-      "y": -433.5
+      "x": 427,
+      "y": -587
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 1120,
-      "y": -433.5
+      "x": 665,
+      "y": -587
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 1440,
-      "y": -433.5
+      "x": 903,
+      "y": -587
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 1760,
-      "y": -433.5
+      "x": 1141,
+      "y": -587
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 2080,
-      "y": -433.5
+      "x": 1379,
+      "y": -587
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 2400,
-      "y": -433.5
+      "x": 1617,
+      "y": -587
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 2720,
-      "y": -433.5
+      "x": 1855,
+      "y": -587
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -1120,
-      "y": -220.5
+      "x": 2093,
+      "y": -587
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -800,
-      "y": -220.5
+      "x": 2331,
+      "y": -587
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -480,
-      "y": -220.5
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -160,
-      "y": -220.5
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 160,
-      "y": -220.5
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 480,
-      "y": -220.5
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 800,
-      "y": -220.5
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1120,
-      "y": -220.5
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1440,
-      "y": -220.5
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1760,
-      "y": -220.5
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 2080,
-      "y": -220.5
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 2400,
-      "y": -220.5
+      "x": 2569,
+      "y": -587
     },
     {
       "sprite": "world/tile-grass-base",
       "x": 2720,
-      "y": -220.5
+      "y": -587
     },
     {
       "sprite": "world/tile-grass-base",
       "x": -1120,
-      "y": -7.5
+      "y": -527.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -800,
-      "y": -7.5
+      "x": -882,
+      "y": -527.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -480,
-      "y": -7.5
+      "x": -644,
+      "y": -527.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -160,
-      "y": -7.5
+      "x": -406,
+      "y": -527.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 160,
-      "y": -7.5
+      "x": -168,
+      "y": -527.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 480,
-      "y": -7.5
+      "x": 70,
+      "y": -527.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 800,
-      "y": -7.5
+      "x": 308,
+      "y": -527.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 1120,
-      "y": -7.5
+      "x": 546,
+      "y": -527.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 1440,
-      "y": -7.5
+      "x": 784,
+      "y": -527.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 1760,
-      "y": -7.5
+      "x": 1022,
+      "y": -527.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 2080,
-      "y": -7.5
+      "x": 1260,
+      "y": -527.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 2400,
-      "y": -7.5
+      "x": 1498,
+      "y": -527.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1736,
+      "y": -527.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1974,
+      "y": -527.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2212,
+      "y": -527.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2450,
+      "y": -527.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2688,
+      "y": -527.5
     },
     {
       "sprite": "world/tile-grass-base",
       "x": 2720,
-      "y": -7.5
+      "y": -527.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -1120,
-      "y": 205.5
+      "x": -1001,
+      "y": -468
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -800,
-      "y": 205.5
+      "x": -763,
+      "y": -468
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -480,
-      "y": 205.5
+      "x": -525,
+      "y": -468
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -160,
-      "y": 205.5
+      "x": -287,
+      "y": -468
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 160,
-      "y": 205.5
+      "x": -49,
+      "y": -468
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 480,
-      "y": 205.5
+      "x": 189,
+      "y": -468
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 800,
-      "y": 205.5
+      "x": 427,
+      "y": -468
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 1120,
-      "y": 205.5
+      "x": 665,
+      "y": -468
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 1440,
-      "y": 205.5
+      "x": 903,
+      "y": -468
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 1760,
-      "y": 205.5
+      "x": 1141,
+      "y": -468
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 2080,
-      "y": 205.5
+      "x": 1379,
+      "y": -468
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 2400,
-      "y": 205.5
+      "x": 1617,
+      "y": -468
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 2720,
-      "y": 205.5
+      "x": 1855,
+      "y": -468
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -1120,
-      "y": 418.5
+      "x": 2093,
+      "y": -468
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -800,
-      "y": 418.5
+      "x": 2331,
+      "y": -468
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -480,
-      "y": 418.5
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -160,
-      "y": 418.5
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 160,
-      "y": 418.5
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 480,
-      "y": 418.5
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 800,
-      "y": 418.5
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1120,
-      "y": 418.5
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1440,
-      "y": 418.5
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1760,
-      "y": 418.5
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 2080,
-      "y": 418.5
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 2400,
-      "y": 418.5
+      "x": 2569,
+      "y": -468
     },
     {
       "sprite": "world/tile-grass-base",
       "x": 2720,
-      "y": 418.5
+      "y": -468
     },
     {
       "sprite": "world/tile-grass-base",
       "x": -1120,
-      "y": 631.5
+      "y": -408.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -800,
-      "y": 631.5
+      "x": -882,
+      "y": -408.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -480,
-      "y": 631.5
+      "x": -644,
+      "y": -408.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -160,
-      "y": 631.5
+      "x": -406,
+      "y": -408.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 160,
-      "y": 631.5
+      "x": -168,
+      "y": -408.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 480,
-      "y": 631.5
+      "x": 70,
+      "y": -408.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 800,
-      "y": 631.5
+      "x": 308,
+      "y": -408.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 1120,
-      "y": 631.5
+      "x": 546,
+      "y": -408.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 1440,
-      "y": 631.5
+      "x": 784,
+      "y": -408.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 1760,
-      "y": 631.5
+      "x": 1022,
+      "y": -408.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 2080,
-      "y": 631.5
+      "x": 1260,
+      "y": -408.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 2400,
-      "y": 631.5
+      "x": 1498,
+      "y": -408.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1736,
+      "y": -408.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1974,
+      "y": -408.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2212,
+      "y": -408.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2450,
+      "y": -408.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2688,
+      "y": -408.5
     },
     {
       "sprite": "world/tile-grass-base",
       "x": 2720,
-      "y": 631.5
+      "y": -408.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -1120,
-      "y": 844.5
+      "x": -1001,
+      "y": -349
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -800,
-      "y": 844.5
+      "x": -763,
+      "y": -349
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -480,
-      "y": 844.5
+      "x": -525,
+      "y": -349
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -160,
-      "y": 844.5
+      "x": -287,
+      "y": -349
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 160,
-      "y": 844.5
+      "x": -49,
+      "y": -349
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 480,
-      "y": 844.5
+      "x": 189,
+      "y": -349
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 800,
-      "y": 844.5
+      "x": 427,
+      "y": -349
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 1120,
-      "y": 844.5
+      "x": 665,
+      "y": -349
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 1440,
-      "y": 844.5
+      "x": 903,
+      "y": -349
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 1760,
-      "y": 844.5
+      "x": 1141,
+      "y": -349
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 2080,
-      "y": 844.5
+      "x": 1379,
+      "y": -349
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 2400,
-      "y": 844.5
+      "x": 1617,
+      "y": -349
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 2720,
-      "y": 844.5
+      "x": 1855,
+      "y": -349
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -1120,
-      "y": 1057.5
+      "x": 2093,
+      "y": -349
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -800,
-      "y": 1057.5
+      "x": 2331,
+      "y": -349
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -480,
-      "y": 1057.5
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": -160,
-      "y": 1057.5
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 160,
-      "y": 1057.5
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 480,
-      "y": 1057.5
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 800,
-      "y": 1057.5
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1120,
-      "y": 1057.5
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1440,
-      "y": 1057.5
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 1760,
-      "y": 1057.5
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 2080,
-      "y": 1057.5
-    },
-    {
-      "sprite": "world/tile-grass-base",
-      "x": 2400,
-      "y": 1057.5
+      "x": 2569,
+      "y": -349
     },
     {
       "sprite": "world/tile-grass-base",
       "x": 2720,
-      "y": 1057.5
+      "y": -349
     },
     {
       "sprite": "world/tile-grass-base",
       "x": -1120,
-      "y": 1270.5
+      "y": -289.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -800,
-      "y": 1270.5
+      "x": -882,
+      "y": -289.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -480,
-      "y": 1270.5
+      "x": -644,
+      "y": -289.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -160,
-      "y": 1270.5
+      "x": -406,
+      "y": -289.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 160,
-      "y": 1270.5
+      "x": -168,
+      "y": -289.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 480,
-      "y": 1270.5
+      "x": 70,
+      "y": -289.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 800,
-      "y": 1270.5
+      "x": 308,
+      "y": -289.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 1120,
-      "y": 1270.5
+      "x": 546,
+      "y": -289.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 1440,
-      "y": 1270.5
+      "x": 784,
+      "y": -289.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 1760,
-      "y": 1270.5
+      "x": 1022,
+      "y": -289.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 2080,
-      "y": 1270.5
+      "x": 1260,
+      "y": -289.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 2400,
-      "y": 1270.5
+      "x": 1498,
+      "y": -289.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1736,
+      "y": -289.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1974,
+      "y": -289.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2212,
+      "y": -289.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2450,
+      "y": -289.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2688,
+      "y": -289.5
     },
     {
       "sprite": "world/tile-grass-base",
       "x": 2720,
-      "y": 1270.5
+      "y": -289.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -1120,
-      "y": 1483.5
+      "x": -1001,
+      "y": -230
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -800,
-      "y": 1483.5
+      "x": -763,
+      "y": -230
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -480,
-      "y": 1483.5
+      "x": -525,
+      "y": -230
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -160,
-      "y": 1483.5
+      "x": -287,
+      "y": -230
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 160,
-      "y": 1483.5
+      "x": -49,
+      "y": -230
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 480,
-      "y": 1483.5
+      "x": 189,
+      "y": -230
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 800,
-      "y": 1483.5
+      "x": 427,
+      "y": -230
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 1120,
-      "y": 1483.5
+      "x": 665,
+      "y": -230
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 1440,
-      "y": 1483.5
+      "x": 903,
+      "y": -230
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 1760,
-      "y": 1483.5
+      "x": 1141,
+      "y": -230
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 2080,
-      "y": 1483.5
+      "x": 1379,
+      "y": -230
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 2400,
-      "y": 1483.5
+      "x": 1617,
+      "y": -230
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1855,
+      "y": -230
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2093,
+      "y": -230
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2331,
+      "y": -230
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2569,
+      "y": -230
     },
     {
       "sprite": "world/tile-grass-base",
       "x": 2720,
-      "y": 1483.5
+      "y": -230
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -1120,
+      "y": -170.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -882,
+      "y": -170.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -644,
+      "y": -170.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -406,
+      "y": -170.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -168,
+      "y": -170.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 70,
+      "y": -170.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 308,
+      "y": -170.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 546,
+      "y": -170.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 784,
+      "y": -170.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1022,
+      "y": -170.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1260,
+      "y": -170.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1498,
+      "y": -170.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1736,
+      "y": -170.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1974,
+      "y": -170.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2212,
+      "y": -170.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2450,
+      "y": -170.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2688,
+      "y": -170.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2720,
+      "y": -170.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -1001,
+      "y": -111
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -763,
+      "y": -111
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -525,
+      "y": -111
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -287,
+      "y": -111
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -49,
+      "y": -111
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 189,
+      "y": -111
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 427,
+      "y": -111
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 665,
+      "y": -111
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 903,
+      "y": -111
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1141,
+      "y": -111
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1379,
+      "y": -111
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1617,
+      "y": -111
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1855,
+      "y": -111
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2093,
+      "y": -111
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2331,
+      "y": -111
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2569,
+      "y": -111
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2720,
+      "y": -111
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -1120,
+      "y": -51.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -882,
+      "y": -51.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -644,
+      "y": -51.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -406,
+      "y": -51.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -168,
+      "y": -51.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 70,
+      "y": -51.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 308,
+      "y": -51.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 546,
+      "y": -51.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 784,
+      "y": -51.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1022,
+      "y": -51.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1260,
+      "y": -51.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1498,
+      "y": -51.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1736,
+      "y": -51.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1974,
+      "y": -51.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2212,
+      "y": -51.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2450,
+      "y": -51.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2688,
+      "y": -51.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2720,
+      "y": -51.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -1001,
+      "y": 8
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -763,
+      "y": 8
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -525,
+      "y": 8
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -287,
+      "y": 8
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -49,
+      "y": 8
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 189,
+      "y": 8
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 427,
+      "y": 8
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 665,
+      "y": 8
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 903,
+      "y": 8
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1141,
+      "y": 8
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1379,
+      "y": 8
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1617,
+      "y": 8
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1855,
+      "y": 8
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2093,
+      "y": 8
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2331,
+      "y": 8
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2569,
+      "y": 8
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2720,
+      "y": 8
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -1120,
+      "y": 67.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -882,
+      "y": 67.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -644,
+      "y": 67.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -406,
+      "y": 67.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -168,
+      "y": 67.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 70,
+      "y": 67.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 308,
+      "y": 67.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 546,
+      "y": 67.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 784,
+      "y": 67.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1022,
+      "y": 67.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1260,
+      "y": 67.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1498,
+      "y": 67.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1736,
+      "y": 67.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1974,
+      "y": 67.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2212,
+      "y": 67.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2450,
+      "y": 67.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2688,
+      "y": 67.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2720,
+      "y": 67.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -1001,
+      "y": 127
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -763,
+      "y": 127
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -525,
+      "y": 127
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -287,
+      "y": 127
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -49,
+      "y": 127
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 189,
+      "y": 127
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 427,
+      "y": 127
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 665,
+      "y": 127
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 903,
+      "y": 127
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1141,
+      "y": 127
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1379,
+      "y": 127
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1617,
+      "y": 127
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1855,
+      "y": 127
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2093,
+      "y": 127
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2331,
+      "y": 127
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2569,
+      "y": 127
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2720,
+      "y": 127
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -1120,
+      "y": 186.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -882,
+      "y": 186.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -644,
+      "y": 186.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -406,
+      "y": 186.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -168,
+      "y": 186.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 70,
+      "y": 186.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 308,
+      "y": 186.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 546,
+      "y": 186.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 784,
+      "y": 186.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1022,
+      "y": 186.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1260,
+      "y": 186.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1498,
+      "y": 186.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1736,
+      "y": 186.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1974,
+      "y": 186.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2212,
+      "y": 186.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2450,
+      "y": 186.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2688,
+      "y": 186.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2720,
+      "y": 186.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -1001,
+      "y": 246
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -763,
+      "y": 246
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -525,
+      "y": 246
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -287,
+      "y": 246
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -49,
+      "y": 246
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 189,
+      "y": 246
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 427,
+      "y": 246
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 665,
+      "y": 246
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 903,
+      "y": 246
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1141,
+      "y": 246
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1379,
+      "y": 246
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1617,
+      "y": 246
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1855,
+      "y": 246
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2093,
+      "y": 246
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2331,
+      "y": 246
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2569,
+      "y": 246
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2720,
+      "y": 246
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -1120,
+      "y": 305.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -882,
+      "y": 305.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -644,
+      "y": 305.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -406,
+      "y": 305.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -168,
+      "y": 305.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 70,
+      "y": 305.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 308,
+      "y": 305.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 546,
+      "y": 305.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 784,
+      "y": 305.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1022,
+      "y": 305.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1260,
+      "y": 305.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1498,
+      "y": 305.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1736,
+      "y": 305.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1974,
+      "y": 305.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2212,
+      "y": 305.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2450,
+      "y": 305.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2688,
+      "y": 305.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2720,
+      "y": 305.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -1001,
+      "y": 365
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -763,
+      "y": 365
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -525,
+      "y": 365
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -287,
+      "y": 365
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -49,
+      "y": 365
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 189,
+      "y": 365
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 427,
+      "y": 365
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 665,
+      "y": 365
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 903,
+      "y": 365
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1141,
+      "y": 365
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1379,
+      "y": 365
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1617,
+      "y": 365
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1855,
+      "y": 365
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2093,
+      "y": 365
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2331,
+      "y": 365
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2569,
+      "y": 365
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2720,
+      "y": 365
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -1120,
+      "y": 424.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -882,
+      "y": 424.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -644,
+      "y": 424.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -406,
+      "y": 424.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -168,
+      "y": 424.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 70,
+      "y": 424.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 308,
+      "y": 424.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 546,
+      "y": 424.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 784,
+      "y": 424.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1022,
+      "y": 424.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1260,
+      "y": 424.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1498,
+      "y": 424.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1736,
+      "y": 424.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1974,
+      "y": 424.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2212,
+      "y": 424.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2450,
+      "y": 424.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2688,
+      "y": 424.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2720,
+      "y": 424.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -1001,
+      "y": 484
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -763,
+      "y": 484
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -525,
+      "y": 484
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -287,
+      "y": 484
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -49,
+      "y": 484
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 189,
+      "y": 484
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 427,
+      "y": 484
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 665,
+      "y": 484
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 903,
+      "y": 484
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1141,
+      "y": 484
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1379,
+      "y": 484
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1617,
+      "y": 484
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1855,
+      "y": 484
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2093,
+      "y": 484
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2331,
+      "y": 484
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2569,
+      "y": 484
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2720,
+      "y": 484
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -1120,
+      "y": 543.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -882,
+      "y": 543.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -644,
+      "y": 543.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -406,
+      "y": 543.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -168,
+      "y": 543.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 70,
+      "y": 543.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 308,
+      "y": 543.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 546,
+      "y": 543.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 784,
+      "y": 543.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1022,
+      "y": 543.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1260,
+      "y": 543.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1498,
+      "y": 543.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1736,
+      "y": 543.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1974,
+      "y": 543.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2212,
+      "y": 543.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2450,
+      "y": 543.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2688,
+      "y": 543.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2720,
+      "y": 543.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -1001,
+      "y": 603
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -763,
+      "y": 603
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -525,
+      "y": 603
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -287,
+      "y": 603
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -49,
+      "y": 603
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 189,
+      "y": 603
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 427,
+      "y": 603
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 665,
+      "y": 603
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 903,
+      "y": 603
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1141,
+      "y": 603
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1379,
+      "y": 603
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1617,
+      "y": 603
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1855,
+      "y": 603
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2093,
+      "y": 603
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2331,
+      "y": 603
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2569,
+      "y": 603
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2720,
+      "y": 603
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -1120,
+      "y": 662.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -882,
+      "y": 662.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -644,
+      "y": 662.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -406,
+      "y": 662.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -168,
+      "y": 662.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 70,
+      "y": 662.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 308,
+      "y": 662.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 546,
+      "y": 662.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 784,
+      "y": 662.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1022,
+      "y": 662.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1260,
+      "y": 662.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1498,
+      "y": 662.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1736,
+      "y": 662.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1974,
+      "y": 662.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2212,
+      "y": 662.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2450,
+      "y": 662.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2688,
+      "y": 662.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2720,
+      "y": 662.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -1001,
+      "y": 722
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -763,
+      "y": 722
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -525,
+      "y": 722
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -287,
+      "y": 722
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -49,
+      "y": 722
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 189,
+      "y": 722
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 427,
+      "y": 722
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 665,
+      "y": 722
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 903,
+      "y": 722
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1141,
+      "y": 722
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1379,
+      "y": 722
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1617,
+      "y": 722
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1855,
+      "y": 722
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2093,
+      "y": 722
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2331,
+      "y": 722
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2569,
+      "y": 722
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2720,
+      "y": 722
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -1120,
+      "y": 781.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -882,
+      "y": 781.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -644,
+      "y": 781.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -406,
+      "y": 781.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -168,
+      "y": 781.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 70,
+      "y": 781.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 308,
+      "y": 781.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 546,
+      "y": 781.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 784,
+      "y": 781.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1022,
+      "y": 781.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1260,
+      "y": 781.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1498,
+      "y": 781.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1736,
+      "y": 781.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1974,
+      "y": 781.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2212,
+      "y": 781.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2450,
+      "y": 781.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2688,
+      "y": 781.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2720,
+      "y": 781.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -1001,
+      "y": 841
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -763,
+      "y": 841
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -525,
+      "y": 841
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -287,
+      "y": 841
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -49,
+      "y": 841
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 189,
+      "y": 841
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 427,
+      "y": 841
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 665,
+      "y": 841
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 903,
+      "y": 841
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1141,
+      "y": 841
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1379,
+      "y": 841
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1617,
+      "y": 841
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1855,
+      "y": 841
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2093,
+      "y": 841
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2331,
+      "y": 841
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2569,
+      "y": 841
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2720,
+      "y": 841
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -1120,
+      "y": 900.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -882,
+      "y": 900.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -644,
+      "y": 900.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -406,
+      "y": 900.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -168,
+      "y": 900.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 70,
+      "y": 900.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 308,
+      "y": 900.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 546,
+      "y": 900.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 784,
+      "y": 900.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1022,
+      "y": 900.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1260,
+      "y": 900.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1498,
+      "y": 900.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1736,
+      "y": 900.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1974,
+      "y": 900.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2212,
+      "y": 900.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2450,
+      "y": 900.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2688,
+      "y": 900.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2720,
+      "y": 900.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -1001,
+      "y": 960
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -763,
+      "y": 960
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -525,
+      "y": 960
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -287,
+      "y": 960
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -49,
+      "y": 960
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 189,
+      "y": 960
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 427,
+      "y": 960
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 665,
+      "y": 960
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 903,
+      "y": 960
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1141,
+      "y": 960
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1379,
+      "y": 960
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1617,
+      "y": 960
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1855,
+      "y": 960
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2093,
+      "y": 960
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2331,
+      "y": 960
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2569,
+      "y": 960
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2720,
+      "y": 960
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -1120,
+      "y": 1019.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -882,
+      "y": 1019.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -644,
+      "y": 1019.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -406,
+      "y": 1019.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -168,
+      "y": 1019.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 70,
+      "y": 1019.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 308,
+      "y": 1019.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 546,
+      "y": 1019.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 784,
+      "y": 1019.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1022,
+      "y": 1019.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1260,
+      "y": 1019.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1498,
+      "y": 1019.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1736,
+      "y": 1019.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1974,
+      "y": 1019.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2212,
+      "y": 1019.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2450,
+      "y": 1019.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2688,
+      "y": 1019.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2720,
+      "y": 1019.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -1001,
+      "y": 1079
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -763,
+      "y": 1079
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -525,
+      "y": 1079
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -287,
+      "y": 1079
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -49,
+      "y": 1079
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 189,
+      "y": 1079
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 427,
+      "y": 1079
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 665,
+      "y": 1079
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 903,
+      "y": 1079
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1141,
+      "y": 1079
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1379,
+      "y": 1079
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1617,
+      "y": 1079
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1855,
+      "y": 1079
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2093,
+      "y": 1079
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2331,
+      "y": 1079
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2569,
+      "y": 1079
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2720,
+      "y": 1079
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -1120,
+      "y": 1138.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -882,
+      "y": 1138.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -644,
+      "y": 1138.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -406,
+      "y": 1138.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -168,
+      "y": 1138.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 70,
+      "y": 1138.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 308,
+      "y": 1138.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 546,
+      "y": 1138.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 784,
+      "y": 1138.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1022,
+      "y": 1138.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1260,
+      "y": 1138.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1498,
+      "y": 1138.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1736,
+      "y": 1138.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1974,
+      "y": 1138.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2212,
+      "y": 1138.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2450,
+      "y": 1138.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2688,
+      "y": 1138.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2720,
+      "y": 1138.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -1001,
+      "y": 1198
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -763,
+      "y": 1198
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -525,
+      "y": 1198
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -287,
+      "y": 1198
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -49,
+      "y": 1198
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 189,
+      "y": 1198
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 427,
+      "y": 1198
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 665,
+      "y": 1198
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 903,
+      "y": 1198
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1141,
+      "y": 1198
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1379,
+      "y": 1198
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1617,
+      "y": 1198
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1855,
+      "y": 1198
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2093,
+      "y": 1198
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2331,
+      "y": 1198
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2569,
+      "y": 1198
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2720,
+      "y": 1198
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -1120,
+      "y": 1257.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -882,
+      "y": 1257.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -644,
+      "y": 1257.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -406,
+      "y": 1257.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -168,
+      "y": 1257.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 70,
+      "y": 1257.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 308,
+      "y": 1257.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 546,
+      "y": 1257.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 784,
+      "y": 1257.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1022,
+      "y": 1257.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1260,
+      "y": 1257.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1498,
+      "y": 1257.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1736,
+      "y": 1257.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1974,
+      "y": 1257.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2212,
+      "y": 1257.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2450,
+      "y": 1257.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2688,
+      "y": 1257.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2720,
+      "y": 1257.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -1001,
+      "y": 1317
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -763,
+      "y": 1317
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -525,
+      "y": 1317
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -287,
+      "y": 1317
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -49,
+      "y": 1317
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 189,
+      "y": 1317
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 427,
+      "y": 1317
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 665,
+      "y": 1317
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 903,
+      "y": 1317
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1141,
+      "y": 1317
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1379,
+      "y": 1317
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1617,
+      "y": 1317
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1855,
+      "y": 1317
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2093,
+      "y": 1317
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2331,
+      "y": 1317
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2569,
+      "y": 1317
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2720,
+      "y": 1317
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -1120,
+      "y": 1376.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -882,
+      "y": 1376.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -644,
+      "y": 1376.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -406,
+      "y": 1376.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -168,
+      "y": 1376.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 70,
+      "y": 1376.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 308,
+      "y": 1376.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 546,
+      "y": 1376.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 784,
+      "y": 1376.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1022,
+      "y": 1376.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1260,
+      "y": 1376.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1498,
+      "y": 1376.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1736,
+      "y": 1376.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1974,
+      "y": 1376.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2212,
+      "y": 1376.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2450,
+      "y": 1376.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2688,
+      "y": 1376.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2720,
+      "y": 1376.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -1001,
+      "y": 1436
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -763,
+      "y": 1436
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -525,
+      "y": 1436
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -287,
+      "y": 1436
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -49,
+      "y": 1436
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 189,
+      "y": 1436
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 427,
+      "y": 1436
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 665,
+      "y": 1436
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 903,
+      "y": 1436
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1141,
+      "y": 1436
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1379,
+      "y": 1436
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1617,
+      "y": 1436
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1855,
+      "y": 1436
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2093,
+      "y": 1436
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2331,
+      "y": 1436
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2569,
+      "y": 1436
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2720,
+      "y": 1436
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -1120,
+      "y": 1495.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -882,
+      "y": 1495.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -644,
+      "y": 1495.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -406,
+      "y": 1495.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -168,
+      "y": 1495.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 70,
+      "y": 1495.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 308,
+      "y": 1495.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 546,
+      "y": 1495.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 784,
+      "y": 1495.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1022,
+      "y": 1495.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1260,
+      "y": 1495.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1498,
+      "y": 1495.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1736,
+      "y": 1495.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1974,
+      "y": 1495.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2212,
+      "y": 1495.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2450,
+      "y": 1495.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2688,
+      "y": 1495.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2720,
+      "y": 1495.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -1001,
+      "y": 1555
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -763,
+      "y": 1555
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -525,
+      "y": 1555
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -287,
+      "y": 1555
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -49,
+      "y": 1555
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 189,
+      "y": 1555
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 427,
+      "y": 1555
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 665,
+      "y": 1555
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 903,
+      "y": 1555
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1141,
+      "y": 1555
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1379,
+      "y": 1555
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1617,
+      "y": 1555
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1855,
+      "y": 1555
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2093,
+      "y": 1555
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2331,
+      "y": 1555
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2569,
+      "y": 1555
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2720,
+      "y": 1555
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -1120,
+      "y": 1614.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -882,
+      "y": 1614.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -644,
+      "y": 1614.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -406,
+      "y": 1614.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -168,
+      "y": 1614.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 70,
+      "y": 1614.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 308,
+      "y": 1614.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 546,
+      "y": 1614.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 784,
+      "y": 1614.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1022,
+      "y": 1614.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1260,
+      "y": 1614.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1498,
+      "y": 1614.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1736,
+      "y": 1614.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1974,
+      "y": 1614.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2212,
+      "y": 1614.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2450,
+      "y": 1614.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2688,
+      "y": 1614.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2720,
+      "y": 1614.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -1001,
+      "y": 1674
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -763,
+      "y": 1674
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -525,
+      "y": 1674
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -287,
+      "y": 1674
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": -49,
+      "y": 1674
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 189,
+      "y": 1674
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 427,
+      "y": 1674
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 665,
+      "y": 1674
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 903,
+      "y": 1674
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1141,
+      "y": 1674
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1379,
+      "y": 1674
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1617,
+      "y": 1674
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1855,
+      "y": 1674
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2093,
+      "y": 1674
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2331,
+      "y": 1674
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2569,
+      "y": 1674
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2720,
+      "y": 1674
     },
     {
       "sprite": "world/tile-grass-base",
@@ -1507,57 +3632,82 @@
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -800,
+      "x": -882,
       "y": 1696.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -480,
+      "x": -644,
       "y": 1696.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": -160,
+      "x": -406,
       "y": 1696.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 160,
+      "x": -168,
       "y": 1696.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 480,
+      "x": 70,
       "y": 1696.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 800,
+      "x": 308,
       "y": 1696.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 1120,
+      "x": 546,
       "y": 1696.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 1440,
+      "x": 784,
       "y": 1696.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 1760,
+      "x": 1022,
       "y": 1696.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 2080,
+      "x": 1260,
       "y": 1696.5
     },
     {
       "sprite": "world/tile-grass-base",
-      "x": 2400,
+      "x": 1498,
+      "y": 1696.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1736,
+      "y": 1696.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 1974,
+      "y": 1696.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2212,
+      "y": 1696.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2450,
+      "y": 1696.5
+    },
+    {
+      "sprite": "world/tile-grass-base",
+      "x": 2688,
       "y": 1696.5
     },
     {
