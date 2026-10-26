@@ -57,34 +57,38 @@ describe('VERIFY-CORE-012 CONTRACT-PERSIST', () => {
     expect(saved.schemaVersion).toBe(1);
     expect(saved.savedAt).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
     expect(loadSave(content, storage, log, SEED).state).toEqual(store.getState());
-    expect(linesOf(log, 'save.written')).toEqual([expect.objectContaining({ bytes: new TextEncoder().encode(written).length })]);
+    // Play-session Q18 (2026-10-26): routine writes are no longer logged; failures still are (log.quota).
+    expect(linesOf(log, 'save.written')).toEqual([]);
   });
 
   it('VERIFY-CORE-012 (a) changes inside the debounce collapse into one write; flush() writes at once', () => {
     const content = validContent();
-    const { log, storage, loaded, persistence } = boot(content, null);
+    const { storage, loaded, persistence } = boot(content, null);
+    const writes = vi.spyOn(storage, 'setItem');
     const store = createStore(content, loaded.state);
     persistence.attach(store);
     store.dispatch({ type: 'debugSetTesterLabel', text: 'a' });
     store.dispatch({ type: 'debugSetTesterLabel', text: 'b' });
     persistence.flush();
     vi.advanceTimersByTime(content.tuning.saveDebounceMs * 2);
-    expect(linesOf(log, 'save.written')).toHaveLength(1);
+    expect(writes.mock.calls.filter(([key]) => key === STORAGE_KEYS.save)).toHaveLength(1);
     expect(JSON.parse(storage.getItem(STORAGE_KEYS.save)!).state.session.testerLabel).toBe('b');
   });
 
   it('foundation §4.4 debounce is bounded: ticks every 16 ms for 2 s still write tpp.save during play (review WORK-014-3-1 A-1)', () => {
     const content = validContent();
-    const { log, storage, loaded, persistence } = boot(content, null);
+    const { storage, loaded, persistence } = boot(content, null);
+    const writes = vi.spyOn(storage, 'setItem');
+    const saves = () => writes.mock.calls.filter(([key]) => key === STORAGE_KEYS.save).length;
     const store = createStore(content, loaded.state);
     persistence.attach(store);
     for (let elapsed = 0; elapsed < 2000; elapsed += 16) {
       store.dispatch({ type: 'tick', dtMs: 16, move: { x: 0, y: 0 } });
       vi.advanceTimersByTime(16);
     }
-    expect(linesOf(log, 'save.written').length).toBeGreaterThanOrEqual(1);
+    expect(saves()).toBeGreaterThanOrEqual(1);
     expect(storage.getItem(STORAGE_KEYS.save)).not.toBeNull();
-    expect(linesOf(log, 'save.written').length).toBeLessThanOrEqual(Math.ceil(2000 / content.tuning.saveDebounceMs));
+    expect(saves()).toBeLessThanOrEqual(Math.ceil(2000 / content.tuning.saveDebounceMs));
   });
 
 });
@@ -113,11 +117,10 @@ describe('VERIFY-CORE-012 FX-SAVE-BAD and size budget', () => {
     const state = fullProgress(content);
     expect(GameStateSchema.safeParse(state).success).toBe(true);
     expect(checkInvariants(content, state)).toEqual([]);
-    const { log, storage, persistence } = boot(content, null);
+    const { storage, persistence } = boot(content, null);
     persistence.changed(state);
     persistence.flush();
     const bytes = new TextEncoder().encode(storage.getItem(STORAGE_KEYS.save)!).length;
-    expect(linesOf(log, 'save.written')).toEqual([expect.objectContaining({ bytes })]);
     expect(bytes).toBeLessThan(65536);
     if (!EVIDENCE) return;
     const { writeFileSync } = await import('node:fs');

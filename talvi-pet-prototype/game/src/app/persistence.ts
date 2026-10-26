@@ -42,7 +42,6 @@ export type Persistence = {
 };
 
 const isQuota = (error: unknown) => error instanceof DOMException && error.name === 'QuotaExceededError';
-const utf8Bytes = (text: string) => new TextEncoder().encode(text).length;
 
 /** Flush on page hide (core §8) where a DOM exists; node tests call `flush()` directly. */
 function onPageHide(flush: () => void): () => void {
@@ -66,9 +65,9 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     cancel();
     if (!state) return;
     const json = JSON.stringify({ schemaVersion: 1, savedAt: wall(), state });
+    // Play-session Q18: a routine write is not logged (it filled the 5,000-line ring in ≈ 21 min); failures still are.
     try { storage.setItem(STORAGE_KEYS.save, json); }
     catch (error) { if (isQuota(error)) { log.recordQuota(); return; } throw error; }
-    log.record('save.written', { bytes: utf8Bytes(json) });
   };
   // Bounded debounce (foundation §4.4, 250 ms): every frame's tick is a state change, so a timer reset on
   // each change would never fire during play; the first unsaved change starts the timer and later changes

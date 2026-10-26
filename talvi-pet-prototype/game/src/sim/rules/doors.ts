@@ -13,8 +13,8 @@ function contains(point: Point, door: Door): boolean {
   return point.x >= x && point.x < x + w && point.y >= y && point.y < y + h;
 }
 
-/** Tick step 2 door swap only. The full reducer must follow street entry with
- * celebration.onStreetEntered, before feed/pets/scripts (core.md §4). */
+/** Tick step 2 door swap only. Street entry starts no celebration (play-session 2026-10-26, "Wait for tap"); the
+ * house tap does (`acknowledgeProject`). */
 export function stepDoors(content: Content, state: GameState): RuleResult {
   if (state.avatar.immunityMs !== 0) return { state, events: [] };
   const hit = sceneDoors(content, state.scene).find(door => contains(state.avatar, door));

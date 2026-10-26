@@ -39,7 +39,8 @@
       "tags": [
         "soft"
       ],
-      "sprite": "charms/cushion"
+      "sprite": "charms/cushion",
+      "seat": { "y": 62 }
     },
     {
       "id": "ball",
@@ -79,7 +80,8 @@
       "tags": [
         "soft"
       ],
-      "sprite": "charms/rug"
+      "sprite": "charms/rug",
+      "seat": { "y": 18 }
     },
     {
       "id": "bookshelf",
@@ -90,7 +92,8 @@
         "tall"
       ],
       "sprite": "charms/bookshelf",
-      "canvas": { "w": 144, "h": 245 }
+      "canvas": { "w": 144, "h": 245 },
+      "standsOnFloor": true
     },
     {
       "id": "perch-branch",
@@ -132,7 +135,8 @@
       "tags": [
         "seat"
       ],
-      "sprite": "charms/stool"
+      "sprite": "charms/stool",
+      "seat": { "y": 100 }
     },
     {
       "id": "toy-basket",

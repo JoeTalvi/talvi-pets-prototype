@@ -14,6 +14,7 @@ const slot = (s: Slot) => ({
   ...(s.wall !== undefined ? { wall: s.wall } : {}),
   ...(s.depthOverride !== undefined ? { depthOverride: s.depthOverride } : {}),
   anchor: facingPoint(s.anchor), adjacent: [...s.adjacent],
+  ...(s.floorY !== undefined ? { floorY: s.floorY } : {}),
 });
 
 /**

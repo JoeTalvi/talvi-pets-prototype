@@ -1,5 +1,6 @@
 import type { Content } from '@content/types';
 import type { DialogueScript, GameState } from '@sim/state';
+import { residentPet } from '@sim/select';
 import type { ViewContext } from '@view/context';
 import { dialogue } from './templates/dialogue';
 import { image } from './templates/shared';
@@ -12,7 +13,14 @@ type Arm = { kind: 'fulfil'; focusSlotId: string } | { kind: 'greeting' };
 
 type Parts = { section: HTMLElement; box: HTMLElement; copy: HTMLElement; speaker: HTMLElement; line: HTMLElement; portrait: HTMLElement };
 
-const SLIDE_MS = 200, SWAP_MS = 80;
+const SLIDE_MS = 200, SWAP_MS = 80, BOX_H = 280;
+
+/** Q10 / mec-008 §2.1 (the pet stays visible): true when the room's pet stands (feet, world y less the camera scroll) under the bottom box. */
+export function petUnderBox(content: Content, state: GameState, overlayHeight: number): boolean {
+  const petId = residentPet(content, state);
+  const y = petId === null ? undefined : state.pets[petId]?.behaviour.y;
+  return y !== undefined && y - (1080 - overlayHeight) / 2 > overlayHeight - BOX_H;
+}
 
 function animate(el: HTMLElement, frames: Keyframe[], duration: number): void {
   // jsdom has no Web Animations: the panel's state is `hidden` + text; the motion is the browser's.
@@ -76,9 +84,11 @@ export function createDialogue(root: HTMLElement, context: ViewContext): Dialogu
     const script = store.getState().dialogue.current;
     if (!script) { parts.section.hidden = true; return; }
     const wasHidden = parts.section.hidden;
+    const top = petUnderBox(content, store.getState(), parseFloat(root.parentElement?.style.height ?? '') || 1080);
     fill(parts, content, assets, text, script);
+    parts.section.classList.toggle('at-top', top);
     parts.section.hidden = false; parts.section.dataset.state = 'open';
-    if (wasHidden) animate(parts.box, [{ transform: 'translateY(280px)' }, { transform: 'translateY(0)' }], SLIDE_MS);
+    if (wasHidden) animate(parts.box, [{ transform: `translateY(${top ? -BOX_H : BOX_H}px)` }, { transform: 'translateY(0)' }], SLIDE_MS);
   };
   const hide = () => { parts.section.hidden = true; parts.section.dataset.state = 'closed'; };
   const deferral = createDeferral(context, show);

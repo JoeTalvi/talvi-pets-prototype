@@ -4,7 +4,7 @@ import type { Log } from './log';
 /** Presentation §3.4: view → controller UI intents (controller-owned; not CONTRACT-EVENTS members). */
 export type PresentationEvent =
   | { type: 'slot.tapped'; slotId: string; filled: boolean }
-  | { type: 'bubble.tapped'; petId: string; class: 'want' | 'chatter' | Reaction; text: string }
+  | { type: 'bubble.tapped'; petId: string; class: 'want' | 'chatter' | 'verb' | Reaction; text: string }
   | { type: 'house.tapped'; projectId: string };
 export type PresentationEventType = PresentationEvent['type'];
 type EventOfType<T extends PresentationEventType> = Extract<PresentationEvent, { type: T }>;

@@ -4,7 +4,8 @@ import type { Action } from '../../src/sim/actions';
 import type { SimEvent } from '../../src/sim/events';
 import { reduce } from '../../src/sim/reduce';
 import { initialState, type GameState, type PetBehaviour } from '../../src/sim/state';
-import { validContent } from '../content/helpers';
+import { files, manifest, patchFiles, validContent } from '../content/helpers';
+import { loadContent } from '../../src/content/load';
 import { advance, deepFreeze, designIn, dogLikesLight, eventsOf, tick } from './helpers';
 
 const place = (slotId: string, typeId: string): Action => ({ type: 'placeCharm', slotId, typeId });
@@ -80,7 +81,7 @@ it('VERIFY-MEC-007-003 recent-target penalty: the recent equal-weight slot is ch
   expect(recent / 1000).toBeLessThanOrEqual(0.26);
 });
 
-it('VERIFY-MEC-007-004 only plant charms: wander targets only, no pet.verbStarted; consecutive repeats only past the one §2.4 re-draw (≤ 1/9 + tolerance; FORK: normative re-draw-once kept over "never two consecutive")', () => {
+it('VERIFY-MEC-007-004 only plant charms: wander targets only, no pet.verbStarted; never the same wander point twice in a row (fork #36 resolved 2026-10-26)', () => {
   const content = validContent();
   const state = designIn(content, ['soft-nap']);
   state.inventory.ownedTypeIds.push('fern');
@@ -91,7 +92,7 @@ it('VERIFY-MEC-007-004 only plant charms: wander targets only, no pet.verbStarte
   const ids = targets.map(target => (target as { wanderPointId: string }).wanderPointId);
   expect(new Set(ids)).toEqual(new Set(['w0', 'w1', 'w2']));
   const repeats = ids.slice(1).filter((id, index) => id === ids[index]).length;
-  expect(repeats / (ids.length - 1)).toBeLessThanOrEqual(0.2);
+  expect(repeats).toBe(0);
   expect(eventsOf(events, 'pet.verbStarted')).toEqual([]);
 });
 
@@ -142,7 +143,7 @@ it('VERIFY-MEC-007-011 greeting on entry: scene.changed, pet.reacted greeting, w
   const content = validContent();
   const state = initialState(content, 1);
   state.session.orientationShown = true;
-  state.avatar = { ...state.avatar, x: 360, y: 800 };
+  state.avatar = { ...state.avatar, x: 200, y: 820 };
   const entered = step(content, state, tick(0, 0, 100));
   const kinds = entered.events.map(event => event.type);
   expect(kinds.slice(0, 3)).toEqual(['scene.changed', 'pet.reacted', 'pet.phaseChanged']);
@@ -193,4 +194,19 @@ it('VERIFY-MEC-007-014 partial (bounded; CORE-008 finishes in WORK-003-5): two r
   expect(first.decisions.length).toBeGreaterThan(5);
   expect(eventsOf(first.events, 'pet.verbStarted').length).toBeGreaterThan(0);
   expect(scripted(content, 2).decisions).not.toEqual(first.decisions);
+});
+
+it('play-session Q6: with greetingDelayMs the greeting walk starts after the door fade-in, not on the entry tick', () => {
+  const content = loadContent(manifest, patchFiles(files(), [{ file: 'tuning.json', path: '/greetingDelayMs', value: 520 }]));
+  const state = initialState(content, 1);
+  state.session.orientationShown = true;
+  state.avatar = { ...state.avatar, x: 200, y: 820 };
+  const entered = step(content, state, tick(0, 0, 100));
+  expect(eventsOf(entered.events, 'pet.reacted')).toEqual([]);
+  expect(entered.state.pets.dog.behaviour).toMatchObject({ phase: 'idle', reaction: 'greeting' });
+  const early = advance(reduce, content, entered.state, 400);
+  expect(eventsOf(early.events, 'pet.reacted')).toEqual([]);
+  const later = advance(reduce, content, early.state, 200);
+  expect(eventsOf(later.events, 'pet.reacted')[0]).toMatchObject({ reaction: 'greeting', walkOver: true });
+  expect(eventsOf(later.events, 'pet.phaseChanged').at(-1)).toMatchObject({ to: 'walking', target: { wanderPointId: 'w0' }, reaction: 'greeting' });
 });

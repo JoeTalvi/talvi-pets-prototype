@@ -37,7 +37,7 @@ describe('tools TOOL-002 serializer', () => {
     const out = JSON.parse(serializeRoom(d)) as Room;
     expect(out.slots.at(-1)!.id).toBe('small-1');
     expect(Object.keys(out.slots.at(-1)!)).toEqual(['id', 'sizeClass', 'x', 'y', 'anchor', 'adjacent']);
-    expect(Object.keys(slot(out, 'wall-1'))).toEqual(['id', 'sizeClass', 'x', 'y', 'wall', 'anchor', 'adjacent']);
+    expect(Object.keys(slot(out, 'wall-1'))).toEqual(['id', 'sizeClass', 'x', 'y', 'wall', 'anchor', 'adjacent', 'floorY']);
     expect(out.wanderPoints.at(-1)).toEqual({ id: 'w1', x: 800, y: 700 });
     expect(serializeRoom(d).endsWith('}\n')).toBe(true);
   });

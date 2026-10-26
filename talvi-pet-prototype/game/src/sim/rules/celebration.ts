@@ -40,11 +40,6 @@ export function startCelebration(content: Content, state: GameState, projectId: 
 }
 
 /** MEC-002 §2.4 street-arrival hook (core §4 step 2): the first project in content order with owed phases. */
-export function onStreetEntered(content: Content, state: GameState): RuleResult {
-  const owed = content.projects.find(project => owedPhases(content, state, project.id) > 0);
-  return owed ? startCelebration(content, state, owed.id) : { state, events: [] };
-}
-
 export function acknowledgeProject(content: Content, state: GameState,
   action: ActionOf<'acknowledgeProject'>): RuleResult {
   const known = content.projects.some(project => project.id === action.projectId);

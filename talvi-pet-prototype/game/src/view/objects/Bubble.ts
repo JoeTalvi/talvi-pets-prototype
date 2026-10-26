@@ -7,7 +7,7 @@ import type { SimEvent } from '@sim/events';
 export type BubbleClass = 'want' | 'chatter' | 'verb' | Reaction;
 export type BubbleKind = 'icon' | 'emoji' | 'text';
 export type BubbleShow = { kind: BubbleKind; class: BubbleClass; glyph?: string; icon?: string; text?: string; tapText?: string };
-export type BubbleTap = { class: 'want' | 'chatter' | Reaction; text: string };
+export type BubbleTap = { class: BubbleClass; text: string };
 export type TextFn = (key: string, params?: Record<string, string>) => string;
 type Tuning = Pick<Content['tuning'], 'bubbleMs' | 'bubbleTextMs'>;
 type Current = BubbleShow & { ageMs: number; lifeMs: number };
@@ -43,7 +43,8 @@ export function verbBubble(content: Content, pet: string, verbId: string): Bubbl
 export function wantBubble(content: Content, text: TextFn, pet: string, tagId: string | null): BubbleShow {
   const tag = tagId === null ? undefined : content.tags.find(t => t.id === tagId);
   if (!tag) return { kind: 'emoji', class: 'want', glyph: '❓', tapText: text('tpp.bubble.wantHidden', { pet }) };
-  return { kind: 'icon', class: 'want', icon: tag.icon, tapText: text('tpp.bubble.want', { pet, tag: tag.name }) };
+  // Play-session Q7: the tag name is lower case inside the sentence (renders.html); standalone pills keep their capitals.
+  return { kind: 'icon', class: 'want', icon: tag.icon, tapText: text('tpp.bubble.want', { pet, tag: tag.name.toLowerCase() }) };
 }
 
 /** mec-008 §2.1 Chatter row: the line as text at once for `bubbleTextMs`; further taps are ignored while shown. */
@@ -103,9 +104,8 @@ export class Bubble extends Phaser.GameObjects.Container {
   tap(): boolean {
     const shown = this.shown;
     if (!shown || shown.kind === 'text' || shown.tapText === undefined) return false;
-    const tapClass = shown.class === 'verb' ? 'chatter' : shown.class;
     this.show({ kind: 'text', class: shown.class, text: shown.tapText });
-    this.onTapped({ class: tapClass, text: shown.tapText });
+    this.onTapped({ class: shown.class, text: shown.tapText });
     return true;
   }
   /** The body ellipse's bounding box in world coordinates (the scene routes `bubble:<petId>` with it). */

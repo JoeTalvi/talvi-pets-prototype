@@ -28,6 +28,53 @@ function cardsMarkup(context: ViewContext, o: TemplateOptions, types: readonly C
     + `<span class="tpp-tags">${tagPills(context, o, type.tags)}</span></button>`).join('');
 }
 
+export type Bounds = { x: number; y: number; w: number; h: number };
+const CARD_PICTURE = { w: 160, h: 140 }, ALPHA_MIN = 16;
+
+/** Q9 (play session 2026-10-26): the box around RGBA pixels with alpha > ALPHA_MIN (soft edges and stray haze excluded); null when none. */
+export function opaqueBounds(data: ArrayLike<number>, w: number, h: number): Bounds | null {
+  let x0 = w, y0 = h, x1 = -1, y1 = -1;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    if (data[(y * w + x) * 4 + 3] <= ALPHA_MIN) continue;
+    x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y);
+  }
+  return x1 < 0 ? null : { x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1 };
+}
+
+/** Q9: the whole image's size and offset so `bounds` fills `box` (contain) and sits centred in it. */
+export function cropBox(bounds: Bounds, natural: { w: number; h: number }, box: { w: number; h: number }) {
+  const scale = Math.min(box.w / bounds.w, box.h / bounds.h);
+  return { width: natural.w * scale, height: natural.h * scale,
+    left: (box.w - bounds.w * scale) / 2 - bounds.x * scale, top: (box.h - bounds.h * scale) / 2 - bounds.y * scale };
+}
+
+const boundsBySrc = new Map<string, Bounds | null>();
+function boundsOf(img: HTMLImageElement): Bounds | null {
+  if (!boundsBySrc.has(img.src)) {
+    const canvas = document.createElement('canvas'); canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
+    const g = canvas.getContext('2d', { willReadFrequently: true });
+    if (!g) return null;
+    g.drawImage(img, 0, 0);
+    boundsBySrc.set(img.src, opaqueBounds(g.getImageData(0, 0, canvas.width, canvas.height).data, canvas.width, canvas.height));
+  }
+  return boundsBySrc.get(img.src) ?? null;
+}
+
+/** Q9: crop each card picture to its charm (the class canvas is padded, so small charms read tiny); whole canvas until the image loads. */
+function cropCardPictures(sheet: HTMLElement): void {
+  for (const img of sheet.querySelectorAll<HTMLImageElement>('.tpp-charm-card > img')) {
+    const crop = () => {
+      const bounds = img.naturalWidth > 0 ? boundsOf(img) : null;
+      if (!bounds) return;
+      const { width, height, left, top } = cropBox(bounds, { w: img.naturalWidth, h: img.naturalHeight }, CARD_PICTURE);
+      const frame = document.createElement('span'); frame.className = 'tpp-charm-crop';
+      img.replaceWith(frame); frame.append(img);
+      Object.assign(img.style, { width: `${width}px`, height: `${height}px`, left: `${left}px`, top: `${top}px` });
+    };
+    if (img.complete) crop(); else img.addEventListener('load', crop, { once: true });
+  }
+}
+
 /** MEC-004 R7/R8: title by size class, owned count, the `chooserTypes` cards in owned order, or the empty line. */
 function sheetMarkup(context: ViewContext, o: TemplateOptions, slotId: string): string {
   const text = o.text as Text;
@@ -102,6 +149,7 @@ export function createChooser(root: HTMLElement, context: ViewContext): Panel {
   const render = () => {
     if (slotId === null) return;
     sheet.innerHTML = sheetMarkup(context, o, slotId);
+    cropCardPictures(sheet);
     section.querySelector('.tpp-chooser-locator')?.remove();
     const locator = locatorOf(context, o, slotId);
     if (locator) section.append(locator);

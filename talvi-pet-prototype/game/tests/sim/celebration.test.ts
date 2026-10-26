@@ -148,17 +148,19 @@ it('VERIFY-MEC-008-011 phase messages for 2 and 4 (in-test variant): only phase 
   expect(eventsOf(close, 'dialogue.opened')[0].script).toMatchObject({ source: 'completionMessage', lines: ['A new home.'] });
 });
 
-it('VERIFY-MEC-002-017 arrival on the street: one tick emits scene.changed then celebration.started at step cutscene', () => {
+it('VERIFY-MEC-002-017 (amended 2026-10-26, "Wait for tap"): arriving on the street with phases owed starts no celebration; the house tap does', () => {
   const content = validContent();
   const state = owing(content, 0, 700);
   state.scene = { kind: 'interior', roomId: 'dog-room' };
   state.pets.dog.introduced = true;
   state.avatar = { x: 500, y: 160, facing: 'up', immunityMs: 0, facingCandidate: null };
   const { state: after, results } = run(content, state, [tick(0, 0, 16)]);
-  expect(types(results[0].events).slice(0, 2)).toEqual(['scene.changed', 'celebration.started']);
-  expect(results[0].events[1]).toMatchObject({ type: 'celebration.started', projectId: 'pet-house', fromPhase: 0, toPhase: 2, replay: false });
-  expect(after.celebration!.step).toBe('cutscene');
+  expect(types(results[0].events)).toContain('scene.changed');
+  expect(types(results[0].events)).not.toContain('celebration.started');
+  expect(after.celebration).toBeNull();
   expect(after.scene).toEqual({ kind: 'street' });
+  const tapped = reduce(content, after, ack);
+  expect(tapped.events[0]).toMatchObject({ type: 'celebration.started', projectId: 'pet-house', fromPhase: 0, toPhase: 2, replay: false });
 });
 
 it('MEC-002 §2.4 a reload or entry onto the street with nothing owed starts nothing; view-timing actions without a celebration are noCelebration', () => {

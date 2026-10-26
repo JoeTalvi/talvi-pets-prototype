@@ -32,12 +32,11 @@ function showTooltip(section: HTMLElement, modifier: string, message: string, st
   return aside;
 }
 
-/** MEC-006 R5: one `span.tpp-stars-delta` per `stars.changed`, gain olive / loss red (U+2212, fork 3), rising and fading, removed after `deltaMs`. */
+/** MEC-006 R5: one `span.tpp-stars-delta` per `stars.changed`, gain olive / loss red (U+2212, fork 3), rising and fading, removed after `deltaMs`; Q8(b): one `{sign}{amount} ★` pattern. */
 function floatDelta(stars: HTMLElement, text: Text, delta: number): HTMLElement {
   const el = document.createElement('span');
-  const key = delta < 0 ? 'tpp.stars.deltaLoss' : 'tpp.stars.delta';
-  el.className = `tpp-stars-delta ${delta < 0 ? 'loss' : 'gain'}`; el.dataset.stringKey = key;
-  el.textContent = text(key, { delta: Math.abs(delta) });
+  el.className = `tpp-stars-delta ${delta < 0 ? 'loss' : 'gain'}`; el.dataset.stringKey = 'tpp.stars.delta';
+  el.textContent = text('tpp.stars.delta', { sign: delta < 0 ? '−' : '+', amount: Math.abs(delta) });
   el.style.color = delta < 0 ? 'var(--red)' : 'var(--olive)';
   stars.append(el);
   el.animate?.([{ transform: 'translateY(0)', opacity: 1 }, { transform: `translateY(-${HUD_TIMING.deltaRisePx}px)`, opacity: 0 }],
@@ -83,7 +82,10 @@ function renderHud(p: Parts, context: ViewContext, text: Text, state: GameState)
   const key = design ? 'tpp.hud.done' : 'tpp.hud.decorate';
   p.label.dataset.stringKey = key; p.label.textContent = text(key);
   p.toggle.classList.toggle('ns-btn-primary', !design); p.toggle.classList.toggle('ns-btn-secondary', design);
-  p.toggle.disabled = state.dialogue.current !== null;
+  // Play-session Q17: Done is disabled only while the dialogue box is on screen (a deferred want story leaves it usable);
+  // Decorate stays disabled for any pending dialogue, which the sim rejects.
+  const boxShown = !(p.section.parentElement?.querySelector<HTMLElement>('[data-panel="dialogue"]')?.hidden ?? true);
+  p.toggle.disabled = state.dialogue.current !== null && (!design || boxShown);
   const room = content.rooms[state.scene.roomId];
   const { points, max } = starsOf(content, state, room.id);
   // MEC-006 R7: hidden arm hides the bar, label and every delta; Hearts stay (and the want panel keeps its Stars floor, Q8(a)).
@@ -116,6 +118,13 @@ export function createHudInterior(root: HTMLElement, context: ViewContext): Pane
       if (after.scene.kind === 'interior' && event.roomId === after.scene.roomId && after.session.starsVisible && event.delta !== 0) floatDelta(p.stars, text, event.delta);
     }),
     store.subscribe('heart.earned', () => pulse(p.hearts))];
+  // Play-session Q17: the dialogue box shows later than its state change (the want story waits for the nap), so Done's
+  // disabled state follows the box itself.
+  const boxWatch = new MutationObserver(records => {
+    if (records.some(r => (r.target as HTMLElement).dataset?.panel === 'dialogue')) render(store.getState());
+  });
+  boxWatch.observe(root, { subtree: true, attributes: true, attributeFilter: ['hidden'] });
+  offs.push(() => boxWatch.disconnect());
   render(store.getState());
   return {
     destroy() {

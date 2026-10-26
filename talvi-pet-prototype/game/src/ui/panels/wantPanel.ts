@@ -19,7 +19,9 @@ const pill = (label: string, met: boolean, extra = '') =>
 
 /** MEC-009 "Panel states": one pill per condition in order; a hidden unrevealed tag is "?" and never names the tag (R4). */
 function pillOf(content: Content, text: Text, view: ConditionView): string {
-  if (view.kind === 'adjacent') return pill(text('tpp.want.adjacent'), view.met);
+  // Fork #12 resolved 2026-10-26: the adjacency pill names its two tags, as the TOOL-003 CLI does.
+  const tagName = (id: string | undefined) => content.tags.find(t => t.id === id)?.name ?? id ?? '';
+  if (view.kind === 'adjacent') return pill(text('tpp.want.adjacent', { a: tagName(view.tagA), b: tagName(view.tagB) }), view.met);
   // Q8(a): the Stars floor is shown with its numbers even while the Stars bar is hidden.
   if (view.kind === 'stars') return `<span class="tpp-tag wide${view.met ? ' done' : ''}">${escapeHtml(text('tpp.want.starsFloor', { min: view.min ?? 0, current: view.current ?? 0 }))}</span>`;
   if (view.hidden || view.tag === undefined) return pill(text('tpp.want.hidden'), view.met);

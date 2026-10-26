@@ -7,13 +7,17 @@ import { tagPills } from './chooser';
 
 const PANEL = { w: 620, h: 240 }, GAP = 24, INSET = 16;
 
-/** Presentation §8.2: above the slot's screen point (world y minus the camera scroll), clamped 16 px inside the overlay. */
-export function sheetPosition(slot: { x: number; y: number }, overlayHeight: number): { left: number; top: number } {
+/**
+ * Q15 (play session 2026-10-26; was presentation §8.2 "above the slot"): beside the charm so a tall one stays visible —
+ * right of it (`halfWidth` + 24 px), else left; bottom level with the slot's screen point; clamped 16 px inside the overlay.
+ */
+export function sheetPosition(slot: { x: number; y: number }, overlayHeight: number, halfWidth: number): { left: number; top: number } {
   const scrollY = (1080 - overlayHeight) / 2;
   const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
+  const right = slot.x + halfWidth + GAP, maxLeft = 1920 - PANEL.w - INSET;
   return {
-    left: clamp(slot.x - PANEL.w / 2, INSET, 1920 - PANEL.w - INSET),
-    top: clamp(slot.y - scrollY - GAP - PANEL.h, INSET, overlayHeight - PANEL.h - INSET),
+    left: clamp(right <= maxLeft ? right : slot.x - halfWidth - GAP - PANEL.w, INSET, maxLeft),
+    top: clamp(slot.y - scrollY - PANEL.h, INSET, overlayHeight - PANEL.h - INSET),
   };
 }
 
@@ -37,7 +41,8 @@ export function createReplaceRemove(root: HTMLElement, context: ViewContext): Pa
     section.querySelector('[data-asset-id]')!.outerHTML = image(o, type.sprite);
     section.querySelector('.tpp-sheet-name')!.textContent = type.name;
     section.querySelector('.tpp-tags, .tpp-tag')!.outerHTML = `<span class="tpp-tags" style="position:absolute;left:130px;top:70px">${tagPills(context, o, type.tags)}</span>`;
-    const { left, top } = sheetPosition(slot, parseFloat(root.parentElement?.style.height ?? '') || 1080);
+    const spriteW = context.manifest.entries.find(e => e.id === type.sprite)?.px?.w ?? 160;
+    const { left, top } = sheetPosition(slot, parseFloat(root.parentElement?.style.height ?? '') || 1080, spriteW / 2);
     Object.assign(section.style, { left: `${left}px`, top: `${top}px` });
     section.dataset.slotId = id;
     return true;

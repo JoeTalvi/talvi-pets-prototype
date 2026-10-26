@@ -62,7 +62,7 @@ it.each(['dialogue', 'celebration', 'arrival', 'design'] as const)(
   },
 );
 
-it('MEC-001 ordered mode preconditions include invalid payload first and block leaving during dialogue', () => {
+it('MEC-001 ordered mode preconditions include invalid payload first; leaving is allowed during a pending dialogue (play-session Q17)', () => {
   const { content, state } = squareFixture();
   state.mode = 'design'; state.dialogue.current = dialogue; state.celebration = celebration;
   const invalid = { type: 'setDesignMode', on: 'true' } as unknown as Action;
@@ -72,8 +72,8 @@ it('MEC-001 ordered mode preconditions include invalid payload first and block l
   expect(reduce(content, state, same).events)
     .toEqual([{ type: 'action.rejected', action: same, reason: 'noChange' }]);
   const leave = { type: 'setDesignMode', on: false } as const;
-  expect(reduce(content, state, leave).events)
-    .toEqual([{ type: 'action.rejected', action: leave, reason: 'dialogueOpen' }]);
+  // Play-session Q17 (2026-10-26): leaving Decorate stays allowed while a dialogue is pending; entering it is not.
+  expect(reduce(content, state, leave).events).toEqual([{ type: 'mode.changed', mode: 'play' }]);
 });
 
 it('MEC-001 synthetic overlapping locks preserve celebration-before-arrival order and allow exit', () => {

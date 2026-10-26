@@ -90,3 +90,13 @@ it('MEC-001 invalid content cannot silently place the avatar at an unrelated spa
   content.rooms['dog-room'].doors[0].target.doorId = 'missing';
   expect(() => stepDoors(content, state)).toThrow('Unresolved target door missing');
 });
+
+it('play-session (2026-10-26, "Wait for tap"): stepping out with a phase owed does not start a celebration', () => {
+  const { content, state } = squareFixture();
+  state.avatar.y = 130;
+  const owed = reduce(content, state, { type: 'debugSetCurrent', projectId: 'pet-house', cents: 400 }).state;
+  const out = reduce(content, owed, tick(0, -1));
+  expect(out.state.scene).toEqual({ kind: 'street' });
+  expect(out.state.celebration).toBeNull();
+  expect(out.events.map(event => event.type)).not.toContain('celebration.started');
+});

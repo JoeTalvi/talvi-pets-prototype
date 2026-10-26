@@ -64,10 +64,10 @@ describe('presentation §8.2 strings fallback (WORK-019-2)', () => {
   it('presentation §8.2 strings (WORK-019-2 keys, merged by WORK-021-1) — WANT, Selected spot, −4 ★ resolve from the real strings.json, not the fallback table; no guess keys', () => {
     const real = realStrings as Record<string, string>;
     const text = createText(real);
-    expect([text('tpp.want.title'), text('tpp.chooser.selected'), text('tpp.stars.deltaLoss', { delta: 4 })]).toEqual(['WANT', 'Selected spot', '−4 ★']);
+    expect([text('tpp.want.title'), text('tpp.chooser.selected'), text('tpp.stars.delta', { sign: '−', amount: 4 })]).toEqual(['WANT', 'Selected spot', '−4 ★']);
     expect(Object.keys(FALLBACK_STRINGS).filter(k => /guess/i.test(k))).toEqual([]);
     expect(Object.keys(real).filter(k => /guess/i.test(k))).toEqual([]);
-    for (const key of ['tpp.want.title', 'tpp.chooser.selected', 'tpp.stars.deltaLoss']) expect(FALLBACK_STRINGS[key]).toBeUndefined();
+    for (const key of ['tpp.want.title', 'tpp.chooser.selected', 'tpp.stars.delta']) expect(FALLBACK_STRINGS[key]).toBeUndefined();
     expect(createText({})('tpp.want.title')).toBe('[tpp.want.title]');
   });
 });

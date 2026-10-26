@@ -38,11 +38,11 @@ describe('MEC-009 panel states (VERIFY-MEC-009-021)', () => {
 
   it('MEC-009 panel states — partial: jsdom state b (bright-corner): plant .unavailable with the nextPhase note, adjacent pill; light ticks after a lamp', async () => {
     const s = await designSetup(withFulfilled(['soft-nap']));
-    expect(pills(s)).toEqual([['☐ Light', ''], ['☐ Plant', 'unavailable'], ['☐ beside each other', '']]);
+    expect(pills(s)).toEqual([['☐ Light', ''], ['☐ Plant', 'unavailable'], ['☐ Light + Plant beside each other', '']]);
     expect(textOf(s, '.tpp-want-note')).toEqual(['arrives with the next home phase']);
     expect(textOf(s, '.tpp-want-reward')).toEqual(['Reward: Sit on']);
     s.context.store.dispatch({ type: 'placeCharm', slotId: 'floor-1', typeId: 'lamp' });
-    expect(pills(s)).toEqual([['✓ Light', 'done'], ['☐ Plant', 'unavailable'], ['☐ beside each other', '']]);
+    expect(pills(s)).toEqual([['✓ Light', 'done'], ['☐ Plant', 'unavailable'], ['☐ Light + Plant beside each other', '']]);
   });
 
   it('MEC-009 panel states — partial: jsdom state c (feels-like-home): "?" pill never names the hidden tag; .wide Stars floor kept while Stars are hidden (Q8(a))', async () => {

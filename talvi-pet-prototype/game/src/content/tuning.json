@@ -21,6 +21,7 @@
   "bubbleTextMs": 3000,
   "toastMs": 3000,
   "fulfilmentUseHoldMs": 2000,
+  "greetingDelayMs": 520,
   "recentTargetPenalty": 0.3,
   "recentTargetsKept": 2,
   "hiddenSlotFromWant": 3,

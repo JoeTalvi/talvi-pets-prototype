@@ -82,7 +82,7 @@ describe('VERIFY-MEC-008-016 verb end, removal and greeting', () => {
   it('VERIFY-MEC-008-016 partial: jsdom — entering the room greets: 🎵 shows on {to:greeting}, not before', async () => {
     const { scene, context, state } = await designSetup({ edit: s => {
       s.mode = 'play'; s.scene = { kind: 'street' };
-      s.avatar = { ...s.avatar, x: 360, y: 810, facing: 'up' };
+      s.avatar = { ...s.avatar, x: 200, y: 830, facing: 'up' };
     } });
     for (let i = 0; i < 20 && state().scene.kind === 'street'; i++) context.store.dispatch({ type: 'tick', dtMs: 100, move: { x: 0, y: -1 } });
     expect(linesOf(context, 'pet.reacted').at(-1)).toMatchObject({ reaction: 'greeting', walkOver: true });
@@ -121,7 +121,7 @@ describe('VERIFY-MEC-008-016 want bubble', () => {
     const body = scene.bubble!;
     pointer(scene, body.x + 44, body.y - 114);
     expect(linesOf(context, 'input.tap').at(-1)).toMatchObject({ target: 'bubble:dog' });
-    expect(glyph(scene)).toBe(`Something ${want.tag === 'soft' ? 'Soft' : 'Seat'} would be lovely.`);
+    expect(glyph(scene)).toBe(`Something ${want.tag} would be lovely.`); // play-session Q7: the tag name is lower case inside the sentence
     expect(linesOf(context, 'ui.bubbleTapped')).toEqual([{ type: 'ui.bubbleTapped', petId: 'dog', class: 'want' }]);
     expect(dispatch).not.toHaveBeenCalled();
   });
@@ -177,5 +177,15 @@ describe('mec-008 §2.3 tapPet routing', () => {
     pointer(scene, b.x, b.y - 50);
     expect(linesOf(context, 'action.rejected').at(-1)).toMatchObject({ reason: 'dialogueOpen' });
     expect(scene.bubble!.current()).toBeNull();
+  });
+});
+
+describe('play-session Q19: a verb emote tap is logged as its own class', () => {
+  it('tapping a verb emote emits bubble.tapped {class: verb}, not chatter', async () => {
+    const { scene, context } = await designSetup({ edit: play });
+    const verb = context.content.verbs[0];
+    scene.bubble!.show({ kind: 'emoji', class: 'verb', glyph: verb.emote, tapText: 'Dog is taking a look.' });
+    scene.bubble!.tap();
+    expect(linesOf(context, 'ui.bubbleTapped').at(-1)).toMatchObject({ petId: 'dog', class: 'verb' });
   });
 });

@@ -7,7 +7,8 @@ export type Toast = Panel & { queued(): number };
 
 type Item = { merchantName: string; amountCents: number; changeCents: number; causeName: string };
 
-const IN_MS = 150, OUT_MS = 200;
+/** Q14(a) (play session 2026-10-26): a dialogue or popup holds at most the latest 2 round-ups; older held ones are dropped (the project bar already counts them). */
+const IN_MS = 150, OUT_MS = 200, HELD_MAX = 2;
 
 function animate(el: HTMLElement, frames: Keyframe[], duration: number): void {
   // jsdom has no Web Animations: the queue and `hidden` carry the state; the motion is the browser's.
@@ -48,6 +49,7 @@ export function createToast(root: HTMLElement, context: ViewContext): Toast {
       if (after.session.feedPresentation === 'trickle') return;
       const causeName = content.projects.find(p => p.id === event.projectId)?.causeName ?? '';
       queue.push({ merchantName: event.merchantName, amountCents: event.amountCents, changeCents: event.changeCents, causeName });
+      if (blocked(after)) queue.splice(0, Math.max(0, queue.length - HELD_MAX));
       pump();
     }),
     store.subscribe('dialogue.closed', () => pump()),

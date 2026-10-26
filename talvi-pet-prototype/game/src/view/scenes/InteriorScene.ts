@@ -134,11 +134,16 @@ export class InteriorScene extends WorldScene {
     this.bubble.hold(reactionBubble(textFrom(this.context.content.strings), name,
       { type: 'pet.reacted', petId, reaction: behaviour.reaction, slotId, typeId: null, line, walkOver: true }));
   }
-  /** Gate fork 1 / presentation §6.1 order fork 3: a pet `using` a `large` slot draws at slot depth + 1, else at its base y. */
+  /** Gate fork 1 / presentation §6.1 order fork 3: a pet `using` a `large` slot draws at slot depth + 1, else at its base y.
+   * A used charm with a `seat` (cushion, rug, stool) also lifts the pet onto it at the slot centre, above the charm. */
   private applyDepthRule(behaviour: Pick<PetBehaviour, 'phase' | 'target'>): void {
     const target = behaviour.target && 'slotId' in behaviour.target ? behaviour.target.slotId : null;
     const slot = behaviour.phase === 'using' && target ? this.room.slots.find(s => s.id === target) : undefined;
-    this.pet?.setDepthOverride(slot?.sizeClass === 'large' ? (slot.depthOverride ?? slot.y) + 1 : null);
+    const typeId = slot ? this.context.store.getState().rooms[this.roomId]?.placements[slot.id] : undefined;
+    const seat = this.context.content.charms.types.find(t => t.id === typeId)?.seat;
+    const above = slot && (seat || slot.sizeClass === 'large') ? (slot.depthOverride ?? slot.y) + 1 : null;
+    this.pet?.setDepthOverride(above);
+    this.pet?.setSeat(slot && seat ? { x: slot.x, y: slot.y - seat.y } : null);
   }
   /** MEC-005 R13/R15: a charm at its slot position, origin (0.5, 1), depth = depthOverride ?? y. */
   placeCharm(slotId: string, typeId: string): CharmSprite | undefined {
@@ -147,14 +152,15 @@ export class InteriorScene extends WorldScene {
     if (!slot || !type) return undefined;
     this.charms.get(slotId)?.destroy();
     const sprite = this.charmSprite(slot, this.textures.exists(type.sprite) ? type.sprite : 'missing');
-    sprite.setDepth(slot.depthOverride ?? slot.y);
+    sprite.setDepth(type.standsOnFloor && slot.floorY !== undefined ? slot.floorY : slot.depthOverride ?? slot.y);
     this.charms.set(slotId, sprite);
     return sprite;
   }
   /** A charm image at the slot (wall paintings projected; other wall art is drawn for the left wall and mirrored on the
-   * right); the fill preview layer reuses it. */
+   * right; a floor-standing charm sits on the slot's floor line); the fill preview layer reuses it. */
   charmSprite(slot: Slot, key: string): CharmSprite {
-    if (key !== 'charms/painting' || !slot.wall) return new CharmSprite(this, slot.x, slot.y, key).setFlipX(slot.wall === 'right');
+    const standing = slot.floorY !== undefined && this.context.content.charms.types.some(t => t.sprite === key && t.standsOnFloor);
+    if (key !== 'charms/painting' || !slot.wall) return new CharmSprite(this, slot.x, standing ? slot.floorY! : slot.y, key).setFlipX(slot.wall === 'right');
     const sourceHash = this.context.manifest.entries.find(e => e.id === key)?.hash ?? '';
     try { return new CharmSprite(this, slot.x, slot.y, key, { side: slot.wall, sourceHash }); }
     catch (error) {

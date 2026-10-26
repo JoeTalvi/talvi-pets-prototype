@@ -52,13 +52,13 @@ function candidates(step: Step): { slotId: SlotId; weight: number }[] {
   });
 }
 
-/** §2.4 step 4: one draw, re-drawn once when it equals the wander point the pet stands on. */
+/** §2.4 step 4 (fork #36 resolved 2026-10-26): one draw among the wander points other than the one the pet stands on,
+ * so it never wanders to the same point twice in a row. */
 function wanderTarget(step: Step): { target: PetBehaviour['target']; state: GameState } {
   const points = step.content.rooms[step.roomId].wanderPoints;
   const { x, y } = step.state.pets[step.petId].behaviour;
-  const current = points.find(point => point.x === x && point.y === y)?.id;
-  let pick = petPick(step.state, step.petId, points);
-  if (pick.item.id === current && points.length >= 2) pick = petPick(pick.state, step.petId, points);
+  const others = points.filter(point => point.x !== x || point.y !== y);
+  const pick = petPick(step.state, step.petId, others.length > 0 ? others : points);
   return { target: { wanderPointId: pick.item.id }, state: pick.state };
 }
 
@@ -164,18 +164,25 @@ function greet(step: Step): RuleResult {
     { type: 'pet.reacted', petId, reaction: 'greeting', slotId: null, typeId: null, line: pick.item, walkOver: true }]);
 }
 
+/** Play-session Q6: on entry the pet holds still (idle, greeting pending) for `greetingDelayMs`, then greets. */
+function awaitGreeting(step: Step): RuleResult {
+  const behaviour = step.state.pets[step.petId].behaviour;
+  return transition(step, step.state, { ...behaviour, phase: 'idle', timerMs: step.content.tuning.greetingDelayMs,
+    target: null, verb: null, reaction: 'greeting' }, verbEndedOf(step.petId, behaviour));
+}
+
 /** MEC-007 §2.2 `stepPet`: at most one transition per tick; the timer overshoot is not carried. */
 export function stepPet(content: Content, state: GameState, petId: PetId, dtMs: number,
   eventsSoFar: readonly SimEvent[]): RuleResult {
   const roomId = (state.scene as { roomId: RoomId }).roomId;
   const step: Step = { content, state, petId, roomId, dtMs };
   if (eventsSoFar.some(event => event.type === 'scene.changed' && event.to.kind === 'interior' && event.to.roomId === roomId))
-    return greet(step);
+    return content.tuning.greetingDelayMs > 0 ? awaitGreeting(step) : greet(step);
   const behaviour = state.pets[petId].behaviour;
   const expired = behaviour.timerMs - dtMs <= 0;
   if (behaviour.phase === 'walking') return walk(step);
   if (!expired) return countdown(step);
-  if (behaviour.phase === 'idle') return decide(step);
+  if (behaviour.phase === 'idle') return behaviour.reaction === 'greeting' ? greet(step) : decide(step);
   return behaviour.phase === 'using' ? endVerb(step) : afterBubble(step);
 }
 

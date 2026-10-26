@@ -4,7 +4,7 @@ import type { RuleResult, SimEvent } from './events';
 import { stepAvatar } from './rules/avatar';
 import { afterWantActivated, stepBubbles, tapPet } from './rules/bubbles';
 import {
-  acknowledgeProject, arrivalFinished, closeReveal, collectRewards, cutsceneFinished, onStreetEntered, skipWait,
+  acknowledgeProject, arrivalFinished, closeReveal, collectRewards, cutsceneFinished, skipWait,
 } from './rules/celebration';
 import {
   debugProgress, debugSetCurrent, debugSetEventInterval, debugSetSeed, debugSetting, debugSimulatePurchase,
@@ -63,9 +63,7 @@ type TickStep = (content: Content, state: GameState, action: TickAction,
 const tickSteps: TickStep[] = [
   (content, state, action) => ({ state: stepAvatar(content, state, action), events: [] }),
   (content, state) => stepDoors(content, state),
-  (content, state, _action, eventsSoFar) =>
-    eventsSoFar.some(event => event.type === 'scene.changed' && event.to.kind === 'street')
-      ? onStreetEntered(content, state) : { state, events: [] },
+  // Play-session 2026-10-26 ("Wait for tap"): stepping onto the street no longer starts an owed celebration.
   (content, state, action) => stepFeed(content, state, action),
   stepResidentPet,
   (content, state, _action, eventsSoFar) => stepScripts(content, state, eventsSoFar, activateFirstWant),

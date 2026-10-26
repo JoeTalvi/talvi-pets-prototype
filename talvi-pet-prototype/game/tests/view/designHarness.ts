@@ -9,8 +9,8 @@ import { designIn } from '../sim/helpers';
 import { bootScene, contextFor } from './sceneHarness';
 
 type Patch = { file: string; path: string; value: unknown };
-/** The 15 keys WORK-021-1 merged from the lanes' strings-additions.json into src/content/strings.json (they were FALLBACK_STRINGS). */
-export const MERGED_STRING_KEYS = ['tpp.chooser.slot', 'tpp.chooser.size.small', 'tpp.chooser.size.large', 'tpp.chooser.size.wall', 'tpp.chooser.count', 'tpp.chooser.scroll', 'tpp.common.close', 'tpp.hud.hearts', 'tpp.want.title', 'tpp.chooser.selected', 'tpp.stars.deltaLoss', 'tpp.toast.delta', 'tpp.hud.progress', 'tpp.popup.rewards', 'tpp.reveal.phase'] as const;
+/** The 15 keys WORK-021-1 merged from the lanes' strings-additions.json into src/content/strings.json (they were FALLBACK_STRINGS); `tpp.stars.deltaLoss` retired by Q8(b) (one `tpp.stars.delta` pattern). */
+export const MERGED_STRING_KEYS = ['tpp.chooser.slot', 'tpp.chooser.size.small', 'tpp.chooser.size.large', 'tpp.chooser.size.wall', 'tpp.chooser.count', 'tpp.chooser.scroll', 'tpp.common.close', 'tpp.hud.hearts', 'tpp.want.title', 'tpp.chooser.selected', 'tpp.toast.delta', 'tpp.hud.progress', 'tpp.popup.rewards', 'tpp.reveal.phase'] as const;
 /** The real strings the acceptance rows read (FX-CONTENT-MIN's strings.json says "Fixture"). */
 export const REAL_STRINGS: Patch[] = Object.entries({
   'tpp.hud.decorate': 'Decorate', 'tpp.hud.done': 'Done', 'tpp.stars.label': '{stars} / {max} ★',
@@ -18,11 +18,11 @@ export const REAL_STRINGS: Patch[] = Object.entries({
   'tpp.bubble.love': 'Just right!', 'tpp.bubble.like': 'I like this.', 'tpp.bubble.dislike': 'Not quite my thing.',
   'tpp.bubble.interrupted': 'Where did it go?', 'tpp.bubble.greeting': 'Hello!', 'tpp.bubble.want': 'Something {tag} would be lovely.',
   'tpp.bubble.wantHidden': 'Watch its reactions.', 'tpp.bubble.chatter': 'A thought to share.',
-  'tpp.hud.attention': 'A home phase is ready, step outside', 'tpp.stars.delta': '+{delta} ★',
+  'tpp.hud.attention': 'A home phase is ready, step outside', 'tpp.stars.delta': '{sign}{amount} ★',
   'tpp.stars.explain': 'New kinds of charm fill the bar; repeats add a little.',
   'tpp.want.availability.nextPhase': 'arrives with the next home phase', 'tpp.want.availability.laterPhase': 'arrives with a later home phase',
   'tpp.want.availability.heart': 'unlocked by a Heart', 'tpp.want.availability.never': 'not available yet',
-  'tpp.want.adjacent': 'beside each other', 'tpp.want.hidden': '?', 'tpp.want.starsFloor': 'room ≥ {min} ★',
+  'tpp.want.adjacent': '{a} + {b} beside each other', 'tpp.want.hidden': '?', 'tpp.want.starsFloor': 'room ≥ {min} ★',
   'tpp.want.rewardPrefix': 'Reward:', 'tpp.want.fulfilledFlash': 'Want fulfilled!', 'tpp.wants.exhausted': 'No more wants for now.',
   'tpp.dialogue.continue': 'Tap to continue', 'tpp.dialogue.gameName': 'Talvi', 'tpp.toast.roundup': '{merchant} {amount} → {change} to {cause}',
   'buildprojects.cutscene.popup.progress.title': 'Coming along!', 'buildprojects.cutscene.popup.complete.title': 'Project Complete!',

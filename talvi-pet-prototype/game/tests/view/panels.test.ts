@@ -202,10 +202,10 @@ describe('mec-005 R8 replace', () => {
     expect(scene.children.list.filter(o => o === scene.charms.get('floor-3') || (o.type === 'Image' && (o as Phaser.GameObjects.Image).texture?.key === 'charms/lamp' && (o as Phaser.GameObjects.Image).alpha === 1))).toHaveLength(1);
   });
 
-  it('mec-005 R8 replace — the sheet sits 24 px above the slot screen point, clamped 16 px inside the overlay', () => {
-    expect(sheetPosition({ x: 907, y: 618 }, 1080)).toEqual({ left: 597, top: 354 });
-    expect(sheetPosition({ x: 100, y: 100 }, 1080)).toEqual({ left: 16, top: 16 });
-    expect(sheetPosition({ x: 1900, y: 618 }, 823)).toEqual({ left: 1284, top: 618 - 128.5 - 264 });
+  it('mec-005 R8 replace — the sheet sits beside the charm (Q15, 2026-10-26: was 24 px above the slot), clamped 16 px inside the overlay', () => {
+    expect(sheetPosition({ x: 907, y: 618 }, 1080, 80)).toEqual({ left: 1011, top: 378 });
+    expect(sheetPosition({ x: 100, y: 100 }, 1080, 80)).toEqual({ left: 204, top: 16 });
+    expect(sheetPosition({ x: 1900, y: 618 }, 823, 80)).toEqual({ left: 1176, top: 618 - 128.5 - 240 });
   });
 });
 
@@ -216,7 +216,7 @@ describe('presentation §8.2 strings fallback', () => {
     const merged: Record<string, string> = {
       'tpp.chooser.slot': '{size} slot', 'tpp.chooser.size.small': 'Small floor', 'tpp.chooser.size.large': 'Large floor', 'tpp.chooser.size.wall': 'Wall',
       'tpp.chooser.count': '{count} charms you own', 'tpp.chooser.scroll': '▸ scroll', 'tpp.common.close': 'Close', 'tpp.hud.hearts': '♥ {hearts}',
-      'tpp.want.title': 'WANT', 'tpp.chooser.selected': 'Selected spot', 'tpp.stars.deltaLoss': '−{delta} ★', 'tpp.toast.delta': '+{change}',
+      'tpp.want.title': 'WANT', 'tpp.chooser.selected': 'Selected spot', 'tpp.toast.delta': '+{change}',
       'tpp.hud.progress': '{current} / {goal}', 'tpp.popup.rewards': 'Rewards', 'tpp.reveal.phase': 'Phase {phase}',
     };
     for (const [key, value] of Object.entries(merged)) expect((realStrings as Record<string, string>)[key]).toBe(value);

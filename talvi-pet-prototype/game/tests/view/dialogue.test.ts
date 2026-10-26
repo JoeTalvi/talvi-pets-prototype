@@ -111,7 +111,7 @@ describe('core §6.4 intro deferral', () => {
   it('core §6.4 intro deferred until the greeting — first entry: box hidden while the Dog walks over, shown on {to:greeting} at index 0', async () => {
     const s = await designSetup({ edit: st => {
       play(st); st.scene = { kind: 'street' } as GameState['scene']; st.pets.dog.introduced = false;
-      st.avatar = { ...st.avatar, x: 360, y: 810, facing: 'up' };
+      st.avatar = { ...st.avatar, x: 200, y: 830, facing: 'up' };
     } });
     fake();
     for (let i = 0; i < 20 && s.state().scene.kind === 'street'; i++) { s.context.store.dispatch({ type: 'tick', dtMs: 100, move: { x: 0, y: -1 } }); vi.advanceTimersByTime(100); }

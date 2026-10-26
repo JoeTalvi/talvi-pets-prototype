@@ -40,6 +40,8 @@ export class PetSprite extends Phaser.GameObjects.Sprite {
   readonly bubbleOffsetMeasured: boolean;
   /** Gate fork 1 draw-above rule: while `using` a `large` slot the scene sets slot depth + 1; null = depth at base y. */
   private depthOverride: number | null = null;
+  /** While `using` a charm with a seat the scene draws the pet on it; the simulation keeps the pet at the floor anchor. */
+  private seat: { x: number; y: number } | null = null;
   constructor(scene: Phaser.Scene, readonly petId: string, private verbs: readonly Verb[], entry: AssetEntry | undefined, behaviour: PetBehaviour) {
     const key = `pets/${petId}-sheet`;
     super(scene, behaviour.x, behaviour.y, scene.textures.exists(key) ? key : 'missing', 0);
@@ -51,7 +53,13 @@ export class PetSprite extends Phaser.GameObjects.Sprite {
     this.setClip(this.clipFor(behaviour));
   }
   sync(pose: Pose): void {
-    this.setPosition(pose.x, pose.y).setFlipX(pose.facing === 'left').setDepth(this.depthOverride ?? depthAtBase(pose.y));
+    const at = this.seat ?? pose;
+    this.setPosition(at.x, at.y).setFlipX(pose.facing === 'left').setDepth(this.depthOverride ?? depthAtBase(at.y));
+  }
+  setSeat(point: { x: number; y: number } | null): void {
+    this.seat = point;
+    if (point) this.setPosition(point.x, point.y);
+    this.setDepth(this.depthOverride ?? depthAtBase(this.y));
   }
   setDepthOverride(depth: number | null): void {
     this.depthOverride = depth;

@@ -155,3 +155,46 @@ describe('wall charm facing (play-session Q3, 2026-10-26)', () => {
     expect(scene.charms.get('wall-2')!.flipX).toBe(true);
   });
 });
+
+describe('pet on a seated charm (play-session follow-up, 2026-10-26)', () => {
+  const usingFloor1 = (seat: boolean) => {
+    const patched = patchFiles(files(), seat ? [{ file: 'charms.json', path: '/types/9/seat', value: { y: 62 } }] : []);
+    const content = loadContent(manifest, patched);
+    const state = designIn(content, [], 1);
+    state.mode = 'play';
+    state.rooms['dog-room'].placements = { 'floor-1': 'cushion' };
+    state.pets.dog.behaviour = { ...state.pets.dog.behaviour, phase: 'using', target: { slotId: 'floor-1' }, verb: 'nap', x: 640, y: 720, facing: 'left' };
+    return contextFor(content, state);
+  };
+  it('draws the pet on the charm seat, above the charm, while it uses a slot whose charm has a seat', async () => {
+    const scene = await bootScene(InteriorScene, usingFloor1(true), dogRoom, ['charms/cushion', 'rooms/fixture']);
+    const slot = scene.room.slots.find(s => s.id === 'floor-1')!, charm = scene.charms.get('floor-1')!;
+    expect([scene.pet!.x, scene.pet!.y]).toEqual([slot.x, slot.y - 62]);
+    expect(scene.pet!.depth).toBeGreaterThan(charm.depth);
+  });
+  it('keeps the pet at its anchor and base depth when the charm has no seat', async () => {
+    const scene = await bootScene(InteriorScene, usingFloor1(false), dogRoom, ['charms/cushion', 'rooms/fixture']);
+    expect([scene.pet!.x, scene.pet!.y, scene.pet!.depth]).toEqual([640, 720, 720]);
+  });
+});
+
+describe('floor-standing wall charms (play-session finding, 2026-10-26)', () => {
+  const withFloor = (floorY: boolean) => loadContent(manifest, patchFiles(files(), [
+    { file: 'charms.json', path: '/types/13/standsOnFloor', value: true },
+    ...(floorY ? [{ file: 'rooms/dog-room.json', path: '/slots/8/floorY', value: 420 }] : [])]));
+  it('draws a standsOnFloor charm with its base on the wall slot floor line, at that depth', async () => {
+    const content = withFloor(true);
+    const context = contextFor(content, designIn(content, [], 1));
+    context.store.dispatch({ type: 'placeCharm', slotId: 'wall-1', typeId: 'picture' });
+    const scene = await bootScene(InteriorScene, context, dogRoom, ['charms/picture', 'rooms/fixture']);
+    const charm = scene.charms.get('wall-1')!;
+    expect([charm.y, charm.depth]).toEqual([420, 420]);
+  });
+  it('falls back to the slot position when the slot has no floor line', async () => {
+    const content = withFloor(false);
+    const context = contextFor(content, designIn(content, [], 1));
+    context.store.dispatch({ type: 'placeCharm', slotId: 'wall-1', typeId: 'picture' });
+    const scene = await bootScene(InteriorScene, context, dogRoom, ['charms/picture', 'rooms/fixture']);
+    expect([scene.charms.get('wall-1')!.y, scene.charms.get('wall-1')!.depth]).toEqual([300, 300]);
+  });
+});
