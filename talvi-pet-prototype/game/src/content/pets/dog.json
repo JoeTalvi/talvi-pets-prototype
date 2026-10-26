@@ -64,7 +64,9 @@
     "wantAnnounce": {
       "soft-nap": "Somewhere soft to nap, please.",
       "bright-corner": "A bright corner to watch the window would be lovely.",
-      "feels-like-home": "It is nearly home. I think one little thing is missing."
+      "feels-like-home": "It is nearly home. I think one little thing is missing.",
+      "snack-time": "A little snack by a soft spot would be perfect.",
+      "welcome-home": "I would like the room to feel welcoming for friends."
     },
     "vignettes": {
       "soft-nap": [
@@ -81,6 +83,17 @@
         "There it is! I thought a little play was missing.",
         "A quiet corner is lovely. A little fun makes it mine.",
         "Now it really feels like home."
+      ],
+      "snack-time": [
+        "A snack and a soft spot. What a treat!",
+        "I will save a little for later. Maybe.",
+        "Now this is the good life."
+      ],
+      "welcome-home": [
+        "A seat for a friend, a light by the door, a picture on the wall.",
+        "Anyone would feel at home here.",
+        "I did not have a home like this before.",
+        "Thank you for making it ours."
       ]
     }
   },
@@ -143,6 +156,60 @@
           "kind": "tag",
           "tag": "toy",
           "hidden": true
+        }
+      ],
+      "reward": {
+        "kind": "vignette"
+      },
+      "rewardLabel": "A little story"
+    },
+    {
+      "id": "snack-time",
+      "brief": "A snack beside somewhere soft",
+      "conditions": [
+        {
+          "kind": "tag",
+          "tag": "food"
+        },
+        {
+          "kind": "tag",
+          "tag": "soft"
+        },
+        {
+          "kind": "adjacent",
+          "tagA": "food",
+          "tagB": "soft"
+        }
+      ],
+      "reward": {
+        "kind": "types",
+        "typeIds": [
+          "toy-chest",
+          "seed-dish"
+        ]
+      },
+      "rewardLabel": "2 charm types: Toy Chest and Seed Dish"
+    },
+    {
+      "id": "welcome-home",
+      "brief": "A welcoming room to share with friends",
+      "conditions": [
+        {
+          "kind": "tag",
+          "tag": "seat"
+        },
+        {
+          "kind": "tag",
+          "tag": "light"
+        },
+        {
+          "kind": "tag",
+          "tag": "art",
+          "hidden": true
+        },
+        {
+          "kind": "stars",
+          "min": 24
         }
       ],
       "reward": {
