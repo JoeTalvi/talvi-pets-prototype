@@ -151,9 +151,10 @@ export class InteriorScene extends WorldScene {
     this.charms.set(slotId, sprite);
     return sprite;
   }
-  /** A charm image at the slot (wall paintings projected); the fill preview layer reuses it. */
+  /** A charm image at the slot (wall paintings projected; other wall art is drawn for the left wall and mirrored on the
+   * right); the fill preview layer reuses it. */
   charmSprite(slot: Slot, key: string): CharmSprite {
-    if (key !== 'charms/painting' || !slot.wall) return new CharmSprite(this, slot.x, slot.y, key);
+    if (key !== 'charms/painting' || !slot.wall) return new CharmSprite(this, slot.x, slot.y, key).setFlipX(slot.wall === 'right');
     const sourceHash = this.context.manifest.entries.find(e => e.id === key)?.hash ?? '';
     try { return new CharmSprite(this, slot.x, slot.y, key, { side: slot.wall, sourceHash }); }
     catch (error) {

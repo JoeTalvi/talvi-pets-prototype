@@ -142,3 +142,16 @@ describe('painting projection fallback', () => {
     expect(context.log.lines().filter(l => l.type === 'app.error')).toHaveLength(1);
   });
 });
+
+describe('wall charm facing (play-session Q3, 2026-10-26)', () => {
+  it('a wall charm drawn for the left wall is mirrored on a right-wall slot and not on a left-wall slot', async () => {
+    const content = loadContent(manifest, patchFiles(files(), [{ file: 'rooms/dog-room.json', path: '/slots/9/wall', value: 'right' }]));
+    const state = designIn(content, [], 1);
+    const context = contextFor(content, state);
+    context.store.dispatch({ type: 'placeCharm', slotId: 'wall-1', typeId: 'picture' });
+    context.store.dispatch({ type: 'placeCharm', slotId: 'wall-2', typeId: 'picture' });
+    const scene = await bootScene(InteriorScene, context, dogRoom, ['charms/picture', 'rooms/fixture']);
+    expect(scene.charms.get('wall-1')!.flipX).toBe(false);
+    expect(scene.charms.get('wall-2')!.flipX).toBe(true);
+  });
+});

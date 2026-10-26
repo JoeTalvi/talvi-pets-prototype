@@ -242,6 +242,7 @@ export function contentChecks(m: AssetManifest, contentDir: string, add: Add, kn
             types?: {
                 sprite: string;
                 sizeClass: string;
+                canvas?: { w: number; h: number };
             }[];
         };
         const sizes: Record<string, [
@@ -249,9 +250,9 @@ export function contentChecks(m: AssetManifest, contentDir: string, add: Add, kn
             number
         ]> = { small: [160, 192], large: [320, 256], wall: [128, 128] };
         for (const t of data.types ?? []) {
-            const e = ids.get(t.sprite), size = sizes[t.sizeClass];
+            const e = ids.get(t.sprite), size = t.canvas ? [t.canvas.w, t.canvas.h] : sizes[t.sizeClass];
             if (e?.px && size && (e.px.w !== size[0] || e.px.h !== size[1]))
-                add('002', 'error', 'charms.json', `${t.sprite}: canvas differs from sizeClass ${t.sizeClass}`);
+                add('002', 'error', 'charms.json', t.canvas ? `${t.sprite}: canvas differs from the type canvas ${size[0]}×${size[1]}` : `${t.sprite}: canvas differs from sizeClass ${t.sizeClass}`);
         }
     }
     for (const e of m.entries)

@@ -7,13 +7,19 @@ import { AssetManifest } from '../../src/content/schema/assets';
 import { checkLedger } from '../../tools/assets/checks';
 import { encodePng } from '../../tools/assets/refit';
 const real = AssetManifest.parse(JSON.parse(readFileSync('public/assets/manifest.json', 'utf8')));
+/** The lamp row as an unaccepted placeholder: the tests exercise accept/replace/retire on it whatever its shipped status. */
+function lampOnly() {
+    const lamp: Record<string, unknown> = { ...real.entries.find(e => e.id === 'charms/lamp')!, status: 'ai-placeholder' };
+    for (const key of ['acceptedBy', 'acceptedAt', 'acceptedReason']) delete lamp[key];
+    return JSON.stringify({ ...real, entries: [lamp] }, null, 2);
+}
 let dir: string, file: string, source: string;
 beforeEach(() => {
     dir = mkdtempSync(join(tmpdir(), 'tpp-ledger-'));
     file = join(dir, 'manifest.json');
     source = join(dir, 'source.png');
     copyFileSync('tests/content/asset-fixtures/portrait.png', source);
-    writeFileSync(file, JSON.stringify({ ...real, entries: real.entries.filter(e => e.id === 'charms/lamp') }, null, 2) + '\n');
+    writeFileSync(file, lampOnly() + '\n');
 });
 afterEach(() => rmSync(dir, { recursive: true, force: true }));
 const append = (extra: string[]) => ledger(['append', '--manifest', file, '--id', 'charms/lamp-derived', '--from', source, '--recorded-by', 'TASK-077 test', '--date', '2026-10-20', '--format', 'json', '--out', join(dir, 'out.json'), ...extra]);
@@ -43,7 +49,7 @@ function setupProject() {
     mkdirSync(join(project, 'phase-3-preproduction/other'), { recursive: true });
     writeFileSync(join(project, record), '# test approval\n');
     writeFileSync(join(project, 'phase-3-preproduction/other/note.md'), '# not an approval\n');
-    writeFileSync(manifest, JSON.stringify({ ...real, entries: real.entries.filter(e => e.id === 'charms/lamp') }, null, 2) + '\n');
+    writeFileSync(manifest, lampOnly() + '\n');
 }
 const read = () => AssetManifest.parse(JSON.parse(readFileSync(manifest, 'utf8'))).entries.find(e => e.id === 'charms/lamp')!;
 const accept = (recordPath: string) => ledger(['accept', '--manifest', manifest, '--id', 'charms/lamp', '--by', 'Test Human', '--reason', 'Looks good (DEC-040).', '--record', recordPath, '--date', '2026-10-21', '--out', join(project, 'out.json')]);
