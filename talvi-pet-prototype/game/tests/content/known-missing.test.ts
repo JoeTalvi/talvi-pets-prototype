@@ -67,11 +67,10 @@ describe('check-assets VERIFY-ASSET-001 honours the same list', () => {
         expect(run(retired, new Map([['charms/fern', 'WORK-018']]))).toEqual(['error']);
     });
 });
-it('the shipped list parses: 3 later-batch IDs (the Owl batch), each labelled WORK-022', () => {
+it('the shipped list parses: 0 later-batch IDs (every batch ledgered)', () => {
     const known = readKnownMissing('tools/known-missing-assets.json');
-    expect(known.size).toBe(3);
-    expect(new Set(known.values())).toEqual(new Set(['WORK-022']));
-    expect(JSON.parse(readFileSync('tools/known-missing-assets.json', 'utf8')).assets).toHaveLength(3);
+    expect(known.size).toBe(0);
+    expect(JSON.parse(readFileSync('tools/known-missing-assets.json', 'utf8')).assets).toHaveLength(0);
 });
 describe('check-assets VERIFY-ASSET-002 per-type canvas (play-session Q3, 2026-10-26)', () => {
     const run = (px: { w: number; h: number }) => {
