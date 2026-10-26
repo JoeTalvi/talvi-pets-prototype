@@ -31,31 +31,66 @@
     },
     {
       "verb": "nap",
-      "atStart": true
+      "atStart": false
     }
   ],
   "lines": {
     "greeting": [
-      "Good evening, neighbour."
+      "Good evening, neighbour.",
+      "Ah, you are back. Do come in.",
+      "Hello again. The leaves have been very quiet."
     ],
     "chatter": [
       "There is always something to notice among the leaves.",
-      "A quiet room makes a good reading place."
+      "A quiet room makes a good reading place.",
+      "I do most of my reading after dark.",
+      "Every leaf has its own little pattern, if you look closely.",
+      "A high place makes even a small room feel wide.",
+      "I find a soft light much kinder than a bright one."
     ],
     "dislike": [
-      "That is a little too lively for my reading corner."
+      "That is a little too lively for my reading corner.",
+      "Perhaps that belongs in a busier room.",
+      "Oh dear. That will not sit quietly at all."
     ],
     "intro": [
-      "Hello. I am the Owl. A leafy view and a high perch would suit me nicely."
+      "Hello. I am the Owl. A leafy view and a high perch would suit me nicely.",
+      "I am a quiet sort. I read the leaves, mostly at night."
     ],
     "wantAnnounce": {
-      "leafy-perch": "Could I have a high place beside some leaves?"
+      "leafy-perch": "Could I have a high place beside some leaves?",
+      "glow-among-leaves": "A little light among the leaves would help me read.",
+      "reading-nook": "I would love a cosy nook with a picture to study.",
+      "lamplit-perch": "Could a lamp sit right beside my perch?",
+      "night-garden": "I dream of a room full of leaves, pictures and glow."
     },
     "vignettes": {
       "leafy-perch": [
         "Just the view I was hoping for.",
         "From up here, every leaf looks like a little page.",
         "I think I shall read the room for a while."
+      ],
+      "glow-among-leaves": [
+        "There. The leaves look warm in that light.",
+        "I can see every vein, like lines on a page.",
+        "Thank you. My evenings will be much brighter now."
+      ],
+      "reading-nook": [
+        "A picture to study and somewhere cosy to sit.",
+        "I may close my eyes for just a moment.",
+        "Only to rest them, of course.",
+        "Do not let me sleep past moonrise."
+      ],
+      "lamplit-perch": [
+        "Light beside my perch, just where I like it.",
+        "Now I can read late into the night.",
+        "You think of everything, neighbour."
+      ],
+      "night-garden": [
+        "Leaves, pictures and a gentle glow. It is all here.",
+        "When I first came, this room was so very quiet.",
+        "It is still quiet. But now it is a good quiet.",
+        "I think I shall stay for a long, long while."
       ]
     }
   },
@@ -71,6 +106,106 @@
         {
           "kind": "tag",
           "tag": "tall"
+        }
+      ],
+      "reward": {
+        "kind": "vignette"
+      },
+      "rewardLabel": "A little story"
+    },
+    {
+      "id": "glow-among-leaves",
+      "brief": "A soft glow among the leaves",
+      "conditions": [
+        {
+          "kind": "tag",
+          "tag": "light"
+        },
+        {
+          "kind": "tag",
+          "tag": "plant"
+        },
+        {
+          "kind": "adjacent",
+          "tagA": "light",
+          "tagB": "plant"
+        }
+      ],
+      "reward": {
+        "kind": "types",
+        "typeIds": [
+          "potted-tree",
+          "night-light"
+        ]
+      },
+      "rewardLabel": "2 charm types: Potted Tree, Night Light"
+    },
+    {
+      "id": "reading-nook",
+      "brief": "A cosy nook with a picture to study",
+      "conditions": [
+        {
+          "kind": "tag",
+          "tag": "art"
+        },
+        {
+          "kind": "tag",
+          "tag": "light"
+        },
+        {
+          "kind": "tag",
+          "tag": "soft",
+          "hidden": true
+        }
+      ],
+      "reward": {
+        "kind": "verb",
+        "verb": "nap"
+      },
+      "rewardLabel": "New trick: nap"
+    },
+    {
+      "id": "lamplit-perch",
+      "brief": "A lamp beside a high perch",
+      "conditions": [
+        {
+          "kind": "tag",
+          "tag": "tall"
+        },
+        {
+          "kind": "tag",
+          "tag": "light"
+        },
+        {
+          "kind": "adjacent",
+          "tagA": "tall",
+          "tagB": "light"
+        }
+      ],
+      "reward": {
+        "kind": "types",
+        "typeIds": [
+          "mossy-log",
+          "standing-frame"
+        ]
+      },
+      "rewardLabel": "2 charm types: Mossy Log, Standing Frame"
+    },
+    {
+      "id": "night-garden",
+      "brief": "A green and glowing room for the night",
+      "conditions": [
+        {
+          "kind": "tag",
+          "tag": "plant"
+        },
+        {
+          "kind": "tag",
+          "tag": "art"
+        },
+        {
+          "kind": "stars",
+          "min": 28
         }
       ],
       "reward": {
