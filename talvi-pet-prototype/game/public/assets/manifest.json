@@ -2498,6 +2498,33 @@
       "recordedBy": "WORK-022-1 / TASK-172",
       "history": [],
       "note": "WORK-022-1 M2 Owl batch under DEC-040; identity reference APPROVAL-018 A-2 (working/TASK-167/candidates/raw/A-2.png, not ledgered); row 2 use-sit empty (CHK-007-04); row 6 use-perch per gate fork Q-A (the verbs.json perch.clip -> use-perch mapping and the UseClip enum are WORK-024-1 / WORK-023-2's); react is a wing-lift flutter (FLAG in the lane journal); creative verdict at the MILESTONE-006 play session; not status accepted"
+    },
+    {
+      "id": "pets/owl-portrait",
+      "type": "image",
+      "url": "pets/owl-portrait.png",
+      "px": {
+        "w": 600,
+        "h": 600
+      },
+      "status": "ai-placeholder",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/pets/1793046269469-9cpv2c/candidate_002.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 16870,
+      "prompt": "Use case: identity-preserve. Create a game dialogue portrait of the EXACT approved small round owl in the reference. Retain the identity: a compact bread-loaf body with NO ear tufts, a smoothly rounded head that merges into the body with no neck; warm cocoa-brown crown and back with soft darker barring, cream heart-shaped facial disc with a clear disc edge, cream chest with three or four small brown flecks, large round dark brown eyes, small pale beak; clean dark brown outline, flat warm shading, restrained feather detail, not fluffy fur rendering. Bust portrait: the head with the whole facial disc and its edge, both eyes, the beak, the rounded crown and a slice of the upper chest with its flecks only; no feet, no spread wings, no branch, no book, no spectacles, no accessories. Facing slightly to the viewer's right in a gentle three-quarter view, calm polite expression, eyes open. Center the whole bust in a square canvas with white space around the crown and both sides; do not crop the crown. Plain white background with nothing else: no glow, shadow, floor, frame, border, text or extra animal.",
+      "refs": [
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/working/TASK-167/candidates/raw/A-2.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts.worktrees/talvi-pets-prototype-RUN-002/WORK-022-1/talvi-pet-prototype/game/public/assets/pets/dog-portrait.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/concepts/v1/dog-a-nano.png"
+      ],
+      "postProcess": "phase-4-build/runs/RUN-002/evidence/WORK-022-1/recipes/prepare-owl-portrait.mjs (SHA-256 7ccf1b779ed9e6a006556305b6e9f35466c410b3d3989ebe960e4d11f9c2b764; pure Node through the maintained use-poses key): JFIF 1024x1024 decoded by ffmpeg 8.1.2, white key backgroundMin 240 / backgroundChroma 18 / dilation 0 / holeMinArea 1000000 (no enclosed white cleared: a bust encloses no background and the default 40 cleared the eye glints), trim 731x794 at (100,130), premultiplied area-average uniform fit scale 0.71537 to 523x568 centred in 600x600 (fit box {\"x\":38,\"y\":16,\"w\":524,\"h\":568}), alpha<8 -> 0 (88 px), corners 0; RGBA PNG 253940 B > 250 KB -> pngquant 3.0.3 --quality 90-100 --speed 1 --nofs 256 (palette+tRNS, as the clue icons) -> 124467 B, SHA-256 9663eb182f631b8120842a745c14192fc00db4c3ab80078e096685b0a9505ea6.",
+      "batch": "owl-m2",
+      "hash": "9663eb182f631b8120842a745c14192fc00db4c3ab80078e096685b0a9505ea6",
+      "recordedAt": "2026-10-26",
+      "recordedBy": "WORK-022-1 / TASK-172",
+      "history": [],
+      "note": "WORK-022-1 M2 Owl batch under DEC-040; bust of the APPROVAL-018 A-2 body (identity reference working/TASK-167/candidates/raw/A-2.png, not ledgered); the parent of pets/owl-silhouette (ledger rule (4)); crop verdict (DEC-033 R card-5 tease) at the MILESTONE-006 play session; not status accepted"
     }
   ]
 }
