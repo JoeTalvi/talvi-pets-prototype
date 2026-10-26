@@ -1,4 +1,11 @@
 {
-  "$comment": "Later-batch AssetIds referenced by src/content but not yet in public/assets/manifest.json. Used only with --known-missing by check:content and check:assets, which then report them as warnings instead of errors. Remove a row when its asset is ledgered. Batches per phase-2-technical/assets.md §3.6 / roadmap: WORK-018 = M1 Dog-first batch (about 12 charms; any charms it does not cover move to WORK-022), WORK-022 = M2 Owl batch (Owl sheet, portrait, derived silhouette, remaining clue icons). List taken from phase-3-preproduction/workflows/WORK-013F.md at game Git 9baabd1: 22 resolution errors, 21 unique IDs (pets/owl-portrait is referenced twice). WORK-018-1 (RUN-001, ledger head 2494ce6) ledgered the 15 M1 charms and clues/spectacles, clues/branch-book, clues/moth in batch charms-m1 and removed their rows; the three WORK-022 Owl ids remain. WORK-022-1 (RUN-002) ledgered the three Owl ids (plus rooms/owl-room) in batch owl-m2 and removed their rows; the list is empty until a later batch references new ids.",
-  "assets": []
+  "$comment": "Later-batch AssetIds referenced by src/content but not yet in public/assets/manifest.json. Used only with --known-missing by check:content and check:assets, which then report them as warnings instead of errors. Remove a row when its asset is ledgered. Batches per phase-2-technical/assets.md §3.6 / roadmap: WORK-018 = M1 Dog-first batch (about 12 charms; any charms it does not cover move to WORK-022), WORK-022 = M2 Owl batch (Owl sheet, portrait, derived silhouette, remaining clue icons). List taken from phase-3-preproduction/workflows/WORK-013F.md at game Git 9baabd1: 22 resolution errors, 21 unique IDs (pets/owl-portrait is referenced twice). WORK-018-1 (RUN-001, ledger head 2494ce6) ledgered the 15 M1 charms and clues/spectacles, clues/branch-book, clues/moth in batch charms-m1 and removed their rows; the three WORK-022 Owl ids remain. WORK-022-1 (RUN-002) ledgered the three Owl ids (plus rooms/owl-room) in batch owl-m2 and removed their rows. WORK-024-1 (RUN-002) added the six new M2 charm type sprites (charms/potted-tree, charms/mossy-log, charms/toy-chest, charms/seed-dish, charms/standing-frame, charms/night-light) under batch WORK-022; WORK-022-2 removes them when it ledgers the art (merge union of f504e62 and 4e827da: the Owl ids are ledgered, the six charm ids remain).",
+  "assets": [
+    { "id": "charms/potted-tree", "batch": "WORK-022" },
+    { "id": "charms/mossy-log", "batch": "WORK-022" },
+    { "id": "charms/toy-chest", "batch": "WORK-022" },
+    { "id": "charms/seed-dish", "batch": "WORK-022" },
+    { "id": "charms/standing-frame", "batch": "WORK-022" },
+    { "id": "charms/night-light", "batch": "WORK-022" }
+  ]
 }

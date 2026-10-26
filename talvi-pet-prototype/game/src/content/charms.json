@@ -188,6 +188,68 @@
         "seat"
       ],
       "sprite": "charms/reading-chair"
+    },
+    {
+      "id": "potted-tree",
+      "name": "Potted Tree",
+      "description": "A slim indoor tree with a crown high enough to perch in.",
+      "sizeClass": "large",
+      "tags": [
+        "plant",
+        "tall"
+      ],
+      "sprite": "charms/potted-tree"
+    },
+    {
+      "id": "mossy-log",
+      "name": "Mossy Log",
+      "description": "A fallen log cushioned in moss, good for a lie-down.",
+      "sizeClass": "large",
+      "tags": [
+        "plant",
+        "soft"
+      ],
+      "sprite": "charms/mossy-log"
+    },
+    {
+      "id": "toy-chest",
+      "name": "Toy Chest",
+      "description": "A wooden chest spilling over with things to chase.",
+      "sizeClass": "large",
+      "tags": [
+        "toy"
+      ],
+      "sprite": "charms/toy-chest"
+    },
+    {
+      "id": "seed-dish",
+      "name": "Seed Dish",
+      "description": "A shallow dish of seeds and berries, set out for a visitor.",
+      "sizeClass": "small",
+      "tags": [
+        "food"
+      ],
+      "sprite": "charms/seed-dish"
+    },
+    {
+      "id": "standing-frame",
+      "name": "Standing Frame",
+      "description": "A small picture propped up on its own little stand.",
+      "sizeClass": "small",
+      "tags": [
+        "art"
+      ],
+      "sprite": "charms/standing-frame"
+    },
+    {
+      "id": "night-light",
+      "name": "Night Light",
+      "description": "A soft glow that keeps the dark friendly.",
+      "sizeClass": "small",
+      "tags": [
+        "light"
+      ],
+      "sprite": "charms/night-light"
     }
   ],
   "starterSet": [
