@@ -25,7 +25,7 @@
   "houses": [
     {
       "projectId": "starter-house",
-      "x": 420,
+      "x": 700,
       "y": 880,
       "stageSprites": [
         "houses/starter-house-complete",
@@ -38,7 +38,7 @@
       "door": {
         "id": "starter-front",
         "rect": {
-          "x": 145,
+          "x": 425,
           "y": 800,
           "w": 110,
           "h": 50
@@ -49,13 +49,13 @@
           "doorId": "to-street"
         },
         "spawn": {
-          "x": 400,
+          "x": 680,
           "y": 900,
           "facing": "down"
         }
       },
       "attentionAnchor": {
-        "x": 420,
+        "x": 700,
         "y": 180
       },
       "arrivalPath": [
@@ -64,11 +64,11 @@
           "y": 910
         },
         {
-          "x": 200,
+          "x": 480,
           "y": 900
         },
         {
-          "x": 200,
+          "x": 480,
           "y": 825
         }
       ]

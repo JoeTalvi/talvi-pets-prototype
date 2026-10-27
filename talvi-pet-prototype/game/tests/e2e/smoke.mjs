@@ -55,7 +55,7 @@ async function bootStep(browser) {
 }
 
 async function doorStep(page) {
-  const left = await holdUntil(page, 'KeyA', () => window.__tpp.store.getState().avatar.x <= 200);
+  const left = await holdUntil(page, 'KeyA', () => window.__tpp.store.getState().avatar.x <= 480);
   // One clock (review B-1): page performance.now() for every end. A store listener stamps scene.changed as it is emitted, and a
   // rAF watcher started before KeyW stamps Interior active and the end of its camera fade-in. The log's t is session-relative and is not used here.
   await page.evaluate(() => {

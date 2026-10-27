@@ -1,6 +1,8 @@
 /* Exact production source pixels; CSS order T R B L. Border images do not consume layout space. */
 .ns-hero{border:0 solid transparent;background:none;border-image:url("/assets/ui/Panel_PopupHero.png") 110 fill / 110px / 0 stretch;box-sizing:border-box}
 .ns-modal{border:0 solid transparent;background:none;border-image:url("/assets/ui/Panel_ModalDialog.png") 100 fill / 100px / 0 stretch;box-sizing:border-box}
+/* R-6: at a half-pixel body offset (EXPAND 823) the slice rows meet with partial coverage and the world shows through one row; a backing in the fill colour, inset 40px inside the frame and its rounded corners, closes it. */
+.ns-modal{background:linear-gradient(#eae4d5,#eae4d5) center/calc(100% - 80px) calc(100% - 80px) no-repeat}
 .ns-sheet{border:0 solid transparent;background:none;border-image:url("/assets/ui/Panel_BottomSheet.png") 105 105 50 105 fill / 105px 105px 50px 105px / 0 stretch;box-sizing:border-box}
 .ns-inset{border:0 solid transparent;background:none;border-image:url("/assets/ui/Panel_InsetSubPanel.png") 85 fill / 85px / 0 stretch;box-sizing:border-box}
 .ns-row{border:0 solid transparent;background:none;border-image:url("/assets/ui/Panel_ListRow.png") 85 fill / 85px / 0 stretch;box-sizing:border-box}

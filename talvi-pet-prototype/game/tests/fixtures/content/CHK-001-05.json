@@ -3,7 +3,7 @@
     "file": "street.json",
     "path": "/playerSpawn",
     "value": {
-      "x": 200,
+      "x": 480,
       "y": 825,
       "facing": "down"
     }

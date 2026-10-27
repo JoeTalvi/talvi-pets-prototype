@@ -139,7 +139,7 @@ describe('VERIFY-MEC-002-028 street icon hidden states', () => {
       const state = owing(content, 1, 1260); edit(state);
       const { context, scene } = await street(content, state);
       expect(scene.icons.get('pet-house')!.visible).toBe(false);
-      tapAt(scene, 1360, 800); tapAt(scene, 360, 800);
+      tapAt(scene, 1360, 800); tapAt(scene, 640, 800);
       expect(linesOf(context, 'input.tap').map(l => l.target)).toEqual(['world', 'world']);
       expect(linesOf(context, 'action.rejected', 'celebration.started')).toEqual([]);
       destroyScene();
