@@ -14,10 +14,13 @@ export type RevealView = { projectId: ProjectId; cards: ClueCardView[] } & (
   | { image: 'full'; silhouetteImage: string; descriptorImage: string; petName: string });
 export type RevealPopupView = RevealView & { newCardIndices: number[]; completes: boolean };
 
-/** MEC-003 §2: the active project, else the last completed rising project (Q10(a)), else null. */
+/** MEC-003 §2: the active project, else a funded rising project not yet `complete` (the Skip chain, review
+ * MILESTONE-006-1 M-1), else the last completed rising project (Q10(a)), else null. */
 export function revealProjectId(content: Content, state: GameState): ProjectId | null {
-  const completed = content.projects.filter(project => !project.completeAtStart && state.projects[project.id].complete);
-  return activeProjectId(content, state) ?? completed.at(-1)?.id ?? null;
+  const rising = content.projects.filter(project => !project.completeAtStart);
+  const completed = rising.filter(project => state.projects[project.id].complete);
+  return activeProjectId(content, state) ?? rising.find(project => !state.projects[project.id].complete)?.id
+    ?? completed.at(-1)?.id ?? null;
 }
 
 /** MEC-003 §2: cards follow `acknowledgedPhase`; no image or name key exists until `complete` (DEC-033). */

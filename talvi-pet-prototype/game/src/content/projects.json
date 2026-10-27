@@ -55,22 +55,22 @@
         },
         {
           "icon": "clues/spectacles",
-          "line": "A pair of round spectacles rests between pressed leaves.",
+          "line": "Spectacles rest on pressed leaves.",
           "hintTag": "plant"
         },
         {
           "icon": "clues/branch-book",
-          "line": "A book waits on a branch, high above the ground.",
+          "line": "A book waits on a high branch.",
           "hintTag": "tall"
         },
         {
           "icon": "clues/lantern",
-          "line": "A little lantern lights a leafy reading corner.",
+          "line": "A lantern lights a leafy nook.",
           "hintTag": "plant"
         },
         {
           "icon": "clues/moth",
-          "line": "A silent night-time visitor watches a moth from a high perch.",
+          "line": "A night watcher on a high perch.",
           "hintTag": "tall"
         }
       ],

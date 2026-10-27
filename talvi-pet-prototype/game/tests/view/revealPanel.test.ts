@@ -128,11 +128,9 @@ describe('mec-003 §3.3 reveal panel close and hide', () => {
     expect([r.panel.hidden, r.records().length]).toEqual([true, 1]);
   });
 
-  it(`${t}never opens when revealProjectId === null (at goal but unacknowledged, fork R1-A1: the icon is hidden and open() does nothing)`, () => {
+  it(`${t}stays available at goal but unacknowledged (M2 play session, review MILESTONE-006-1 M-1: no icon flicker before project.completed)`, () => {
     const s = setup(owing(content, 1, 1260));
     s.dispatch({ type: 'debugCompleteProject', projectId: 'pet-house' });
-    expect(s.link.hidden).toBe(true);
-    s.panels.revealPanel.open();
-    expect([s.panel.hidden, s.records()]).toEqual([true, []]);
+    expect(s.link.hidden).toBe(false);
   });
 });

@@ -97,11 +97,11 @@ describe('mec-003 §1 reveal icon stub and presentation §7.1 frozen', () => {
     expect(h.host.querySelector<HTMLElement>('.tpp-revealPanel')!.hidden).toBe(false);
   });
 
-  it('mec-003 §1 reveal icon — fork 1: selector verbatim, mec-003 §2 gap R1-A1: at current = goal with ack 1 (debugCompleteProject) the icon is hidden', () => {
+  it('mec-003 §1 reveal icon — fork 1: selector verbatim, M2 play session (review M-1): at current = goal with ack 1 (debugCompleteProject) the icon stays visible', () => {
     const h = hud(owing(content, 1, 1260));
     h.dispatch({ type: 'debugCompleteProject', projectId: 'pet-house' });
     expect(h.context.store.getState().projects['pet-house']).toMatchObject({ currentCents: 1500, acknowledgedPhase: 1, complete: false });
-    expect(h.q('.tpp-reveal-link').hidden).toBe(true);
+    expect(h.q('.tpp-reveal-link').hidden).toBe(false);
   });
 
   it('presentation §7.1 hudStreet frozen — celebration.started adds .frozen, pointer-events none, opacity 0.6, reveal disabled; celebration.ended removes them', () => {

@@ -250,11 +250,15 @@ describe('core §6.4 Owl room entry (WORK-023-2, real content)', () => {
     const script = context.store.getState().dialogue.current!;
     expect([script.source, script.speaker]).toEqual(['intro', { petId: 'owl' }]);
     const box = root.querySelector<HTMLElement>('.tpp-dialogue')!;
-    expect(box.hidden).toBe(false);
+    const wantPanel = root.querySelector<HTMLElement>('.tpp-wantPanel')!;
+    // M2 play session: the intro box waits for the greeting to land; the want panel stays behind the intro.
+    while (ms < 8000 && box.hidden) { expect(wantPanel.hidden).toBe(true); tick(); ms += tickMs; }
+    expect([box.hidden, context.store.getState().pets.owl.behaviour.phase, wantPanel.hidden]).toEqual([false, 'greeting', true]);
     expect(box.querySelector('.tpp-portrait img[data-asset-id="pets/owl-portrait"]')).not.toBeNull();
     expect(box.querySelector('.tpp-speaker')!.textContent).toBe(owlContent.pets.owl.name);
     expect(linesOf(context, 'want.activated')[0]).toMatchObject({ petId: 'owl', wantId: owlContent.pets.owl.wants[0].id });
-    expect(root.querySelector<HTMLElement>('.tpp-wantPanel')!.hidden).toBe(false);
+    while (context.store.getState().dialogue.current?.source === 'intro') context.store.dispatch({ type: 'advanceDialogue' });
+    expect(wantPanel.hidden).toBe(false);
     expect(linesOf(context, 'action.rejected')).toEqual([]);
   });
 

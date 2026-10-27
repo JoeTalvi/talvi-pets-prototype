@@ -132,6 +132,26 @@ describe('core §6.4 intro deferral', () => {
   });
 });
 
+describe('M2 play session: intro waits for the greeting with greetingDelayMs', () => {
+  it('M2 play session — with greetingDelayMs 520 the intro box and the want panel stay hidden until the pet reaches {to:greeting}', async () => {
+    const s = await designSetup({ patches: [{ file: 'tuning.json', path: '/greetingDelayMs', value: 520 }], edit: st => {
+      play(st); st.scene = { kind: 'street' } as GameState['scene']; st.pets.dog.introduced = false;
+      st.avatar = { ...st.avatar, x: 200, y: 830, facing: 'up' };
+    } });
+    fake();
+    for (let i = 0; i < 20 && s.state().scene.kind === 'street'; i++) { s.context.store.dispatch({ type: 'tick', dtMs: 100, move: { x: 0, y: -1 } }); vi.advanceTimersByTime(100); }
+    const want = () => s.root.querySelector<HTMLElement>('.tpp-wantPanel')!;
+    expect(s.state().dialogue.current?.source).toBe('intro');
+    expect([box(s).hidden, s.panels.dialogue.isDeferred(), want().hidden]).toEqual([true, true, true]);
+    let elapsed = 0;
+    while (s.state().pets.dog.behaviour.phase !== 'greeting' && elapsed < 7000) { expect([box(s).hidden, want().hidden]).toEqual([true, true]); tick(s); elapsed += 100; }
+    expect(elapsed).toBeGreaterThanOrEqual(500);
+    expect([box(s).hidden, want().hidden]).toEqual([false, true]);
+    while (s.state().dialogue.current?.source === 'intro') { s.context.store.dispatch({ type: 'advanceDialogue' }); }
+    expect(want().hidden).toBe(false);
+  });
+});
+
 describe('VERIFY-MEC-009-020 reload mid-chain', () => {
   it('VERIFY-MEC-009-020 partial: desktop "no pet sequence" (view) — a saved vignette renders at once at line 0, not deferred; the walking Dog continues from state', async () => {
     const s = await designSetup({ edit: st => {

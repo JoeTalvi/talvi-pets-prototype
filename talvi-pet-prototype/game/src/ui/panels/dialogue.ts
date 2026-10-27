@@ -52,6 +52,14 @@ function fill(parts: Parts, content: Content, assets: Record<string, string>, te
   parts.section.dataset.source = script.source;
 }
 
+/** Core §6.4: an intro opened while the resident pet's entry greeting is still pending (the `greetingDelayMs`
+ * pause, M1 play-session Q6) waits for that greeting like one emitted in the same dispatch. */
+function greetingPending(content: Content, state: GameState): boolean {
+  const petId = residentPet(content, state);
+  const behaviour = petId === null ? undefined : state.pets[petId]?.behaviour;
+  return state.dialogue.current?.source === 'intro' && behaviour?.reaction === 'greeting' && behaviour.phase !== 'greeting';
+}
+
 /** mec-008 §2.7 view timing: when a deferred box may show. Timers only; the sim's pet events arrive through the store. */
 function createDeferral(context: ViewContext, show: () => void) {
   const { walkOverMs, fulfilmentUseHoldMs } = context.content.tuning;
@@ -124,7 +132,7 @@ function subscribe(context: ViewContext, h: Hooks): (() => void)[] {
     store.subscribe('pet.reacted', event => { if (event.reaction === 'greeting' && event.walkOver) h.setArm({ kind: 'greeting' }); }),
     store.subscribe('pet.phaseChanged', event => h.deferral.phaseChanged(event.to, event.target)),
     store.subscribe('dialogue.opened', () => {
-      const arm = h.takeArm();
+      const arm = h.takeArm() ?? (greetingPending(context.content, store.getState()) ? { kind: 'greeting' as const } : null);
       if (store.getState().arrival !== null) h.deferral.holdForArrival();
       else if (arm && h.parts.section.hidden) h.deferral.start(arm);
       else if (!h.deferral.active()) h.show();

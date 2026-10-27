@@ -3,7 +3,7 @@
 .tpp-panel-layer>*{pointer-events:auto}
 .tpp-dismiss-backdrop,.tpp-dialogue-backdrop,.tpp-preview-backdrop{position:absolute;inset:0}
 .tpp-dim-backdrop{background:var(--backdrop-panel)}.tpp-popup-backdrop{background:var(--backdrop-popup)}
-.tpp-close{position:absolute;right:20px;top:12px;width:64px;height:64px;border:0;background:none;font:700 44px var(--font-body)!important;color:var(--muted)!important}
+.tpp-close{position:absolute;right:20px;top:12px;width:64px;height:64px;border:0;background:none;font:700 44px var(--font-body)!important;color:var(--ink)!important}
 .tpp-asset-slot{display:inline-block;background:linear-gradient(135deg,transparent 49%,var(--line) 49% 51%,transparent 51%),var(--paper2);border:2px dashed var(--line)}
 .tpp-hudStreet{position:absolute;top:0;left:0;width:1920px;height:104px;background:rgb(247 241 227/.9);border-bottom:1.5px solid var(--ink);z-index:var(--z-hud)}
 .tpp-project{position:absolute;left:32px;top:12px;width:600px}.tpp-project-label{display:flex;justify-content:space-between;font-size:24px;font-weight:800;margin-bottom:6px;line-height:30px}.tpp-chunks{display:flex;gap:8px;height:36px}.tpp-chunks i{flex:1;background:var(--white);border:3px solid var(--ink);border-radius:10px;overflow:hidden;padding:3px}.tpp-chunks b{display:block;height:100%;background:var(--red);border-radius:5px}

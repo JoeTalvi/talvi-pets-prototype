@@ -11,7 +11,7 @@ import { assetsFrom, createText, type Panel, type Text } from '../overlay';
 export type WantPanel = Panel & { render(): void };
 
 const RENDER_ON = ['scene.changed', 'want.activated', 'want.progressed', 'want.hiddenRevealed', 'wants.exhausted', 'types.unlocked',
-  'rewards.collected', 'phase.reached', 'mode.changed', 'heart.earned', 'charm.placed', 'charm.removed'] as const;
+  'rewards.collected', 'phase.reached', 'mode.changed', 'heart.earned', 'charm.placed', 'charm.removed', 'dialogue.opened'] as const;
 
 const span = (cls: string, key: string, value: string) => `<span class="${cls}" data-string-key="${escapeHtml(key)}">${escapeHtml(value)}</span>`;
 const pill = (label: string, met: boolean, extra = '') =>
@@ -71,7 +71,8 @@ export function createWantPanel(root: HTMLElement, context: ViewContext): WantPa
   const render = () => {
     const state = store.getState();
     const petId = residentPet(content, state);
-    section.hidden = petId === null;
+    // M2 play session: the panel stays behind the pet's introduction until the intro box closes.
+    section.hidden = petId === null || state.dialogue.current?.source === 'intro';
     if (petId === null) { flash = null; return; }
     section.classList.toggle('dim', state.mode === 'design');
     section.innerHTML = flash ? fulfilledMarkup(content, text, state, petId, flash) : panelMarkup(content, text, state, petId, section.dataset.state === 'expanded');
