@@ -63,6 +63,8 @@ async function scanPanel(w, H) {
   const box = await w.page.locator('.tpp-reveal-panel').boundingBox(), scale = await w.page.evaluate(() => Number(getComputedStyle(document.querySelector('#overlay')).getPropertyValue('--overlay-scale')) || 1);
   // The body width minus the 100 px corners on each side (the stretched edge + fill seam region), as a horizontal crop.
   const edge = 100 * scale, clip = { x: box.x + edge + 4, y: box.y, width: box.width - 2 * edge - 8, height: box.height };
+  // Frame-only scan: the panel's rows and image sit across the scanned bands, so they are hidden for this one screenshot.
+  await w.page.addStyleTag({ content: '.tpp-reveal-panel > *{visibility:hidden !important}' }); await w.page.waitForTimeout(200);
   const png = await w.page.screenshot({ clip });
   const top = await seamRows(w.page, png, [Math.round(edge - 6), Math.round(edge + 6)]), bottom = await seamRows(w.page, png, [Math.round(clip.height - edge - 6), Math.round(clip.height - edge + 6)]);
   const crop = { x: box.x, y: box.y + edge - 30, width: box.width, height: 60 };
@@ -87,13 +89,15 @@ async function seam() {
   await page.goto(`${base}/tools/panels.html`); await page.waitForTimeout(1500);
   const panels = await page.evaluate(() => [...new Set([...document.querySelectorAll('[class*="ns-"]')].flatMap(e => [...e.classList].filter(c => c.startsWith('ns-'))))].map(cls => {
     const e = document.querySelector(`.${cls}`), s = getComputedStyle(e), b = getComputedStyle(e, '::before'), r = e.getBoundingClientRect();
+    // .ns-switch is the track + knob container and carries no border image of its own.
+    if (cls === 'ns-switch') return { cls, container: true, borderImage: 'n/a (container of ns-switch-track / ns-switch-knob)', w: Math.round(r.width), h: Math.round(r.height) };
     return { cls, borderImage: (s.borderImageSource !== 'none' ? s.borderImageSource : b.borderImageSource).replace(/^.*\/assets\//, '').replace(/"\)$/, ''), w: Math.round(r.width), h: Math.round(r.height) };
   }));
   const panelsStill = await shot(page, await browserP, captures, `panels-823-${label}`, { url: `${base}/tools/panels.html`, label }); await ctx.close();
   const prior = existsSync(join(EV, 'seam-scan.json')) ? JSON.parse(readFileSync(join(EV, 'seam-scan.json'), 'utf8')) : {};
   writeJson(join(EV, 'seam-scan.json'), { ...prior, work: 'WORK-025-2', rule: 'seam = a row whose luminance differs from both neighbours (same sign) by > 6/255 on >= 60 % of the stretched body width, scanned at top + 100 css px ± 6 and bottom − 100 ± 6',
     [label]: { sha, css: readFileSync('src/ui/styles/nineslice.css', 'utf8').split('\n').find(l => l.startsWith('.ns-modal')), panels: rows.map(({ topRows, bottomRows, ...r }) => r), rowsDetail: rows.map(r => ({ H: r.H, top: r.topRows, bottom: r.bottomRows })),
-      panelsPage: { still: panelsStill, classes: panels, everyClassRenders: panels.every(p => p.borderImage && p.borderImage !== 'none' && p.w > 0 && p.h > 0) } } });
+      panelsPage: { still: panelsStill, classes: panels, everyClassRenders: panels.every(p => p.container || (p.borderImage && p.borderImage !== 'none' && p.w > 0 && p.h > 0)) } } });
   console.log(JSON.stringify(rows.map(r => [r.H, r.seam, r.top.hitFraction, r.bottom.hitFraction])), panels.length);
 }
 
