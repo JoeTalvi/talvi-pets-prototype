@@ -1,0 +1,57 @@
+{
+  "$comment": "WORK-026-2 (RUN-003) synthesized SFX placeholders, ASSET-018. Pure sine partials with exponential envelopes; no noise, samples or speech. Rendered by tools/assets/sfx-placeholders.mjs to 44.1 kHz mono 16-bit WAV, then afconvert AAC 96k (m4a) and Vorbis (ogg). Notes: start ms from sample 0; partials: freq Hz (glideTo Hz over glideMs), amp, decay per second. Lengths sit >= 60 ms under the ASSET-018 limits to absorb AAC priming/padding.",
+  "version": 1,
+  "seed": 0,
+  "sampleRate": 44100,
+  "attackMs": 4,
+  "fadeOutMs": 10,
+  "entries": [
+    {
+      "id": "sfx/heart",
+      "name": "heart",
+      "limitMs": 1000,
+      "lengthMs": 850,
+      "peakDbfs": -4.0,
+      "class": "warm two-note accent, major third (C5 then E5)",
+      "segments": [
+        { "startMs": 0, "partials": [{ "freq": 523.25, "amp": 1.0, "decay": 6.5 }, { "freq": 1046.5, "amp": 0.18, "decay": 11 }] },
+        { "startMs": 170, "partials": [{ "freq": 659.25, "amp": 1.0, "decay": 5.5 }, { "freq": 1318.5, "amp": 0.18, "decay": 10 }] }
+      ]
+    },
+    {
+      "id": "sfx/complete",
+      "name": "complete",
+      "limitMs": 2000,
+      "lengthMs": 1800,
+      "peakDbfs": -4.0,
+      "class": "three-note ascending warm chime (C5 E5 G5), longest tail",
+      "segments": [
+        { "startMs": 0, "partials": [{ "freq": 523.25, "amp": 0.9, "decay": 3.2 }, { "freq": 1046.5, "amp": 0.15, "decay": 6 }] },
+        { "startMs": 210, "partials": [{ "freq": 659.25, "amp": 0.9, "decay": 3.0 }, { "freq": 1318.5, "amp": 0.15, "decay": 6 }] },
+        { "startMs": 420, "partials": [{ "freq": 783.99, "amp": 1.0, "decay": 2.6 }, { "freq": 1567.98, "amp": 0.15, "decay": 5 }] }
+      ]
+    },
+    {
+      "id": "sfx/reaction",
+      "name": "reaction",
+      "limitMs": 400,
+      "lengthMs": 280,
+      "peakDbfs": -9.0,
+      "class": "short soft tick, quietest of the set",
+      "segments": [
+        { "startMs": 0, "partials": [{ "freq": 1320, "amp": 1.0, "decay": 32 }, { "freq": 2640, "amp": 0.25, "decay": 55 }] }
+      ]
+    },
+    {
+      "id": "sfx/phase-pop",
+      "name": "phase-pop",
+      "limitMs": 500,
+      "lengthMs": 380,
+      "peakDbfs": -5.0,
+      "class": "rounder pop in the place family: decaying sine with a short downward glide",
+      "segments": [
+        { "startMs": 0, "partials": [{ "freq": 880, "glideTo": 560, "glideMs": 120, "amp": 1.0, "decay": 15 }, { "freq": 1760, "glideTo": 1120, "glideMs": 120, "amp": 0.12, "decay": 30 }] }
+      ]
+    }
+  ]
+}

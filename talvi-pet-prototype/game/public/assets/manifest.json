@@ -916,9 +916,20 @@
       "generator": "ffmpeg crop + sips resize",
       "postProcess": "ffmpeg crop=1024:682:1024:0 (top-left); sips -z 213 320; crop RGBA verified byte-identical to source rect",
       "hash": "283bcd3e4c922ecb94ee3a84815c9b9a795151ec40ed829693fa79347324457d",
-      "recordedAt": "2026-10-17",
-      "recordedBy": "WORK-012 / TASK-031",
-      "history": []
+      "recordedAt": "2026-10-27",
+      "recordedBy": "WORK-026-2 / TASK-199",
+      "retired": true,
+      "history": [
+        {
+          "hash": "283bcd3e4c922ecb94ee3a84815c9b9a795151ec40ed829693fa79347324457d",
+          "status": "production-reference",
+          "origin": "production",
+          "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/Tiles/Outdoor/Talvi_Outdoor_Ground_Atlas.png bottom-left rect (1024,1366,1024,682)",
+          "recordedAt": "2026-10-17",
+          "recordedBy": "WORK-012 / TASK-031"
+        }
+      ],
+      "note": "Unreferenced by src/content at 771b964 (VERIFY-ASSET-001 warning); file kept on disk, row kept (ledger only grows); retired at the MILESTONE-007 ledger close-out (gate: recorded or resolved); un-retire by a row edit with a note if a later street references it"
     },
     {
       "id": "world/tile-grass-short",
@@ -934,9 +945,20 @@
       "generator": "ffmpeg crop + sips resize",
       "postProcess": "ffmpeg crop=1024:682:0:682 (top-left); sips -z 213 320; crop RGBA verified byte-identical to source rect",
       "hash": "a72622ff29b03fde2db6957ca10319feb2d14c16755567f8039db4cf7d36ad24",
-      "recordedAt": "2026-10-17",
-      "recordedBy": "WORK-012 / TASK-031",
-      "history": []
+      "recordedAt": "2026-10-27",
+      "recordedBy": "WORK-026-2 / TASK-199",
+      "retired": true,
+      "history": [
+        {
+          "hash": "a72622ff29b03fde2db6957ca10319feb2d14c16755567f8039db4cf7d36ad24",
+          "status": "production-reference",
+          "origin": "production",
+          "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/Tiles/Outdoor/Talvi_Outdoor_Ground_Atlas.png bottom-left rect (0,684,1024,682)",
+          "recordedAt": "2026-10-17",
+          "recordedBy": "WORK-012 / TASK-031"
+        }
+      ],
+      "note": "Unreferenced by src/content at 771b964 (VERIFY-ASSET-001 warning); file kept on disk, row kept (ledger only grows); retired at the MILESTONE-007 ledger close-out (gate: recorded or resolved); un-retire by a row edit with a note if a later street references it"
     },
     {
       "id": "world/tile-grass-tall",
@@ -952,9 +974,20 @@
       "generator": "ffmpeg crop + sips resize",
       "postProcess": "ffmpeg crop=1024:682:1024:682 (top-left); sips -z 213 320; crop RGBA verified byte-identical to source rect",
       "hash": "c3da2eba878deefe548b369894969be946a34c9a340ff6b345ba044972000b27",
-      "recordedAt": "2026-10-17",
-      "recordedBy": "WORK-012 / TASK-031",
-      "history": []
+      "recordedAt": "2026-10-27",
+      "recordedBy": "WORK-026-2 / TASK-199",
+      "retired": true,
+      "history": [
+        {
+          "hash": "c3da2eba878deefe548b369894969be946a34c9a340ff6b345ba044972000b27",
+          "status": "production-reference",
+          "origin": "production",
+          "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/Tiles/Outdoor/Talvi_Outdoor_Ground_Atlas.png bottom-left rect (1024,684,1024,682)",
+          "recordedAt": "2026-10-17",
+          "recordedBy": "WORK-012 / TASK-031"
+        }
+      ],
+      "note": "Unreferenced by src/content at 771b964 (VERIFY-ASSET-001 warning); file kept on disk, row kept (ledger only grows); retired at the MILESTONE-007 ledger close-out (gate: recorded or resolved); un-retire by a row edit with a note if a later street references it"
     },
     {
       "id": "world/tile-grass-wildflower",
@@ -970,9 +1003,20 @@
       "generator": "ffmpeg crop + sips resize",
       "postProcess": "ffmpeg crop=1024:682:0:1364 (top-left); sips -z 213 320; crop RGBA verified byte-identical to source rect",
       "hash": "6567b2dfad29e990ef7e06577a6142156814a41785d92bc5bda12741efebeb22",
-      "recordedAt": "2026-10-17",
-      "recordedBy": "WORK-012 / TASK-031",
-      "history": []
+      "recordedAt": "2026-10-27",
+      "recordedBy": "WORK-026-2 / TASK-199",
+      "retired": true,
+      "history": [
+        {
+          "hash": "6567b2dfad29e990ef7e06577a6142156814a41785d92bc5bda12741efebeb22",
+          "status": "production-reference",
+          "origin": "production",
+          "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/Tiles/Outdoor/Talvi_Outdoor_Ground_Atlas.png bottom-left rect (0,2,1024,682)",
+          "recordedAt": "2026-10-17",
+          "recordedBy": "WORK-012 / TASK-031"
+        }
+      ],
+      "note": "Unreferenced by src/content at 771b964 (VERIFY-ASSET-001 warning); file kept on disk, row kept (ledger only grows); retired at the MILESTONE-007 ledger close-out (gate: recorded or resolved); un-retire by a row edit with a note if a later street references it"
     },
     {
       "id": "world/bush-1",
@@ -1006,10 +1050,21 @@
       "generator": "sips-316",
       "postProcess": "sips -Z 320 (320x245); ffmpeg crop=320:240:0:0, removing five fully transparent bottom rows; RGBA retained pixels verified byte-identical",
       "hash": "e90dfa89389868379a79e38cf3f3ace55722314a37e1c81353aed7c3471e42fe",
-      "recordedAt": "2026-10-17",
-      "recordedBy": "WORK-012 / TASK-031",
-      "history": [],
-      "note": "Production source retained read-only; pivot normalization preserves every nontransparent exported pixel."
+      "recordedAt": "2026-10-27",
+      "recordedBy": "WORK-026-2 / TASK-199",
+      "retired": true,
+      "history": [
+        {
+          "hash": "e90dfa89389868379a79e38cf3f3ace55722314a37e1c81353aed7c3471e42fe",
+          "status": "production-reference",
+          "origin": "production",
+          "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/ArtDeliveries/_Ingested/bush-2/bush-2.png",
+          "recordedAt": "2026-10-17",
+          "recordedBy": "WORK-012 / TASK-031",
+          "note": "Production source retained read-only; pivot normalization preserves every nontransparent exported pixel."
+        }
+      ],
+      "note": "Unreferenced by src/content at 771b964 (VERIFY-ASSET-001 warning); file kept on disk, row kept (ledger only grows); retired at the MILESTONE-007 ledger close-out (gate: recorded or resolved); un-retire by a row edit with a note if a later street references it"
     },
     {
       "id": "world/rock-1",
@@ -1025,9 +1080,20 @@
       "generator": "sips-316",
       "postProcess": "resize:320",
       "hash": "251fce951a51d20b0862e7398e1f5014f18ebc71ebbb0d23a0cf843864fefa90",
-      "recordedAt": "2026-10-17",
-      "recordedBy": "WORK-012 / TASK-031",
-      "history": []
+      "recordedAt": "2026-10-27",
+      "recordedBy": "WORK-026-2 / TASK-199",
+      "history": [
+        {
+          "hash": "251fce951a51d20b0862e7398e1f5014f18ebc71ebbb0d23a0cf843864fefa90",
+          "status": "production-reference",
+          "origin": "production",
+          "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/ArtDeliveries/_Ingested/rock-1-1/rock-1-1.png",
+          "recordedAt": "2026-10-17",
+          "recordedBy": "WORK-012 / TASK-031"
+        }
+      ],
+      "retired": true,
+      "note": "Unreferenced by src/content at 771b964 (VERIFY-ASSET-001 warning); file kept on disk, row kept (ledger only grows); retired at the MILESTONE-007 ledger close-out (gate: recorded or resolved); un-retire by a row edit with a note if a later street references it"
     },
     {
       "id": "world/flower-1",
@@ -2926,6 +2992,86 @@
         }
       ],
       "note": "WORK-022-2 M2 batch under DEC-040; chosen candidate_003 of 3 (silhouette: pass — toy (round balls heaped above the rim of an open chest)); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-006 play session (TECH-018 item 2); not status accepted"
+    },
+    {
+      "id": "sfx/heart",
+      "type": "audio",
+      "urls": [
+        "sfx/heart.m4a",
+        "sfx/heart.ogg"
+      ],
+      "durationMs": 906,
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "tools/assets/sfx-placeholders.mjs (SHA-256 2f1e3e2fcdf458095e073190371a40bd1a15ea79c38113ae1ee48df3f0cb337a) + tools/assets/sfx-placeholders-v1.config.json (SHA-256 2852e00f5dcf8fdd3f6c9a0af1f13d71dcf588508f7d8490b2ca2db551937b7a), entry heart: deterministic sine/envelope tone; OGG helper tools/assets/sfx-ogg-sndfile.py (SHA-256 18cca28917bd875b2c629a3e782f7f40c2e6001fe6de6d289eb5db2747b4fa38)",
+      "generator": "node waveform (tools/assets/sfx-placeholders.mjs), afconvert AAC 96k, libsndfile Vorbis (tools/assets/sfx-ogg-sndfile.py)",
+      "postProcess": "44100 Hz mono PCM 850 ms, peak -4.0 dBFS, no leading silence (4 ms attack from sample 0, 10 ms fade-out); afconvert AAC 96k (-c 1); OGG route B libsndfile Vorbis default quality via tools/assets/sfx-ogg-sndfile.py (route A ffmpeg vorbis -strict -2 failed: encoder rejects mono, 'Could not open encoder before EOF'); WAV SHA-256 9fccffe9159031aa2e36e05afc864d622a8daac4145cf8b3f6ddd81838222631; measured: m4a 905.6 ms / 7801 B / -4.02 dB, ogg 850.0 ms / 6284 B / -3.99 dB",
+      "batch": "playtest-m3",
+      "hash": "835f53d418579684b857417312105b5b14253fea7face81f674ca5f5575e2dc2",
+      "recordedAt": "2026-10-27",
+      "recordedBy": "WORK-026-2 / TASK-199",
+      "history": [],
+      "note": "WORK-026-2 M3 playtest-ready batch under gate answer 2 (synthesized placeholder, zero spend, no audio-generation service); replaceable by id with no code change (ASSET-018); OGG route B libsndfile Vorbis validated by decode round-trip (gate fork Q-B; route A ffmpeg vorbis rejects mono); creative verdict (fit, not annoying at the 20 s cadence) at the MILESTONE-007 dry run; not status accepted"
+    },
+    {
+      "id": "sfx/complete",
+      "type": "audio",
+      "urls": [
+        "sfx/complete.m4a",
+        "sfx/complete.ogg"
+      ],
+      "durationMs": 1858,
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "tools/assets/sfx-placeholders.mjs (SHA-256 2f1e3e2fcdf458095e073190371a40bd1a15ea79c38113ae1ee48df3f0cb337a) + tools/assets/sfx-placeholders-v1.config.json (SHA-256 2852e00f5dcf8fdd3f6c9a0af1f13d71dcf588508f7d8490b2ca2db551937b7a), entry complete: deterministic sine/envelope tone; OGG helper tools/assets/sfx-ogg-sndfile.py (SHA-256 18cca28917bd875b2c629a3e782f7f40c2e6001fe6de6d289eb5db2747b4fa38)",
+      "generator": "node waveform (tools/assets/sfx-placeholders.mjs), afconvert AAC 96k, libsndfile Vorbis (tools/assets/sfx-ogg-sndfile.py)",
+      "postProcess": "44100 Hz mono PCM 1800 ms, peak -4.0 dBFS, no leading silence (4 ms attack from sample 0, 10 ms fade-out); afconvert AAC 96k (-c 1); OGG route B libsndfile Vorbis default quality via tools/assets/sfx-ogg-sndfile.py (route A ffmpeg vorbis -strict -2 failed: encoder rejects mono, 'Could not open encoder before EOF'); WAV SHA-256 cdfb3e1ed8444d5e8c008ade079b50b93ee773dfee6b97476f076922004dff9c; measured: m4a 1857.6 ms / 11906 B / -3.97 dB, ogg 1800.0 ms / 9806 B / -3.85 dB",
+      "batch": "playtest-m3",
+      "hash": "2f2dba7f5ac1148d8cebbb1c3881f74313fd17d4194113e28996c35def26c3e6",
+      "recordedAt": "2026-10-27",
+      "recordedBy": "WORK-026-2 / TASK-199",
+      "history": [],
+      "note": "WORK-026-2 M3 playtest-ready batch under gate answer 2 (synthesized placeholder, zero spend, no audio-generation service); replaceable by id with no code change (ASSET-018); OGG route B libsndfile Vorbis validated by decode round-trip (gate fork Q-B; route A ffmpeg vorbis rejects mono); creative verdict (fit, not annoying at the 20 s cadence) at the MILESTONE-007 dry run; not status accepted"
+    },
+    {
+      "id": "sfx/reaction",
+      "type": "audio",
+      "urls": [
+        "sfx/reaction.m4a",
+        "sfx/reaction.ogg"
+      ],
+      "durationMs": 349,
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "tools/assets/sfx-placeholders.mjs (SHA-256 2f1e3e2fcdf458095e073190371a40bd1a15ea79c38113ae1ee48df3f0cb337a) + tools/assets/sfx-placeholders-v1.config.json (SHA-256 2852e00f5dcf8fdd3f6c9a0af1f13d71dcf588508f7d8490b2ca2db551937b7a), entry reaction: deterministic sine/envelope tone; OGG helper tools/assets/sfx-ogg-sndfile.py (SHA-256 18cca28917bd875b2c629a3e782f7f40c2e6001fe6de6d289eb5db2747b4fa38)",
+      "generator": "node waveform (tools/assets/sfx-placeholders.mjs), afconvert AAC 96k, libsndfile Vorbis (tools/assets/sfx-ogg-sndfile.py)",
+      "postProcess": "44100 Hz mono PCM 280 ms, peak -9.0 dBFS, no leading silence (4 ms attack from sample 0, 10 ms fade-out); afconvert AAC 96k (-c 1); OGG route B libsndfile Vorbis default quality via tools/assets/sfx-ogg-sndfile.py (route A ffmpeg vorbis -strict -2 failed: encoder rejects mono, 'Could not open encoder before EOF'); WAV SHA-256 4f6371aed47ff0a13408ebc0bcde15450de23dcc492aae5b45b267ba90f90b18; measured: m4a 348.3 ms / 5029 B / -9.08 dB, ogg 280.0 ms / 5214 B / -8.23 dB",
+      "batch": "playtest-m3",
+      "hash": "47e065a6d82f98050d31595db168f8a3a8a43ff288cfbb27ad9269a4e263174c",
+      "recordedAt": "2026-10-27",
+      "recordedBy": "WORK-026-2 / TASK-199",
+      "history": [],
+      "note": "WORK-026-2 M3 playtest-ready batch under gate answer 2 (synthesized placeholder, zero spend, no audio-generation service); replaceable by id with no code change (ASSET-018); OGG route B libsndfile Vorbis validated by decode round-trip (gate fork Q-B; route A ffmpeg vorbis rejects mono); creative verdict (fit, not annoying at the 20 s cadence) at the MILESTONE-007 dry run; not status accepted"
+    },
+    {
+      "id": "sfx/phase-pop",
+      "type": "audio",
+      "urls": [
+        "sfx/phase-pop.m4a",
+        "sfx/phase-pop.ogg"
+      ],
+      "durationMs": 442,
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "tools/assets/sfx-placeholders.mjs (SHA-256 2f1e3e2fcdf458095e073190371a40bd1a15ea79c38113ae1ee48df3f0cb337a) + tools/assets/sfx-placeholders-v1.config.json (SHA-256 2852e00f5dcf8fdd3f6c9a0af1f13d71dcf588508f7d8490b2ca2db551937b7a), entry phase-pop: deterministic sine/envelope tone; OGG helper tools/assets/sfx-ogg-sndfile.py (SHA-256 18cca28917bd875b2c629a3e782f7f40c2e6001fe6de6d289eb5db2747b4fa38)",
+      "generator": "node waveform (tools/assets/sfx-placeholders.mjs), afconvert AAC 96k, libsndfile Vorbis (tools/assets/sfx-ogg-sndfile.py)",
+      "postProcess": "44100 Hz mono PCM 380 ms, peak -5.0 dBFS, no leading silence (4 ms attack from sample 0, 10 ms fade-out); afconvert AAC 96k (-c 1); OGG route B libsndfile Vorbis default quality via tools/assets/sfx-ogg-sndfile.py (route A ffmpeg vorbis -strict -2 failed: encoder rejects mono, 'Could not open encoder before EOF'); WAV SHA-256 e74ba8bcfa3d3a25e080b532d1fdc9254c49b286f837f77a88237d8070109238; measured: m4a 441.2 ms / 5387 B / -5.05 dB, ogg 380.0 ms / 5370 B / -4.69 dB",
+      "batch": "playtest-m3",
+      "hash": "951c1706bb2519e83ee96b645d81192443981f895bb2a58463de41566909e155",
+      "recordedAt": "2026-10-27",
+      "recordedBy": "WORK-026-2 / TASK-199",
+      "history": [],
+      "note": "WORK-026-2 M3 playtest-ready batch under gate answer 2 (synthesized placeholder, zero spend, no audio-generation service); replaceable by id with no code change (ASSET-018); OGG route B libsndfile Vorbis validated by decode round-trip (gate fork Q-B; route A ffmpeg vorbis rejects mono); creative verdict (fit, not annoying at the 20 s cadence) at the MILESTONE-007 dry run; not status accepted"
     }
   ]
 }
