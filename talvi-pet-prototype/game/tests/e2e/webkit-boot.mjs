@@ -9,7 +9,7 @@ import { sha, boot, waitScene, getState, lines, until, setDebug, writeJson, erro
 const EV = process.env.TPP_EVIDENCE;
 if (!EV) throw new Error('TPP_EVIDENCE is required');
 const out = join(EV, 'webkit'); mkdirSync(out, { recursive: true });
-const CHROMIUM_TOTAL = 91; // smoke.mjs line 47 pin as found on the merged base (chromium-1243 measured it; see the journal)
+const CHROMIUM_TOTAL = 95; // smoke.mjs line 47 pin on the M3 package head (WORK-026-2 measured 91 + 4 sfx; WORK-025-3 re-pinned after the merge)
 const PHONE = { name: 'iPhone 15 landscape (screen 852x393)', contextOptions: { ...devices['iPhone 15 landscape'], screen: { width: 852, height: 393 } } };
 const DESK = { name: 'desktop 1920x823', contextOptions: { viewport: { width: 1920, height: 823 } } };
 
@@ -27,7 +27,7 @@ async function run(browser, target) {
   const H = await page.evaluate(() => Math.round(window.__tpp.game.scale.gameSize.height));
   Object.assign(row, await page.evaluate(() => ({ loader: window.__tpp.game.scene.getScene('Boot').loaderTotals, scene: window.__tpp.store.getState().scene,
     lockedBeforeInput: window.__tpp.game.sound.locked ?? null, avatarClips: ['idle-down', 'idle-up', 'idle-side', 'walk-down', 'walk-up', 'walk-side'].map(c => [c, window.__tpp.game.anims.exists(`avatar-${c}`)]),
-    canShareType: typeof navigator.canShare, canShareFiles: typeof navigator.canShare === 'function' ? navigator.canShare({ files: [new File([''], 'x.jsonl', { type: 'application/x-ndjson' })] }) : null,
+    sfx: ['sfx/place', 'sfx/heart', 'sfx/complete', 'sfx/reaction', 'sfx/phase-pop'].map(id => [id, window.__tpp.game.cache.audio.exists(id)]), canShareType: typeof navigator.canShare, canShareFiles: typeof navigator.canShare === 'function' ? navigator.canShare({ files: [new File([''], 'x.jsonl', { type: 'application/x-ndjson' })] }) : null,
     gameSize: { w: window.__tpp.game.scale.gameSize.width, h: window.__tpp.game.scale.gameSize.height }, inner: [innerWidth, innerHeight], dpr: devicePixelRatio, ua: navigator.userAgent })));
   row.stills = [await still(page, browser, `street-${H}`, { target: target.name })];
   // First tap: the dialogue box (a real click/tap), then read sound.locked again (DEC-034 first-tap unlock).
@@ -76,7 +76,7 @@ try {
   const rows = [await run(browser, DESK), await run(browser, PHONE)];
   const milestone = makeFixture(['--scenario', 'save-v1.milestone']).text;
   const reveal = [await revealStill(browser, DESK, milestone), await revealStill(browser, PHONE, milestone)];
-  const checks = rows.map(r => ({ target: r.target, totalFailed0: r.loader?.totalFailed === 0, totalCompleteEqualsChromiumPin: r.loader?.totalComplete === CHROMIUM_TOTAL, street: r.scene?.kind === 'street',
+  const checks = rows.map(r => ({ target: r.target, totalFailed0: r.loader?.totalFailed === 0, totalCompleteEqualsChromiumPin: r.loader?.totalComplete === CHROMIUM_TOTAL, sfxCachedAll5: r.sfx?.length === 5 && r.sfx.every(([, v]) => v), street: r.scene?.kind === 'street',
     zeroErrors: !r.errors.consoleErrors.length && !r.errors.pageErrors.length && !r.errors.assetLoadErrors.length, avatarClips: r.avatarClips.every(([, e]) => e),
     soundLockedTrueToFalse: r.lockedBeforeInput === true && r.lockedAfterFirstTap === false, audioLockedAtMostOnceBeforeTap: r.audioLockedLines <= 1 && r.audioLockedBeforeFirstTap, shareVisibilityMatches: r.shareVisibilityMatches }));
   const report = { work: WORK, sha, browser: `webkit ${browser.version()}`, result: 'partial (headless WebKit stand-in)', note: 'not Mac Safari and not an iPhone: VERIFY-PRES-011 ENV-MAC-SA and ENV-IPH device cells stay not-run (user, dry-run session); sound.locked values are recorded as observed',
