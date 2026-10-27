@@ -1,0 +1,109 @@
+{
+  "version": 1,
+  "$comment": "WORK-026-1 / TASK-195 (ASSET-016 + gate fork Q-A; APPROVAL-004 concept avatar-retry seed 8602): the avatar sheet built from the six chosen Asset-Bot nano-banana candidates (JFIF data under .png names, decoded by ffmpeg) copied under phase-4-build/runs/RUN-003/evidence/WORK-026-1/candidates/. No base (the sheet starts fully transparent; use-poses.ts base optional since WORK-026-1). Rows 0 idle-down, 1 idle-up, 2 idle-side, 3 walk-down, 4 walk-up, 5 walk-side (side rows face right; left = side flipped); cells 4, 5, 10, 11, 16, 17 transparent. Head feature = pose top (hair top) to the first moss-green shirt row (evidence/WORK-026-1/measurements.json); idle-down frame 0 scaled to 166 px opaque height (111 px Dog x renders.html avatar:Dog ratio 1.5; FORK), the other rows scaled so their frame-0 head feature matches the idle-down reference within headTolerancePx. Key as use-poses-v1 (240/18/dilation 0/holeMinArea 40). Run: npx tsx tools/assets/use-poses.ts --config tools/assets/avatar-sheet-v1.config.json --out <staging-dir>",
+  "frame": {
+    "w": 192,
+    "h": 256
+  },
+  "grid": {
+    "columns": 6,
+    "rows": 6
+  },
+  "key": {
+    "backgroundMin": 240,
+    "backgroundChroma": 18,
+    "dilation": 0,
+    "holeMinArea": 40
+  },
+  "headTolerancePx": 4,
+  "poses": [
+    {
+      "clip": "idle-down",
+      "row": 0,
+      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-003/evidence/WORK-026-1/candidates/idle-down-1.png",
+      "sha256": "6a7da75083885667e1a182a42042009c2c31848363190b04cdea929860df9fcb",
+      "cells": 4,
+      "scale": 0.2423,
+      "head": {
+        "sourcePx": 260,
+        "referencePx": 63.0
+      },
+      "standing": {
+        "referencePx": 166,
+        "tolerancePx": 6
+      }
+    },
+    {
+      "clip": "idle-up",
+      "row": 1,
+      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-003/evidence/WORK-026-1/candidates/idle-up-2.png",
+      "sha256": "8c8062ff340ab3294a02cf41077e46debaa2e3cc10e323a4bc28d5f265798fbf",
+      "cells": 4,
+      "scale": 0.2716,
+      "head": {
+        "sourcePx": 232,
+        "referencePx": 63.0
+      }
+    },
+    {
+      "clip": "idle-side",
+      "row": 2,
+      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-003/evidence/WORK-026-1/candidates/idle-side-1.png",
+      "sha256": "fcf55d02c3209d400174bd06244fb8bbf463fb5f4fcce178c10902f6df50e05a",
+      "cells": 4,
+      "scale": 0.2461,
+      "head": {
+        "sourcePx": 256,
+        "referencePx": 63.0
+      },
+      "standing": {
+        "referencePx": 166,
+        "tolerancePx": 6
+      }
+    },
+    {
+      "clip": "walk-down",
+      "row": 3,
+      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-003/evidence/WORK-026-1/candidates/walk-down-3.png",
+      "sha256": "cc7faf079f1ba7744b327e39224d41b89c03c591656b8dbcaf28c1d384a7da22",
+      "cells": 6,
+      "scale": 0.352,
+      "head": {
+        "sourcePx": 179,
+        "referencePx": 63.0
+      },
+      "standing": {
+        "referencePx": 166,
+        "tolerancePx": 6
+      }
+    },
+    {
+      "clip": "walk-up",
+      "row": 4,
+      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-003/evidence/WORK-026-1/candidates/walk-up-3.png",
+      "sha256": "c041e69ba1308b1eb2419abec80647b8965b83d84957c3826fda3ed681212c25",
+      "cells": 6,
+      "scale": 0.3369,
+      "head": {
+        "sourcePx": 187,
+        "referencePx": 63.0
+      }
+    },
+    {
+      "clip": "walk-side",
+      "row": 5,
+      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-003/evidence/WORK-026-1/candidates/walk-side-2.png",
+      "sha256": "e5c0c461584b75fd0cfc060182db3355b934f6e8ae607bcb66e0e2f894ab63c1",
+      "cells": 6,
+      "scale": 0.35,
+      "head": {
+        "sourcePx": 180,
+        "referencePx": 63.0
+      },
+      "standing": {
+        "referencePx": 166,
+        "tolerancePx": 6
+      }
+    }
+  ]
+}
