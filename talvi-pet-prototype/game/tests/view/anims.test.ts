@@ -67,7 +67,9 @@ it('VERIFY-ASSET-005 / gate fork Q-A HEADLESS: owl perch maps to pet-owl-use-per
 });
 it('registers avatar and dust keys with frameRate timing', async () => {
   const scene = await createGame();
-  expect(registerClips(scene, addSheet(scene, 'player/avatar-sheet'))).toEqual(['avatar-idle']);
+  expect(registerClips(scene, addSheet(scene, 'player/avatar-sheet'))).toEqual(['avatar-idle-down', 'avatar-idle-up', 'avatar-idle-side', 'avatar-walk-down', 'avatar-walk-up', 'avatar-walk-side']);
+  expect(scene.anims.get('avatar-walk-side')!.frameRate).toBe(10);
+  expect(scene.anims.get('avatar-idle-down')!.frames.map(f => f.duration)).toEqual([2600, 80, 120, 80]);
   expect(registerClips(scene, addSheet(scene, 'world/dust-poof'))).toEqual(['dust']);
   expect(scene.anims.get('dust')!.frameRate).toBe(18);
 });
