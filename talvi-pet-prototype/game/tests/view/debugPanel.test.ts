@@ -12,6 +12,7 @@ import type { WorldScene } from '../../src/view/scenes/WorldScene';
 import { GRID_DEPTH } from '../../src/view/alignmentGrid';
 import type { ViewContext } from '../../src/view/context';
 import { STORAGE_KEYS } from '../../src/app/persistence';
+import { createLog, type Exporter, type ExportMethod } from '../../src/app/log';
 import { parseSave } from '../../src/app/persistence';
 import { files, manifest, patchFiles } from '../content/helpers';
 import { designIn, owing } from '../sim/helpers';
@@ -26,9 +27,15 @@ const content = loadContent(manifest, patchFiles(files(), REAL_STRINGS));
 type Setup = { context: ViewContext; scene: WorldScene; root: HTMLElement; panels: Panels; storage: Storage; reload: ReturnType<typeof vi.fn> };
 
 /** FX-CONTENT-MIN with the overlay mounted and the given scene booted; storage, reload and headerFor injected. */
-async function setup(state: GameState = designIn(content), scene: 'interior' | 'street' = 'interior'): Promise<Setup> {
+async function setup(state: GameState = designIn(content), scene: 'interior' | 'street' = 'interior',
+  exporters?: Partial<Record<ExportMethod, Exporter>>): Promise<Setup> {
   const storage = createMemoryStorage();
   const context = contextFor(content, state, storage);
+  if (exporters) { // row 13: the controller's exporters injected (createLog's own seam), attached to the same store
+    const log = createLog({ storage, ringLines: content.tuning.logRingLines, exporters });
+    log.start(headerFor(state)); log.attach(context.store);
+    Object.assign(context, { log });
+  }
   const reload = vi.fn();
   Object.assign(context, { storage, reload, headerFor });
   context.persistence.attach(context.store);
@@ -182,6 +189,95 @@ describe('VERIFY-MEC-010-013 row 12 reset', () => {
     expect(panelOf(s.root).hidden).toBe(true);
     s.context.persistence.flush();
     expect(JSON.parse(s.storage.getItem(STORAGE_KEYS.save)!).state.session).toMatchObject({ seed: 42, eventIntervalMs: null });
+  });
+
+  it('VERIFY-MEC-010-013 partial: header half — row 11 label typed through the panel, then row 12 Yes + Start frozen → session.started carries it', async () => {
+    const s = await setup(); open(s);
+    const label = rowOf(s.root, 'Tester label').querySelector('input')!;
+    label.value = 'iphone-1'; label.dispatchEvent(new Event('change'));
+    const slot = () => rowOf(s.root, 'Reset save');
+    click(slot().querySelector('[data-action=reset]'));
+    slot().querySelector<HTMLInputElement>('[data-field=frozen]')!.checked = true;
+    click(slot().querySelector('[data-action=reset-yes]'));
+    expect(s.context.log.lines()[0]).toMatchObject({ type: 'session.started', cadence: null, testerLabel: 'iphone-1' });
+    expect(s.context.store.getState().session.testerLabel).toBe('iphone-1');
+  });
+});
+
+describe('mec-010 §3 row 11 Tester label', () => {
+  it('VERIFY-MEC-010-007 panel: row 11 change → debugSetTesterLabel (raw text; D3 trims), debug.applied logged, input reflects state on reopen', async () => {
+    const s = await setup(); open(s);
+    const input = () => rowOf(s.root, 'Tester label').querySelector('input')!;
+    expect(input().disabled).toBe(false);
+    expect(input().value).toBe(''); // the template's mock "desktop-review" is overwritten from state.session.testerLabel
+    const dispatch = vi.spyOn(s.context.store, 'dispatch');
+    input().value = '  desk A  '; input().dispatchEvent(new Event('change'));
+    expect(dispatch.mock.calls.map(c => c[0])).toEqual([{ type: 'debugSetTesterLabel', text: '  desk A  ' }]);
+    expect(s.context.store.getState().session.testerLabel).toBe('desk A');
+    expect(input().value).toBe('desk A');
+    expect(s.context.log.lines().at(-1)).toMatchObject({ type: 'debug.applied', action: { type: 'debugSetTesterLabel', text: '  desk A  ' } });
+    s.panels.debugPanel.close(); input().value = 'stale'; open(s);
+    expect(input().value).toBe('desk A');
+  });
+
+  it('VERIFY-MEC-010-007 panel: a label over 40 characters (maxlength bypassed) is rejected with the row error; state unchanged', async () => {
+    const s = await setup(); open(s);
+    const input = rowOf(s.root, 'Tester label').querySelector('input')!;
+    input.value = 'x'.repeat(41); input.dispatchEvent(new Event('change'));
+    expect(errorIn(s.root, 'Tester label')).toMatch(/^Rejected: /);
+    expect([s.context.store.getState().session.testerLabel, input.value]).toEqual(['', '']);
+  });
+});
+
+describe('mec-010 §3 row 13 Export log', () => {
+  const stubs = () => {
+    const calls: [ExportMethod, string, string][] = [];
+    const make = (method: ExportMethod): Exporter => async (text, filename) => { calls.push([method, text, filename]); };
+    return { calls, exporters: { download: make('download'), copy: make('copy'), share: make('share') } };
+  };
+  const flush = () => new Promise(resolve => setTimeout(resolve, 0));
+
+  it('VERIFY-MEC-010-011 partial: jsdom — Download · Copy · Share each call their exporter, then log.exported {method, lines}', async () => {
+    const { calls, exporters } = stubs();
+    vi.stubGlobal('navigator', Object.assign(Object.create(navigator), { canShare: () => true }));
+    const s = await setup(designIn(content), 'interior', exporters); open(s);
+    const [download, copy, share] = buttons(s.root, 'Export log');
+    expect([download, copy, share].map(b => [b.textContent, b.disabled, b.hidden])).toEqual([
+      ['Download', false, false], ['Copy', false, false], ['Share', false, false]]);
+    for (const [i, method] of (['download', 'copy', 'share'] as const).entries()) {
+      const before = s.context.log.lines().length;
+      click([download, copy, share][i]); await flush();
+      expect(calls.at(-1)![0]).toBe(method);
+      expect(calls.at(-1)![1].split('\n')).toHaveLength(before);
+      expect(calls.at(-1)![2]).toMatch(/^tpp-log-\d{4}-\d{2}-\d{2}T\d{4}\.jsonl$/);
+      expect(s.context.log.lines().at(-1)).toMatchObject({ type: 'log.exported', method, lines: before });
+    }
+    vi.unstubAllGlobals();
+  });
+
+  it('VERIFY-MEC-010-011 partial: jsdom — Share hidden when navigator.canShare is absent, shown on the next open once it returns true for files', async () => {
+    const s = await setup(designIn(content), 'interior', stubs().exporters); open(s);
+    const share = () => buttons(s.root, 'Export log')[2];
+    expect('canShare' in navigator).toBe(false);
+    expect(share().hidden).toBe(true);
+    s.panels.debugPanel.close();
+    const canShare = vi.fn((data: ShareData) => (data.files?.[0]?.name ?? '').endsWith('.jsonl'));
+    vi.stubGlobal('navigator', Object.assign(Object.create(navigator), { canShare }));
+    open(s);
+    expect(share().hidden).toBe(false);
+    expect(canShare).toHaveBeenCalled();
+    vi.unstubAllGlobals();
+  });
+
+  it('VERIFY-MEC-010-011 partial: jsdom — a failing exporter shows the row error and records app.error, no log.exported, no unhandled rejection', async () => {
+    const failing: Exporter = async () => { throw new Error('clipboard denied'); };
+    const s = await setup(designIn(content), 'interior', { copy: failing }); open(s);
+    click(buttons(s.root, 'Export log')[1]); await flush();
+    expect(errorIn(s.root, 'Export log')).toBe('Export failed: clipboard denied');
+    const last = s.context.log.lines().at(-1)!;
+    expect(last).toMatchObject({ type: 'app.error' });
+    expect(String(last.message)).toContain('log export (copy) failed');
+    expect(s.context.log.lines().some(l => l.type === 'log.exported')).toBe(false);
   });
 });
 
