@@ -2417,6 +2417,161 @@
         }
       ],
       "note": "WORK-018-1 M1 batch under DEC-040 (APPROVAL-010); chosen candidate_003.png of 3 (clue pre-check: pass — round wire spectacles dominant, two pressed leaves as the single secondary clue; cream/brown finish matching feather-book and the Lantern; cleanest contour of the three); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-005 play session (TECH-018 item 2); not status accepted"
+    },
+    {
+      "id": "pets/owl-sheet",
+      "type": "spritesheet",
+      "url": "pets/owl-sheet.png",
+      "px": {
+        "w": 1536,
+        "h": 1792
+      },
+      "frame": {
+        "w": 256,
+        "h": 256
+      },
+      "clips": {
+        "idle": {
+          "start": 0,
+          "end": 3,
+          "frameRate": 6,
+          "repeat": -1,
+          "frameDurationsMs": [
+            2600,
+            80,
+            120,
+            80
+          ]
+        },
+        "walk": {
+          "start": 6,
+          "end": 11,
+          "frameRate": 10,
+          "repeat": -1
+        },
+        "react": {
+          "start": 18,
+          "end": 21,
+          "frameRate": 8,
+          "repeat": -1
+        },
+        "use-lie": {
+          "start": 24,
+          "end": 27,
+          "frameRate": 4,
+          "repeat": -1,
+          "frameDurationsMs": [
+            1400,
+            250,
+            700,
+            250
+          ]
+        },
+        "use-look": {
+          "start": 30,
+          "end": 33,
+          "frameRate": 4,
+          "repeat": -1
+        },
+        "use-perch": {
+          "start": 36,
+          "end": 39,
+          "frameRate": 4,
+          "repeat": -1
+        }
+      },
+      "status": "ai-placeholder",
+      "origin": "asset-bot",
+      "source": "row 0 idle: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/pets/1793045968931-m9d1eq/candidate_003.png (seed 16810; copy phase-4-build/runs/RUN-002/evidence/WORK-022-1/candidates/idle-3.png, SHA-256 95b8b4797f0070a377c89637529c70c4046aa6296266baace0f6c1a4bef1f7cc); row 1 walk: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/pets/1793045986869-txqcty/candidate_002.png (seed 16820; copy phase-4-build/runs/RUN-002/evidence/WORK-022-1/candidates/walk-2.png, SHA-256 63011ddef7c95f3d3a90117a19fd07465d47830eb61c326587e899cd3ae651b2); row 6 use-perch: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/pets/1793046005586-x4rj0v/candidate_002.png (seed 16830; copy phase-4-build/runs/RUN-002/evidence/WORK-022-1/candidates/use-perch-2.png, SHA-256 2ad3ec584f4e3c870b88867d635b8182b0a20dfce442caf2f4a5985dceac47aa); row 3 react: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/pets/1793046065152-3gfpiu/candidate_002.png (seed 16840; copy phase-4-build/runs/RUN-002/evidence/WORK-022-1/candidates/react-2.png, SHA-256 38bba47edc38c39ddce28a7ead4f7120aaf69dc2129efe3f2102be1857684218); row 4 use-lie: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/pets/1793046083816-ie9aj3/candidate_002.png (seed 16850; copy phase-4-build/runs/RUN-002/evidence/WORK-022-1/candidates/use-lie-2.png, SHA-256 de42c8e732c11b58d260347330a8fc9770cc9e4fd164887f2f82dfaab98819d0); row 5 use-look: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/pets/1793046103684-mdi0ts/candidate_002.png (seed 16860; copy phase-4-build/runs/RUN-002/evidence/WORK-022-1/candidates/use-look-2.png, SHA-256 7afd600bdd1d70f7e0d670379d1859a89af50def0d7324a693294c75091eaf6d); row 2 use-sit and every unused cell transparent (CHK-007-04)",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 16810,
+      "prompt": "[row 0 idle: Asset-Bot run 1793045968931-m9d1eq, seed 16810] Use case: identity-preserve game sprite animation. Exactly FOUR full-body poses of the SAME approved small round owl in ONE horizontal row, four equal-width cells without borders. Match the reference identity exactly: a compact bread-loaf body with NO ear tufts, a smoothly rounded head that merges into the body with no neck, wings folded tight so the whole outline is one plain egg shape, short feet mostly hidden under belly feathers; warm cocoa-brown back and wings with soft darker barring, cream heart-shaped facial disc, cream chest and belly with a few small brown flecks, large round dark brown eyes, small pale beak. Clean dark brown outline, flat warm shading, restrained feather detail, not fluffy fur rendering. All four face right at the same slight three-quarter view from the front-left, same stance, same proportions and body size, feet on one baseline. A quiet looping IDLE: pose1 eyes open calm; pose2 same pose with a tiny breath rise in the chest; pose3 same pose with both eyes softly closed in a blink; pose4 eyes open again matching pose1. No head turn, no leg travel, no wing movement, no different expressions, no rotation. Whole owl visible in every cell with generous white padding and clear white gutters between the cells. Plain white background. No numbers, labels, cell borders, gridlines, floor, branch, props, cast shadow, glow, objects or text.\n\n[row 1 walk: Asset-Bot run 1793045986869-txqcty, seed 16820] Use case: identity-preserve game sprite animation. Draw exactly SIX full-body frames of the SAME approved small round owl arranged in ONE horizontal row, six equal-width cells without borders. Match the reference identity exactly: a compact bread-loaf body with NO ear tufts, a smoothly rounded head that merges into the body with no neck, wings folded tight so the whole outline is one plain egg shape, short feet mostly hidden under belly feathers; warm cocoa-brown back and wings with soft darker barring, cream heart-shaped facial disc, cream chest and belly with a few small brown flecks, large round dark brown eyes, small pale beak. Clean dark brown outline, flat warm shading, restrained feather detail, not fluffy fur rendering. All six face right at the SAME slight three-quarter view from the front-left as the reference. This is one seamless WADDLING WALK-IN-PLACE cycle on short feet with the wings kept folded, not six different characters: frame1 near foot forward and far foot back, body leaning slightly over the planted foot; frame2 feet passing with a small body dip; frame3 near foot back and far foot forward, body leaning slightly the other way; frame4 opposite contact; frame5 opposite passing; frame6 approaching frame1. A small side-to-side body bob, head steady. No flying, no spread wings, no hopping, no duplicated feet, no extra legs, no body rotation. Feet share one baseline; identical head and body proportions, owl centred in each cell. Whole owl visible in every cell with generous white padding and clear white gutters between the cells. Plain white background. No numbers, labels, cell borders, gridlines, floor, branch, props, cast shadow, glow, objects or text.\n\n[row 6 use-perch: Asset-Bot run 1793046005586-x4rj0v, seed 16830] Use case: identity-preserve game sprite animation. Exactly FOUR full-body poses of the SAME approved small round owl in ONE horizontal row, four equal-width cells without borders. Match the reference identity exactly: a compact bread-loaf body with NO ear tufts, a smoothly rounded head that merges into the body with no neck, wings folded tight so the whole outline is one plain egg shape, short feet mostly hidden under belly feathers; warm cocoa-brown back and wings with soft darker barring, cream heart-shaped facial disc, cream chest and belly with a few small brown flecks, large round dark brown eyes, small pale beak. Clean dark brown outline, flat warm shading, restrained feather detail, not fluffy fur rendering. All four face right at the same slight three-quarter view from the front-left, same proportions and body size. A calm PERCHED loop as a loaf: both feet grip an INVISIBLE horizontal bar at the very bottom of the body with the talons curled closed as if around a bar (draw no branch, no bar, no perch), the body lowered so the belly feathers rest over the feet, the head turned a little toward the viewer. pose1 eyes open calm; pose2 same pose with a tiny breath rise in the chest; pose3 same pose with both eyes softly closed; pose4 eyes open again matching pose1. Same body position in every cell, feet on one baseline; no wing movement, no leg travel, no rotation. Whole owl visible in every cell with generous white padding and clear white gutters between the cells. Plain white background. No numbers, labels, cell borders, gridlines, floor, branch, props, cast shadow, glow, objects or text.\n\n[row 3 react: Asset-Bot run 1793046065152-3gfpiu, seed 16840] Use case: identity-preserve game sprite animation. Exactly FOUR full-body frames of the SAME approved small round owl in ONE horizontal row, four equal-width cells without borders. Match the reference identity exactly: a compact bread-loaf body with NO ear tufts, a smoothly rounded head that merges into the body with no neck, wings folded tight so the whole outline is one plain egg shape, short feet mostly hidden under belly feathers; warm cocoa-brown back and wings with soft darker barring, cream heart-shaped facial disc, cream chest and belly with a few small brown flecks, large round dark brown eyes, small pale beak. Clean dark brown outline, flat warm shading, restrained feather detail, not fluffy fur rendering. All four face right at the same slight three-quarter view from the front-left, same proportions and body size, feet planted on one baseline in every frame. A small happy FEATHER-FLUFF reaction: frame1 standing relaxed, eyes open and happy; frame2 wings lifted slightly away from the body and the whole body puffed rounder, eyes bright; frame3 settling, wings half folded, body a little puffed; frame4 back to the relaxed standing pose matching frame1. No hop, no jump, no standing taller, no spread flight wings, no open beak, no rotation. Whole owl visible in every cell with generous white padding and clear white gutters between the cells. Plain white background. No numbers, labels, cell borders, gridlines, floor, branch, props, cast shadow, glow, objects or text.\n\n[row 4 use-lie: Asset-Bot run 1793046083816-ie9aj3, seed 16850] Use case: identity-preserve game sprite animation. Exactly FOUR full-body frames of the SAME approved small round owl in ONE horizontal row, four equal-width cells without borders. Match the reference identity exactly: a compact bread-loaf body with NO ear tufts, a smoothly rounded head that merges into the body with no neck, wings folded tight so the whole outline is one plain egg shape, short feet mostly hidden under belly feathers; warm cocoa-brown back and wings with soft darker barring, cream heart-shaped facial disc, cream chest and belly with a few small brown flecks, large round dark brown eyes, small pale beak. Clean dark brown outline, flat warm shading, restrained feather detail, not fluffy fur rendering. All four face right at the same slight three-quarter view from the front-left, same proportions and body size. A calm NAP loop: the owl settled low with the feet tucked under the belly feathers so it rests like a round loaf on the ground, head sunk into the body, both eyes closed in EVERY frame as two soft curved closed-eyelid lines. frame1 eyes closed resting; frame2 slow breath in, chest and body slightly fuller; frame3 eyes closed resting matching frame1; frame4 slow breath out, body slightly lower. Same body position in every cell on one baseline; no open eyes, no head turn, no leg travel, no rotation. Whole owl visible in every cell with generous white padding and clear white gutters between the cells. Plain white background. No numbers, labels, cell borders, gridlines, floor, branch, props, cast shadow, glow, objects or text.\n\n[row 5 use-look: Asset-Bot run 1793046103684-mdi0ts, seed 16860] Use case: identity-preserve game sprite animation. Exactly FOUR full-body frames of the SAME approved small round owl in ONE horizontal row, four equal-width cells without borders. Match the reference identity exactly: a compact bread-loaf body with NO ear tufts, a smoothly rounded head that merges into the body with no neck, wings folded tight so the whole outline is one plain egg shape, short feet mostly hidden under belly feathers; warm cocoa-brown back and wings with soft darker barring, cream heart-shaped facial disc, cream chest and belly with a few small brown flecks, large round dark brown eyes, small pale beak. Clean dark brown outline, flat warm shading, restrained feather detail, not fluffy fur rendering. All four face right at the same slight three-quarter view from the front-left, same proportions and body size, feet on one baseline. A calm LOOKING loop: the owl standing on its short feet with the head raised and tilted up, looking attentively at something above and to its right, eyes open and bright. frame1 head raised, eyes open; frame2 same pose with a tiny breath rise in the chest; frame3 same pose with both eyes softly closed in a blink; frame4 eyes open again matching frame1. Same body position in every cell; no leg travel, no wing movement, no rotation. Whole owl visible in every cell with generous white padding and clear white gutters between the cells. Plain white background. No numbers, labels, cell borders, gridlines, floor, branch, props, cast shadow, glow, objects or text.",
+      "refs": [
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/working/TASK-167/candidates/raw/A-2.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/concepts/v1/dog-a-nano.png",
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/style/owl_in_room.png"
+      ],
+      "postProcess": "WORK-022-1 / TASK-172 (APPROVAL-018, CN-12 + gate fork Q-A): npx tsx tools/assets/use-poses.ts --config tools/assets/owl-sheet-v1.config.json (config SHA-256 f05f97eb6e734bcdb8c9b38252779645d7a022825adf8e8652f2186c31ddce48); base fa6d1b4:public/assets/pets/dog-sheet.png (SHA-256 3ff2e03da75e85a13cecdd22e667b0f43c92d7c07991c124f9a7d87449534e44) with copyRows [] (nothing copied; the recipe's base requirement only). Six JFIF strips 1376x768 decoded by ffmpeg 8.1.2 (-sws_flags accurate_rnd+full_chroma_int): white key backgroundMin 240, backgroundChroma 18, dilation 0, enclosed white holes >= 40 px cleared (idle: 4 eye glints of ~140 px); poses split by connected component into equal cells, trimmed, premultiplied area-average scaled into 256x256 cells, bottom edge on the cell bottom, box centred. Scale rule (art bible v1.4 Dog-scale rule): idle frame 0 scaled 0.3353 to 111 px opaque height (96x111 in cell 0); head feature = facial-disc width (cream pixels in the top 40 % of the keyed pose box, phase-4-build/runs/RUN-002/evidence/WORK-022-1/recipes/measure-owl-poses.ts SHA-256 a56bdec116661a05d5365c7f53d9599fd77d624cac05ed7d79993f522ec3ae6d), reference 75.8 px, headTolerancePx 4; per row: idle 0.3353 (disc 226 -> 75.8 px; frame 0 opaque 95.6x111 px), walk 0.4235 (disc 179 -> 75.8 px; frame 0 opaque 91.5x113.1 px), use-perch 0.286 (disc 265 -> 75.8 px; frame 0 opaque 92.1x115 px), react 0.3399 (disc 223 -> 75.8 px; frame 0 opaque 92.1x107.1 px), use-lie 0.3198 (disc 237 -> 75.8 px; frame 0 opaque 93.7x108.7 px), use-look 0.3145 (disc 241 -> 75.8 px; frame 0 opaque 93.4x116.7 px); standing 111 +/- 6 asserted on idle, walk, use-look. Rows 0 idle, 1 walk, 3 react, 4 use-lie, 5 use-look, 6 use-perch; row 2 (use-sit) and cells 4,5,12-17,22,23,28,29,34,35,40,41 transparent. Clip timing: idle frameDurationsMs [2600,80,120,80] (CN-07, the accepted blink), use-lie [1400,250,700,250] (the Dog's nap timing), react frameRate 8 (no hold), walk 10, use-look 4, use-perch 4. RGBA PNG per-row min-residual filter, zlib 9: 1536x1792, 488350 B, SHA-256 0534ee0169b4e6b92b8e78c7d0bcc06e46c60693dc8d21f55d2e2d224852d47b.",
+      "batch": "owl-m2",
+      "hash": "0534ee0169b4e6b92b8e78c7d0bcc06e46c60693dc8d21f55d2e2d224852d47b",
+      "recordedAt": "2026-10-26",
+      "recordedBy": "WORK-022-1 / TASK-172",
+      "history": [],
+      "note": "WORK-022-1 M2 Owl batch under DEC-040; identity reference APPROVAL-018 A-2 (working/TASK-167/candidates/raw/A-2.png, not ledgered); row 2 use-sit empty (CHK-007-04); row 6 use-perch per gate fork Q-A (the verbs.json perch.clip -> use-perch mapping and the UseClip enum are WORK-024-1 / WORK-023-2's); react is a wing-lift flutter (FLAG in the lane journal); creative verdict at the MILESTONE-006 play session; not status accepted"
+    },
+    {
+      "id": "pets/owl-portrait",
+      "type": "image",
+      "url": "pets/owl-portrait.png",
+      "px": {
+        "w": 600,
+        "h": 600
+      },
+      "status": "ai-placeholder",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/pets/1793046269469-9cpv2c/candidate_002.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 16870,
+      "prompt": "Use case: identity-preserve. Create a game dialogue portrait of the EXACT approved small round owl in the reference. Retain the identity: a compact bread-loaf body with NO ear tufts, a smoothly rounded head that merges into the body with no neck; warm cocoa-brown crown and back with soft darker barring, cream heart-shaped facial disc with a clear disc edge, cream chest with three or four small brown flecks, large round dark brown eyes, small pale beak; clean dark brown outline, flat warm shading, restrained feather detail, not fluffy fur rendering. Bust portrait: the head with the whole facial disc and its edge, both eyes, the beak, the rounded crown and a slice of the upper chest with its flecks only; no feet, no spread wings, no branch, no book, no spectacles, no accessories. Facing slightly to the viewer's right in a gentle three-quarter view, calm polite expression, eyes open. Center the whole bust in a square canvas with white space around the crown and both sides; do not crop the crown. Plain white background with nothing else: no glow, shadow, floor, frame, border, text or extra animal.",
+      "refs": [
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/working/TASK-167/candidates/raw/A-2.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts.worktrees/talvi-pets-prototype-RUN-002/WORK-022-1/talvi-pet-prototype/game/public/assets/pets/dog-portrait.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/concepts/v1/dog-a-nano.png"
+      ],
+      "postProcess": "phase-4-build/runs/RUN-002/evidence/WORK-022-1/recipes/prepare-owl-portrait.mjs (SHA-256 7ccf1b779ed9e6a006556305b6e9f35466c410b3d3989ebe960e4d11f9c2b764; pure Node through the maintained use-poses key): JFIF 1024x1024 decoded by ffmpeg 8.1.2, white key backgroundMin 240 / backgroundChroma 18 / dilation 0 / holeMinArea 1000000 (no enclosed white cleared: a bust encloses no background and the default 40 cleared the eye glints), trim 731x794 at (100,130), premultiplied area-average uniform fit scale 0.71537 to 523x568 centred in 600x600 (fit box {\"x\":38,\"y\":16,\"w\":524,\"h\":568}), alpha<8 -> 0 (88 px), corners 0; RGBA PNG 253940 B > 250 KB -> pngquant 3.0.3 --quality 90-100 --speed 1 --nofs 256 (palette+tRNS, as the clue icons) -> 124467 B, SHA-256 9663eb182f631b8120842a745c14192fc00db4c3ab80078e096685b0a9505ea6.",
+      "batch": "owl-m2",
+      "hash": "9663eb182f631b8120842a745c14192fc00db4c3ab80078e096685b0a9505ea6",
+      "recordedAt": "2026-10-26",
+      "recordedBy": "WORK-022-1 / TASK-172",
+      "history": [],
+      "note": "WORK-022-1 M2 Owl batch under DEC-040; bust of the APPROVAL-018 A-2 body (identity reference working/TASK-167/candidates/raw/A-2.png, not ledgered); the parent of pets/owl-silhouette (ledger rule (4)); crop verdict (DEC-033 R card-5 tease) at the MILESTONE-006 play session; not status accepted"
+    },
+    {
+      "id": "pets/owl-silhouette",
+      "type": "image",
+      "url": "pets/owl-silhouette.png",
+      "px": {
+        "w": 600,
+        "h": 600
+      },
+      "status": "ai-placeholder",
+      "origin": "derived",
+      "source": "pets/owl-portrait",
+      "postProcess": "alpha copied pixel for pixel from pets/owl-portrait (SHA-256 9663eb182f631b8120842a745c14192fc00db4c3ab80078e096685b0a9505ea6, decoded by ffmpeg 8.1.2 to straight RGBA), RGB flat #3a2a1f, 8-bit RGBA PNG; phase-4-build/runs/RUN-002/evidence/WORK-022-1/recipes/derive-owl-silhouette.mjs SHA-256 40235d20b867d18ffc6108e3d9250c8c67ae00e54b3d2253651ca240f2965331; --verify: alpha channels byte-identical, alpha IoU 1.0 (228126 opaque px; phase-4-build/runs/RUN-002/evidence/WORK-022-1/silhouette-iou.json); 10112 B, SHA-256 62d0b95e6b134a8e141b6e14097c2dff4d8a7a3e89509dc3db168daac138fb06.",
+      "batch": "owl-m2",
+      "hash": "62d0b95e6b134a8e141b6e14097c2dff4d8a7a3e89509dc3db168daac138fb06",
+      "recordedAt": "2026-10-26",
+      "recordedBy": "WORK-022-1 / TASK-172",
+      "history": [],
+      "note": "DEC-033 R: derived from the portrait alpha, never generated; shown only in the card-5 state (revealPopup/revealPanel silhouette state); ui/mystery-shape stays through phases 1-4; status inherits pets/owl-portrait (ai-placeholder); not status accepted"
+    },
+    {
+      "id": "rooms/owl-room",
+      "type": "image",
+      "url": "rooms/owl-room.jpg",
+      "px": {
+        "w": 1920,
+        "h": 1080
+      },
+      "status": "ai-placeholder",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/rooms/1793046287626-cefiny/candidate_002.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 16880,
+      "prompt": "An empty room interior for a small pet, drawn exactly like the reference room: the same isometric three-quarter view with two back walls meeting at a centre corner and an open wooden plank floor diamond in front, the same wall height, a plain open doorway on the left wall at the same place and size as the reference, one small square window on the right wall at the same place and size as the reference, simple skirting boards. The room about 1.5x larger in width and depth than the first reference, doorway and window at reference size, walls and floor about 85% of the image height, the room centred on a plain neutral paper background with the floor's front corner near the bottom edge. This is the owl's quiet evening room: cooler pale grey-green plaster walls, soft dusk-blue light in the window, the same restrained warm wood floor, doorway trim and window frame, a little darker and quieter than the dog's room. Completely empty: no furniture, no books, no shelves, no bed, no rug, no lamp, no perch, no plants, no props, no animals, no text, no people.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/production/pet_house_lv3.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/concepts/v1/room-a.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts.worktrees/talvi-pets-prototype-RUN-002/WORK-022-1/talvi-pet-prototype/game/public/assets/rooms/dog-room.jpg",
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/style/owl_in_room.png"
+      ],
+      "postProcess": "Full-frame uniform fit as rooms/dog-room: the whole 1376x768 source scaled by 1920/1376 (1.39535) to 1920x1072, centred at y 4.19 (bandTop 0, bandHeight 1080; no band fit: the phone-band clipping of the back and front floor corners follows the accepted Dog room, APPROVAL-011 / art bible v1.4; lane FORK); sampled neutral exterior paper rgb(234,235,225) outside the source-image room contour [[683,14],[1087,238],[1086,526],[691,754],[291,527],[293,236]] (six extreme points of the non-paper mask padded 4 px) with a 3px keep and 6px feather; Chrome canvas JPEG quality 0.8 (Google Chrome 156.0.8078.48); recipe game/tools/assets/export-refinements.mjs + owl-room-v1.config.json (SHA-256 442d1e08d73e8f0eb7b8ed8fcbaa1b2e16c6f3da430627f18fca6d9e777734aa); preserved source phase-4-build/runs/RUN-002/evidence/WORK-022-1/candidates/room-2.png SHA-256 beff93741e66391667753c6dc130d7dbac18670b6535986c7afd245a8a50be43; 129632 B, SHA-256 d584644813ef742475b85414308b2fb8351e5d7f4e2dba455fcd7065aef37020. Measured on the export (phase-4-build/runs/RUN-002/evidence/WORK-022-1/room-measurements.json): wall top y 28, back corner (963,386), floor diamond left (436,700) / front (974,1053) / right (1496,690), door foot rect {640,548,70,55} (dx -22, dy -3 from the Dog room's to-street rect), door opening {630,335,90,240}, window {1170,260,130,220}.",
+      "batch": "owl-m2",
+      "hash": "d584644813ef742475b85414308b2fb8351e5d7f4e2dba455fcd7065aef37020",
+      "recordedAt": "2026-10-26",
+      "recordedBy": "WORK-022-1 / TASK-172",
+      "history": [],
+      "note": "room-v2 recipe; the Owl's quiet evening room from the carried direction note (same composition class as rooms/dog-room: two back walls, floor diamond, left-wall doorway, right-wall window; cooler plaster, dusk window, empty floor, no inferred furniture); geometry (walk area, door, slots, floorY, seats) to be measured by WORK-024-2 on this art; owl-room.json still points at rooms/dog-room until then; taste verdict at the MILESTONE-006 play session; not status accepted"
     }
   ]
 }
