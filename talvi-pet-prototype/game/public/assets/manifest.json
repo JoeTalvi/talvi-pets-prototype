@@ -2572,6 +2572,32 @@
       "recordedBy": "WORK-022-1 / TASK-172",
       "history": [],
       "note": "room-v2 recipe; the Owl's quiet evening room from the carried direction note (same composition class as rooms/dog-room: two back walls, floor diamond, left-wall doorway, right-wall window; cooler plaster, dusk window, empty floor, no inferred furniture); geometry (walk area, door, slots, floorY, seats) to be measured by WORK-024-2 on this art; owl-room.json still points at rooms/dog-room until then; taste verdict at the MILESTONE-006 play session; not status accepted"
+    },
+    {
+      "id": "charms/mossy-log",
+      "type": "image",
+      "url": "charms/mossy-log.png",
+      "px": {
+        "w": 320,
+        "h": 256
+      },
+      "status": "ai-placeholder",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1793053842146-9y7bmv/candidate_002.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 18510,
+      "prompt": "One fallen tree log lying on its side, a short thick rounded trunk with a visible cut end, its top thickly cushioned with a plump soft pad of green moss like a bed, so it clearly reads as a soft mossy plant cushion to lie on. Three-quarter view from the front-left as in the furniture references, resting on the floor. Single complete isolated object, centred, generous margin, plain white background, no floor, no cast shadow, no room, no pet, no text, no extra objects.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/production/pet_house_lv3.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/concepts/v1/charms-nano.png"
+      ],
+      "postProcess": "Decode: /opt/homebrew/bin/ffmpeg -v error -y -i /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1793053842146-9y7bmv/candidate_002.png -sws_flags accurate_rnd+full_chroma_int -pix_fmt rgb24 /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-002/evidence/WORK-022-2/decoded/charms/mossy-log.png (raw SHA-256 e2d9b64cf21ad7866fe83c9d0dcafc428c1ffa7d35ef0a63544b7b8b1bb06a6c; decoded SHA-256 acc9cdc2e41d55fe9531dc6e653dda5fdb8a28e35f6b59dfcae8acafbe11860f). Key/fit: game/tools/assets/export-refinements.mjs (Chrome 155.0.8059.85) with config <EV>/recipes/charms-m2.export.config.json SHA-256 bd485719389bacd77ccf3ecc1858e6771ee1808038e23d7f8b3dbc9444c78c78; boundary-connected white flood backgroundMin 240 / backgroundChroma 18, enclosed near-white kept opaque, keep-region dilation 0, exterior luma alpha + white unmatte, trim, uniform max-fit bottom-centred in fit box 320x110; exporter sourceBounds [139, 140, 1071, 781], scale 0.171340, bounds [80, 0, 239, 109], bottomGap 0, centerOffset 0, corners [0, 0, 0, 0]; fit PNG SHA-256 2324efe0d3b370cce8ab5687ecbc5d4da84c48459044b0c4312a98c3e2c62191. lossless pad: ffmpeg -v error -y -i <EV>/staging/fit/charms/mossy-log.png -vf \"format=rgba,pad=320:256:(ow-iw)/2:oh-ih:color=black@0.0\" -pix_fmt rgba <EV>/staging/final/charms/mossy-log.png; final SHA-256 31e4e1a33a3a07b532b0d101d37aa87bcefa2a2f06fea5d0a65eee4d48a9bfd8. H_t (art bible v1.4 Dog-scale rule, Dog 111 px at idle; APPROVAL-016 sibling heights read from the rows' postProcess): 110 px (= dog-bed 110 px, the accepted large soft lie-down piece; cushion 113 px). Floor piece (no wall class in this batch). <EV> = /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-002/evidence/WORK-022-2",
+      "batch": "charms-m2",
+      "hash": "31e4e1a33a3a07b532b0d101d37aa87bcefa2a2f06fea5d0a65eee4d48a9bfd8",
+      "recordedAt": "2026-10-26",
+      "recordedBy": "WORK-022-2 / TASK-176",
+      "history": [],
+      "note": "WORK-022-2 M2 batch under DEC-040; chosen candidate_002 of 3 (silhouette: pass — soft (quilted tufted moss pad on top), plant (moss mass reads as foliage)); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-006 play session (TECH-018 item 2); not status accepted"
     }
   ]
 }
