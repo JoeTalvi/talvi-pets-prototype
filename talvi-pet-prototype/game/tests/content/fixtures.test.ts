@@ -8,6 +8,7 @@ import { checkInvariants } from '../../src/sim/invariants';
 import { reduce } from '../../src/sim/reduce';
 import type { GameState } from '../../src/sim/state';
 import { parseSaveValue } from '../../src/sim/state.schema';
+import { parseSave } from '../../src/app/persistence';
 import { FIXTURE_DIR, generateFixture, readSteps, STEPS_DIR, stepsFiles } from '../../tools/make-fixture';
 import { loadContent } from '../../src/content/load';
 import { readContentFiles } from '../../tools/content/io';
@@ -21,8 +22,8 @@ const stateOf = (name: string) => (JSON.parse(committed(name)) as { state: GameS
 const fixture = (argv: string[]) => spawnSync(process.execPath, [runner, 'tools/make-fixture.ts', ...argv], { encoding: 'utf8' });
 
 describe('VERIFY-TOOL-008 committed fixtures', () => {
-  it('VERIFY-TOOL-008 there are 18 steps files, each with its generated fixture', () => {
-    expect(stepsFiles()).toHaveLength(18);
+  it('VERIFY-TOOL-008 there are 22 steps files, each with its generated fixture', () => {
+    expect(stepsFiles()).toHaveLength(22);
     for (const name of stepsFiles()) expect(existsSync(join(FIXTURE_DIR, name)), name).toBe(true);
   });
   it.each(stepsFiles())('VERIFY-TOOL-008 %s: regenerating in-process equals the committed bytes; it loads without discard and checkInvariants → []', name => {
@@ -96,5 +97,26 @@ describe('VERIFY-TOOL-008 named scenarios over the real content (src/content)', 
   it.each(stepsFiles())('VERIFY-TOOL-008 %s generates over src/content and loads there without discard', name => {
     const text = generateFixture(real, readSteps(join(STEPS_DIR, name)));
     expect(parseSaveValue(real, JSON.parse(text))).not.toHaveProperty('discarded');
+  });
+});
+
+describe('prototype.md §4 fixed opening: the session-opening family (Q-C) on real content', async () => {
+  const real = loadContent(undefined, await readContentFiles('src/content'));
+  const arms: [string, Partial<GameState['session']>][] = [
+    ['session-opening', { starsVisible: true, feedPresentation: 'events', eventIntervalMs: 20000 }],
+    ['session-opening-stars-hidden', { starsVisible: false }], ['session-opening-trickle', { feedPresentation: 'trickle' }],
+    ['session-opening-frozen', { eventIntervalMs: null }]];
+  it.each(arms)('VERIFY-TOOL-008 %s.real.json parses through parseSave on src/content with the fixed-opening invariants and its arm', (name, arm) => {
+    const text = readFileSync(join('tests/view/capture', `${name}.real.json`), 'utf8');
+    expect(text).toBe(generateFixture(real, readSteps(join(STEPS_DIR, `${name}.json`))));
+    const loaded = parseSave(real, text);
+    expect(loaded).not.toHaveProperty('discarded');
+    const { state } = loaded as { state: GameState };
+    expect(state.pets.dog).toMatchObject({ introduced: true, hearts: 0, fulfilledWantIds: [] });
+    expect(state.projects['pet-house']).toMatchObject({ currentCents: 0, acknowledgedPhase: 0 });
+    expect(state.projects['starter-house'].complete).toBe(true);
+    expect(state.scene).toEqual({ kind: 'interior', roomId: 'dog-room' });
+    expect(state.dialogue.current).toBeNull();
+    expect(state.session).toMatchObject({ seed: 1234, ...arm });
   });
 });
