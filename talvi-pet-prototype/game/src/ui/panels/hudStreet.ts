@@ -67,16 +67,13 @@ function renderHud(p: Parts, context: ViewContext, text: Text, state: GameState,
   else if (p.section.dataset.barCents !== String(cents)) setBar(p, cents, project.goalCents, 0);
 }
 
-/** Presentation §8.2 `hudStreet`: the project bar (nudge / trickle glide), "More homes coming", the reveal stub, `.frozen`; the debug entry is bound by the debug panel. */
+/** Presentation §8.2 `hudStreet`: the project bar (nudge / trickle glide), "More homes coming", the reveal icon, `.frozen`; the debug entry and the reveal icon are bound by the debug and reveal panels. */
 export function createHudStreet(root: HTMLElement, context: ViewContext): HudStreet {
-  const { content, store, log } = context;
+  const { content, store } = context;
   const text = createText(content.strings);
   root.insertAdjacentHTML('beforeend', hudStreet({ text, assets: assetsFrom(context.manifest), idPrefix: 'hud-street' }));
   const p = partsOf(root.lastElementChild as HTMLElement, text);
   const render = (state: GameState, nudgeMs: number | null = null) => renderHud(p, context, text, state, nudgeMs);
-  // Mec-003 §1 stub: the reveal panel is M2 (WORK-023), so the tap is recorded and nothing opens.
-  const onReveal = () => { if (!p.reveal.disabled) log.record('ui.revealPanel', { open: true }); };
-  p.reveal.addEventListener('click', onReveal);
   const offs = [...RENDER_ON.map(type => store.subscribe(type, (_event, after) => render(after))),
     // VERIFY-MEC-010-015: the trickle arm glides over one feed interval instead of the 300 ms nudge.
     store.subscribe('roundup.fired', (_event, after) => render(after,
@@ -84,6 +81,6 @@ export function createHudStreet(root: HTMLElement, context: ViewContext): HudStr
   render(store.getState());
   return {
     render: () => render(store.getState()),
-    destroy() { for (const off of offs) off(); p.reveal.removeEventListener('click', onReveal); p.section.remove(); },
+    destroy() { for (const off of offs) off(); p.section.remove(); },
   };
 }
