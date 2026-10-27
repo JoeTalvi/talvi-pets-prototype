@@ -2,8 +2,14 @@
 import './setup';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { DialogueScript, GameState } from '../../src/sim/state';
-import { designSetup, linesOf, pointer } from './designHarness';
-import { destroyScene } from './sceneHarness';
+import { designSetup, linesOf, pointer, REAL_STRINGS } from './designHarness';
+import { bootScene, contextFor, destroyScene } from './sceneHarness';
+import { loadContent } from '../../src/content/load';
+import { mountOverlay } from '../../src/ui/overlay';
+import { StreetScene } from '../../src/view/scenes/StreetScene';
+import { directorClock, phaserClock } from '../../src/view/celebration/CelebrationDirector';
+import { files, patchFiles } from '../content/helpers';
+import { owing } from '../sim/helpers';
 
 afterEach(() => { vi.useRealTimers(); destroyScene(); document.body.replaceChildren(); vi.restoreAllMocks(); });
 
@@ -126,6 +132,26 @@ describe('core §6.4 intro deferral', () => {
   });
 });
 
+describe('M2 play session: intro waits for the greeting with greetingDelayMs', () => {
+  it('M2 play session — with greetingDelayMs 520 the intro box and the want panel stay hidden until the pet reaches {to:greeting}', async () => {
+    const s = await designSetup({ patches: [{ file: 'tuning.json', path: '/greetingDelayMs', value: 520 }], edit: st => {
+      play(st); st.scene = { kind: 'street' } as GameState['scene']; st.pets.dog.introduced = false;
+      st.avatar = { ...st.avatar, x: 200, y: 830, facing: 'up' };
+    } });
+    fake();
+    for (let i = 0; i < 20 && s.state().scene.kind === 'street'; i++) { s.context.store.dispatch({ type: 'tick', dtMs: 100, move: { x: 0, y: -1 } }); vi.advanceTimersByTime(100); }
+    const want = () => s.root.querySelector<HTMLElement>('.tpp-wantPanel')!;
+    expect(s.state().dialogue.current?.source).toBe('intro');
+    expect([box(s).hidden, s.panels.dialogue.isDeferred(), want().hidden]).toEqual([true, true, true]);
+    let elapsed = 0;
+    while (s.state().pets.dog.behaviour.phase !== 'greeting' && elapsed < 7000) { expect([box(s).hidden, want().hidden]).toEqual([true, true]); tick(s); elapsed += 100; }
+    expect(elapsed).toBeGreaterThanOrEqual(500);
+    expect([box(s).hidden, want().hidden]).toEqual([false, true]);
+    while (s.state().dialogue.current?.source === 'intro') { s.context.store.dispatch({ type: 'advanceDialogue' }); }
+    expect(want().hidden).toBe(false);
+  });
+});
+
 describe('VERIFY-MEC-009-020 reload mid-chain', () => {
   it('VERIFY-MEC-009-020 partial: desktop "no pet sequence" (view) — a saved vignette renders at once at line 0, not deferred; the walking Dog continues from state', async () => {
     const s = await designSetup({ edit: st => {
@@ -144,5 +170,52 @@ describe('VERIFY-MEC-009-020 reload mid-chain', () => {
     expect(s.panels.dialogue.isDeferred()).toBe(true);
     s.context.store.dispatch({ type: 'reset' });
     expect([box(s).hidden, s.panels.dialogue.isDeferred()]).toEqual([true, false]);
+  });
+});
+
+describe('mec-002 §2.6 dialogue hold during the arrival', () => {
+  // The completion message is injected so the row does not depend on WORK-024-1's text; the phase message is removed so it is index 0.
+  const content = loadContent(undefined, patchFiles(files(), [...REAL_STRINGS,
+    { file: 'projects.json', path: '/projects/1/completionMessage', value: ['Held line one.', 'Held line two.'] },
+    { file: 'projects.json', path: '/projects/1/phaseMessages', remove: true }]));
+  type Syncable = { syncScene(ms: number): void };
+  async function arriving(state = owing(content, 4, content.projects.find(p => p.id === 'pet-house')!.goalCents)) {
+    directorClock.create = () => ({ now: () => 0, after: () => () => {} });
+    const context = contextFor(content, state);
+    const host = document.createElement('div'); document.body.append(host);
+    const panels = mountOverlay(host, context)!;
+    const scene = await bootScene(StreetScene, context);
+    const root = host.querySelector<HTMLElement>('#panels')!;
+    return { context, panels, scene, el: root.querySelector<HTMLElement>('.tpp-dialogue')!,
+      walk: (ms: number) => { for (let t = 0; t < ms; t += 50) (scene as unknown as Syncable).syncScene(50); } };
+  }
+  afterEach(() => { directorClock.create = phaserClock; });
+
+  it('mec-002 §2.6 dialogue hold — completion message deferred while arrival !== null, shown on arrival.finished', async () => {
+    const a = await arriving();
+    a.context.store.dispatch({ type: 'acknowledgeProject', projectId: 'pet-house' });
+    for (const type of ['cutsceneFinished', 'collectRewards', 'closeReveal'] as const) a.context.store.dispatch({ type });
+    const state = a.context.store.getState();
+    expect([state.arrival?.petId, state.dialogue.current?.source]).toEqual(['owl', 'completionMessage']);
+    expect([a.el.hidden, a.panels.dialogue.isDeferred()]).toEqual([true, true]);
+    a.walk(1500);
+    expect([a.el.hidden, a.panels.dialogue.isDeferred()]).toEqual([true, true]);
+    a.walk(5000);
+    expect(linesOf(a.context, 'arrival.finished')).toHaveLength(1);
+    expect([a.el.hidden, a.panels.dialogue.isDeferred(), a.el.dataset.source]).toEqual([false, false, 'completionMessage']);
+    expect(a.el.querySelector('.tpp-dialogue-line')!.textContent).toBe('Held line one.');
+    expect(linesOf(a.context, 'dialogue.opened')).toHaveLength(1);
+  });
+
+  it('mec-002 §2.6 dialogue hold — a reload with arrival !== null and an open script stays deferred until arrival.finished', async () => {
+    const first = await arriving();
+    first.context.store.dispatch({ type: 'acknowledgeProject', projectId: 'pet-house' });
+    for (const type of ['cutsceneFinished', 'collectRewards', 'closeReveal'] as const) first.context.store.dispatch({ type });
+    const saved = structuredClone(first.context.store.getState());
+    first.panels.dialogue.destroy(); destroyScene(); document.body.replaceChildren();
+    const a = await arriving(saved);
+    expect([a.el.hidden, a.panels.dialogue.isDeferred()]).toEqual([true, true]);
+    a.walk(6000);
+    expect([a.el.hidden, a.panels.dialogue.isDeferred(), a.el.dataset.source]).toEqual([false, false, 'completionMessage']);
   });
 });

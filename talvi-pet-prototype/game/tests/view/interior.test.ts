@@ -8,7 +8,11 @@ import type { GameState } from '../../src/sim/state';
 import { files, manifest, patchFiles, validContent } from '../content/helpers';
 import { designIn, dogRoomDesign } from '../sim/helpers';
 import { fixtureText } from '../app/helpers';
-import { bootScene, contextFor, destroyScene } from './sceneHarness';
+import { addTexture, bootScene, contextFor, destroyScene, realManifest } from './sceneHarness';
+import { readFileSync } from 'node:fs';
+import { mountOverlay } from '../../src/ui/overlay';
+import { registerClips } from '../../src/view/anims';
+import { linesOf } from './designHarness';
 
 afterEach(() => { destroyScene(); document.body.replaceChildren(); vi.restoreAllMocks(); });
 
@@ -196,5 +200,85 @@ describe('floor-standing wall charms (play-session finding, 2026-10-26)', () => 
     context.store.dispatch({ type: 'placeCharm', slotId: 'wall-1', typeId: 'picture' });
     const scene = await bootScene(InteriorScene, context, dogRoom, ['charms/picture', 'rooms/fixture']);
     expect([scene.charms.get('wall-1')!.y, scene.charms.get('wall-1')!.depth]).toEqual([300, 300]);
+  });
+});
+
+/** WORK-023-2: the street save standing in the pet-front door after arrivalFinished (tests/view/capture/owl-room-entry.steps.json). */
+const owlContent = loadContent();
+const owlEntry = realManifest.entries.find(e => e.id === 'pets/owl-sheet')!;
+const tickMs = 20;
+async function enterOwlRoom() {
+  const saved = (parseSaveValue(owlContent, JSON.parse(readFileSync('tests/view/capture/owl-room-entry.real.json', 'utf8'))) as { state: GameState }).state;
+  const context = contextFor(owlContent, saved);
+  context.manifest = realManifest;
+  const host = document.createElement('div'); document.body.append(host);
+  mountOverlay(host, context);
+  const tick = (move = { x: 0, y: 0 }) => context.store.dispatch({ type: 'tick', dtMs: tickMs, move });
+  for (let i = 0; i < 50 && context.store.getState().scene.kind === 'street'; i++) tick({ x: 0, y: -1 });
+  const scene = await bootScene(InteriorScene, context, { roomId: 'owl-room' });
+  addTexture(scene, 'pets/owl-sheet', owlEntry.px!.w, owlEntry.px!.h, owlEntry.frame);
+  registerClips(scene, owlEntry);
+  settle(scene);
+  return { context, scene, tick, root: host.querySelector<HTMLElement>('#panels')! };
+}
+
+const perchOn = async (slotId: string, typeId: string) => {
+  const env = await enterOwlRoom();
+  const { context, tick } = env;
+  for (let i = 0; i < 10 && context.store.getState().dialogue.current !== null; i++) context.store.dispatch({ type: 'advanceDialogue' });
+  const owned = context.store.getState().inventory.ownedTypeIds;
+  expect(owned).toContain(typeId);
+  context.store.dispatch({ type: 'setDesignMode', on: true });
+  context.store.dispatch({ type: 'placeCharm', slotId, typeId });
+  expect(linesOf(context, 'action.rejected')).toEqual([]);
+  const owl = () => context.store.getState().pets.owl.behaviour;
+  for (let i = 0; i < 1000 && !(owl().phase === 'using' && owl().verb === 'perch'); i++) tick();
+  env.scene.update(0, 0);
+  return { ...env, owl };
+};
+
+describe('core §6.4 Owl room entry (WORK-023-2, real content)', () => {
+  it('core §6.4 Owl room entry — greeting after greetingDelayMs, intro with the Owl speaker, first want activated', async () => {
+    const { context, scene, tick, root } = await enterOwlRoom();
+    expect(linesOf(context, 'scene.changed').at(-1)).toMatchObject({ to: { kind: 'interior', roomId: 'owl-room' } });
+    expect(scene.pet!.petId).toBe('owl');
+    let ms = 0;
+    while (ms < 3000 && !linesOf(context, 'pet.reacted').some(l => l.reaction === 'greeting')) { tick(); ms += tickMs; }
+    expect(ms).toBeGreaterThanOrEqual(owlContent.tuning.greetingDelayMs);
+    expect(linesOf(context, 'pet.reacted').find(l => l.reaction === 'greeting')).toMatchObject({ petId: 'owl', reaction: 'greeting' });
+    expect((linesOf(context, 'dialogue.opened')[0].script as { source: string }).source).toBe('intro');
+    const script = context.store.getState().dialogue.current!;
+    expect([script.source, script.speaker]).toEqual(['intro', { petId: 'owl' }]);
+    const box = root.querySelector<HTMLElement>('.tpp-dialogue')!;
+    const wantPanel = root.querySelector<HTMLElement>('.tpp-wantPanel')!;
+    // M2 play session: the intro box waits for the greeting to land; the want panel stays behind the intro.
+    while (ms < 8000 && box.hidden) { expect(wantPanel.hidden).toBe(true); tick(); ms += tickMs; }
+    expect([box.hidden, context.store.getState().pets.owl.behaviour.phase, wantPanel.hidden]).toEqual([false, 'greeting', true]);
+    expect(box.querySelector('.tpp-portrait img[data-asset-id="pets/owl-portrait"]')).not.toBeNull();
+    expect(box.querySelector('.tpp-speaker')!.textContent).toBe(owlContent.pets.owl.name);
+    expect(linesOf(context, 'want.activated')[0]).toMatchObject({ petId: 'owl', wantId: owlContent.pets.owl.wants[0].id });
+    while (context.store.getState().dialogue.current?.source === 'intro') context.store.dispatch({ type: 'advanceDialogue' });
+    expect(wantPanel.hidden).toBe(false);
+    expect(linesOf(context, 'action.rejected')).toEqual([]);
+  });
+
+  it('VERIFY-MEC-007-016 (Owl) / gate fork Q-A — the first owned tall type (bookshelf, wall-1) is used with perch and plays pet-owl-use-perch; no seat: the Owl stays at the anchor', async () => {
+    const firstTall = owlContent.charms.types.find(t => t.tags.includes('tall') && t.sizeClass === 'wall')!;
+    const { scene, owl, context } = await perchOn('wall-1', firstTall.id);
+    expect([firstTall.id, firstTall.seat]).toEqual(['bookshelf', undefined]);
+    expect([owl().phase, owl().verb]).toEqual(['using', 'perch']);
+    expect(scene.pet!.anims.currentAnim?.key).toBe('pet-owl-use-perch');
+    const anchor = owlContent.rooms['owl-room'].slots.find(s => s.id === 'wall-1')!.anchor;
+    expect([scene.pet!.x, scene.pet!.y]).toEqual([anchor.x, anchor.y]);
+    expect(linesOf(context, 'action.rejected')).toEqual([]);
+  });
+
+  it('VERIFY-MEC-007-016 (Owl) — perch-branch (seat 64, WORK-024-2) at wall-2 lifts the Owl onto the seat above the charm while it perches', async () => {
+    const { scene, owl } = await perchOn('wall-2', 'perch-branch');
+    const slot = owlContent.rooms['owl-room'].slots.find(s => s.id === 'wall-2')!;
+    const seat = owlContent.charms.types.find(t => t.id === 'perch-branch')!.seat!;
+    expect([owl().phase, owl().verb, scene.pet!.anims.currentAnim?.key]).toEqual(['using', 'perch', 'pet-owl-use-perch']);
+    expect([scene.pet!.x, scene.pet!.y, scene.pet!.depth]).toEqual([slot.x, slot.y - seat.y, (slot.depthOverride ?? slot.y) + 1]);
+    expect(scene.pet!.depth).toBeGreaterThan(scene.charms.get('wall-2')!.depth);
   });
 });

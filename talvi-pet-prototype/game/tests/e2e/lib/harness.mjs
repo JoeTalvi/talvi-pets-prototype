@@ -13,7 +13,8 @@ export const evidenceRoot = process.env.TPP_EVIDENCE ?? '/Users/joefrancia/Deskt
 export const executablePath = `${process.env.HOME}/Library/Caches/ms-playwright/chromium-1243/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing`;
 export const ffmpeg = '/opt/homebrew/bin/ffmpeg';
 export const sha = process.env.TPP_SHA ?? execFileSync('git', ['-C', GAME_DIR, 'rev-parse', '--short', 'HEAD']).toString().trim();
-export const WORK = 'WORK-021-2';
+export const WORK = process.env.TPP_WORK ?? 'WORK-021-2';
+export const MILESTONE = process.env.TPP_MILESTONE ?? 'MILESTONE-005';
 
 export function createSteps() {
   const steps = [];
@@ -148,7 +149,7 @@ let ffVersion = null;
 export function encode(loopsDir, name, frames, meta, { maxMs = 12000, crf = 26, gif = null, scale = null, fps = 30 } = {}) {
   ffVersion ??= execFileSync(ffmpeg, ['-version']).toString().split('\n')[0];
   mkdirSync(loopsDir, { recursive: true });
-  const sidecar = { kind: 'loop', milestone: 'MILESTONE-005', work: WORK, point: name, sha, captured_at: new Date().toISOString(), tool: 'cdp-screencast+ffmpeg', ffmpeg: ffVersion, binary: executablePath, ...meta };
+  const sidecar = { kind: 'loop', milestone: MILESTONE, work: WORK, point: name, sha, captured_at: new Date().toISOString(), tool: 'cdp-screencast+ffmpeg', ffmpeg: ffVersion, binary: executablePath, ...meta };
   if (!frames.length) { sidecar.gap = { reason: 'no screencast frames' }; writeFileSync(join(loopsDir, `${name}.json`), `${JSON.stringify(sidecar, null, 2)}\n`); return sidecar; }
   const tmp = mkdtempSync(join(tmpdir(), `tpp-loop-${name}-`));
   const t0 = frames[0].t, kept = frames.filter(f => f.t - t0 <= maxMs);
@@ -183,7 +184,7 @@ export async function shot(page, browser, dir, point, meta = {}) {
   const png = join(dir, `${point}-${String(n).padStart(3, '0')}.png`);
   await page.screenshot({ path: png });
   const vp = page.viewportSize();
-  const sidecar = { kind: 'screenshot', milestone: 'MILESTONE-005', work: WORK, point, sequence: n, sha, captured_at: new Date().toISOString(), viewport: vp, bytes: statSync(png).size,
+  const sidecar = { kind: 'screenshot', milestone: MILESTONE, work: WORK, point, sequence: n, sha, captured_at: new Date().toISOString(), viewport: vp, bytes: statSync(png).size,
     tool: 'playwright-library', binary: executablePath, version: browser.version(), ...meta };
   writeFileSync(png.replace(/\.png$/, '.json'), `${JSON.stringify(sidecar, null, 2)}\n`);
   return png;

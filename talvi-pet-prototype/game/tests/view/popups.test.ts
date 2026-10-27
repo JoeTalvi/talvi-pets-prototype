@@ -20,8 +20,8 @@ afterEach(() => { vi.useRealTimers(); document.body.replaceChildren(); });
 const content: Content = loadContent(manifest, patchFiles(files(), REAL_STRINGS));
 const H = '(HEADLESS jsdom: hidden, dataset, classes, disabled, text, data-* ids and dispatched actions/records; no layout or Web Animations; Chrome in work-020-3.mjs) — ';
 
-function popups(state: GameState) {
-  const context = contextFor(content, state);
+function popups(state: GameState, c: Content = content) {
+  const context = contextFor(c, state);
   const host = document.createElement('div'); document.body.append(host);
   const panels = mountOverlay(host, context)!;
   const milestone = host.querySelector<HTMLElement>('.tpp-milestonePopup')!;
@@ -37,8 +37,8 @@ function popups(state: GameState) {
 type Popups = ReturnType<typeof popups>;
 const ack = (p: Popups) => p.dispatch({ type: 'acknowledgeProject', projectId: 'pet-house' });
 /** FX-CONTENT-MIN `owing(content, 1, 1260)` on the street, acknowledged; the test dispatches `cutsceneFinished` (the director's call). */
-function atMilestone(ackPhase = 1, cents = 1260): Popups {
-  const p = popups(owing(content, ackPhase, cents));
+function atMilestone(ackPhase = 1, cents = 1260, c: Content = content): Popups {
+  const p = popups(owing(c, ackPhase, cents), c);
   ack(p);
   expect(p.milestone.hidden).toBe(true);
   p.dispatch({ type: 'cutsceneFinished' });
@@ -200,12 +200,12 @@ describe('mec-003 §3.3 reveal popup on reload', () => {
   });
 });
 
+const owl = content.pets.owl;
+const leaks = (html: string) => [html.includes('clues/descriptor'), html.includes('clues/silhouette'), html.includes('pets/owl'),
+  new RegExp(`\\b${owl.name}\\b`, 'i').test(html), /\bowl\b/i.test(html), /guess/i.test(html), /<input|<textarea/i.test(html)];
+const none = [false, false, false, false, false, false, false];
 describe('VERIFY-MEC-003-002 information hiding (view)', () => {
   const t = 'VERIFY-MEC-003-002 partial: view (jsdom; Chrome DOM in reveal-dom.json; rules half WORK-003) — ';
-  const owl = content.pets.owl;
-  const leaks = (html: string) => [html.includes('clues/descriptor'), html.includes('clues/silhouette'), html.includes('pets/owl'),
-    new RegExp(`\\b${owl.name}\\b`, 'i').test(html), /\bowl\b/i.test(html), /guess/i.test(html), /<input|<textarea/i.test(html)];
-  const none = [false, false, false, false, false, false, false];
   it(`${t}no descriptorImage, silhouetteImage, pets/owl, Owl name or guess field in either popup through phases 1 → 4`, () => {
     const p = atMilestone();
     expect(leaks(p.milestone.outerHTML + p.reveal.outerHTML)).toEqual(none);
@@ -214,11 +214,66 @@ describe('VERIFY-MEC-003-002 information hiding (view)', () => {
     expect(p.reveal.hidden).toBe(false);
     expect(leaks(p.milestone.outerHTML + p.reveal.outerHTML)).toEqual(none);
   });
-  it(`${t}the completing reveal stub (fork 4) renders only data-completes="true": no image, silhouette or name (WORK-023's beat)`, () => {
-    const p = atMilestone(4, 1500);
-    click(p.milestone.querySelector('.tpp-collect'));
-    vi.advanceTimersByTime(collectMs(p.tiles().length) + 1000);
-    expect([p.reveal.hidden, p.reveal.dataset.completes, p.cards().map(c => c.querySelector('.tpp-clue-phase')!.textContent)]).toEqual([false, 'true', ['Phase 5']]);
+});
+
+/** FX-CONTENT-MIN with the real content's reveal ids (`projects.json` pet-house: pets/owl-portrait, pets/owl-silhouette). */
+const portrait = manifest.entries.find(e => e.id === 'pets/owl-portrait')!;
+const owlManifest = { ...manifest, entries: [...manifest.entries, { ...portrait, id: 'pets/owl-silhouette', url: 'synthetic/pets/owl-silhouette.png' }] };
+const owlContent: Content = loadContent(owlManifest, patchFiles(files(), [...REAL_STRINGS,
+  { file: 'projects.json', path: '/projects/1/descriptorImage', value: 'pets/owl-portrait' },
+  { file: 'projects.json', path: '/projects/1/silhouetteImage', value: 'pets/owl-silhouette' }]));
+const { revealCardStaggerMs: stagger, revealSilhouetteHoldMs: hold, revealResolveMs: resolveMs } = owlContent.tuning;
+const stage = (p: Popups) => ({
+  state: p.reveal.dataset.state,
+  ids: [...p.reveal.querySelectorAll<HTMLElement>('.tpp-mystery-tile [data-asset-id]')].map(e => e.dataset.assetId),
+  title: p.reveal.querySelector('.tpp-reveal-popup-title')!.textContent,
+});
+const openReveal = (p: Popups) => {
+  click(p.milestone.querySelector('.tpp-collect'));
+  for (let ms = 0; ms < 10000 && p.reveal.hidden; ms++) vi.advanceTimersByTime(1);
+  expect(p.reveal.hidden).toBe(false);
+};
+const phases = (p: Popups) => p.cards().map(c => c.querySelector('.tpp-clue-phase')!.textContent);
+describe('VERIFY-MEC-003-011 completion beat (view)', () => {
+  const t = 'VERIFY-MEC-003-011 partial: view (jsdom fake timers; Chrome DOM timestamps in work-023-1.mjs) — ';
+  it(`${t}VERIFY-MEC-003-011 completing reveal beat (WORK-023-1, flipped from the fork-4 stub): 3 → 5 opens on the mystery shape (state mystery, no Owl); the fifth card enters after the stagger and the silhouette (pets/owl-silhouette, state silhouette) is held revealSilhouetteHoldMs, then resolves over revealResolveMs into pets/owl-portrait with "Owl has moved in!" (state complete); Continue is enabled throughout`, () => {
+    const p = atMilestone(3, 1500, owlContent);
+    const proceed = p.reveal.querySelector<HTMLButtonElement>('.tpp-collect')!;
+    openReveal(p);
+    expect([phases(p), visibleCards(p), p.reveal.dataset.completes]).toEqual([['Phase 4', 'Phase 5'], 1, 'true']);
+    expect(stage(p)).toEqual({ state: 'mystery', ids: ['ui/mystery-shape'], title: 'Someone is moving in' });
     expect(leaks(p.reveal.outerHTML)).toEqual(none);
+    vi.advanceTimersByTime(stagger);
+    expect([visibleCards(p), proceed.disabled]).toEqual([2, false]);
+    expect(stage(p)).toEqual({ state: 'silhouette', ids: ['pets/owl-silhouette'], title: 'Someone is moving in' });
+    vi.advanceTimersByTime(hold - 1);
+    expect([stage(p).ids, proceed.disabled]).toEqual([['pets/owl-silhouette'], false]);
+    vi.advanceTimersByTime(1);
+    expect(stage(p)).toEqual({ state: 'silhouette', ids: ['pets/owl-silhouette', 'pets/owl-portrait'], title: 'Someone is moving in' });
+    vi.advanceTimersByTime(resolveMs);
+    expect([stage(p), proceed.disabled]).toEqual([{ state: 'complete', ids: ['pets/owl-portrait'], title: 'Owl has moved in!' }, false]);
+    expect(leaks(p.reveal.outerHTML).slice(2, 4)).toEqual([true, true]);
+    click(proceed);
+    expect(p.dispatched).toContain('closeReveal');
+  });
+  it(`${t}VERIFY-MEC-003-011 completing reveal 4 → 5: the "Phase 5" card alone on ui/mystery-shape at open; the beat starts with it (one card: stagger × 0)`, () => {
+    const p = atMilestone(4, 1500, owlContent);
+    openReveal(p);
+    expect([phases(p), p.reveal.dataset.completes]).toEqual([['Phase 5'], 'true']);
+    expect(stage(p)).toEqual({ state: 'mystery', ids: ['ui/mystery-shape'], title: 'Someone is moving in' });
+    vi.advanceTimersByTime(1);
+    expect(stage(p).state).toBe('silhouette');
+    vi.advanceTimersByTime(hold + resolveMs);
+    expect(stage(p)).toEqual({ state: 'complete', ids: ['pets/owl-portrait'], title: 'Owl has moved in!' });
+  });
+  it(`${t}mec-003 §3.3 a reload at step reveal with completes shows every card at once and plays the beat at once`, () => {
+    const first = atMilestone(3, 1500, owlContent);
+    openReveal(first);
+    const state = first.state();
+    first.panels.revealPopup.destroy();
+    const p = popups(state, owlContent);
+    expect([p.reveal.hidden, visibleCards(p), stage(p).state, stage(p).ids]).toEqual([false, 2, 'silhouette', ['pets/owl-silhouette']]);
+    vi.advanceTimersByTime(hold + resolveMs);
+    expect(stage(p)).toEqual({ state: 'complete', ids: ['pets/owl-portrait'], title: 'Owl has moved in!' });
   });
 });

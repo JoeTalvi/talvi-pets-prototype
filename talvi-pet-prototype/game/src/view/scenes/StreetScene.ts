@@ -4,7 +4,7 @@ import type { ProjectId } from '@sim/state';
 import { recordPointer, type PointerSample } from '@app/input/pointerRouting';
 import { AttentionIcon, HouseSprite } from '../objects/HouseSprite';
 import { CelebrationDirector, directorClock } from '../celebration/CelebrationDirector';
-import { ArrivalStub, type Arrival } from '../celebration/ArrivalStub';
+import { ArrivalWalk, type Arrival } from '../celebration/ArrivalWalk';
 import { depthAtBase } from '../depth';
 import { MISSING_TEXTURE } from './BootScene';
 import type { ScenePointer } from './InteriorScene';
@@ -36,8 +36,8 @@ export class StreetScene extends WorldScene {
   tiles: Phaser.GameObjects.Image[] = [];
   /** Presentation §7: built per scene start; owns the celebrating house's texture while it holds a cue (order fork 6). */
   director: CelebrationDirector | null = null;
-  /** Order fork 5: the arrival stub while `state.arrival` runs (WORK-023 replaces it with the walk). */
-  arrival: ArrivalStub | null = null;
+  /** Presentation §7.6: the arrival walk while `state.arrival` runs (WORK-023-2). */
+  arrival: ArrivalWalk | null = null;
   private downs = new Map<number, PointerSample>();
   private joystickPointer: number | null = null;
   constructor() { super('Street'); }
@@ -62,7 +62,7 @@ export class StreetScene extends WorldScene {
   private startArrival(arrival: Arrival): void {
     if (this.arrival && !this.arrival.finished && this.arrival.arrival.petId === arrival.petId) return;
     this.arrival?.cancel();
-    this.arrival = new ArrivalStub(this, this.context, arrival);
+    this.arrival = new ArrivalWalk(this, this.context, arrival, this.houses.get(arrival.projectId)?.depth ?? 0);
   }
   private cancelArrival(): void { this.arrival?.cancel(); this.arrival = null; }
   protected syncScene(deltaMs: number): void {

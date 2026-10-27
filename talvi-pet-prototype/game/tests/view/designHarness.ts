@@ -30,6 +30,8 @@ export const REAL_STRINGS: Patch[] = Object.entries({
   'buildprojects.cutscene.popup.complete.congrats': "It's finished — go and have a look.", 'buildprojects.cutscene.popup.collect': 'Collect Rewards',
   'tpp.popup.skipWait': 'Skip the wait', 'tpp.popup.skipWaitFree': 'Free in this prototype', 'tpp.reveal.popupTitle': 'Someone is moving in',
   'tpp.reveal.continue': 'Continue',
+  // WORK-023-1: the reveal panel and the completion beat read these from the real strings.json.
+  ...Object.fromEntries((['tpp.reveal.panelTitle', 'tpp.reveal.locked', 'tpp.reveal.arrived'] as const).map(key => [key, (realStrings as Record<string, string>)[key]])),
   // WORK-021-1 strings merge: the former FALLBACK_STRINGS keys, read from the real strings.json they now live in.
   ...Object.fromEntries(MERGED_STRING_KEYS.map(key => [key, (realStrings as Record<string, string>)[key]])),
 }).map(([key, value]) => ({ file: 'strings.json', path: `/${key}`, value }));

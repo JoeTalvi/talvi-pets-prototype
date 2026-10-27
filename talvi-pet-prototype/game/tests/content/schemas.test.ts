@@ -85,7 +85,7 @@ it('verb emotes are single graphemes and rooms retain a street exit', () => {
     room.doors = [];
     expect(() => loadContent(manifest, f)).toThrow('room requires a door');
 });
-it('CN-12: every verb names its use clip (use-sit | use-lie | use-look)', () => {
+it('CN-12: every verb names its use clip (use-sit | use-lie | use-look | use-perch)', () => {
     const verbs = files()['verbs.json'] as { verbs: Record<string, unknown>[] };
     expect(VerbsSchema.safeParse(verbs).success).toBe(true);
     verbs.verbs[0].clip = 'use';

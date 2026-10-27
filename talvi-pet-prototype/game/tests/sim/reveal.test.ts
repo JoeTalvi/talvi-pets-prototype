@@ -67,3 +67,12 @@ it('VERIFY-MEC-003-007 skip chain popups: [1,2,3] completes false, then [4] comp
   expect(revealPopupView(content, results[2].state)).toMatchObject({ newCardIndices: [1, 2, 3], completes: false });
   expect(revealPopupView(content, results[5].state)).toMatchObject({ newCardIndices: [4], completes: true });
 });
+
+it('M2 play session (review M-1): the HUD reveal project stays the Pet House through the Skip chain, before project.completed', () => {
+  const content = validContent();
+  const { results } = run(content, owing(content, 1, 1260), [ack, act('cutsceneFinished'), act('skipWait'),
+    act('closeReveal'), act('cutsceneFinished'), act('collectRewards')]);
+  for (const result of results) expect(revealProjectId(content, result.state)).toBe('pet-house');
+  const atGoal = run(content, owing(content, 1, 1260), [{ type: 'debugCompleteProject', projectId: 'pet-house' }]).state;
+  expect(revealProjectId(content, atGoal)).toBe('pet-house');
+});
