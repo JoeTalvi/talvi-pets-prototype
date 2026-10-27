@@ -18,15 +18,15 @@ describe('foundation §4.2 startup', () => {
     expect(lenientAllowed('?lenient=0', true)).toBe(false);
   });
 
-  it('foundation §4.2 startup findingsOf(real content, real manifest): the 4 unresolved Owl-batch references (3 ids) are the only errors, each listed once', () => {
+  it('foundation §4.2 startup findingsOf(real content, real manifest): the 10 unresolved WORK-022-batch references (3 Owl ids + 6 M2 charm ids) are the only errors, each listed once', () => {
     const content = loadContent(undefined);
     const findings = findingsOf(content, realManifest);
     const errors = findings.filter(f => f.level === 'error');
-    expect(errors).toHaveLength(4);
+    expect(errors).toHaveLength(10);
     for (const error of errors) {
       expect(error.ids[0]).toBe('CHK-CORE-03');
       expect(error.message).toMatch(/^Asset "(charms|pets|clues)\/[a-z-]+" must resolve as (image|spritesheet)$/);
     }
-    expect(new Set(errors.map(e => `${e.file}${e.path}`)).size).toBe(4);
+    expect(new Set(errors.map(e => `${e.file}${e.path}`)).size).toBe(10);
   });
 });
