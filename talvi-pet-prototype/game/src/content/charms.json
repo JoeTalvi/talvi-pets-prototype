@@ -103,7 +103,8 @@
       "tags": [
         "tall"
       ],
-      "sprite": "charms/perch-branch"
+      "sprite": "charms/perch-branch",
+      "seat": { "y": 64 }
     },
     {
       "id": "lamp-planter",
@@ -198,7 +199,8 @@
         "plant",
         "tall"
       ],
-      "sprite": "charms/potted-tree"
+      "sprite": "charms/potted-tree",
+      "seat": { "y": 155 }
     },
     {
       "id": "mossy-log",
@@ -209,7 +211,8 @@
         "plant",
         "soft"
       ],
-      "sprite": "charms/mossy-log"
+      "sprite": "charms/mossy-log",
+      "seat": { "y": 72 }
     },
     {
       "id": "toy-chest",
