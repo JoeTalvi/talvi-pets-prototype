@@ -31,6 +31,7 @@
 .tpp-reveal-panel{top:50%;transform:translateY(-50%)}
 /* Up to five newly acknowledged clues retain the contract popup shell; scroll the card region. Q5/B-5: 90 px rows fit a two-line clue; three end at y 694, above Continue (696). */
 .tpp-popup-clues{height:270px;overflow-y:auto;padding-right:8px}.tpp-popup-clues .tpp-clue{height:90px}
-/* WORK-023-1 reveal panel (presentation §8.2 screen 12: close 44, five 92 px rows) and the completion beat's cross-fade layer. */
+/* WORK-023-1 reveal panel (presentation §8.2 screen 12: close 44, five 92 px rows, image 560 when the overlay is 823 high: width-scaled overlay, so aspect ≥ 1920/823) and the completion beat cross-fade layer. */
 .tpp-reveal-panel .tpp-close{width:44px;height:44px;right:24px;top:20px;font-size:36px!important;line-height:1}.tpp-reveal-name{display:block;font:700 44px var(--font-title);margin:-6px 0 8px}.tpp-reveal-info .tpp-clue{height:92px}
 .tpp-mystery-tile{overflow:hidden}.tpp-mystery-tile>.tpp-beat-next{position:absolute;left:30px;top:30px;width:calc(100% - 60px);height:calc(100% - 60px);opacity:0}
+@media (min-aspect-ratio:1920/823){.tpp-reveal-image{width:560px;height:560px}}
