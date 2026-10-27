@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import './setup';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, expect, it } from 'vitest';
 import { loadContent } from '../../src/content/load';
 import type { GameState } from '../../src/sim/state';
 import { doorEnabled, inputFrozen } from '../../src/sim/select';
@@ -47,81 +47,79 @@ async function completing(withSheet = true) {
   return { context, scene };
 }
 
-describe('presentation §7.6 arrival walk', () => {
-  const t = 'presentation §7.6 arrival walk — ';
-  it(`${t}path, speed, flip, depth, 🎵, fade, arrivalFinished once (HEADLESS jsdom, real content, syncScene deltas)`, async () => {
-    const { context, scene } = await completing();
-    expect(linesOf(context, 'arrival.started')).toEqual([expect.objectContaining({ projectId: 'pet-house', petId: 'owl', doorId: 'pet-front' })]);
-    const walk = scene.arrival!;
-    const sprite = walk.sprite;
-    expect([sprite.x, sprite.y]).toEqual([path[0].x, path[0].y]);
-    expect([1820, 910]).toEqual([path[0].x, path[0].y]);
-    expect(sprite.anims.currentAnim?.key).toBe('pet-owl-walk');
-    expect(sprite.flipX).toBe(true);
-    expect(sprite.depth).toBeGreaterThan(scene.houses.get('pet-house')!.depth);
-    expect(Math.round(doorMs)).toBe(789);
-    expect(walk.plan).toEqual({ doorMs, fadeMs: doorMs + content.tuning.bubbleMs, finishMs: doorMs + content.tuning.bubbleMs + ARRIVAL_FADE_MS });
-    run(scene, 300);
-    const f = 300 * speed / seg[0];
-    expect(Math.abs(sprite.x - (path[0].x + (path[1].x - path[0].x) * f))).toBeLessThan(1);
-    expect(Math.abs(sprite.y - (path[0].y + (path[1].y - path[0].y) * f))).toBeLessThan(1);
-    expect([sprite.flipX, walk.bubble.current()]).toEqual([true, null]);
-    expect(inputFrozen(content, context.store.getState())).toBe(true);
-    expect(doorEnabled(content, context.store.getState(), house.door)).toBe(false);
-    run(scene, Math.ceil(doorMs) - 300);
-    expect([sprite.x, sprite.y, sprite.flipX]).toEqual([path.at(-1)!.x, path.at(-1)!.y, true]);
-    expect(sprite.anims.currentAnim?.key).toBe('pet-owl-idle');
-    expect(walk.timeline.find(b => b.beat === 'door')!.atMs).toBeCloseTo(doorMs, -1);
-    expect([walk.bubble.depth, walk.bubble.x, walk.bubble.y, walk.bubble.current()]).toEqual([BUBBLE_DEPTH,
-      sprite.bubbleAnchor().x, sprite.bubbleAnchor().y, { kind: 'emoji', class: 'greeting', text: REACTION_EMOJI.greeting }]);
-    run(scene, content.tuning.bubbleMs + ARRIVAL_FADE_MS - 30);
-    expect(finishes(context)).toHaveLength(0);
-    expect(sprite.alpha).toBeLessThan(1);
-    run(scene, 40);
-    run(scene, 5000);
-    expect(finishes(context)).toHaveLength(1);
-    expect(linesOf(context, 'arrival.finished')).toEqual([expect.objectContaining({ petId: 'owl' })]);
-    expect(walk.timeline.map(b => b.beat)).toEqual(['walk', 'door', 'greeting', 'fade', 'finished']);
-    expect([walk.finished, sprite.active, scene.arrival]).toEqual([true, false, null]);
-    // The held completion dialogue (mec-002 §2.5 closeReveal) is the only remaining freeze; the dialogue panel drains it in play.
-    for (let i = 0; i < 10 && context.store.getState().dialogue.current !== null; i++) context.store.dispatch({ type: 'advanceDialogue' });
-    const state: GameState = context.store.getState();
-    expect([state.arrival, state.projects['pet-house'].arrivalDone, inputFrozen(content, state)]).toEqual([null, true, false]);
-    expect([house.door.id, doorEnabled(content, state, house.door)]).toEqual(['pet-front', true]);
-    expect(state.pets.owl.behaviour.phase).not.toBe('walking');
-    expect(linesOf(context, 'action.rejected')).toEqual([]);
-  });
+const t = 'presentation §7.6 arrival walk — ';
+it(`${t}path, speed, flip, depth, 🎵, fade, arrivalFinished once (HEADLESS jsdom, real content, syncScene deltas)`, async () => {
+  const { context, scene } = await completing();
+  expect(linesOf(context, 'arrival.started')).toEqual([expect.objectContaining({ projectId: 'pet-house', petId: 'owl', doorId: 'pet-front' })]);
+  const walk = scene.arrival!;
+  const sprite = walk.sprite;
+  expect([sprite.x, sprite.y]).toEqual([path[0].x, path[0].y]);
+  expect([1820, 910]).toEqual([path[0].x, path[0].y]);
+  expect(sprite.anims.currentAnim?.key).toBe('pet-owl-walk');
+  expect(sprite.flipX).toBe(true);
+  expect(sprite.depth).toBeGreaterThan(scene.houses.get('pet-house')!.depth);
+  expect(Math.round(doorMs)).toBe(789);
+  expect(walk.plan).toEqual({ doorMs, fadeMs: doorMs + content.tuning.bubbleMs, finishMs: doorMs + content.tuning.bubbleMs + ARRIVAL_FADE_MS });
+  run(scene, 300);
+  const f = 300 * speed / seg[0];
+  expect(Math.abs(sprite.x - (path[0].x + (path[1].x - path[0].x) * f))).toBeLessThan(1);
+  expect(Math.abs(sprite.y - (path[0].y + (path[1].y - path[0].y) * f))).toBeLessThan(1);
+  expect([sprite.flipX, walk.bubble.current()]).toEqual([true, null]);
+  expect(inputFrozen(content, context.store.getState())).toBe(true);
+  expect(doorEnabled(content, context.store.getState(), house.door)).toBe(false);
+  run(scene, Math.ceil(doorMs) - 300);
+  expect([sprite.x, sprite.y, sprite.flipX]).toEqual([path.at(-1)!.x, path.at(-1)!.y, true]);
+  expect(sprite.anims.currentAnim?.key).toBe('pet-owl-idle');
+  expect(walk.timeline.find(b => b.beat === 'door')!.atMs).toBeCloseTo(doorMs, -1);
+  expect([walk.bubble.depth, walk.bubble.x, walk.bubble.y, walk.bubble.current()]).toEqual([BUBBLE_DEPTH,
+    sprite.bubbleAnchor().x, sprite.bubbleAnchor().y, { kind: 'emoji', class: 'greeting', text: REACTION_EMOJI.greeting }]);
+  run(scene, content.tuning.bubbleMs + ARRIVAL_FADE_MS - 30);
+  expect(finishes(context)).toHaveLength(0);
+  expect(sprite.alpha).toBeLessThan(1);
+  run(scene, 40);
+  run(scene, 5000);
+  expect(finishes(context)).toHaveLength(1);
+  expect(linesOf(context, 'arrival.finished')).toEqual([expect.objectContaining({ petId: 'owl' })]);
+  expect(walk.timeline.map(b => b.beat)).toEqual(['walk', 'door', 'greeting', 'fade', 'finished']);
+  expect([walk.finished, sprite.active, scene.arrival]).toEqual([true, false, null]);
+  // The held completion dialogue (mec-002 §2.5 closeReveal) is the only remaining freeze; the dialogue panel drains it in play.
+  for (let i = 0; i < 10 && context.store.getState().dialogue.current !== null; i++) context.store.dispatch({ type: 'advanceDialogue' });
+  const state: GameState = context.store.getState();
+  expect([state.arrival, state.projects['pet-house'].arrivalDone, inputFrozen(content, state)]).toEqual([null, true, false]);
+  expect([house.door.id, doorEnabled(content, state, house.door)]).toEqual(['pet-front', true]);
+  expect(state.pets.owl.behaviour.phase).not.toBe('walking');
+  expect(linesOf(context, 'action.rejected')).toEqual([]);
+});
 
-  it(`${t}a 100 ms frame (dtClampMs) reaches the same beats: frame-rate independent`, async () => {
-    const { context, scene } = await completing();
-    run(scene, Math.ceil(doorMs + content.tuning.bubbleMs + ARRIVAL_FADE_MS) + 100, content.tuning.dtClampMs);
-    expect(finishes(context)).toHaveLength(1);
-  });
+it(`${t}a 100 ms frame (dtClampMs) reaches the same beats: frame-rate independent`, async () => {
+  const { context, scene } = await completing();
+  run(scene, Math.ceil(doorMs + content.tuning.bubbleMs + ARRIVAL_FADE_MS) + 100, content.tuning.dtClampMs);
+  expect(finishes(context)).toHaveLength(1);
+});
 
-  it(`${t}reload with state.arrival replays from the first point and finishes once`, async () => {
-    const { context: first } = await completing();
-    const saved = structuredClone(first.store.getState());
-    destroyScene();
-    expect(saved.arrival).toEqual({ projectId: 'pet-house', petId: 'owl' });
-    const context = spy(contextFor(content, saved));
-    context.manifest = realManifest;
-    const scene = await bootScene(StreetScene, context);
-    const walk = scene.arrival!;
-    expect([walk.sprite.x, walk.sprite.y, walk.sprite.texture.key]).toEqual([path[0].x, path[0].y, 'missing']);
-    expect(walk.sprite.clipFor({ phase: 'walking', verb: null })).toBe('pet-owl-walk');
-    run(scene, doorMs + content.tuning.bubbleMs + ARRIVAL_FADE_MS + 100, 50);
-    expect([finishes(context).length, linesOf(context, 'arrival.finished').length, context.store.getState().arrival]).toEqual([1, 1, null]);
-  });
+it(`${t}reload with state.arrival replays from the first point and finishes once`, async () => {
+  const { context: first } = await completing();
+  const saved = structuredClone(first.store.getState());
+  destroyScene();
+  expect(saved.arrival).toEqual({ projectId: 'pet-house', petId: 'owl' });
+  const context = spy(contextFor(content, saved));
+  context.manifest = realManifest;
+  const scene = await bootScene(StreetScene, context);
+  const walk = scene.arrival!;
+  expect([walk.sprite.x, walk.sprite.y, walk.sprite.texture.key]).toEqual([path[0].x, path[0].y, 'missing']);
+  expect(walk.sprite.clipFor({ phase: 'walking', verb: null })).toBe('pet-owl-walk');
+  run(scene, doorMs + content.tuning.bubbleMs + ARRIVAL_FADE_MS + 100, 50);
+  expect([finishes(context).length, linesOf(context, 'arrival.finished').length, context.store.getState().arrival]).toEqual([1, 1, null]);
+});
 
-  it(`${t}state.reset mid-walk dispatches nothing`, async () => {
-    const { context, scene } = await completing();
-    const walk = scene.arrival!;
-    run(scene, 500);
-    context.store.dispatch({ type: 'reset', seed: 3 });
-    expect([walk.finished, scene.arrival]).toEqual([true, null]);
-    run(scene, 5000);
-    walk.update(5000);
-    expect(finishes(context)).toHaveLength(0);
-    expect(linesOf(context, 'arrival.finished')).toHaveLength(0);
-  });
+it(`${t}state.reset mid-walk dispatches nothing`, async () => {
+  const { context, scene } = await completing();
+  const walk = scene.arrival!;
+  run(scene, 500);
+  context.store.dispatch({ type: 'reset', seed: 3 });
+  expect([walk.finished, scene.arrival]).toEqual([true, null]);
+  run(scene, 5000);
+  walk.update(5000);
+  expect(finishes(context)).toHaveLength(0);
+  expect(linesOf(context, 'arrival.finished')).toHaveLength(0);
 });
