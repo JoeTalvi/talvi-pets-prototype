@@ -6,7 +6,7 @@ import { existsSync } from 'node:fs';
 import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { base, evidenceRoot, sha, launch, boot, waitScene, lines, getState, count, first, strip, until, waitLine, tapSlot, holdUntil, steer,
-  debugClick, setDebug, domRead, makeFixture, createSteps, writeJson } from './lib/harness.mjs';
+  debugClick, setDebug, domRead, makeFixture, createSteps, writeJson, WORK } from './lib/harness.mjs';
 
 const { steps, step } = createSteps();
 const t0 = Date.now();
@@ -44,7 +44,7 @@ async function bootStep(browser) {
   await waitScene(page, 'Street');
   const boot0 = await page.evaluate(() => ({ loader: window.__tpp.game.scene.getScene('Boot').loaderTotals, scene: window.__tpp.store.getState().scene }));
   const all = await lines(page), dom = await domRead(page);
-  step('boot: BootScene complete, totalFailed 0, 81 textures (lenient)', boot0.loader.totalFailed === 0 && boot0.loader.totalComplete === 81, 'loaderTotals {totalComplete 81, totalFailed 0}', boot0.loader);
+  step('boot: BootScene complete, totalFailed 0, 91 textures (lenient; WORK-022-1 measured 85 + 6 charms-m2)', boot0.loader.totalFailed === 0 && boot0.loader.totalComplete === 91, 'loaderTotals {totalComplete 91, totalFailed 0}', boot0.loader);
   step('boot: session.started ×1, scene street', count(all, 'session.started') === 1 && boot0.scene.kind === 'street', 'session.started ×1; scene.kind street', { sessionStarted: count(all, 'session.started'), scene: boot0.scene });
   step('boot: orientation box visible (text-only game box)', dom.dialogue.visible && (await getState(page)).dialogue.current?.source === 'orientation', 'dialogue panel visible with the orientation script', { dom: dom.dialogue, source: (await getState(page)).dialogue.current?.source });
   const taps = await tapBoxUntilClosed(page);
@@ -179,10 +179,10 @@ try {
   for (const w of windows) { const all = await lines(w.page); perWindow.push({ window: w.name, consoleErrors: w.errors.consoleErrors, pageErrors: w.errors.pageErrors, assetLoadErrors: all.filter(l => l.type === 'asset.loadError'), saveWritten: count(all, 'save.written') }); }
   step('throughout: zero console errors and page errors (every window)', perWindow.every(w => !w.consoleErrors.length && !w.pageErrors.length), 'console error / pageerror lists empty', perWindow.map(w => ({ window: w.window, consoleErrors: w.consoleErrors, pageErrors: w.pageErrors })));
   step('throughout: zero asset.loadError (every window)', perWindow.every(w => !w.assetLoadErrors.length), 'no asset.loadError lines', perWindow.map(w => ({ window: w.window, assetLoadErrors: w.assetLoadErrors })));
-  report = { kind: 'state read', work: 'WORK-021-2', harness: 'smoke v0 (TECH-018)', sha, base, run: n, captured_at: new Date().toISOString(), elapsedMs: Date.now() - t0, chromium: browser.version(), ok: steps.every(s => s.ok), steps, perWindow };
+  report = { kind: 'state read', work: WORK, harness: 'smoke v0 (TECH-018)', sha, base, run: n, captured_at: new Date().toISOString(), elapsedMs: Date.now() - t0, chromium: browser.version(), ok: steps.every(s => s.ok), steps, perWindow };
 } catch (error) {
   step('harness: no uncaught error', false, 'the run completes', String(error).slice(0, 800));
-  report = { kind: 'state read', work: 'WORK-021-2', harness: 'smoke v0 (TECH-018)', sha, base, run: n, captured_at: new Date().toISOString(), elapsedMs: Date.now() - t0, ok: false, steps };
+  report = { kind: 'state read', work: WORK, harness: 'smoke v0 (TECH-018)', sha, base, run: n, captured_at: new Date().toISOString(), elapsedMs: Date.now() - t0, ok: false, steps };
 } finally { await browser.close(); }
 writeJson(join(evidenceRoot, 'smoke-report.json'), report);
 writeJson(join(evidenceRoot, `smoke-report-${n}.json`), report);

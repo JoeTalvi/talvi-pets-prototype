@@ -41,11 +41,11 @@ it('VERIFY-ASSET-005 HEADLESS: dog clips register once with explicit idle durati
   expect(registerClips(scene, dog)).toEqual([]);
 });
 const verbs = VerbsSchema.parse(JSON.parse(readFileSync('src/content/verbs.json', 'utf8'))).verbs;
-it('CN-12: the using clip follows the verb (nap → lie, sit-on → sit, look-at and perch → look)', async () => {
+it('CN-12: the using clip follows the verb (nap → lie, sit-on → sit, look-at → look; perch → use-perch, which the Dog sheet lacks → use-sit)', async () => {
   const scene = await createGame();
   registerClips(scene, addSheet(scene, 'pets/dog-sheet'));
   expect(Object.fromEntries(verbs.map(v => [v.id, useClipKey(scene.anims, 'dog', v)]))).toEqual({
-    nap: 'pet-dog-use-lie', 'sit-on': 'pet-dog-use-sit', 'look-at': 'pet-dog-use-look', perch: 'pet-dog-use-look' });
+    nap: 'pet-dog-use-lie', 'sit-on': 'pet-dog-use-sit', 'look-at': 'pet-dog-use-look', perch: 'pet-dog-use-sit' });
 });
 it('CN-12: a pet whose sheet lacks the verb clip falls back to use-sit', async () => {
   const scene = await createGame(), dog = addSheet(scene, 'pets/dog-sheet'), canvas = document.createElement('canvas');
@@ -55,6 +55,15 @@ it('CN-12: a pet whose sheet lacks the verb clip falls back to use-sit', async (
   const nap = verbs.find(v => v.id === 'nap')!;
   expect(useClipKey(scene.anims, 'owl', nap)).toBe('pet-owl-use-sit');
   expect(useClipKey(scene.anims, 'owl', { clip: 'use-look' })).toBe('pet-owl-use-sit');
+});
+it('VERIFY-ASSET-005 / gate fork Q-A HEADLESS: owl perch maps to pet-owl-use-perch (frames 36–39) when the ledgered sheet declares the row, else pet-owl-use-sit', async () => {
+  const perch = verbs.find(v => v.id === 'perch')!;
+  expect(perch.clip).toBe('use-perch');
+  const scene = await createGame(), owl = addSheet(scene, 'pets/owl-sheet');
+  expect(useClipKey(scene.anims, 'owl', perch)).toBe('pet-owl-use-sit');
+  expect(registerClips(scene, owl)).toContain('pet-owl-use-perch');
+  expect(scene.anims.get('pet-owl-use-perch')!.frames.map(f => f.frame.name)).toEqual([36, 37, 38, 39]);
+  expect(useClipKey(scene.anims, 'owl', perch)).toBe('pet-owl-use-perch');
 });
 it('registers avatar and dust keys with frameRate timing', async () => {
   const scene = await createGame();

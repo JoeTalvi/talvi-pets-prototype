@@ -75,7 +75,28 @@
         }
       ],
       "descriptorImage": "pets/owl-portrait",
-      "silhouetteImage": "pets/owl-silhouette"
+      "silhouetteImage": "pets/owl-silhouette",
+      "phaseMessages": [
+        [
+          "The Pet House has its first walls. Someone new is on the way.",
+          "Each clue card tells a little more about who is coming."
+        ],
+        [
+          "The roof is going up on the Pet House.",
+          "The clues are starting to fit together."
+        ],
+        [
+          "The Pet House has windows now. Someone will be looking out of them soon."
+        ],
+        [
+          "The Pet House is nearly finished. Only one clue card is left."
+        ],
+        []
+      ],
+      "completionMessage": [
+        "The Pet House is complete. Thank you for helping the Pet Shelters!",
+        "Look, someone is coming up the street to meet you."
+      ]
     }
   ]
 }

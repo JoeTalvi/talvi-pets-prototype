@@ -1,0 +1,111 @@
+{
+  "version": 1,
+  "$comment": "WORK-022-1 / TASK-172 (APPROVAL-018, CN-12 + gate fork Q-A): the Owl sheet built from the six chosen Asset-Bot candidates (JFIF data under .png names, decoded by ffmpeg) copied under phase-4-build/runs/RUN-002/evidence/WORK-022-1/candidates/. base = the accepted Dog sheet blob at fa6d1b4 with copyRows [] (copies nothing; it only satisfies the recipe base requirement). Rows 0 idle, 1 walk, 3 react, 4 use-lie, 5 use-look, 6 use-perch; row 2 (use-sit) and unused cells transparent (CHK-007-04). Head feature = facial-disc width (cream pixels in the top 40 % of the keyed pose box; evidence/WORK-022-1/measurements.json); idle frame 0 scaled to 111 px opaque height (art bible v1.4 Dog scale rule), the other rows scaled so their frame-0 disc width matches the idle reference within headTolerancePx. Key as use-poses-v1 (240/18/dilation 0/holeMinArea 40). Run: npx tsx tools/assets/use-poses.ts --config tools/assets/owl-sheet-v1.config.json --out <staging-dir>",
+  "frame": {
+    "w": 256,
+    "h": 256
+  },
+  "grid": {
+    "columns": 6,
+    "rows": 7
+  },
+  "base": {
+    "git": "fa6d1b4",
+    "path": "public/assets/pets/dog-sheet.png",
+    "sha256": "3ff2e03da75e85a13cecdd22e667b0f43c92d7c07991c124f9a7d87449534e44",
+    "copyRows": []
+  },
+  "key": {
+    "backgroundMin": 240,
+    "backgroundChroma": 18,
+    "dilation": 0,
+    "holeMinArea": 40
+  },
+  "headTolerancePx": 4,
+  "poses": [
+    {
+      "clip": "idle",
+      "row": 0,
+      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-002/evidence/WORK-022-1/candidates/idle-3.png",
+      "sha256": "95b8b4797f0070a377c89637529c70c4046aa6296266baace0f6c1a4bef1f7cc",
+      "cells": 4,
+      "scale": 0.3353,
+      "head": {
+        "sourcePx": 226,
+        "referencePx": 75.8
+      },
+      "standing": {
+        "referencePx": 111,
+        "tolerancePx": 6
+      }
+    },
+    {
+      "clip": "walk",
+      "row": 1,
+      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-002/evidence/WORK-022-1/candidates/walk-2.png",
+      "sha256": "63011ddef7c95f3d3a90117a19fd07465d47830eb61c326587e899cd3ae651b2",
+      "cells": 6,
+      "scale": 0.4235,
+      "head": {
+        "sourcePx": 179,
+        "referencePx": 75.8
+      },
+      "standing": {
+        "referencePx": 111,
+        "tolerancePx": 6
+      }
+    },
+    {
+      "clip": "use-perch",
+      "row": 6,
+      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-002/evidence/WORK-022-1/candidates/use-perch-2.png",
+      "sha256": "2ad3ec584f4e3c870b88867d635b8182b0a20dfce442caf2f4a5985dceac47aa",
+      "cells": 4,
+      "scale": 0.286,
+      "head": {
+        "sourcePx": 265,
+        "referencePx": 75.8
+      }
+    },
+    {
+      "clip": "react",
+      "row": 3,
+      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-002/evidence/WORK-022-1/candidates/react-2.png",
+      "sha256": "38bba47edc38c39ddce28a7ead4f7120aaf69dc2129efe3f2102be1857684218",
+      "cells": 4,
+      "scale": 0.3399,
+      "head": {
+        "sourcePx": 223,
+        "referencePx": 75.8
+      }
+    },
+    {
+      "clip": "use-lie",
+      "row": 4,
+      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-002/evidence/WORK-022-1/candidates/use-lie-2.png",
+      "sha256": "de42c8e732c11b58d260347330a8fc9770cc9e4fd164887f2f82dfaab98819d0",
+      "cells": 4,
+      "scale": 0.3198,
+      "head": {
+        "sourcePx": 237,
+        "referencePx": 75.8
+      }
+    },
+    {
+      "clip": "use-look",
+      "row": 5,
+      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-002/evidence/WORK-022-1/candidates/use-look-2.png",
+      "sha256": "7afd600bdd1d70f7e0d670379d1859a89af50def0d7324a693294c75091eaf6d",
+      "cells": 4,
+      "scale": 0.3145,
+      "head": {
+        "sourcePx": 241,
+        "referencePx": 75.8
+      },
+      "standing": {
+        "referencePx": 111,
+        "tolerancePx": 6
+      }
+    }
+  ]
+}
