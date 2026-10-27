@@ -26,7 +26,7 @@ async function drain(page, ms = 12000) {
 }
 const visible = (page, sel) => until(page, sel => { const e = document.querySelector(sel); return !!e && !e.hidden && !e.closest('[hidden]'); }, sel, 15000);
 const designOn = async page => { await until(page, () => !document.querySelector('.tpp-design-toggle').disabled, null, 8000); if ((await getState(page)).mode !== 'design') { await page.click('.tpp-design-toggle'); await page.waitForTimeout(400); } };
-const street = async (page, w) => { await waitScene(page, 'Street', 900); await drain(page); };
+const street = async page => { await waitScene(page, 'Street', 900); await drain(page); };
 const interior = async page => { await waitScene(page, 'Interior', 900); await drain(page); };
 
 /** [n, id, save | null, reach(page, target)] — the states the earlier capture scripts reach, from real-content saves. */
@@ -97,7 +97,7 @@ async function touchJoystick(browser) {
   const after = await read();
   const frames = await rec.stop();
   const loop = encode(join(EV, 'loops'), 'phone-joystick-walk', frames, { descriptor: DEVICE, note: 'CDP Input.dispatchTouchEvent drag +60 game px, held ~1.1 s', emulation: 'chromium device emulation, not a device' });
-  const joy = (await lines(page, 'input.joystick')).filter(l => true).slice(-2), fresh = (await lines(page)).slice(n0).filter(l => l.type === 'input.joystick');
+  const joy = (await lines(page, 'input.joystick')).slice(-2), fresh = (await lines(page)).slice(n0).filter(l => l.type === 'input.joystick');
   const knobOffset = held && { x: Math.round(held.knob.x - held.base.x), y: Math.round(held.knob.y - held.base.y) };
   // Hidden entry: tap the street HUD's top-right debug entry under touch (VERIFY-MEC-010-012 touch half, ENV-IPH stand-in).
   const entry = await page.locator('.tpp-debug-entry:visible').first().boundingBox();

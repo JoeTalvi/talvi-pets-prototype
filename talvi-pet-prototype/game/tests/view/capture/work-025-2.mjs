@@ -96,7 +96,7 @@ async function seam() {
   const panelsStill = await shot(page, await browserP, captures, `panels-823-${label}`, { url: `${base}/tools/panels.html`, label }); await ctx.close();
   const prior = existsSync(join(EV, 'seam-scan.json')) ? JSON.parse(readFileSync(join(EV, 'seam-scan.json'), 'utf8')) : {};
   writeJson(join(EV, 'seam-scan.json'), { ...prior, work: 'WORK-025-2', rule: 'seam = a row whose luminance differs from both neighbours (same sign) by > 6/255 on >= 60 % of the stretched body width, scanned at top + 100 css px ± 6 and bottom − 100 ± 6',
-    [label]: { sha, css: readFileSync('src/ui/styles/nineslice.css', 'utf8').split('\n').find(l => l.startsWith('.ns-modal')), panels: rows.map(({ topRows, bottomRows, ...r }) => r), rowsDetail: rows.map(r => ({ H: r.H, top: r.topRows, bottom: r.bottomRows })),
+    [label]: { sha, css: readFileSync('src/ui/styles/nineslice.css', 'utf8').split('\n').find(l => l.startsWith('.ns-modal')), panels: rows.map(r => Object.fromEntries(Object.entries(r).filter(([k]) => k !== 'topRows' && k !== 'bottomRows'))), rowsDetail: rows.map(r => ({ H: r.H, top: r.topRows, bottom: r.bottomRows })),
       panelsPage: { still: panelsStill, classes: panels, everyClassRenders: panels.every(p => p.container || (p.borderImage && p.borderImage !== 'none' && p.w > 0 && p.h > 0)) } } });
   console.log(JSON.stringify(rows.map(r => [r.H, r.seam, r.top.hitFraction, r.bottom.hitFraction])), panels.length);
 }
