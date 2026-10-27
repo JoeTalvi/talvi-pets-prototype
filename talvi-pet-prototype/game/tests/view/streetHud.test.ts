@@ -89,13 +89,12 @@ describe('VERIFY-MEC-010-015 trickle glide', () => {
 });
 
 describe('mec-003 §1 reveal icon stub and presentation §7.1 frozen', () => {
-  it('mec-003 §1 reveal icon — visible on a rising project; a click records exactly one ui.revealPanel {open:true} and opens nothing', () => {
+  it('mec-003 §1 reveal icon (WORK-023-1, retitled from the M1 stub) — visible on a rising project; a click records exactly one ui.revealPanel {open:true}, written by the reveal panel it opens', () => {
     const h = hud(owing(content, 1, 1260));
-    const before = h.host.querySelectorAll('[data-panel]').length;
     expect(h.q('.tpp-reveal-link').hidden).toBe(false);
     click(h.q('.tpp-reveal-link'));
     expect(linesOf(h.context, 'ui.revealPanel')).toEqual([{ type: 'ui.revealPanel', open: true }]);
-    expect(h.host.querySelectorAll('[data-panel]').length).toBe(before);
+    expect(h.host.querySelector<HTMLElement>('.tpp-revealPanel')!.hidden).toBe(false);
   });
 
   it('mec-003 §1 reveal icon — fork 1: selector verbatim, mec-003 §2 gap R1-A1: at current = goal with ack 1 (debugCompleteProject) the icon is hidden', () => {
