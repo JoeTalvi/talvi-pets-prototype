@@ -916,9 +916,20 @@
       "generator": "ffmpeg crop + sips resize",
       "postProcess": "ffmpeg crop=1024:682:1024:0 (top-left); sips -z 213 320; crop RGBA verified byte-identical to source rect",
       "hash": "283bcd3e4c922ecb94ee3a84815c9b9a795151ec40ed829693fa79347324457d",
-      "recordedAt": "2026-10-17",
-      "recordedBy": "WORK-012 / TASK-031",
-      "history": []
+      "recordedAt": "2026-10-27",
+      "recordedBy": "WORK-026-2 / TASK-199",
+      "retired": true,
+      "history": [
+        {
+          "hash": "283bcd3e4c922ecb94ee3a84815c9b9a795151ec40ed829693fa79347324457d",
+          "status": "production-reference",
+          "origin": "production",
+          "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/Tiles/Outdoor/Talvi_Outdoor_Ground_Atlas.png bottom-left rect (1024,1366,1024,682)",
+          "recordedAt": "2026-10-17",
+          "recordedBy": "WORK-012 / TASK-031"
+        }
+      ],
+      "note": "Unreferenced by src/content at 771b964 (VERIFY-ASSET-001 warning); file kept on disk, row kept (ledger only grows); retired at the MILESTONE-007 ledger close-out (gate: recorded or resolved); un-retire by a row edit with a note if a later street references it"
     },
     {
       "id": "world/tile-grass-short",
@@ -934,9 +945,20 @@
       "generator": "ffmpeg crop + sips resize",
       "postProcess": "ffmpeg crop=1024:682:0:682 (top-left); sips -z 213 320; crop RGBA verified byte-identical to source rect",
       "hash": "a72622ff29b03fde2db6957ca10319feb2d14c16755567f8039db4cf7d36ad24",
-      "recordedAt": "2026-10-17",
-      "recordedBy": "WORK-012 / TASK-031",
-      "history": []
+      "recordedAt": "2026-10-27",
+      "recordedBy": "WORK-026-2 / TASK-199",
+      "retired": true,
+      "history": [
+        {
+          "hash": "a72622ff29b03fde2db6957ca10319feb2d14c16755567f8039db4cf7d36ad24",
+          "status": "production-reference",
+          "origin": "production",
+          "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/Tiles/Outdoor/Talvi_Outdoor_Ground_Atlas.png bottom-left rect (0,684,1024,682)",
+          "recordedAt": "2026-10-17",
+          "recordedBy": "WORK-012 / TASK-031"
+        }
+      ],
+      "note": "Unreferenced by src/content at 771b964 (VERIFY-ASSET-001 warning); file kept on disk, row kept (ledger only grows); retired at the MILESTONE-007 ledger close-out (gate: recorded or resolved); un-retire by a row edit with a note if a later street references it"
     },
     {
       "id": "world/tile-grass-tall",
@@ -952,9 +974,20 @@
       "generator": "ffmpeg crop + sips resize",
       "postProcess": "ffmpeg crop=1024:682:1024:682 (top-left); sips -z 213 320; crop RGBA verified byte-identical to source rect",
       "hash": "c3da2eba878deefe548b369894969be946a34c9a340ff6b345ba044972000b27",
-      "recordedAt": "2026-10-17",
-      "recordedBy": "WORK-012 / TASK-031",
-      "history": []
+      "recordedAt": "2026-10-27",
+      "recordedBy": "WORK-026-2 / TASK-199",
+      "retired": true,
+      "history": [
+        {
+          "hash": "c3da2eba878deefe548b369894969be946a34c9a340ff6b345ba044972000b27",
+          "status": "production-reference",
+          "origin": "production",
+          "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/Tiles/Outdoor/Talvi_Outdoor_Ground_Atlas.png bottom-left rect (1024,684,1024,682)",
+          "recordedAt": "2026-10-17",
+          "recordedBy": "WORK-012 / TASK-031"
+        }
+      ],
+      "note": "Unreferenced by src/content at 771b964 (VERIFY-ASSET-001 warning); file kept on disk, row kept (ledger only grows); retired at the MILESTONE-007 ledger close-out (gate: recorded or resolved); un-retire by a row edit with a note if a later street references it"
     },
     {
       "id": "world/tile-grass-wildflower",
@@ -970,9 +1003,20 @@
       "generator": "ffmpeg crop + sips resize",
       "postProcess": "ffmpeg crop=1024:682:0:1364 (top-left); sips -z 213 320; crop RGBA verified byte-identical to source rect",
       "hash": "6567b2dfad29e990ef7e06577a6142156814a41785d92bc5bda12741efebeb22",
-      "recordedAt": "2026-10-17",
-      "recordedBy": "WORK-012 / TASK-031",
-      "history": []
+      "recordedAt": "2026-10-27",
+      "recordedBy": "WORK-026-2 / TASK-199",
+      "retired": true,
+      "history": [
+        {
+          "hash": "6567b2dfad29e990ef7e06577a6142156814a41785d92bc5bda12741efebeb22",
+          "status": "production-reference",
+          "origin": "production",
+          "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/Tiles/Outdoor/Talvi_Outdoor_Ground_Atlas.png bottom-left rect (0,2,1024,682)",
+          "recordedAt": "2026-10-17",
+          "recordedBy": "WORK-012 / TASK-031"
+        }
+      ],
+      "note": "Unreferenced by src/content at 771b964 (VERIFY-ASSET-001 warning); file kept on disk, row kept (ledger only grows); retired at the MILESTONE-007 ledger close-out (gate: recorded or resolved); un-retire by a row edit with a note if a later street references it"
     },
     {
       "id": "world/bush-1",
@@ -1006,10 +1050,21 @@
       "generator": "sips-316",
       "postProcess": "sips -Z 320 (320x245); ffmpeg crop=320:240:0:0, removing five fully transparent bottom rows; RGBA retained pixels verified byte-identical",
       "hash": "e90dfa89389868379a79e38cf3f3ace55722314a37e1c81353aed7c3471e42fe",
-      "recordedAt": "2026-10-17",
-      "recordedBy": "WORK-012 / TASK-031",
-      "history": [],
-      "note": "Production source retained read-only; pivot normalization preserves every nontransparent exported pixel."
+      "recordedAt": "2026-10-27",
+      "recordedBy": "WORK-026-2 / TASK-199",
+      "retired": true,
+      "history": [
+        {
+          "hash": "e90dfa89389868379a79e38cf3f3ace55722314a37e1c81353aed7c3471e42fe",
+          "status": "production-reference",
+          "origin": "production",
+          "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/ArtDeliveries/_Ingested/bush-2/bush-2.png",
+          "recordedAt": "2026-10-17",
+          "recordedBy": "WORK-012 / TASK-031",
+          "note": "Production source retained read-only; pivot normalization preserves every nontransparent exported pixel."
+        }
+      ],
+      "note": "Unreferenced by src/content at 771b964 (VERIFY-ASSET-001 warning); file kept on disk, row kept (ledger only grows); retired at the MILESTONE-007 ledger close-out (gate: recorded or resolved); un-retire by a row edit with a note if a later street references it"
     },
     {
       "id": "world/rock-1",
@@ -1025,9 +1080,20 @@
       "generator": "sips-316",
       "postProcess": "resize:320",
       "hash": "251fce951a51d20b0862e7398e1f5014f18ebc71ebbb0d23a0cf843864fefa90",
-      "recordedAt": "2026-10-17",
-      "recordedBy": "WORK-012 / TASK-031",
-      "history": []
+      "recordedAt": "2026-10-27",
+      "recordedBy": "WORK-026-2 / TASK-199",
+      "history": [
+        {
+          "hash": "251fce951a51d20b0862e7398e1f5014f18ebc71ebbb0d23a0cf843864fefa90",
+          "status": "production-reference",
+          "origin": "production",
+          "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/ArtDeliveries/_Ingested/rock-1-1/rock-1-1.png",
+          "recordedAt": "2026-10-17",
+          "recordedBy": "WORK-012 / TASK-031"
+        }
+      ],
+      "retired": true,
+      "note": "Unreferenced by src/content at 771b964 (VERIFY-ASSET-001 warning); file kept on disk, row kept (ledger only grows); retired at the MILESTONE-007 ledger close-out (gate: recorded or resolved); un-retire by a row edit with a note if a later street references it"
     },
     {
       "id": "world/flower-1",
