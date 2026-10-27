@@ -2480,7 +2480,7 @@
           "repeat": -1
         }
       },
-      "status": "ai-placeholder",
+      "status": "accepted",
       "origin": "asset-bot",
       "source": "row 0 idle: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/pets/1793045968931-m9d1eq/candidate_003.png (seed 16810; copy phase-4-build/runs/RUN-002/evidence/WORK-022-1/candidates/idle-3.png, SHA-256 95b8b4797f0070a377c89637529c70c4046aa6296266baace0f6c1a4bef1f7cc); row 1 walk: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/pets/1793045986869-txqcty/candidate_002.png (seed 16820; copy phase-4-build/runs/RUN-002/evidence/WORK-022-1/candidates/walk-2.png, SHA-256 63011ddef7c95f3d3a90117a19fd07465d47830eb61c326587e899cd3ae651b2); row 6 use-perch: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/pets/1793046005586-x4rj0v/candidate_002.png (seed 16830; copy phase-4-build/runs/RUN-002/evidence/WORK-022-1/candidates/use-perch-2.png, SHA-256 2ad3ec584f4e3c870b88867d635b8182b0a20dfce442caf2f4a5985dceac47aa); row 3 react: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/pets/1793046065152-3gfpiu/candidate_002.png (seed 16840; copy phase-4-build/runs/RUN-002/evidence/WORK-022-1/candidates/react-2.png, SHA-256 38bba47edc38c39ddce28a7ead4f7120aaf69dc2129efe3f2102be1857684218); row 4 use-lie: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/pets/1793046083816-ie9aj3/candidate_002.png (seed 16850; copy phase-4-build/runs/RUN-002/evidence/WORK-022-1/candidates/use-lie-2.png, SHA-256 de42c8e732c11b58d260347330a8fc9770cc9e4fd164887f2f82dfaab98819d0); row 5 use-look: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/pets/1793046103684-mdi0ts/candidate_002.png (seed 16860; copy phase-4-build/runs/RUN-002/evidence/WORK-022-1/candidates/use-look-2.png, SHA-256 7afd600bdd1d70f7e0d670379d1859a89af50def0d7324a693294c75091eaf6d); row 2 use-sit and every unused cell transparent (CHK-007-04)",
       "generator": "asset-bot/generate_image:nano-banana",
@@ -2496,7 +2496,20 @@
       "hash": "0534ee0169b4e6b92b8e78c7d0bcc06e46c60693dc8d21f55d2e2d224852d47b",
       "recordedAt": "2026-10-26",
       "recordedBy": "WORK-022-1 / TASK-172",
-      "history": [],
+      "acceptedBy": "the user (play session)",
+      "acceptedAt": "2026-10-27",
+      "acceptedReason": "Accepted at the M2 play session (All looks good). Record: phase-3-preproduction/approvals/approval-2026-10-27-m2-accepted.md",
+      "history": [
+        {
+          "hash": "0534ee0169b4e6b92b8e78c7d0bcc06e46c60693dc8d21f55d2e2d224852d47b",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "row 0 idle: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/pets/1793045968931-m9d1eq/candidate_003.png (seed 16810; copy phase-4-build/runs/RUN-002/evidence/WORK-022-1/candidates/idle-3.png, SHA-256 95b8b4797f0070a377c89637529c70c4046aa6296266baace0f6c1a4bef1f7cc); row 1 walk: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/pets/1793045986869-txqcty/candidate_002.png (seed 16820; copy phase-4-build/runs/RUN-002/evidence/WORK-022-1/candidates/walk-2.png, SHA-256 63011ddef7c95f3d3a90117a19fd07465d47830eb61c326587e899cd3ae651b2); row 6 use-perch: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/pets/1793046005586-x4rj0v/candidate_002.png (seed 16830; copy phase-4-build/runs/RUN-002/evidence/WORK-022-1/candidates/use-perch-2.png, SHA-256 2ad3ec584f4e3c870b88867d635b8182b0a20dfce442caf2f4a5985dceac47aa); row 3 react: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/pets/1793046065152-3gfpiu/candidate_002.png (seed 16840; copy phase-4-build/runs/RUN-002/evidence/WORK-022-1/candidates/react-2.png, SHA-256 38bba47edc38c39ddce28a7ead4f7120aaf69dc2129efe3f2102be1857684218); row 4 use-lie: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/pets/1793046083816-ie9aj3/candidate_002.png (seed 16850; copy phase-4-build/runs/RUN-002/evidence/WORK-022-1/candidates/use-lie-2.png, SHA-256 de42c8e732c11b58d260347330a8fc9770cc9e4fd164887f2f82dfaab98819d0); row 5 use-look: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/pets/1793046103684-mdi0ts/candidate_002.png (seed 16860; copy phase-4-build/runs/RUN-002/evidence/WORK-022-1/candidates/use-look-2.png, SHA-256 7afd600bdd1d70f7e0d670379d1859a89af50def0d7324a693294c75091eaf6d); row 2 use-sit and every unused cell transparent (CHK-007-04)",
+          "recordedAt": "2026-10-26",
+          "recordedBy": "WORK-022-1 / TASK-172",
+          "note": "WORK-022-1 M2 Owl batch under DEC-040; identity reference APPROVAL-018 A-2 (working/TASK-167/candidates/raw/A-2.png, not ledgered); row 2 use-sit empty (CHK-007-04); row 6 use-perch per gate fork Q-A (the verbs.json perch.clip -> use-perch mapping and the UseClip enum are WORK-024-1 / WORK-023-2's); react is a wing-lift flutter (FLAG in the lane journal); creative verdict at the MILESTONE-006 play session; not status accepted"
+        }
+      ],
       "note": "WORK-022-1 M2 Owl batch under DEC-040; identity reference APPROVAL-018 A-2 (working/TASK-167/candidates/raw/A-2.png, not ledgered); row 2 use-sit empty (CHK-007-04); row 6 use-perch per gate fork Q-A (the verbs.json perch.clip -> use-perch mapping and the UseClip enum are WORK-024-1 / WORK-023-2's); react is a wing-lift flutter (FLAG in the lane journal); creative verdict at the MILESTONE-006 play session; not status accepted"
     },
     {
@@ -2507,7 +2520,7 @@
         "w": 600,
         "h": 600
       },
-      "status": "ai-placeholder",
+      "status": "accepted",
       "origin": "asset-bot",
       "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/pets/1793046269469-9cpv2c/candidate_002.png",
       "generator": "asset-bot/generate_image:nano-banana",
@@ -2523,7 +2536,20 @@
       "hash": "9663eb182f631b8120842a745c14192fc00db4c3ab80078e096685b0a9505ea6",
       "recordedAt": "2026-10-26",
       "recordedBy": "WORK-022-1 / TASK-172",
-      "history": [],
+      "acceptedBy": "the user (play session)",
+      "acceptedAt": "2026-10-27",
+      "acceptedReason": "Accepted at the M2 play session (All looks good). Record: phase-3-preproduction/approvals/approval-2026-10-27-m2-accepted.md",
+      "history": [
+        {
+          "hash": "9663eb182f631b8120842a745c14192fc00db4c3ab80078e096685b0a9505ea6",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/pets/1793046269469-9cpv2c/candidate_002.png",
+          "recordedAt": "2026-10-26",
+          "recordedBy": "WORK-022-1 / TASK-172",
+          "note": "WORK-022-1 M2 Owl batch under DEC-040; bust of the APPROVAL-018 A-2 body (identity reference working/TASK-167/candidates/raw/A-2.png, not ledgered); the parent of pets/owl-silhouette (ledger rule (4)); crop verdict (DEC-033 R card-5 tease) at the MILESTONE-006 play session; not status accepted"
+        }
+      ],
       "note": "WORK-022-1 M2 Owl batch under DEC-040; bust of the APPROVAL-018 A-2 body (identity reference working/TASK-167/candidates/raw/A-2.png, not ledgered); the parent of pets/owl-silhouette (ledger rule (4)); crop verdict (DEC-033 R card-5 tease) at the MILESTONE-006 play session; not status accepted"
     },
     {
@@ -2534,7 +2560,7 @@
         "w": 600,
         "h": 600
       },
-      "status": "ai-placeholder",
+      "status": "accepted",
       "origin": "derived",
       "source": "pets/owl-portrait",
       "postProcess": "alpha copied pixel for pixel from pets/owl-portrait (SHA-256 9663eb182f631b8120842a745c14192fc00db4c3ab80078e096685b0a9505ea6, decoded by ffmpeg 8.1.2 to straight RGBA), RGB flat #3a2a1f, 8-bit RGBA PNG; phase-4-build/runs/RUN-002/evidence/WORK-022-1/recipes/derive-owl-silhouette.mjs SHA-256 40235d20b867d18ffc6108e3d9250c8c67ae00e54b3d2253651ca240f2965331; --verify: alpha channels byte-identical, alpha IoU 1.0 (228126 opaque px; phase-4-build/runs/RUN-002/evidence/WORK-022-1/silhouette-iou.json); 10112 B, SHA-256 62d0b95e6b134a8e141b6e14097c2dff4d8a7a3e89509dc3db168daac138fb06.",
@@ -2542,7 +2568,20 @@
       "hash": "62d0b95e6b134a8e141b6e14097c2dff4d8a7a3e89509dc3db168daac138fb06",
       "recordedAt": "2026-10-26",
       "recordedBy": "WORK-022-1 / TASK-172",
-      "history": [],
+      "acceptedBy": "the user (play session)",
+      "acceptedAt": "2026-10-27",
+      "acceptedReason": "Accepted at the M2 play session (All looks good). Record: phase-3-preproduction/approvals/approval-2026-10-27-m2-accepted.md",
+      "history": [
+        {
+          "hash": "62d0b95e6b134a8e141b6e14097c2dff4d8a7a3e89509dc3db168daac138fb06",
+          "status": "ai-placeholder",
+          "origin": "derived",
+          "source": "pets/owl-portrait",
+          "recordedAt": "2026-10-26",
+          "recordedBy": "WORK-022-1 / TASK-172",
+          "note": "DEC-033 R: derived from the portrait alpha, never generated; shown only in the card-5 state (revealPopup/revealPanel silhouette state); ui/mystery-shape stays through phases 1-4; status inherits pets/owl-portrait (ai-placeholder); not status accepted"
+        }
+      ],
       "note": "DEC-033 R: derived from the portrait alpha, never generated; shown only in the card-5 state (revealPopup/revealPanel silhouette state); ui/mystery-shape stays through phases 1-4; status inherits pets/owl-portrait (ai-placeholder); not status accepted"
     },
     {
@@ -2553,7 +2592,7 @@
         "w": 1920,
         "h": 1080
       },
-      "status": "ai-placeholder",
+      "status": "accepted",
       "origin": "asset-bot",
       "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/rooms/1793046287626-cefiny/candidate_002.png",
       "generator": "asset-bot/generate_image:nano-banana",
@@ -2570,7 +2609,20 @@
       "hash": "d584644813ef742475b85414308b2fb8351e5d7f4e2dba455fcd7065aef37020",
       "recordedAt": "2026-10-26",
       "recordedBy": "WORK-022-1 / TASK-172",
-      "history": [],
+      "acceptedBy": "the user (play session)",
+      "acceptedAt": "2026-10-27",
+      "acceptedReason": "Accepted at the M2 play session (All looks good). Record: phase-3-preproduction/approvals/approval-2026-10-27-m2-accepted.md",
+      "history": [
+        {
+          "hash": "d584644813ef742475b85414308b2fb8351e5d7f4e2dba455fcd7065aef37020",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/rooms/1793046287626-cefiny/candidate_002.png",
+          "recordedAt": "2026-10-26",
+          "recordedBy": "WORK-022-1 / TASK-172",
+          "note": "room-v2 recipe; the Owl's quiet evening room from the carried direction note (same composition class as rooms/dog-room: two back walls, floor diamond, left-wall doorway, right-wall window; cooler plaster, dusk window, empty floor, no inferred furniture); geometry (walk area, door, slots, floorY, seats) to be measured by WORK-024-2 on this art; owl-room.json still points at rooms/dog-room until then; taste verdict at the MILESTONE-006 play session; not status accepted"
+        }
+      ],
       "note": "room-v2 recipe; the Owl's quiet evening room from the carried direction note (same composition class as rooms/dog-room: two back walls, floor diamond, left-wall doorway, right-wall window; cooler plaster, dusk window, empty floor, no inferred furniture); geometry (walk area, door, slots, floorY, seats) to be measured by WORK-024-2 on this art; owl-room.json still points at rooms/dog-room until then; taste verdict at the MILESTONE-006 play session; not status accepted"
     },
     {
@@ -2581,7 +2633,7 @@
         "w": 320,
         "h": 256
       },
-      "status": "ai-placeholder",
+      "status": "accepted",
       "origin": "asset-bot",
       "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1793053842146-9y7bmv/candidate_002.png",
       "generator": "asset-bot/generate_image:nano-banana",
@@ -2596,7 +2648,20 @@
       "hash": "31e4e1a33a3a07b532b0d101d37aa87bcefa2a2f06fea5d0a65eee4d48a9bfd8",
       "recordedAt": "2026-10-26",
       "recordedBy": "WORK-022-2 / TASK-176",
-      "history": [],
+      "acceptedBy": "the user (play session)",
+      "acceptedAt": "2026-10-27",
+      "acceptedReason": "Accepted at the M2 play session (All looks good). Record: phase-3-preproduction/approvals/approval-2026-10-27-m2-accepted.md",
+      "history": [
+        {
+          "hash": "31e4e1a33a3a07b532b0d101d37aa87bcefa2a2f06fea5d0a65eee4d48a9bfd8",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1793053842146-9y7bmv/candidate_002.png",
+          "recordedAt": "2026-10-26",
+          "recordedBy": "WORK-022-2 / TASK-176",
+          "note": "WORK-022-2 M2 batch under DEC-040; chosen candidate_002 of 3 (silhouette: pass — soft (quilted tufted moss pad on top), plant (moss mass reads as foliage)); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-006 play session (TECH-018 item 2); not status accepted"
+        }
+      ],
       "note": "WORK-022-2 M2 batch under DEC-040; chosen candidate_002 of 3 (silhouette: pass — soft (quilted tufted moss pad on top), plant (moss mass reads as foliage)); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-006 play session (TECH-018 item 2); not status accepted"
     },
     {
@@ -2607,7 +2672,7 @@
         "w": 160,
         "h": 192
       },
-      "status": "ai-placeholder",
+      "status": "accepted",
       "origin": "asset-bot",
       "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1793058388566-ko9zdq/candidate_002.png",
       "generator": "asset-bot/generate_image:nano-banana",
@@ -2623,7 +2688,20 @@
       "hash": "5d83562e25d9c2d728348e9bce929c727c6c7f6bb685333a56e2d7233d5e0b39",
       "recordedAt": "2026-10-26",
       "recordedBy": "WORK-022-2 / TASK-176",
-      "history": [],
+      "acceptedBy": "the user (play session)",
+      "acceptedAt": "2026-10-27",
+      "acceptedReason": "Accepted at the M2 play session (All looks good). Record: phase-3-preproduction/approvals/approval-2026-10-27-m2-accepted.md",
+      "history": [
+        {
+          "hash": "5d83562e25d9c2d728348e9bce929c727c6c7f6bb685333a56e2d7233d5e0b39",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1793058388566-ko9zdq/candidate_002.png",
+          "recordedAt": "2026-10-26",
+          "recordedBy": "WORK-022-2 / TASK-176",
+          "note": "WORK-022-2 M2 batch under DEC-040; chosen candidate_002 of 3 (silhouette: pass — light (lamp: round shade over a stem over a round foot, warm glow)); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-006 play session (TECH-018 item 2); not status accepted"
+        }
+      ],
       "note": "WORK-022-2 M2 batch under DEC-040; chosen candidate_002 of 3 (silhouette: pass — light (lamp: round shade over a stem over a round foot, warm glow)); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-006 play session (TECH-018 item 2); not status accepted"
     },
     {
@@ -2634,7 +2712,7 @@
         "w": 320,
         "h": 256
       },
-      "status": "ai-placeholder",
+      "status": "accepted",
       "origin": "asset-bot",
       "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1793048766675-go2k84/candidate_002.png",
       "generator": "asset-bot/generate_image:nano-banana",
@@ -2649,7 +2727,20 @@
       "hash": "eb4ef19df219ae94056b6015199bc6e292be68bec2db6300effc1beffa14bc46",
       "recordedAt": "2026-10-26",
       "recordedBy": "WORK-022-2 / TASK-176",
-      "history": [],
+      "acceptedBy": "the user (play session)",
+      "acceptedAt": "2026-10-27",
+      "acceptedReason": "Accepted at the M2 play session (All looks good). Record: phase-3-preproduction/approvals/approval-2026-10-27-m2-accepted.md",
+      "history": [
+        {
+          "hash": "eb4ef19df219ae94056b6015199bc6e292be68bec2db6300effc1beffa14bc46",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1793048766675-go2k84/candidate_002.png",
+          "recordedAt": "2026-10-26",
+          "recordedBy": "WORK-022-2 / TASK-176",
+          "note": "WORK-022-2 M2 batch under DEC-040; chosen candidate_002 of 3 (silhouette: pass — plant (leafy crown), tall (upright trunk ~3x the pot)); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-006 play session (TECH-018 item 2); not status accepted"
+        }
+      ],
       "note": "WORK-022-2 M2 batch under DEC-040; chosen candidate_002 of 3 (silhouette: pass — plant (leafy crown), tall (upright trunk ~3x the pot)); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-006 play session (TECH-018 item 2); not status accepted"
     },
     {
@@ -2660,7 +2751,7 @@
         "w": 160,
         "h": 192
       },
-      "status": "ai-placeholder",
+      "status": "accepted",
       "origin": "asset-bot",
       "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1793056218878-4klwr2/candidate_002.png",
       "generator": "asset-bot/generate_image:nano-banana",
@@ -2676,7 +2767,20 @@
       "hash": "4a127af7685aa8971ee66a016b50cd19bb240ddc444fd33788581dfa8d18f6f0",
       "recordedAt": "2026-10-26",
       "recordedBy": "WORK-022-2 / TASK-176",
-      "history": [],
+      "acceptedBy": "the user (play session)",
+      "acceptedAt": "2026-10-27",
+      "acceptedReason": "Accepted at the M2 play session (All looks good). Record: phase-3-preproduction/approvals/approval-2026-10-27-m2-accepted.md",
+      "history": [
+        {
+          "hash": "4a127af7685aa8971ee66a016b50cd19bb240ddc444fd33788581dfa8d18f6f0",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1793056218878-4klwr2/candidate_002.png",
+          "recordedAt": "2026-10-26",
+          "recordedBy": "WORK-022-2 / TASK-176",
+          "note": "WORK-022-2 M2 batch under DEC-040; chosen candidate_002 of 3 (silhouette: pass — food (shallow flat-rimmed bowl profile with a heaped mound)); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-006 play session (TECH-018 item 2); not status accepted"
+        }
+      ],
       "note": "WORK-022-2 M2 batch under DEC-040; chosen candidate_002 of 3 (silhouette: pass — food (shallow flat-rimmed bowl profile with a heaped mound)); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-006 play session (TECH-018 item 2); not status accepted"
     },
     {
@@ -2687,7 +2791,7 @@
         "w": 160,
         "h": 192
       },
-      "status": "ai-placeholder",
+      "status": "accepted",
       "origin": "asset-bot",
       "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1793058094176-y7c4aa/candidate_001.png",
       "generator": "asset-bot/generate_image:nano-banana",
@@ -2703,7 +2807,20 @@
       "hash": "48b246f5ac6dc565d3c41c16b87434b1a5e58397494a6658c4af7cf9c205113a",
       "recordedAt": "2026-10-26",
       "recordedBy": "WORK-022-2 / TASK-176",
-      "history": [],
+      "acceptedBy": "the user (play session)",
+      "acceptedAt": "2026-10-27",
+      "acceptedReason": "Accepted at the M2 play session (All looks good). Record: phase-3-preproduction/approvals/approval-2026-10-27-m2-accepted.md",
+      "history": [
+        {
+          "hash": "48b246f5ac6dc565d3c41c16b87434b1a5e58397494a6658c4af7cf9c205113a",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1793058094176-y7c4aa/candidate_001.png",
+          "recordedAt": "2026-10-26",
+          "recordedBy": "WORK-022-2 / TASK-176",
+          "note": "WORK-022-2 M2 batch under DEC-040; chosen candidate_001 of 3 (silhouette: pass — art (rectangular framed picture on a short easel)); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-006 play session (TECH-018 item 2); not status accepted"
+        }
+      ],
       "note": "WORK-022-2 M2 batch under DEC-040; chosen candidate_001 of 3 (silhouette: pass — art (rectangular framed picture on a short easel)); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-006 play session (TECH-018 item 2); not status accepted"
     },
     {
@@ -2714,7 +2831,7 @@
         "w": 320,
         "h": 256
       },
-      "status": "ai-placeholder",
+      "status": "accepted",
       "origin": "asset-bot",
       "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1793055980426-tvghh2/candidate_003.png",
       "generator": "asset-bot/generate_image:nano-banana",
@@ -2729,7 +2846,20 @@
       "hash": "c22cf5b28f1c26d76537c75808c66170c05d95d99155cfe50656529e9b9624c2",
       "recordedAt": "2026-10-26",
       "recordedBy": "WORK-022-2 / TASK-176",
-      "history": [],
+      "acceptedBy": "the user (play session)",
+      "acceptedAt": "2026-10-27",
+      "acceptedReason": "Accepted at the M2 play session (All looks good). Record: phase-3-preproduction/approvals/approval-2026-10-27-m2-accepted.md",
+      "history": [
+        {
+          "hash": "c22cf5b28f1c26d76537c75808c66170c05d95d99155cfe50656529e9b9624c2",
+          "status": "ai-placeholder",
+          "origin": "asset-bot",
+          "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1793055980426-tvghh2/candidate_003.png",
+          "recordedAt": "2026-10-26",
+          "recordedBy": "WORK-022-2 / TASK-176",
+          "note": "WORK-022-2 M2 batch under DEC-040; chosen candidate_003 of 3 (silhouette: pass — toy (round balls heaped above the rim of an open chest)); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-006 play session (TECH-018 item 2); not status accepted"
+        }
+      ],
       "note": "WORK-022-2 M2 batch under DEC-040; chosen candidate_003 of 3 (silhouette: pass — toy (round balls heaped above the rim of an open chest)); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-006 play session (TECH-018 item 2); not status accepted"
     }
   ]
