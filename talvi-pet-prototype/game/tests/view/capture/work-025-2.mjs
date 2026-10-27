@@ -101,8 +101,9 @@ async function facing() {
   const w = await boot(await browserP, { height: 1080, query: '' });
   await waitScene(w.page, 'Street', 1000); await drain(w.page);
   const out = [];
-  for (const [dir, key] of [['right', 'KeyD'], ['down', 'KeyS'], ['up', 'KeyW'], ['left', 'KeyA']]) {
-    await w.page.keyboard.down(key); await w.page.waitForTimeout(300);
+  // The walk band is 160 px tall at ≈ 760 px/s: vertical holds stay short so the read lands while the sim still moves the avatar.
+  for (const [dir, key, ms] of [['right', 'KeyD', 300], ['up', 'KeyW', 90], ['down', 'KeyS', 90], ['left', 'KeyA', 300]]) {
+    await w.page.keyboard.down(key); await w.page.waitForTimeout(ms);
     const read = await w.page.evaluate(() => { const a = window.__tpp.game.scene.getScene('Street').avatar; return { anim: a.anims.currentAnim?.key, flipX: a.flipX, x: a.x, y: a.y, facing: window.__tpp.store.getState().avatar.facing }; });
     const still = await shot(w.page, await browserP, captures, `avatar-facing-${dir}`, { key, read });
     await w.page.keyboard.up(key); await w.page.waitForTimeout(200);
