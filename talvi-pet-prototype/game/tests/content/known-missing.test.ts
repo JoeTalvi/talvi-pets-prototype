@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import { afterAll, describe, expect, it } from 'vitest';
@@ -67,11 +67,17 @@ describe('check-assets VERIFY-ASSET-001 honours the same list', () => {
         expect(run(retired, new Map([['charms/fern', 'WORK-018']]))).toEqual(['error']);
     });
 });
-it('the shipped list parses: 3 later-batch IDs (the Owl batch), each labelled WORK-022', () => {
+it('the shipped list parses: every row is a WORK-022 id absent from the manifest and referenced by src/content', () => {
     const known = readKnownMissing('tools/known-missing-assets.json');
-    expect(known.size).toBe(3);
-    expect(new Set(known.values())).toEqual(new Set(['WORK-022']));
-    expect(JSON.parse(readFileSync('tools/known-missing-assets.json', 'utf8')).assets).toHaveLength(3);
+    const rows = JSON.parse(readFileSync('tools/known-missing-assets.json', 'utf8')).assets as { id: string }[];
+    expect(known.size).toBe(rows.length);
+    const shipped = new Set((JSON.parse(readFileSync('public/assets/manifest.json', 'utf8')).entries as { id: string }[]).map(e => e.id));
+    const contentText = readdirSync('src/content', { recursive: true, encoding: 'utf8' }).filter(f => f.endsWith('.json')).map(f => readFileSync(join('src/content', f), 'utf8')).join('\n');
+    for (const [id, batch] of known) {
+        expect(batch).toMatch(/^WORK-022/);
+        expect(shipped.has(id), id).toBe(false);
+        expect(contentText.includes(`"${id}"`), id).toBe(true);
+    }
 });
 describe('check-assets VERIFY-ASSET-002 per-type canvas (play-session Q3, 2026-10-26)', () => {
     const run = (px: { w: number; h: number }) => {

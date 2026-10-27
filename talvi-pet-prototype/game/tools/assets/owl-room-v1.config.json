@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "$comment": "WORK-022-1 / TASK-172: the Owl room from the chosen Asset-Bot candidate (room-2, seed 16880, JFIF data under a .png name) in the room-v2 recipe form: full-frame uniform fit of the 1376x768 source into 1920x1080 (bandTop 0, bandHeight 1080), sampled neutral paper outside the measured source-image room contour (evidence/WORK-022-1/room-contour.json: six extreme points of the non-paper mask padded 4 px) with a 3 px keep and 6 px feather, Chrome canvas JPEG quality 0.8. sourceDirectory is the lane evidence folder (absolute). Run from game/: node tools/assets/export-refinements.mjs --project <lane talvi-pet-prototype dir> --config tools/assets/owl-room-v1.config.json --out <staging-dir>",
+  "sourceDirectory": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-002/evidence/WORK-022-1/candidates",
+  "sourceSubdirectory": "",
+  "room": { "source": "room-2.png", "sourceSha256": "beff93741e66391667753c6dc130d7dbac18670b6535986c7afd245a8a50be43", "id": "rooms/owl-room", "width": 1920, "height": 1080, "bandTop": 0, "bandHeight": 1080, "quality": 0.8, "exteriorBoundary": [[683,14],[1087,238],[1086,526],[691,754],[291,527],[293,236]], "exteriorKeep": 3, "exteriorFeather": 6 },
+  "sprites": []
+}
