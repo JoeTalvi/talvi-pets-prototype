@@ -2678,6 +2678,33 @@
       "recordedBy": "WORK-022-2 / TASK-176",
       "history": [],
       "note": "WORK-022-2 M2 batch under DEC-040; chosen candidate_002 of 3 (silhouette: pass — food (shallow flat-rimmed bowl profile with a heaped mound)); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-006 play session (TECH-018 item 2); not status accepted"
+    },
+    {
+      "id": "charms/standing-frame",
+      "type": "image",
+      "url": "charms/standing-frame.png",
+      "px": {
+        "w": 160,
+        "h": 192
+      },
+      "status": "ai-placeholder",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1793058094176-y7c4aa/candidate_001.png",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 18540,
+      "prompt": "One small framed picture standing on its own little wooden easel stand: a simple rectangular wood frame holding a tiny painted landscape of a hill and a tree, propped upright on a short three-legged tabletop easel, so it clearly reads as a framed picture. Three-quarter view from the front-left as in the furniture references, resting on the floor. Single complete isolated object, centred, generous margin, plain white background, no floor, no cast shadow, no room, no pet, no text, no extra objects.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/production/pet_house_lv3.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/concepts/v1/charms-nano.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/charm-painting.png"
+      ],
+      "postProcess": "Decode: /opt/homebrew/bin/ffmpeg -v error -y -i /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/charms/1793058094176-y7c4aa/candidate_001.png -sws_flags accurate_rnd+full_chroma_int -pix_fmt rgb24 /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-002/evidence/WORK-022-2/decoded/charms/standing-frame.png (raw SHA-256 70e0587a13ae83ceefdae67e34196d7b5eb9e266c723b1608d77ed2b62e722a9; decoded SHA-256 4afd11d55d112f9ab0b65c733cd06ec9e0f9b44bca570b86dfe5870983ceb34c). Key/fit: game/tools/assets/export-refinements.mjs (Chrome 155.0.8059.85) with config <EV>/recipes/charms-m2.export.config.json SHA-256 bd485719389bacd77ccf3ecc1858e6771ee1808038e23d7f8b3dbc9444c78c78; boundary-connected white flood backgroundMin 240 / backgroundChroma 18, enclosed near-white kept opaque, keep-region dilation 0, exterior luma alpha + white unmatte, trim, uniform max-fit bottom-centred in fit box 160x100; exporter sourceBounds [164, 186, 739, 1043], scale 0.116550, bounds [46, 0, 113, 99], bottomGap 0, centerOffset 0, corners [0, 0, 0, 0]; fit PNG SHA-256 dcacbc2293c42ebcbf21b89826273c21053f24b204659c2b4398d96588940e64. lossless pad: ffmpeg -v error -y -i <EV>/staging/fit/charms/standing-frame.png -vf \"format=rgba,pad=160:192:(ow-iw)/2:oh-ih:color=black@0.0\" -pix_fmt rgba <EV>/staging/final/charms/standing-frame.png; final SHA-256 48b246f5ac6dc565d3c41c16b87434b1a5e58397494a6658c4af7cf9c205113a. H_t (art bible v1.4 Dog-scale rule, Dog 111 px at idle; APPROVAL-016 sibling heights read from the rows' postProcess): 100 px (= fern 100 px; a small tabletop object between the 40 px food-bowl and the 130 px stool; lantern 110 px). Floor piece (no wall class in this batch). <EV> = /Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-002/evidence/WORK-022-2",
+      "batch": "charms-m2",
+      "hash": "48b246f5ac6dc565d3c41c16b87434b1a5e58397494a6658c4af7cf9c205113a",
+      "recordedAt": "2026-10-26",
+      "recordedBy": "WORK-022-2 / TASK-176",
+      "history": [],
+      "note": "WORK-022-2 M2 batch under DEC-040; chosen candidate_001 of 3 (silhouette: pass — art (rectangular framed picture on a short easel)); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-006 play session (TECH-018 item 2); not status accepted"
     }
   ]
 }
