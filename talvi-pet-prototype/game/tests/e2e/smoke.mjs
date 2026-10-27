@@ -6,7 +6,7 @@ import { existsSync } from 'node:fs';
 import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { base, evidenceRoot, sha, launch, boot, waitScene, lines, getState, count, first, strip, until, waitLine, tapSlot, holdUntil, steer,
-  debugClick, setDebug, domRead, makeFixture, createSteps, writeJson } from './lib/harness.mjs';
+  debugClick, setDebug, domRead, makeFixture, createSteps, writeJson, WORK } from './lib/harness.mjs';
 
 const { steps, step } = createSteps();
 const t0 = Date.now();
@@ -179,10 +179,10 @@ try {
   for (const w of windows) { const all = await lines(w.page); perWindow.push({ window: w.name, consoleErrors: w.errors.consoleErrors, pageErrors: w.errors.pageErrors, assetLoadErrors: all.filter(l => l.type === 'asset.loadError'), saveWritten: count(all, 'save.written') }); }
   step('throughout: zero console errors and page errors (every window)', perWindow.every(w => !w.consoleErrors.length && !w.pageErrors.length), 'console error / pageerror lists empty', perWindow.map(w => ({ window: w.window, consoleErrors: w.consoleErrors, pageErrors: w.pageErrors })));
   step('throughout: zero asset.loadError (every window)', perWindow.every(w => !w.assetLoadErrors.length), 'no asset.loadError lines', perWindow.map(w => ({ window: w.window, assetLoadErrors: w.assetLoadErrors })));
-  report = { kind: 'state read', work: 'WORK-021-2', harness: 'smoke v0 (TECH-018)', sha, base, run: n, captured_at: new Date().toISOString(), elapsedMs: Date.now() - t0, chromium: browser.version(), ok: steps.every(s => s.ok), steps, perWindow };
+  report = { kind: 'state read', work: WORK, harness: 'smoke v0 (TECH-018)', sha, base, run: n, captured_at: new Date().toISOString(), elapsedMs: Date.now() - t0, chromium: browser.version(), ok: steps.every(s => s.ok), steps, perWindow };
 } catch (error) {
   step('harness: no uncaught error', false, 'the run completes', String(error).slice(0, 800));
-  report = { kind: 'state read', work: 'WORK-021-2', harness: 'smoke v0 (TECH-018)', sha, base, run: n, captured_at: new Date().toISOString(), elapsedMs: Date.now() - t0, ok: false, steps };
+  report = { kind: 'state read', work: WORK, harness: 'smoke v0 (TECH-018)', sha, base, run: n, captured_at: new Date().toISOString(), elapsedMs: Date.now() - t0, ok: false, steps };
 } finally { await browser.close(); }
 writeJson(join(evidenceRoot, 'smoke-report.json'), report);
 writeJson(join(evidenceRoot, `smoke-report-${n}.json`), report);
