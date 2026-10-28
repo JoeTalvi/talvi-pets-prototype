@@ -162,32 +162,97 @@
       "type": "spritesheet",
       "url": "player/avatar-sheet.png",
       "px": {
-        "w": 192,
-        "h": 256
+        "w": 1152,
+        "h": 1536
       },
       "frame": {
         "w": 192,
         "h": 256
       },
       "clips": {
-        "idle": {
+        "idle-down": {
           "start": 0,
-          "end": 0,
-          "frameRate": 1,
+          "end": 3,
+          "frameRate": 6,
+          "repeat": -1,
+          "frameDurationsMs": [
+            2600,
+            80,
+            120,
+            80
+          ]
+        },
+        "idle-up": {
+          "start": 6,
+          "end": 9,
+          "frameRate": 6,
+          "repeat": -1,
+          "frameDurationsMs": [
+            2600,
+            80,
+            120,
+            80
+          ]
+        },
+        "idle-side": {
+          "start": 12,
+          "end": 15,
+          "frameRate": 6,
+          "repeat": -1,
+          "frameDurationsMs": [
+            2600,
+            80,
+            120,
+            80
+          ]
+        },
+        "walk-down": {
+          "start": 18,
+          "end": 23,
+          "frameRate": 10,
+          "repeat": -1
+        },
+        "walk-up": {
+          "start": 24,
+          "end": 29,
+          "frameRate": 10,
+          "repeat": -1
+        },
+        "walk-side": {
+          "start": 30,
+          "end": 35,
+          "frameRate": 10,
           "repeat": -1
         }
       },
       "status": "ai-placeholder",
-      "origin": "derived",
-      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/player.png",
-      "generator": "sips + ffmpeg",
-      "seed": 1004,
-      "postProcess": "sips --resampleHeight 256 <source> --out <intermediate>; ffmpeg -i <intermediate> -vf pad=192:256:(ow-iw)/2:oh-ih:color=0x00000000 -frames:v 1 <output>",
-      "hash": "71130166669b3998c68fd6778af5ba678135087e72c22dca3c50b01f655e3d44",
-      "recordedAt": "2026-10-17",
-      "recordedBy": "TASK-022 / WORK-001",
-      "history": [],
-      "note": "Phase 1 Asset-Bot original: runs/generate-image/player/1792069414927-mladn7/candidate_001.png; single-frame integration stopgap, not creative approval"
+      "origin": "asset-bot",
+      "source": "row 0 idle-down: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/player/1793125676782-8zn554/candidate_001.png (seed 8610; copy phase-4-build/runs/RUN-003/evidence/WORK-026-1/candidates/idle-down-1.png, SHA-256 6a7da75083885667e1a182a42042009c2c31848363190b04cdea929860df9fcb); row 1 idle-up: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/player/1793125698287-2ulnn2/candidate_002.png (seed 8620; copy phase-4-build/runs/RUN-003/evidence/WORK-026-1/candidates/idle-up-2.png, SHA-256 8c8062ff340ab3294a02cf41077e46debaa2e3cc10e323a4bc28d5f265798fbf); row 2 idle-side: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/player/1793125716477-7gba84/candidate_001.png (seed 8630; copy phase-4-build/runs/RUN-003/evidence/WORK-026-1/candidates/idle-side-1.png, SHA-256 fcf55d02c3209d400174bd06244fb8bbf463fb5f4fcce178c10902f6df50e05a); row 3 walk-down: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/player/1793125734323-xch14i/candidate_003.png (seed 8640; copy phase-4-build/runs/RUN-003/evidence/WORK-026-1/candidates/walk-down-3.png, SHA-256 cc7faf079f1ba7744b327e39224d41b89c03c591656b8dbcaf28c1d384a7da22); row 4 walk-up: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/player/1793125752967-jwhysk/candidate_003.png (seed 8650; copy phase-4-build/runs/RUN-003/evidence/WORK-026-1/candidates/walk-up-3.png, SHA-256 c041e69ba1308b1eb2419abec80647b8965b83d84957c3826fda3ed681212c25); row 5 walk-side: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/player/1793125772262-crthry/candidate_002.png (seed 8660; copy phase-4-build/runs/RUN-003/evidence/WORK-026-1/candidates/walk-side-2.png, SHA-256 e5c0c461584b75fd0cfc060182db3355b934f6e8ae607bcb66e0e2f894ab63c1); cells 4, 5, 10, 11, 16, 17 transparent",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 8610,
+      "prompt": "[row 0 idle-down: Asset-Bot run 1793125676782-8zn554, seed 8610] Game sprite animation strip: exactly FOUR full-body poses of the SAME approved character in ONE horizontal row, four equal-width cells. Small friendly person with short muted dark-brown hair, muted moss-green plain shirt, clay-brown trousers and simple brown shoes. Entire body visible, compact proportions, gentle minimal face. No hat, no props, no accessories, no costume pieces, no detached parts, no floating objects. All four in FRONT VIEW facing the viewer, standing at rest with relaxed arms, the same stance. A quiet looping IDLE: pose1 eyes open at rest; pose2 identical with a tiny chest rise; pose3 identical with both eyes softly closed in a blink; pose4 identical to pose1. No leg travel, no head turn, no different expressions. Feet on one shared baseline, identical size and proportions in every cell, equal cell widths, whole figure visible in every cell with generous white padding and clear white gutters between the cells. Plain white background. No shadow, no floor, no numbers, labels, cell borders, gridlines or text.\n[row 1 idle-up: Asset-Bot run 1793125698287-2ulnn2, seed 8620] Game sprite animation strip: exactly FOUR full-body poses of the SAME approved character in ONE horizontal row, four equal-width cells. Small friendly person with short muted dark-brown hair, muted moss-green plain shirt, clay-brown trousers and simple brown shoes. Entire body visible, compact proportions, gentle minimal face. No hat, no props, no accessories, no costume pieces, no detached parts, no floating objects. All four in BACK VIEW, facing directly away from the viewer: we see the back of the head of short dark-brown hair, the back of the moss-green shirt, the clay-brown trousers and the heels of the brown shoes; NO face visible. Standing at rest with relaxed arms, the same stance. A quiet looping IDLE: pose1 at rest; pose2 identical with a tiny shoulder rise; pose3 at rest; pose4 at rest. No leg travel, no head turn. Feet on one shared baseline, identical size and proportions in every cell, equal cell widths, whole figure visible in every cell with generous white padding and clear white gutters between the cells. Plain white background. No shadow, no floor, no numbers, labels, cell borders, gridlines or text.\n[row 2 idle-side: Asset-Bot run 1793125716477-7gba84, seed 8630] Game sprite animation strip: exactly FOUR full-body poses of the SAME approved character in ONE horizontal row, four equal-width cells. Small friendly person with short muted dark-brown hair, muted moss-green plain shirt, clay-brown trousers and simple brown shoes. Entire body visible, compact proportions, gentle minimal face. No hat, no props, no accessories, no costume pieces, no detached parts, no floating objects. All four facing RIGHT in three-quarter view, exactly like the reference, standing at rest with relaxed arms, the same stance. A quiet looping IDLE: pose1 eyes open at rest; pose2 identical with a tiny chest rise; pose3 identical with both eyes softly closed in a blink; pose4 identical to pose1. No leg travel, no head turn, no different expressions. Feet on one shared baseline, identical size and proportions in every cell, equal cell widths, whole figure visible in every cell with generous white padding and clear white gutters between the cells. Plain white background. No shadow, no floor, no numbers, labels, cell borders, gridlines or text.\n[row 3 walk-down: Asset-Bot run 1793125734323-xch14i, seed 8640] Game sprite animation strip: exactly SIX full-body poses of the SAME approved character in ONE horizontal row, six equal-width cells. Small friendly person with short muted dark-brown hair, muted moss-green plain shirt, clay-brown trousers and simple brown shoes. Entire body visible, compact proportions, gentle minimal face. No hat, no props, no accessories, no costume pieces, no detached parts, no floating objects. All six in FRONT VIEW facing the viewer, walking in place toward the viewer: a six-frame walk cycle - pose1 left foot forward contact, pose2 down, pose3 passing with legs together, pose4 right foot forward contact, pose5 down, pose6 passing. Arms swing opposite the legs. No travel across the cell, same body size in every pose. Feet on one shared baseline, identical size and proportions in every cell, equal cell widths, whole figure visible in every cell with generous white padding and clear white gutters between the cells. Plain white background. No shadow, no floor, no numbers, labels, cell borders, gridlines or text.\n[row 4 walk-up: Asset-Bot run 1793125752967-jwhysk, seed 8650] Game sprite animation strip: exactly SIX full-body poses of the SAME approved character in ONE horizontal row, six equal-width cells. Small friendly person with short muted dark-brown hair, muted moss-green plain shirt, clay-brown trousers and simple brown shoes. Entire body visible, compact proportions, gentle minimal face. No hat, no props, no accessories, no costume pieces, no detached parts, no floating objects. All six in BACK VIEW, facing directly away from the viewer, walking in place away from the viewer: we see the back of the head of short dark-brown hair, the back of the moss-green shirt, clay-brown trousers and brown shoe heels; NO face visible. A six-frame walk cycle - pose1 left foot forward contact, pose2 down, pose3 passing with legs together, pose4 right foot forward contact, pose5 down, pose6 passing. Arms swing opposite the legs. No travel across the cell, same body size in every pose. Feet on one shared baseline, identical size and proportions in every cell, equal cell widths, whole figure visible in every cell with generous white padding and clear white gutters between the cells. Plain white background. No shadow, no floor, no numbers, labels, cell borders, gridlines or text.\n[row 5 walk-side: Asset-Bot run 1793125772262-crthry, seed 8660] Game sprite animation strip: exactly SIX full-body poses of the SAME approved character in ONE horizontal row, six equal-width cells. Small friendly person with short muted dark-brown hair, muted moss-green plain shirt, clay-brown trousers and simple brown shoes. Entire body visible, compact proportions, gentle minimal face. No hat, no props, no accessories, no costume pieces, no detached parts, no floating objects. All six facing RIGHT in side view, walking to the right in place: the classic side walk cycle - pose1 contact with left leg forward, pose2 recoil, pose3 passing, pose4 high point, pose5 contact with right leg forward, pose6 recoil. Arms swing opposite the legs. No travel across the cell, same body size in every pose. Feet on one shared baseline, identical size and proportions in every cell, equal cell widths, whole figure visible in every cell with generous white padding and clear white gutters between the cells. Plain white background. No shadow, no floor, no numbers, labels, cell borders, gridlines or text.",
+      "refs": [
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/concepts/v1/avatar-retry.png",
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/production/pet_house_lv3.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/player.png"
+      ],
+      "postProcess": "WORK-026-1 / TASK-195 (ASSET-016 + gate fork Q-A): npx tsx tools/assets/use-poses.ts --config tools/assets/avatar-sheet-v1.config.json (config SHA-256 edd79514009f7d42d84cc3348ad00a013dd1a15ac35c1cd8c247366927e5fa41); recipe edit 4b6472a (base optional; absent here, the sheet starts fully transparent; Owl config proven byte-identical 0534ee01). Six JFIF strips 1376x768 decoded by ffmpeg 8.1.2 (-sws_flags accurate_rnd+full_chroma_int): white key backgroundMin 240, backgroundChroma 18, dilation 0, enclosed white holes >= 40 px; split into equal cells by connected component; premultiplied area-average scale into 192x256 cells, base-centred. Head feature = hair top to first moss-green shirt row; reference 63.0 px. Per-row scale/head source px: idle-down 0.2423/260; idle-up 0.2716/232; idle-side 0.2461/256; walk-down 0.352/179; walk-up 0.3369/187; walk-side 0.35/180. idle-down frame 0 opaque height 166 px (H; 111 px Dog x 1.5). Cells 4, 5, 10, 11, 16, 17 transparent. No repack (625 723 B <= 1.2 MB).",
+      "batch": "playtest-m3",
+      "hash": "230de952dbd63a4855b748398f7a5acd13d825d8dc020c2b2d0b35d3d0394acb",
+      "recordedAt": "2026-10-27",
+      "recordedBy": "WORK-026-1 / TASK-195",
+      "history": [
+        {
+          "hash": "71130166669b3998c68fd6778af5ba678135087e72c22dca3c50b01f655e3d44",
+          "status": "ai-placeholder",
+          "origin": "derived",
+          "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-1-design/mockups/renders/assets/player.png",
+          "recordedAt": "2026-10-17",
+          "recordedBy": "TASK-022 / WORK-001",
+          "note": "Phase 1 Asset-Bot original: runs/generate-image/player/1792069414927-mladn7/candidate_001.png; single-frame integration stopgap, not creative approval"
+        }
+      ],
+      "note": "WORK-026-1 M3 playtest-ready batch under DEC-040; replaces the WORK-001 single-frame stopgap (history[0]); identity reference APPROVAL-004 concepts/v1/avatar-retry.png (seed 8602); layout ASSET-016 + gate fork Q-A (3 facings, left = side flipped); scale 166 px at idle-down frame 0 (111 px Dog x renders.html avatar:Dog ratio 1.5); down rows are a three-quarter view toward the viewer (no straight-front candidate at the cap; FLAG); the facing clips are wired by WORK-025-2; creative verdict at the MILESTONE-007 dry run; not status accepted"
     },
     {
       "id": "charms/dog-bed",
@@ -851,9 +916,20 @@
       "generator": "ffmpeg crop + sips resize",
       "postProcess": "ffmpeg crop=1024:682:1024:0 (top-left); sips -z 213 320; crop RGBA verified byte-identical to source rect",
       "hash": "283bcd3e4c922ecb94ee3a84815c9b9a795151ec40ed829693fa79347324457d",
-      "recordedAt": "2026-10-17",
-      "recordedBy": "WORK-012 / TASK-031",
-      "history": []
+      "recordedAt": "2026-10-27",
+      "recordedBy": "WORK-026-2 / TASK-199",
+      "retired": true,
+      "history": [
+        {
+          "hash": "283bcd3e4c922ecb94ee3a84815c9b9a795151ec40ed829693fa79347324457d",
+          "status": "production-reference",
+          "origin": "production",
+          "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/Tiles/Outdoor/Talvi_Outdoor_Ground_Atlas.png bottom-left rect (1024,1366,1024,682)",
+          "recordedAt": "2026-10-17",
+          "recordedBy": "WORK-012 / TASK-031"
+        }
+      ],
+      "note": "Unreferenced by src/content at 771b964 (VERIFY-ASSET-001 warning); file kept on disk, row kept (ledger only grows); retired at the MILESTONE-007 ledger close-out (gate: recorded or resolved); un-retire by a row edit with a note if a later street references it"
     },
     {
       "id": "world/tile-grass-short",
@@ -869,9 +945,20 @@
       "generator": "ffmpeg crop + sips resize",
       "postProcess": "ffmpeg crop=1024:682:0:682 (top-left); sips -z 213 320; crop RGBA verified byte-identical to source rect",
       "hash": "a72622ff29b03fde2db6957ca10319feb2d14c16755567f8039db4cf7d36ad24",
-      "recordedAt": "2026-10-17",
-      "recordedBy": "WORK-012 / TASK-031",
-      "history": []
+      "recordedAt": "2026-10-27",
+      "recordedBy": "WORK-026-2 / TASK-199",
+      "retired": true,
+      "history": [
+        {
+          "hash": "a72622ff29b03fde2db6957ca10319feb2d14c16755567f8039db4cf7d36ad24",
+          "status": "production-reference",
+          "origin": "production",
+          "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/Tiles/Outdoor/Talvi_Outdoor_Ground_Atlas.png bottom-left rect (0,684,1024,682)",
+          "recordedAt": "2026-10-17",
+          "recordedBy": "WORK-012 / TASK-031"
+        }
+      ],
+      "note": "Unreferenced by src/content at 771b964 (VERIFY-ASSET-001 warning); file kept on disk, row kept (ledger only grows); retired at the MILESTONE-007 ledger close-out (gate: recorded or resolved); un-retire by a row edit with a note if a later street references it"
     },
     {
       "id": "world/tile-grass-tall",
@@ -887,9 +974,20 @@
       "generator": "ffmpeg crop + sips resize",
       "postProcess": "ffmpeg crop=1024:682:1024:682 (top-left); sips -z 213 320; crop RGBA verified byte-identical to source rect",
       "hash": "c3da2eba878deefe548b369894969be946a34c9a340ff6b345ba044972000b27",
-      "recordedAt": "2026-10-17",
-      "recordedBy": "WORK-012 / TASK-031",
-      "history": []
+      "recordedAt": "2026-10-27",
+      "recordedBy": "WORK-026-2 / TASK-199",
+      "retired": true,
+      "history": [
+        {
+          "hash": "c3da2eba878deefe548b369894969be946a34c9a340ff6b345ba044972000b27",
+          "status": "production-reference",
+          "origin": "production",
+          "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/Tiles/Outdoor/Talvi_Outdoor_Ground_Atlas.png bottom-left rect (1024,684,1024,682)",
+          "recordedAt": "2026-10-17",
+          "recordedBy": "WORK-012 / TASK-031"
+        }
+      ],
+      "note": "Unreferenced by src/content at 771b964 (VERIFY-ASSET-001 warning); file kept on disk, row kept (ledger only grows); retired at the MILESTONE-007 ledger close-out (gate: recorded or resolved); un-retire by a row edit with a note if a later street references it"
     },
     {
       "id": "world/tile-grass-wildflower",
@@ -905,9 +1003,20 @@
       "generator": "ffmpeg crop + sips resize",
       "postProcess": "ffmpeg crop=1024:682:0:1364 (top-left); sips -z 213 320; crop RGBA verified byte-identical to source rect",
       "hash": "6567b2dfad29e990ef7e06577a6142156814a41785d92bc5bda12741efebeb22",
-      "recordedAt": "2026-10-17",
-      "recordedBy": "WORK-012 / TASK-031",
-      "history": []
+      "recordedAt": "2026-10-27",
+      "recordedBy": "WORK-026-2 / TASK-199",
+      "retired": true,
+      "history": [
+        {
+          "hash": "6567b2dfad29e990ef7e06577a6142156814a41785d92bc5bda12741efebeb22",
+          "status": "production-reference",
+          "origin": "production",
+          "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/Assets/Textures/Tiles/Outdoor/Talvi_Outdoor_Ground_Atlas.png bottom-left rect (0,2,1024,682)",
+          "recordedAt": "2026-10-17",
+          "recordedBy": "WORK-012 / TASK-031"
+        }
+      ],
+      "note": "Unreferenced by src/content at 771b964 (VERIFY-ASSET-001 warning); file kept on disk, row kept (ledger only grows); retired at the MILESTONE-007 ledger close-out (gate: recorded or resolved); un-retire by a row edit with a note if a later street references it"
     },
     {
       "id": "world/bush-1",
@@ -941,10 +1050,21 @@
       "generator": "sips-316",
       "postProcess": "sips -Z 320 (320x245); ffmpeg crop=320:240:0:0, removing five fully transparent bottom rows; RGBA retained pixels verified byte-identical",
       "hash": "e90dfa89389868379a79e38cf3f3ace55722314a37e1c81353aed7c3471e42fe",
-      "recordedAt": "2026-10-17",
-      "recordedBy": "WORK-012 / TASK-031",
-      "history": [],
-      "note": "Production source retained read-only; pivot normalization preserves every nontransparent exported pixel."
+      "recordedAt": "2026-10-27",
+      "recordedBy": "WORK-026-2 / TASK-199",
+      "retired": true,
+      "history": [
+        {
+          "hash": "e90dfa89389868379a79e38cf3f3ace55722314a37e1c81353aed7c3471e42fe",
+          "status": "production-reference",
+          "origin": "production",
+          "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/ArtDeliveries/_Ingested/bush-2/bush-2.png",
+          "recordedAt": "2026-10-17",
+          "recordedBy": "WORK-012 / TASK-031",
+          "note": "Production source retained read-only; pivot normalization preserves every nontransparent exported pixel."
+        }
+      ],
+      "note": "Unreferenced by src/content at 771b964 (VERIFY-ASSET-001 warning); file kept on disk, row kept (ledger only grows); retired at the MILESTONE-007 ledger close-out (gate: recorded or resolved); un-retire by a row edit with a note if a later street references it"
     },
     {
       "id": "world/rock-1",
@@ -960,9 +1080,20 @@
       "generator": "sips-316",
       "postProcess": "resize:320",
       "hash": "251fce951a51d20b0862e7398e1f5014f18ebc71ebbb0d23a0cf843864fefa90",
-      "recordedAt": "2026-10-17",
-      "recordedBy": "WORK-012 / TASK-031",
-      "history": []
+      "recordedAt": "2026-10-27",
+      "recordedBy": "WORK-026-2 / TASK-199",
+      "history": [
+        {
+          "hash": "251fce951a51d20b0862e7398e1f5014f18ebc71ebbb0d23a0cf843864fefa90",
+          "status": "production-reference",
+          "origin": "production",
+          "source": "/Users/joefrancia/Desktop/Talvi/ALT_TALVI/ArtDeliveries/_Ingested/rock-1-1/rock-1-1.png",
+          "recordedAt": "2026-10-17",
+          "recordedBy": "WORK-012 / TASK-031"
+        }
+      ],
+      "retired": true,
+      "note": "Unreferenced by src/content at 771b964 (VERIFY-ASSET-001 warning); file kept on disk, row kept (ledger only grows); retired at the MILESTONE-007 ledger close-out (gate: recorded or resolved); un-retire by a row edit with a note if a later street references it"
     },
     {
       "id": "world/flower-1",
@@ -2861,6 +2992,86 @@
         }
       ],
       "note": "WORK-022-2 M2 batch under DEC-040; chosen candidate_003 of 3 (silhouette: pass — toy (round balls heaped above the rim of an open chest)); prompt is the string passed to generate_image (the pipeline prepends its ref/style lines and appends the anti-collage suffix); creative verdict at the MILESTONE-006 play session (TECH-018 item 2); not status accepted"
+    },
+    {
+      "id": "sfx/heart",
+      "type": "audio",
+      "urls": [
+        "sfx/heart.m4a",
+        "sfx/heart.ogg"
+      ],
+      "durationMs": 906,
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "tools/assets/sfx-placeholders.mjs (SHA-256 2f1e3e2fcdf458095e073190371a40bd1a15ea79c38113ae1ee48df3f0cb337a) + tools/assets/sfx-placeholders-v1.config.json (SHA-256 2852e00f5dcf8fdd3f6c9a0af1f13d71dcf588508f7d8490b2ca2db551937b7a), entry heart: deterministic sine/envelope tone; OGG helper tools/assets/sfx-ogg-sndfile.py (SHA-256 18cca28917bd875b2c629a3e782f7f40c2e6001fe6de6d289eb5db2747b4fa38)",
+      "generator": "node waveform (tools/assets/sfx-placeholders.mjs), afconvert AAC 96k, libsndfile Vorbis (tools/assets/sfx-ogg-sndfile.py)",
+      "postProcess": "44100 Hz mono PCM 850 ms, peak -4.0 dBFS, no leading silence (4 ms attack from sample 0, 10 ms fade-out); afconvert AAC 96k (-c 1); OGG route B libsndfile Vorbis default quality via tools/assets/sfx-ogg-sndfile.py (route A ffmpeg vorbis -strict -2 failed: encoder rejects mono, 'Could not open encoder before EOF'); WAV SHA-256 9fccffe9159031aa2e36e05afc864d622a8daac4145cf8b3f6ddd81838222631; measured: m4a 905.6 ms / 7801 B / -4.02 dB, ogg 850.0 ms / 6284 B / -3.99 dB",
+      "batch": "playtest-m3",
+      "hash": "835f53d418579684b857417312105b5b14253fea7face81f674ca5f5575e2dc2",
+      "recordedAt": "2026-10-27",
+      "recordedBy": "WORK-026-2 / TASK-199",
+      "history": [],
+      "note": "WORK-026-2 M3 playtest-ready batch under gate answer 2 (synthesized placeholder, zero spend, no audio-generation service); replaceable by id with no code change (ASSET-018); OGG route B libsndfile Vorbis validated by decode round-trip (gate fork Q-B; route A ffmpeg vorbis rejects mono); creative verdict (fit, not annoying at the 20 s cadence) at the MILESTONE-007 dry run; not status accepted"
+    },
+    {
+      "id": "sfx/complete",
+      "type": "audio",
+      "urls": [
+        "sfx/complete.m4a",
+        "sfx/complete.ogg"
+      ],
+      "durationMs": 1858,
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "tools/assets/sfx-placeholders.mjs (SHA-256 2f1e3e2fcdf458095e073190371a40bd1a15ea79c38113ae1ee48df3f0cb337a) + tools/assets/sfx-placeholders-v1.config.json (SHA-256 2852e00f5dcf8fdd3f6c9a0af1f13d71dcf588508f7d8490b2ca2db551937b7a), entry complete: deterministic sine/envelope tone; OGG helper tools/assets/sfx-ogg-sndfile.py (SHA-256 18cca28917bd875b2c629a3e782f7f40c2e6001fe6de6d289eb5db2747b4fa38)",
+      "generator": "node waveform (tools/assets/sfx-placeholders.mjs), afconvert AAC 96k, libsndfile Vorbis (tools/assets/sfx-ogg-sndfile.py)",
+      "postProcess": "44100 Hz mono PCM 1800 ms, peak -4.0 dBFS, no leading silence (4 ms attack from sample 0, 10 ms fade-out); afconvert AAC 96k (-c 1); OGG route B libsndfile Vorbis default quality via tools/assets/sfx-ogg-sndfile.py (route A ffmpeg vorbis -strict -2 failed: encoder rejects mono, 'Could not open encoder before EOF'); WAV SHA-256 cdfb3e1ed8444d5e8c008ade079b50b93ee773dfee6b97476f076922004dff9c; measured: m4a 1857.6 ms / 11906 B / -3.97 dB, ogg 1800.0 ms / 9806 B / -3.85 dB",
+      "batch": "playtest-m3",
+      "hash": "2f2dba7f5ac1148d8cebbb1c3881f74313fd17d4194113e28996c35def26c3e6",
+      "recordedAt": "2026-10-27",
+      "recordedBy": "WORK-026-2 / TASK-199",
+      "history": [],
+      "note": "WORK-026-2 M3 playtest-ready batch under gate answer 2 (synthesized placeholder, zero spend, no audio-generation service); replaceable by id with no code change (ASSET-018); OGG route B libsndfile Vorbis validated by decode round-trip (gate fork Q-B; route A ffmpeg vorbis rejects mono); creative verdict (fit, not annoying at the 20 s cadence) at the MILESTONE-007 dry run; not status accepted"
+    },
+    {
+      "id": "sfx/reaction",
+      "type": "audio",
+      "urls": [
+        "sfx/reaction.m4a",
+        "sfx/reaction.ogg"
+      ],
+      "durationMs": 349,
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "tools/assets/sfx-placeholders.mjs (SHA-256 2f1e3e2fcdf458095e073190371a40bd1a15ea79c38113ae1ee48df3f0cb337a) + tools/assets/sfx-placeholders-v1.config.json (SHA-256 2852e00f5dcf8fdd3f6c9a0af1f13d71dcf588508f7d8490b2ca2db551937b7a), entry reaction: deterministic sine/envelope tone; OGG helper tools/assets/sfx-ogg-sndfile.py (SHA-256 18cca28917bd875b2c629a3e782f7f40c2e6001fe6de6d289eb5db2747b4fa38)",
+      "generator": "node waveform (tools/assets/sfx-placeholders.mjs), afconvert AAC 96k, libsndfile Vorbis (tools/assets/sfx-ogg-sndfile.py)",
+      "postProcess": "44100 Hz mono PCM 280 ms, peak -9.0 dBFS, no leading silence (4 ms attack from sample 0, 10 ms fade-out); afconvert AAC 96k (-c 1); OGG route B libsndfile Vorbis default quality via tools/assets/sfx-ogg-sndfile.py (route A ffmpeg vorbis -strict -2 failed: encoder rejects mono, 'Could not open encoder before EOF'); WAV SHA-256 4f6371aed47ff0a13408ebc0bcde15450de23dcc492aae5b45b267ba90f90b18; measured: m4a 348.3 ms / 5029 B / -9.08 dB, ogg 280.0 ms / 5214 B / -8.23 dB",
+      "batch": "playtest-m3",
+      "hash": "47e065a6d82f98050d31595db168f8a3a8a43ff288cfbb27ad9269a4e263174c",
+      "recordedAt": "2026-10-27",
+      "recordedBy": "WORK-026-2 / TASK-199",
+      "history": [],
+      "note": "WORK-026-2 M3 playtest-ready batch under gate answer 2 (synthesized placeholder, zero spend, no audio-generation service); replaceable by id with no code change (ASSET-018); OGG route B libsndfile Vorbis validated by decode round-trip (gate fork Q-B; route A ffmpeg vorbis rejects mono); creative verdict (fit, not annoying at the 20 s cadence) at the MILESTONE-007 dry run; not status accepted"
+    },
+    {
+      "id": "sfx/phase-pop",
+      "type": "audio",
+      "urls": [
+        "sfx/phase-pop.m4a",
+        "sfx/phase-pop.ogg"
+      ],
+      "durationMs": 442,
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "tools/assets/sfx-placeholders.mjs (SHA-256 2f1e3e2fcdf458095e073190371a40bd1a15ea79c38113ae1ee48df3f0cb337a) + tools/assets/sfx-placeholders-v1.config.json (SHA-256 2852e00f5dcf8fdd3f6c9a0af1f13d71dcf588508f7d8490b2ca2db551937b7a), entry phase-pop: deterministic sine/envelope tone; OGG helper tools/assets/sfx-ogg-sndfile.py (SHA-256 18cca28917bd875b2c629a3e782f7f40c2e6001fe6de6d289eb5db2747b4fa38)",
+      "generator": "node waveform (tools/assets/sfx-placeholders.mjs), afconvert AAC 96k, libsndfile Vorbis (tools/assets/sfx-ogg-sndfile.py)",
+      "postProcess": "44100 Hz mono PCM 380 ms, peak -5.0 dBFS, no leading silence (4 ms attack from sample 0, 10 ms fade-out); afconvert AAC 96k (-c 1); OGG route B libsndfile Vorbis default quality via tools/assets/sfx-ogg-sndfile.py (route A ffmpeg vorbis -strict -2 failed: encoder rejects mono, 'Could not open encoder before EOF'); WAV SHA-256 e74ba8bcfa3d3a25e080b532d1fdc9254c49b286f837f77a88237d8070109238; measured: m4a 441.2 ms / 5387 B / -5.05 dB, ogg 380.0 ms / 5370 B / -4.69 dB",
+      "batch": "playtest-m3",
+      "hash": "951c1706bb2519e83ee96b645d81192443981f895bb2a58463de41566909e155",
+      "recordedAt": "2026-10-27",
+      "recordedBy": "WORK-026-2 / TASK-199",
+      "history": [],
+      "note": "WORK-026-2 M3 playtest-ready batch under gate answer 2 (synthesized placeholder, zero spend, no audio-generation service); replaceable by id with no code change (ASSET-018); OGG route B libsndfile Vorbis validated by decode round-trip (gate fork Q-B; route A ffmpeg vorbis rejects mono); creative verdict (fit, not annoying at the 20 s cadence) at the MILESTONE-007 dry run; not status accepted"
     }
   ]
 }

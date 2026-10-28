@@ -1,4 +1,5 @@
 import type { Action } from '@sim/actions';
+import type { ExportMethod } from '@app/log';
 import type { SimEvent } from '@sim/events';
 import type { GameState } from '@sim/state';
 import { activeProjectId, starsOf } from '@sim/select';
@@ -12,7 +13,6 @@ export type DebugPanel = { open(): void; close(): void; toggle(): void; refresh(
 
 export const ERROR_MS = 3000;
 const PROJECT_ROWS = ['Simulate a purchase', 'Set current progress', 'Jump to next phase', 'Complete project'];
-const LATER_ROWS = ['Tester label', 'Export log']; // WORK-025 (11, 13)
 
 /** Verification §5/§7 GAP-4 sampler: ten 1 s reads of the fps getter, then one `perf.sample` record. */
 export async function sampleFps(fps: () => number, record: (type: 'perf.sample', payload: FpsSample) => void,
@@ -134,6 +134,14 @@ function fillInputs(context: ViewContext, row: (name: string) => HTMLElement, la
   inputOf(row('Feed seed')).value = String(state.session.seed);
   inputOf(row('Event interval')).value = String(state.session.eventIntervalMs ?? lastNonNull);
   if (projectId) inputOf(row('Set current progress')).value = String(state.projects[projectId].currentCents);
+  inputOf(row('Tester label')).value = state.session.testerLabel;
+  buttonsOf(row('Export log'))[2].hidden = !canShareFiles();
+}
+
+/** mec-010 §3 row 13: Share is shown only when the browser can share a `.jsonl` file (evaluated on every open). */
+function canShareFiles(): boolean {
+  const probe = [new File([''], 'x.jsonl', { type: 'application/x-ndjson' })];
+  return typeof navigator.canShare === 'function' && navigator.canShare({ files: probe });
 }
 
 /** Row 14 text and every widget's reflected state (switches, segments, disabled project rows, row-4 caption). */
@@ -173,7 +181,6 @@ function decorate(section: HTMLElement, row: (name: string) => HTMLElement): Ext
   inputOf(row('Feed seed')).setAttribute('aria-label', 'Feed seed');
   inputOf(row('Set current progress')).setAttribute('aria-label', 'Current cents');
   const caption = document.createElement('small'); row('Set current progress').querySelector('div')!.append(caption);
-  for (const name of LATER_ROWS) for (const el of row(name).querySelectorAll<HTMLInputElement | HTMLButtonElement>('button, input')) el.disabled = true;
   section.querySelector('.tpp-debug-scroll > p:not(.tpp-debug-error)')?.remove();
   const noProject = document.createElement('p'); noProject.className = 'tpp-debug-note'; noProject.textContent = 'All projects complete'; noProject.hidden = true;
   row('Simulate a purchase').before(noProject);
@@ -299,8 +306,27 @@ function bindFixture(b: Binding): void {
   });
 }
 
+/** Row 11: the label applies on change (Enter or blur) through D3; the input then reflects the reduced (trimmed, capped) value. */
+function bindTesterLabel(b: Binding): void {
+  const input = inputOf(b.row('Tester label'));
+  input.addEventListener('change', () => {
+    b.dispatchFrom('Tester label', { type: 'debugSetTesterLabel', text: input.value });
+    input.value = b.context.store.getState().session.testerLabel;
+  });
+}
+
+/** Row 13: Download · Copy · Share → `log.exportLog(method)`; a failure shows the row error (the log records `app.error`). */
+function bindExport(b: Binding): void {
+  const methods: ExportMethod[] = ['download', 'copy', 'share'];
+  buttonsOf(b.row('Export log')).forEach((button, i) => b.listen(button, () => {
+    b.context.log.exportLog(methods[i]).catch(error => b.showError('Export log', `Export failed: ${errorMessage(error)}`));
+  }));
+}
+
 function bindRows(b: Binding): void {
   bindDispatchRows(b);
+  bindTesterLabel(b);
+  bindExport(b);
   bindReset(b);
   bindViewSwitches(b);
   bindPreview(b);

@@ -225,3 +225,19 @@ export const domRead = page => page.evaluate(() => {
 
 export const errorsSummary = (errors, all) => ({ consoleErrors: errors.consoleErrors, pageErrors: errors.pageErrors, assetLoadErrors: all.filter(l => l.type === 'asset.loadError'), appErrors: all.filter(l => l.type === 'app.error') });
 export const writeJson = (path, value) => { mkdirSync(dirname(path), { recursive: true }); writeFileSync(path, `${JSON.stringify(value, null, 2)}\n`); };
+
+/** WORK-025-2 (additive): a real touch drag through CDP Input.dispatchTouchEvent (Playwright's touchscreen has only tap).
+ * CSS px in and out; `during(page)` runs while the finger is held; returns { held, after }. Chromium only (CDP). */
+export async function touchDrag(page, from, to, { steps = 6, holdMs = 1100, during = null } = {}) {
+  const cdp = await page.context().newCDPSession(page);
+  const touch = (type, p) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: p ? [{ x: p.x, y: p.y, id: 1, radiusX: 4, radiusY: 4, force: 1 }] : [] });
+  try {
+    await touch('touchStart', from);
+    for (let i = 1; i <= steps; i++) { await touch('touchMove', { x: from.x + (to.x - from.x) * i / steps, y: from.y + (to.y - from.y) * i / steps }); await page.waitForTimeout(16); }
+    await page.waitForTimeout(Math.max(0, holdMs - 300));
+    const held = during ? await during(page) : null;
+    await page.waitForTimeout(300);
+    await touch('touchEnd', null);
+    return { held };
+  } finally { await cdp.detach().catch(() => {}); }
+}

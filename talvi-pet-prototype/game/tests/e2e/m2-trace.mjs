@@ -342,8 +342,8 @@ async function dogReturn() {
   await waitScene(page, 'Street', 600);
   await drainAll(800);
   // leave the pet-front spawn sideways first so the steer never re-enters the Pet House door (the rect sits right above the spawn)
-  await steer(page, 200, 905, () => window.__tpp.store.getState().avatar.x < 260, 40000);
-  await steer(page, 200, 795, () => window.__tpp.store.getState().scene.roomId === 'dog-room', 30000);
+  await steer(page, 480, 905, () => window.__tpp.store.getState().avatar.x < 540, 40000);
+  await steer(page, 480, 795, () => window.__tpp.store.getState().scene.roomId === 'dog-room', 30000);
   await waitScene(page, 'Interior', 600);
   await drainAll(1200);
   const tuning = await page.evaluate(() => window.__tpp.content?.tuning ?? null);

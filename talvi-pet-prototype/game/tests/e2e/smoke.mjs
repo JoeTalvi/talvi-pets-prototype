@@ -44,7 +44,7 @@ async function bootStep(browser) {
   await waitScene(page, 'Street');
   const boot0 = await page.evaluate(() => ({ loader: window.__tpp.game.scene.getScene('Boot').loaderTotals, scene: window.__tpp.store.getState().scene }));
   const all = await lines(page), dom = await domRead(page);
-  step('boot: BootScene complete, totalFailed 0, 91 textures (lenient; WORK-022-1 measured 85 + 6 charms-m2)', boot0.loader.totalFailed === 0 && boot0.loader.totalComplete === 91, 'loaderTotals {totalComplete 91, totalFailed 0}', boot0.loader);
+  step('boot: BootScene complete, totalFailed 0, 95 files (lenient; WORK-026-2 measured 91 + 4 sfx playtest-m3)', boot0.loader.totalFailed === 0 && boot0.loader.totalComplete === 95, 'loaderTotals {totalComplete 95, totalFailed 0}', boot0.loader);
   step('boot: session.started ×1, scene street', count(all, 'session.started') === 1 && boot0.scene.kind === 'street', 'session.started ×1; scene.kind street', { sessionStarted: count(all, 'session.started'), scene: boot0.scene });
   step('boot: orientation box visible (text-only game box)', dom.dialogue.visible && (await getState(page)).dialogue.current?.source === 'orientation', 'dialogue panel visible with the orientation script', { dom: dom.dialogue, source: (await getState(page)).dialogue.current?.source });
   const taps = await tapBoxUntilClosed(page);
@@ -55,7 +55,7 @@ async function bootStep(browser) {
 }
 
 async function doorStep(page) {
-  const left = await holdUntil(page, 'KeyA', () => window.__tpp.store.getState().avatar.x <= 200);
+  const left = await holdUntil(page, 'KeyA', () => window.__tpp.store.getState().avatar.x <= 480);
   // One clock (review B-1): page performance.now() for every end. A store listener stamps scene.changed as it is emitted, and a
   // rAF watcher started before KeyW stamps Interior active and the end of its camera fade-in. The log's t is session-relative and is not used here.
   await page.evaluate(() => {

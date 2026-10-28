@@ -54,6 +54,17 @@ it('VERIFY-MEC-010-003 debugSetEventInterval null freezes the clock at 0; 100 is
     events: [{ type: 'action.rejected', action: tooFast, reason: 'invalidInterval' }] });
 });
 
+it('VERIFY-MEC-010-013 partial: node half (120 s of ticks) — frozen from initialState: zero roundup.fired, sinceLastEventMs stays 0', () => {
+  const content = validContent();
+  const frozen = run(content, initialState(content, 1234), [{ type: 'debugSetEventInterval', ms: null }]).state;
+  const ticked = advance(reduce, content, frozen, 120_000);
+  expect(eventsOf(ticked.events, 'roundup.fired')).toEqual([]);
+  expect(ticked.state.feed.sinceLastEventMs).toBe(0);
+  expect(ticked.state.session.eventIntervalMs).toBeNull();
+  const control = advance(reduce, content, initialState(content, 1234), 120_000); // same span unfrozen: the clock does fire
+  expect(eventsOf(control.events, 'roundup.fired').length).toBeGreaterThan(0);
+});
+
 it('VERIFY-MEC-010-004 two reducers given debugSetSeed 7 produce identical round-ups over 100 s', () => {
   const content = validContent();
   const streams = [1, 2].map(seed => {
