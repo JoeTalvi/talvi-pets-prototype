@@ -9,7 +9,7 @@ import { sha, boot, waitScene, getState, lines, until, setDebug, writeJson, erro
 const EV = process.env.TPP_EVIDENCE;
 if (!EV) throw new Error('TPP_EVIDENCE is required');
 const out = join(EV, 'webkit'); mkdirSync(out, { recursive: true });
-const CHROMIUM_TOTAL = 95; // smoke.mjs line 47 pin on the M3 package head (WORK-026-2 measured 91 + 4 sfx; WORK-025-3 re-pinned after the merge)
+const CHROMIUM_TOTAL = 99; // smoke.mjs line 47 pin (WORK-026-2 measured 91 + 4 sfx; WORK-034-1 measured 99 with the two owl-mate and two site-garden rows)
 const PHONE = { name: 'iPhone 15 landscape (screen 852x393)', contextOptions: { ...devices['iPhone 15 landscape'], screen: { width: 852, height: 393 } } };
 const DESK = { name: 'desktop 1920x823', contextOptions: { viewport: { width: 1920, height: 823 } } };
 
