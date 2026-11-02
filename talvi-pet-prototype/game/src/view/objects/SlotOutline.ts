@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import type { Slot } from '@content/schema/room';
+import { OUTLINE_BAND } from '../celebration/timings';
 
 export type OutlineState = 'empty' | 'filled' | 'selected';
 
@@ -37,7 +38,8 @@ export class SlotOutline extends Phaser.GameObjects.Graphics {
     this.slotId = slot.id;
     this.points = outlinePoints(slot);
     this.polygon = new Phaser.Geom.Polygon(this.points);
-    const depth = (slot.depthOverride ?? slot.y) - 0.5;
+    // WORK-032-2 order fork (c): outlines keep their base-y order but draw in a band above the design tint (and every world sprite).
+    const depth = OUTLINE_BAND + (slot.depthOverride ?? slot.y) - 0.5;
     const centre = Phaser.Geom.Polygon.GetAABB(this.polygon);
     this.label = scene.add.text(centre.centerX, centre.centerY, LABEL[slot.sizeClass], { fontFamily: 'Nunito, sans-serif', fontStyle: '800', fontSize: '22px', color: '#ffffff' })
       .setOrigin(0.5).setDepth(depth);

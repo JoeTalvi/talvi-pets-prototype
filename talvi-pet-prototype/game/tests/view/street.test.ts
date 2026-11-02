@@ -31,7 +31,7 @@ describe('VERIFY-PRES-008 replay boot', () => {
   it('presentation §4 StreetScene at the replay boot (WORK-020-1 replaces the WORK-014 placeholder title) — no door rects, one HouseSprite per street house at displayedPhase', async () => {
     const content = validContent();
     const scene = await bootScene(StreetScene, contextFor(content, (parseSaveValue(content, JSON.parse(fixtureText('save-v1.milestone.json'))) as { state: GameState }).state), {}, ['houses/fixture']);
-    expect(scene.children.list.filter(c => c.type === 'Rectangle')).toHaveLength(0);
+    expect(scene.children.list.filter(c => c.type === 'Rectangle' && c !== scene.designTint.rect)).toHaveLength(0);
     expect([...scene.houses.keys()]).toEqual(content.street.houses.map(h => h.projectId));
     expect([...scene.houses.values()].map(h => h.phase)).toEqual([5, 4]);
   });

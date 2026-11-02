@@ -10,6 +10,7 @@ import { contextOf, type ViewContext } from '../context';
 import { startSceneFor } from '../startup';
 import { drawAlignment } from '../alignmentGrid';
 import { previewLayers, type Preview } from '../preview';
+import { DesignTint } from '../objects/DesignTint';
 
 export const FADE_MS = 250;
 
@@ -21,6 +22,8 @@ export abstract class WorldScene extends Phaser.Scene {
   transitioning = false;
   alignment: Phaser.GameObjects.Graphics | null = null;
   preview!: Preview;
+  /** WORK-032-2 fix 4: the design-mode world tint every world scene owns (the street's stays off until it has a design mode, WORK-034). */
+  designTint!: DesignTint;
   /** Which TOOL-002 stage-1 layers this scene offers (Interior: four; Street: geometry). */
   protected abstract readonly previewKind: 'interior' | 'street';
   protected unsubscribes: (() => void)[] = [];
@@ -33,6 +36,8 @@ export abstract class WorldScene extends Phaser.Scene {
     this.context = contextOf(this);
     this.cameras.main.setScroll(0, (1080 - this.scale.gameSize.height) / 2);
     this.drawWorld();
+    this.designTint = new DesignTint(this);
+    this.syncDesignTint(this.context.store.getState());
     this.avatar = new AvatarSprite(this, this.context.store.getState().avatar.x, this.context.store.getState().avatar.y);
     this.joystick = new Joystick(this, this.context);
     this.subscribeCommon();
@@ -69,11 +74,15 @@ export abstract class WorldScene extends Phaser.Scene {
     else if (!on && this.alignment) { this.alignment.destroy(); this.alignment = null; }
   }
 
+  /** The tint follows `state.mode` (mode.changed, and the state at create so a reload or restart in design mode keeps it). */
+  syncDesignTint(state: Pick<GameState, 'mode'>): void { this.designTint.setOn(state.mode === 'design'); }
+
   protected on<T extends SimEvent['type']>(type: T, fn: (event: EventOf<T>, stateAfter: GameState) => void): void {
     this.unsubscribes.push(this.context.store.subscribe(type, fn));
   }
 
   private subscribeCommon(): void {
+    this.on('mode.changed', (_event, after) => this.syncDesignTint(after));
     this.on('scene.changed', event => {
       this.transitioning = true;
       this.joystick.release();
@@ -87,6 +96,7 @@ export abstract class WorldScene extends Phaser.Scene {
   private teardown(): void {
     for (const off of this.unsubscribes.splice(0)) off();
     this.preview.destroy();
+    this.designTint.destroy();
     this.joystick.destroy();
   }
 }

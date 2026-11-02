@@ -4,13 +4,14 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { destroyScene } from './sceneHarness';
 import { designSetup, linesOf, pointer } from './designHarness';
 import { outlinePoints } from '../../src/view/objects/SlotOutline';
+import { OUTLINE_BAND } from '../../src/view/celebration/timings';
 
 afterEach(() => { destroyScene(); document.body.replaceChildren(); vi.restoreAllMocks(); });
 
 const shown = (setup: Awaited<ReturnType<typeof designSetup>>) => [...setup.scene.outlines.values()].filter(o => o.visible).length;
 
 describe('presentation §6.2 SlotOutline', () => {
-  it('presentation §6.2 SlotOutline — 12 outlines, hidden in play, shown empty with class labels in design, depth = slot.y − 0.5', async () => {
+  it('presentation §6.2 SlotOutline — 12 outlines, hidden in play, shown empty with class labels in design, depth = OUTLINE_BAND + slot.y − 0.5 (WORK-032-2 fork (c))', async () => {
     const setup = await designSetup({ mode: 'play' });
     const { scene, context } = setup;
     expect(scene.outlines.size).toBe(12);
@@ -21,17 +22,17 @@ describe('presentation §6.2 SlotOutline', () => {
     expect(outlines.every(o => o.outlineState === 'empty' && o.label.visible)).toBe(true);
     const labels = outlines.map(o => o.label.text);
     expect([labels.filter(l => l === 'floor').length, labels.filter(l => l === 'large').length, labels.filter(l => l === 'wall').length]).toEqual([7, 1, 4]);
-    expect(scene.outlines.get('floor-3')!.depth).toBe(449.5);
-    expect(scene.outlines.get('wall-1')!.depth).toBe(299.5);
+    expect(scene.outlines.get('floor-3')!.depth).toBe(OUTLINE_BAND + 449.5);
+    expect(scene.outlines.get('wall-1')!.depth).toBe(OUTLINE_BAND + 299.5);
     expect(scene.outlines.get('floor-3')!.input?.enabled).toBe(true);
     context.store.dispatch({ type: 'setDesignMode', on: false });
     expect(shown(setup)).toBe(0);
     expect(scene.outlines.get('floor-3')!.input?.enabled ?? false).toBe(false);
   });
 
-  it('presentation §6.2 SlotOutline — depthOverride 1 gives depth 0.5', async () => {
+  it('presentation §6.2 SlotOutline — depthOverride 1 gives depth OUTLINE_BAND + 0.5', async () => {
     const { scene } = await designSetup({ patches: [{ file: 'rooms/dog-room.json', path: '/slots/8/depthOverride', value: 1 }] });
-    expect(scene.outlines.get('wall-1')!.depth).toBe(0.5);
+    expect(scene.outlines.get('wall-1')!.depth).toBe(OUTLINE_BAND + 0.5);
   });
 
   it('presentation §6.2 SlotOutline — placeCharm → filled (solid, no label), removeCharm → empty', async () => {
