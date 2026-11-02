@@ -6,7 +6,7 @@
 // tester label → TEST-008 reset "Start frozen" + one real 120 s wait → Playtest restored → TEST-003 (street) → TEST-004 (street "?") →
 // walk into the Starter House → TEST-001 → want-panel "2 charms" (WORK-033-2) → TEST-005/006 → scarcity block (place lamp → "none left" → inert
 // click → remove → "×1") → strip reaction (remove the Heart bed → 😢, bed back, row 19 still) (WORK-033-2) → TEST-007 → garden site
-// (WORK-034-3: row 20 unlock → walk out → street Decorate → 2 outdoor placements → Done → the mate's site arrival → input unfreezes → wander → 1 remove) → mute → exports
+// (WORK-034-3: row 20 unlock → walk out → street Decorate → 2 outdoor placements → Done → the mate's site arrival → input unfreezes → wander → 1 remove → walk back into the Dog room) → mute → exports
 // (Download, Copy, Share hidden / stub) → R-9 → errors → storage + reload → quota (own context) → tier 1 save reset (own context, WORK-033-2). Writes trace-report.json, trace-log.jsonl, storage-reads.json, rows/*, exports/*, loops/*, captures/*.
 import { mkdtempSync, rmSync, readFileSync, existsSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
@@ -514,6 +514,14 @@ async function gardenSite() {
     removed.length === 1 && sR.inventory.counts[first] === cBefore + 1 && hR.stars === '4 / 24 ★' && (await getState(page)).mode === 'play',
     'charm.removed ×1; count +1; 4 / 24 ★', { removed: removed.map(strip), counts: { before: cBefore, after: sR.inventory.counts[first] }, hud: hR });
   row('t2-site', { verify: 'VERIFY-T2-SITE-101..106 (browser half)', first, second, phases, view: vW });
+  // back into the Dog room so the later beats (mute, exports) run where they always ran: the mate's wander on the street writes
+  // pet.phaseChanged lines that would fall between the export and its log.exported record
+  await steer(page, 475, 965, () => { const s = window.__tpp.store.getState(); return (Math.abs(s.avatar.x - 475) < 30 && s.avatar.y > 940) || s.scene.kind === 'interior'; }, 40000);
+  await steer(page, 475, 895, () => window.__tpp.store.getState().scene.roomId === 'dog-room', 30000);
+  await waitScene(page, 'Interior', 800);
+  await drainAll(1500);
+  const back = await getState(page);
+  beat('garden: walk back into the Starter House → scene dog-room (the later beats run where they always ran)', back.scene.roomId === 'dog-room' && !back.dialogue.current, 'scene dog-room', { scene: back.scene });
 }
 
 // ---- mute (row 10) both ways ------------------------------------------------------------------------------------------------------
