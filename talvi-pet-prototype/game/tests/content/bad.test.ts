@@ -6,6 +6,14 @@ import { manifest } from './helpers';
 const cases: Record<string, string[]> = {
     'chk-001-04-spawn-in-door': [
         'CHK-001-04'
+    ], 'chk-001-11-blocker-off-scene': [
+        'CHK-001-11'
+    ], 'chk-001-12-spawn-in-blocker': [
+        'CHK-001-12'
+    ], 'chk-001-13-door-in-blocker': [
+        'CHK-001-13'
+    ], 'chk-001-14-arrival-in-other-blocker': [
+        'CHK-001-14'
     ], 'chk-005-02-asym-adjacency': [
         'CHK-005-02'
     ], 'chk-006-01-stars-repeat-5': [
@@ -50,6 +58,11 @@ const cases: Record<string, string[]> = {
         'CHK-002-03'
     ]
 };
+/** WORK-032-1: each CHK-001-11..14 fixture names its exact JSON path. */
+const blockerPaths: Record<string, string> = {
+    'chk-001-11-blocker-off-scene': '/houses/0/blockers/0', 'chk-001-12-spawn-in-blocker': '/playerSpawn',
+    'chk-001-13-door-in-blocker': '/houses/0/door/rect', 'chk-001-14-arrival-in-other-blocker': '/houses/1/arrivalPath/1'
+};
 describe('named single-fault fixtures', () => {
     for (const [name, expected] of Object.entries(cases))
         it(name, () => {
@@ -66,6 +79,8 @@ describe('named single-fault fixtures', () => {
                         ...new Set(errors.map(x => x.ids[0]))
                     ]).toEqual(expected);
                     expect(errors.every(x => x.path.startsWith('/'))).toBe(true);
+                    if (name in blockerPaths)
+                        expect(errors.map(x => x.path)).toEqual([blockerPaths[name]]);
                 }
             }
             catch (e) {
