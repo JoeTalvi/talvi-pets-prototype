@@ -8,7 +8,9 @@ export const CharmTypeSchema = z.object({
     // Height above the charm's base where a pet using it is drawn (lying on the cushion, sitting on the stool).
     seat: z.object({ y: z.number().int().nonnegative() }).optional(),
     // A wall charm that stands on the floor against the wall (the bookshelf) instead of hanging at the slot.
-    standsOnFloor: z.boolean().optional()
+    standsOnFloor: z.boolean().optional(),
+    // The wall a non-painting wall charm's art is drawn for (WORK-032-2 fix 5); absent = 'left', mirrored on the other wall.
+    wallArtFacing: z.enum(['left', 'right']).optional()
 });
 export const CharmsSchema = z.object({
     types: z.array(CharmTypeSchema), starterSet: z.array(Id)
