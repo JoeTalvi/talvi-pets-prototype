@@ -19,7 +19,9 @@ import { afterPlacement } from './rules/reactions';
 import { applyPlace, applyRemove, type PlacementChange, type SlotsResult } from './rules/slots';
 import { afterRoomChange } from './rules/stars';
 import { activateFirstWant, afterRoomChange as wantsAfterRoomChange } from './rules/wants';
-import type { GameState, RoomId } from './state';
+import type { GameState } from './state';
+import { debugFillSpace, debugFulfilActiveWant, debugUnlockSpace } from './rules/debugSpace';
+import { maybeStartSiteArrival } from './rules/sites';
 
 type Payload = Record<string, unknown>;
 const isString = (value: unknown) => typeof value === 'string';
@@ -53,6 +55,9 @@ const payloadValid: Record<Action['type'], (action: Payload) => boolean> = {
     (action.count as number) >= 1 && (action.count as number) <= 9,
   debugJumpPhase: action => isString(action.projectId),
   debugCompleteProject: action => isString(action.projectId),
+  debugUnlockSpace: action => isString(action.siteId),
+  debugFillSpace: action => isString(action.siteId),
+  debugFulfilActiveWant: action => isString(action.petId),
   debugSetStarsVisible: action => isBoolean(action.on),
   debugSetMuted: action => isBoolean(action.on),
   debugSetTesterLabel: action => isString(action.text) && action.text.trim().length <= 40,
@@ -65,7 +70,7 @@ type TickStep = (content: Content, state: GameState, action: TickAction,
   eventsSoFar: readonly SimEvent[]) => RuleResult;
 const tickSteps: TickStep[] = [
   (content, state, action) => ({ state: stepAvatar(content, state, action), events: [] }),
-  (content, state) => stepDoors(content, state),
+  (content, state) => enterStreet(content, stepDoors(content, state)),
   // Play-session 2026-10-26 ("Wait for tap"): stepping onto the street no longer starts an owed celebration.
   (content, state, action) => stepFeed(content, state, action),
   stepResidentPet,
@@ -78,14 +83,19 @@ const tickSteps: TickStep[] = [
 type PlacementLink = (content: Content, before: GameState, current: GameState,
   change: PlacementChange, eventsSoFar: readonly SimEvent[]) => RuleResult;
 const placementChain: PlacementLink[] = [
-  (content, before, current) => ({ state: current,
-    events: afterRoomChange(content, before, current, (before.scene as { roomId: RoomId }).roomId) }),
-  (content, before, current, change) =>
-    wantsAfterRoomChange(content, current, (before.scene as { roomId: RoomId }).roomId, change),
+  (content, before, current, change) => ({ state: current, events: afterRoomChange(content, before, current, change.space) }),
+  (content, _before, current, change) => wantsAfterRoomChange(content, current, change.space, change),
   afterPlacement,
   (content, before, current, change) => afterRemoval(content, before, current, change),
   (content, before, current, _change, eventsSoFar) => afterWantActivated(content, before, current, eventsSoFar),
 ];
+
+/** Fork 3 (DEC-044): entering the street with the site at `arrivalAtStars` starts the mate's arrival. */
+function enterStreet(content: Content, doors: RuleResult): RuleResult {
+  if (!doors.events.some(event => event.type === 'scene.changed' && event.to.kind === 'street')) return doors;
+  const arrival = maybeStartSiteArrival(content, doors.state);
+  return { state: arrival.state, events: [...doors.events, ...arrival.events] };
+}
 
 function runTick(content: Content, state: GameState, action: TickAction): RuleResult {
   let current = state;
@@ -119,6 +129,8 @@ const handlers: Handlers = {
   debugJumpPhase: debugProgress, debugCompleteProject: debugProgress,
   debugSetFeedPresentation: debugSetting, debugSetStarsVisible: debugSetting, debugSetMuted: debugSetting,
   debugSetTesterLabel: debugSetting,
+  debugUnlockSpace, debugFulfilActiveWant,
+  debugFillSpace: (content, state, action) => debugFillSpace(content, state, action, runPlacement),
 };
 
 /** CONTRACT-ACTIONS v1.5: apply fully, or reject with `result.state === state`. Every action is handled. */

@@ -185,6 +185,8 @@ function decorate(section: HTMLElement, row: (name: string) => HTMLElement, cont
   inputOf(row('Set current progress')).setAttribute('aria-label', 'Current cents');
   row('Grant copies').querySelector('select')!.innerHTML = content.charms.types   // row 19: catalogue order, by name
     .map(type => `<option value="${escapeHtml(type.id)}">${escapeHtml(type.name)}</option>`).join('');
+  row('Fulfil active want').querySelector('select')!.innerHTML = Object.values(content.pets)   // WORK-034-2 row 22: pets in content order
+    .map(pet => `<option value="${escapeHtml(pet.id)}">${escapeHtml(pet.name)}</option>`).join('');
   const caption = document.createElement('small'); row('Set current progress').querySelector('div')!.append(caption);
   section.querySelector('.tpp-debug-scroll > p:not(.tpp-debug-error)')?.remove();
   const noProject = document.createElement('p'); noProject.className = 'tpp-debug-note'; noProject.textContent = 'All projects complete'; noProject.hidden = true;
@@ -227,6 +229,11 @@ function bindDispatchRows(b: Binding): void {
   // Row 19 (WORK-033-2, TEST-002 arm): n copies of one type; the sim validates the count (1..9) and rejects otherwise.
   go('Grant copies', 0, () => ({ type: 'debugGrantCopies', typeId: row('Grant copies').querySelector('select')!.value,
     count: Number(inputOf(row('Grant copies')).value) }));
+  // Rows 20–22 (WORK-034-2): the garden site arms and the gate fork 8 "fulfil active want" arm (passes `greeted` before WORK-036).
+  const siteId = () => content.street.sites[0]?.id ?? null;
+  go('Unlock garden', 0, () => { const id = siteId(); return id ? { type: 'debugUnlockSpace', siteId: id } : null; });
+  go('Fill garden', 0, () => { const id = siteId(); return id ? { type: 'debugFillSpace', siteId: id } : null; });
+  go('Fulfil active want', 0, () => ({ type: 'debugFulfilActiveWant', petId: row('Fulfil active want').querySelector('select')!.value }));
   go('Feed presentation', 0, () => ({ type: 'debugSetFeedPresentation', mode: 'events' }));
   go('Feed presentation', 1, () => ({ type: 'debugSetFeedPresentation', mode: 'trickle' }));
   const flip = (name: string, action: () => Action) => listen(switchOf(row(name)), () => dispatchFrom(name, action()));

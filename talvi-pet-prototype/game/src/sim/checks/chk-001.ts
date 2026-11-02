@@ -33,7 +33,26 @@ export function check001(c: Content, m?: AssetManifest): Finding[] {
             add('06', 'street.json', '/houses', `Project "${p.id}" must have exactly one house targeting "${p.interiorRoomId}"`);
     });
     out.push(...checkGroundAndArrivals(c, m));
-    out.push(...checkBlockers(c));
+    out.push(...checkBlockers(c), ...checkSites(c));
+    return out;
+}
+/** WORK-034-2 (DEC-044): CHK-001-15 site points inside the walk area, outside every blocker and door rect;
+ * CHK-001-16 (warning) a site point or slot base below the 1920x823 visible band (y 951.5). */
+function checkSites(c: Content): Finding[] {
+    const out: Finding[] = [];
+    const s = c.street, blockers = s.houses.flatMap(h => h.blockers), doors = s.houses.map(h => h.door.rect);
+    (s.sites ?? []).forEach((site, i) => {
+        const base = `/sites/${i}`;
+        const points = [{ p: { x: site.x, y: site.y }, path: base }, { p: site.petSpawn, path: `${base}/petSpawn` },
+            ...site.wanderPoints.map((p, j) => ({ p, path: `${base}/wanderPoints/${j}` })),
+            ...(site.arrivalPath.length ? [{ p: site.arrivalPath[site.arrivalPath.length - 1], path: `${base}/arrivalPath/${site.arrivalPath.length - 1}` }] : [])];
+        for (const { p, path } of points)
+            if (!pointInPolygon(p, s.walkArea) || blockers.some(b => pointInRect(p, b)) || doors.some(d => within(p, d)))
+                out.push(finding('CHK-001-15', 'error', 'street.json', path, 'Site point must be inside walkArea and outside every house blocker and door rect'));
+        for (const { p, path } of [...points, ...site.slots.map((slot, j) => ({ p: slot, path: `${base}/slots/${j}` }))])
+            if (p.y > 951.5)
+                out.push(finding('CHK-001-16', 'warning', 'street.json', path, 'Site element lies below the 1920x823 visible band (y 951.5)'));
+    });
     return out;
 }
 /** WORK-032-1: street blockers (CHK-001-11..14). A door centre outside the walk area stays CHK-001-02 (aliased 13). */

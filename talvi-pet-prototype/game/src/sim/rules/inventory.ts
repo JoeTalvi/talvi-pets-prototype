@@ -2,6 +2,7 @@ import type { Content } from '../../content/types';
 import type { CharmType, Item } from '../../content/schema/charms';
 import type { RuleResult, SimEvent } from '../events';
 import type { CharmTypeId, GameState, SlotId, TagId } from '../state';
+import { slotOf } from './slots';
 
 export type GrantSource = Extract<SimEvent, { type: 'items.granted' }>['source'];
 
@@ -30,8 +31,7 @@ export const isGranted = (state: GameState, typeId: CharmTypeId): boolean =>
 /** MEC-004 R7: first-grant order, exact size class, only the current interior; zero-count types included
  * (the chooser shows them as "none left", DEC-043). */
 export function chooserTypes(content: Content, state: GameState, slotId: SlotId): CharmType[] {
-  if (state.scene.kind !== 'interior') return [];
-  const slot = content.rooms[state.scene.roomId].slots.find(slot => slot.id === slotId);
+  const slot = slotOf(content, state, slotId); // the interior's room, or an unlocked street site (WORK-034-2)
   if (!slot) return [];
   const types = new Map(content.charms.types.map(type => [type.id, type]));
   return Object.keys(state.inventory.counts).map(id => types.get(id)!)

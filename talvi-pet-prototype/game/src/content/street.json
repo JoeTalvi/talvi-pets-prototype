@@ -3743,5 +3743,137 @@
       "x": 1110,
       "y": 720
     }
+  ],
+  "sites": [
+    {
+      "id": "garden",
+      "x": 380,
+      "y": 955,
+      "art": {
+        "empty": "world/site-garden-empty",
+        "base": "world/site-garden-base"
+      },
+      "slots": [
+        {
+          "id": "garden-small-1",
+          "sizeClass": "small",
+          "x": 120,
+          "y": 820,
+          "anchor": {
+            "x": 160,
+            "y": 840,
+            "facing": "left"
+          },
+          "adjacent": [
+            "garden-small-2",
+            "garden-small-5"
+          ]
+        },
+        {
+          "id": "garden-small-2",
+          "sizeClass": "small",
+          "x": 250,
+          "y": 790,
+          "anchor": {
+            "x": 290,
+            "y": 800,
+            "facing": "left"
+          },
+          "adjacent": [
+            "garden-small-1",
+            "garden-large-1"
+          ]
+        },
+        {
+          "id": "garden-small-5",
+          "sizeClass": "small",
+          "x": 120,
+          "y": 880,
+          "anchor": {
+            "x": 160,
+            "y": 900,
+            "facing": "left"
+          },
+          "adjacent": [
+            "garden-small-1",
+            "garden-large-1"
+          ]
+        },
+        {
+          "id": "garden-large-1",
+          "sizeClass": "large",
+          "x": 240,
+          "y": 880,
+          "anchor": {
+            "x": 330,
+            "y": 900,
+            "facing": "left"
+          },
+          "adjacent": [
+            "garden-small-2",
+            "garden-small-5",
+            "garden-small-3"
+          ]
+        },
+        {
+          "id": "garden-small-3",
+          "sizeClass": "small",
+          "x": 360,
+          "y": 935,
+          "anchor": {
+            "x": 390,
+            "y": 950,
+            "facing": "left"
+          },
+          "adjacent": [
+            "garden-large-1",
+            "garden-small-4"
+          ]
+        },
+        {
+          "id": "garden-small-4",
+          "sizeClass": "small",
+          "x": 580,
+          "y": 905,
+          "anchor": {
+            "x": 560,
+            "y": 930,
+            "facing": "right"
+          },
+          "adjacent": [
+            "garden-small-3"
+          ]
+        }
+      ],
+      "wanderPoints": [
+        {
+          "id": "garden-w1",
+          "x": 160,
+          "y": 870
+        },
+        {
+          "id": "garden-w2",
+          "x": 330,
+          "y": 940
+        }
+      ],
+      "petSpawn": {
+        "x": 160,
+        "y": 870,
+        "facing": "right"
+      },
+      "residentPetId": "owl-mate",
+      "arrivalPath": [
+        {
+          "x": 90,
+          "y": 940
+        },
+        {
+          "x": 160,
+          "y": 870
+        }
+      ],
+      "arrivalAtStars": 8
+    }
   ]
 }

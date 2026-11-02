@@ -36,6 +36,14 @@ export function coverage(c: Content, findings: Finding[], opts: {
                 }))
             }
         ])),
+        // WORK-034-2 (TOOL-003): the outdoor sites, their slots and resident (the mate's wants are listed under pets).
+        sites: Object.fromEntries(c.street.sites.map(site => [
+            site.id, {
+                residentPetId: site.residentPetId, arrivalAtStars: site.arrivalAtStars, max: site.slots.length * c.tuning.starsFirstCopy,
+                slots: site.slots.map(slot => ({ id: slot.id, sizeClass: slot.sizeClass, x: slot.x, y: slot.y, adjacent: slot.adjacent })),
+                unlockedBy: Object.values(c.pets).flatMap(p => p.wants.filter(w => w.reward.some(r => r.kind === 'space' && r.siteId === site.id)).map(w => `${p.id}/${w.id}`))
+            }
+        ])),
         rooms: Object.fromEntries(Object.values(c.rooms).map(r => [
             r.id, {
                 max: r.slots.length * c.tuning.starsFirstCopy, reachableMax: reachableMax(c, r.id, allGrantedTypes(c)), floors: c.pets[r.residentPetId]?.wants.flatMap(w => w.conditions.flatMap(x => x.kind === 'stars' ? [
@@ -76,7 +84,7 @@ export function coverageText(c: Content, r: ReturnType<typeof coverage>): string
         id, p.lines
     ])), null, 2), 'E — Reward kinds', JSON.stringify(Object.fromEntries(Object.entries(r.pets).map(([id, p]) => [
         id, p.rewardKinds
-    ])), null, 2), 'F — Stars', JSON.stringify(r.rooms, null, 2));
+    ])), null, 2), 'F — Stars', JSON.stringify(r.rooms, null, 2), 'G — Sites', JSON.stringify(r.sites, null, 2));
     return lines.join('\n');
 }
 function wantCoverage(c: Content, petId: string, w: Want, index: number, findings: Finding[]) {

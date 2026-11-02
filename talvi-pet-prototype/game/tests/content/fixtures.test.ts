@@ -59,7 +59,7 @@ describe('VERIFY-TOOL-008 CLI', () => {
     writeFileSync(steps, JSON.stringify({ seed: 1, steps: [{ action: { type: 'setDesignMode', on: true } }] }));
     const result = fixture(['--steps', steps, '--content', 'tests/fixtures/content-min', '--out', out]);
     expect(result.status).toBe(1);
-    expect(result.stderr).toContain('step 0: setDesignMode rejected: notInterior');
+    expect(result.stderr).toContain('step 0: setDesignMode rejected: siteLocked');
     expect(existsSync(out)).toBe(false);
   });
   it('VERIFY-TOOL-008 a set outside the tools.md §2.4 fields exits 1 and writes nothing', () => {

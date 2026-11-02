@@ -4,6 +4,7 @@ import { itemTypeIds } from '../../content/schema/charms';
 import { rewardItems } from '../../content/schema/pet';
 import { tagSources, wantTags } from './coverage-data';
 import { check009Satisfiable } from './chk-009-17';
+import { check009Sites } from './chk-009-sites';
 export function check009(c: Content): Finding[] {
     const out: Finding[] = [];
     for (const p of Object.values(c.pets)) {
@@ -11,11 +12,14 @@ export function check009(c: Content): Finding[] {
         const add = (n: string, path: string, msg: string, level: 'error' | 'warning' = 'error', details?: Record<string, unknown>, aliases: string[] = []) => out.push(finding([
             `CHK-009-${n}`, ...aliases
         ], level, f, path, msg, undefined, details));
-        const homes = Object.values(c.rooms).filter(r => r.residentPetId === p.id), max = (homes[0]?.slots.length ?? 0) * c.tuning.starsFirstCopy;
+        // WORK-034-2: a space-homed pet's home is its site (DEC-044: three wants); CHK-009-18 checks the home itself.
+        const site = p.home?.kind === 'space' ? c.street.sites.find(s => p.home?.kind === 'space' && s.id === p.home.siteId) : undefined;
+        const homes = p.home?.kind === 'space' ? (site ? [site] : []) : Object.values(c.rooms).filter(r => r.residentPetId === p.id), max = (homes[0]?.slots.length ?? 0) * c.tuning.starsFirstCopy;
+        const target = p.home?.kind === 'space' ? 3 : 5;
         if (!p.wants.length)
             add('01', '/wants', 'At least one want required');
-        if (p.wants.length !== 5)
-            add('01', '/wants', 'Target is 5 wants', 'warning');
+        if (p.wants.length !== target)
+            add('01', '/wants', `Target is ${target} wants`, 'warning');
         const earlier = new Set<string>(), visibleEarlier = new Set<string>(), verbs = new Set(p.verbs.filter(v => v.atStart).map(v => v.verb));
         checkWants(c, p, add, homes.length, max, earlier, visibleEarlier, verbs);
         const earlyTypes = new Set([
@@ -40,14 +44,16 @@ export function check009(c: Content): Finding[] {
                 add('16', '/wants/0', `Dog first want lacks starter coverage: ${miss.join(', ')}`);
         }
     }
-    out.push(...check009Satisfiable(c));
+    out.push(...check009Satisfiable(c), ...check009Sites(c));
     return out;
 }
 type AddWantFinding = (n: string, path: string, msg: string, level?: "error" | "warning", details?: Record<string, unknown>, aliases?: string[]) => unknown;
 function checkWants(c: Content, p: Content["pets"][string], add: AddWantFinding, homeCount: number, max: number, earlier: Set<string>, visibleEarlier: Set<string>, verbs: Set<string>): void {
     p.wants.forEach((w, i) => {
-        const path = `/wants/${i}`, tags = w.conditions.filter(x => x.kind === 'tag'), adj = w.conditions.filter(x => x.kind === 'adjacent'), stars = w.conditions.filter(x => x.kind === 'stars'), hidden = tags.filter(x => x.hidden);
-        if (tags.length < 2 || tags.length > 3 || new Set(tags.map(x => x.tag)).size !== tags.length)
+        const greeted = w.conditions.some(x => x.kind === 'greeted'), path = `/wants/${i}`, tags = w.conditions.filter(x => x.kind === 'tag'), adj = w.conditions.filter(x => x.kind === 'adjacent'), stars = w.conditions.filter(x => x.kind === 'stars'), hidden = tags.filter(x => x.hidden);
+        if (!greeted && (tags.length < 2 || tags.length > 3)) // a `greeted` want (DEC-046) needs no tag
+            add('02', path + '/conditions', 'Want requires 2–3 distinct tag conditions');
+        if (tags.length > 3 || new Set(tags.map(x => x.tag)).size !== tags.length)
             add('02', path + '/conditions', 'Want requires 2–3 distinct tag conditions');
         if (adj.length > 1 || adj.some(x => x.tagA === x.tagB || ![
             x.tagA, x.tagB
@@ -78,7 +84,7 @@ function checkWants(c: Content, p: Content["pets"][string], add: AddWantFinding,
         }
         if (w.conditions.every(x => x.kind === 'stars' && x.min <= 0))
             add('11', path + '/conditions', 'Want must not be satisfiable by an empty room');
-        if (i > 0 && tags.every(t => earlier.has(t.tag)) && !adj.length && !stars.length)
+        if (i > 0 && !greeted && tags.every(t => earlier.has(t.tag)) && !adj.length && !stars.length)
             add('12', path + '/conditions', 'Already satisfied by the preceding fills', 'warning');
         for (const h of hidden)
             if (visibleEarlier.has(h.tag))

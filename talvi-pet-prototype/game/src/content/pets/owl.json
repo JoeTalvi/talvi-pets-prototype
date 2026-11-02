@@ -139,6 +139,10 @@
       ],
       "reward": [
         {
+          "kind": "space",
+          "siteId": "garden"
+        },
+        {
           "kind": "items",
           "items": [
             {
@@ -152,7 +156,7 @@
           ]
         }
       ],
-      "rewardLabel": "2 charms: Potted Tree, Night Light"
+      "rewardLabel": "Garden + Potted Tree, Night Light"
     },
     {
       "id": "reading-nook",

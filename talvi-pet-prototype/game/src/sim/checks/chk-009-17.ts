@@ -2,6 +2,7 @@ import type { Content } from '../../content/types';
 import type { Item } from '../../content/schema/charms';
 import { rewardItems, type Condition } from '../../content/schema/pet';
 import type { Slot } from '../../content/schema/room';
+import { homeSpaceOf, spaceDef } from '../space';
 import { finding, type Finding } from './types';
 
 /** CHK-009-17 (DEC-043): every want is satisfiable from the copies owned at its activation (a lower bound). */
@@ -16,12 +17,42 @@ function addItems(owned: Owned, items: readonly Item[]): void {
  * project): the starter set, from want 1 on also `phaseRewards[0]` of every rising project. An arriving pet
  * (resident of a rising project): the starter set + every phase of its project. Plus the pet's own earlier Heart items. */
 export function ownedAtActivation(c: Content, petId: string, wantIndex: number): Owned {
+  const home = c.pets[petId]?.home;
+  if (home?.kind === 'space') return ownedAtSiteWant(c, petId, home.siteId, wantIndex);
   const owned: Owned = {};
   addItems(owned, c.charms.starterSet);
   const own = c.projects.find(project => project.residentPetId === petId);
   if (own && !own.completeAtStart) own.phaseRewards.forEach(items => addItems(owned, items));
   else if (own && wantIndex >= 1)
     c.projects.filter(project => !project.completeAtStart).forEach(project => addItems(owned, project.phaseRewards[0] ?? []));
+  c.pets[petId].wants.slice(0, wantIndex).forEach(want => addItems(owned, rewardItems(want)));
+  return owned;
+}
+
+/** WORK-034-2: the pet and want index whose reward unlocks `siteId` (kind `space`), or null. */
+export function unlockWantOf(c: Content, siteId: string): { petId: string; wantIndex: number } | null {
+  for (const pet of Object.values(c.pets)) {
+    const wantIndex = pet.wants.findIndex(want => want.reward.some(entry => entry.kind === 'space' && entry.siteId === siteId));
+    if (wantIndex >= 0) return { petId: pet.id, wantIndex };
+  }
+  return null;
+}
+
+/** Copies owned once the site's unlock want is fulfilled (its bundle included): the starter set, every phase of every
+ * project and the unlocking pet's Heart items up to that want. Stripping is allowed, so placed copies count. */
+export function ownedAfterUnlock(c: Content, siteId: string): Owned | null {
+  const unlock = unlockWantOf(c, siteId);
+  if (!unlock) return null;
+  const owned: Owned = {};
+  addItems(owned, c.charms.starterSet);
+  c.projects.forEach(project => project.phaseRewards.forEach(items => addItems(owned, items)));
+  c.pets[unlock.petId].wants.slice(0, unlock.wantIndex + 1).forEach(want => addItems(owned, rewardItems(want)));
+  return owned;
+}
+
+/** A space-homed pet's want: the copies owned after the unlock plus the pet's own earlier Heart items. */
+function ownedAtSiteWant(c: Content, petId: string, siteId: string, wantIndex: number): Owned {
+  const owned = ownedAfterUnlock(c, siteId) ?? {};
   c.pets[petId].wants.slice(0, wantIndex).forEach(want => addItems(owned, rewardItems(want)));
   return owned;
 }
@@ -95,20 +126,27 @@ function bestStars(c: Content, slots: Slot[], owned: Owned, conditions: readonly
 }
 
 const describe = (condition: Condition): string => condition.kind === 'tag' ? `tag ${condition.tag}`
-  : condition.kind === 'adjacent' ? `adjacent ${condition.tagA}+${condition.tagB}` : `stars >= ${condition.min}`;
+  : condition.kind === 'adjacent' ? `adjacent ${condition.tagA}+${condition.tagB}`
+  : condition.kind === 'greeted' ? `greeted ${condition.withPetId}` : `stars >= ${condition.min}`;
 
-/** Exact for the room: tag conditions (hidden included), the adjacent condition over `slot.adjacent`, Stars floor. */
+/** The pet's home slots (room or site, WORK-034-2), or null when it has none. */
+function homeSlots(c: Content, petId: string): Slot[] | null {
+  try { return spaceDef(c, homeSpaceOf(c, petId)).slots; } catch { return null; }
+}
+
+/** Exact for the home space (a room or a site): tag conditions (hidden included), the adjacent condition over
+ * `slot.adjacent`, Stars floor. A `greeted` condition is not placement-driven (DEC-046) and is left out. */
 export function wantSatisfiable(c: Content, petId: string, wantIndex: number): Satisfiability {
-  const want = c.pets[petId].wants[wantIndex];
-  const room = Object.values(c.rooms).find(candidate => candidate.residentPetId === petId);
+  const conditions = c.pets[petId].wants[wantIndex].conditions.filter(condition => condition.kind !== 'greeted');
+  const slots = homeSlots(c, petId);
   const owned = ownedAtActivation(c, petId, wantIndex);
-  if (!room) return { satisfiable: false, owned, unmet: want.conditions.map(describe), maxStars: -1 };
-  const best = bestStars(c, room.slots, owned, want.conditions);
-  const floor = want.conditions.find(condition => condition.kind === 'stars');
+  if (!slots) return { satisfiable: false, owned, unmet: conditions.map(describe), maxStars: -1 };
+  const best = bestStars(c, slots, owned, conditions);
+  const floor = conditions.find((condition): condition is Extract<Condition, { kind: 'stars' }> => condition.kind === 'stars');
   const satisfiable = best >= 0 && (!floor || best >= floor.min);
   if (satisfiable) return { satisfiable, owned, unmet: [], maxStars: best };
-  const alone = want.conditions.filter(condition => condition.kind !== 'stars' && bestStars(c, room.slots, owned, [condition]) < 0);
-  const unmet = alone.length ? alone.map(describe) : floor && best >= 0 ? [describe(floor)] : want.conditions.map(describe);
+  const alone = conditions.filter(condition => condition.kind !== 'stars' && bestStars(c, slots, owned, [condition]) < 0);
+  const unmet = alone.length ? alone.map(describe) : floor && best >= 0 ? [describe(floor)] : conditions.map(describe);
   return { satisfiable, owned, unmet, maxStars: best };
 }
 

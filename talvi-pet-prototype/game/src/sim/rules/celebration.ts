@@ -4,6 +4,7 @@ import type { RuleResult, SimEvent } from '../events';
 import type { GameState, ProjectId } from '../state';
 import { buildScript, enqueueScript } from './dialogue';
 import { grantItems } from './inventory';
+import { finishSiteArrival } from './sites';
 import {
   completeNowOffered, completeNowPriceCents, creditProject, owedPhases, phaseOf, projectOf,
 } from './projects';
@@ -48,7 +49,7 @@ export function acknowledgeProject(content: Content, state: GameState,
     : owedPhases(content, state, action.projectId) <= 0 ? 'nothingOwed'
     : state.celebration !== null ? 'celebrationActive'
     : state.dialogue.current !== null ? 'dialogueOpen'
-    : state.arrival !== null ? 'arrivalActive'
+    : state.arrival !== null || state.siteArrival !== null ? 'arrivalActive'
     : state.mode === 'design' ? 'designMode' : null;
   return reason ? reject(state, action, reason) : startCelebration(content, state, action.projectId);
 }
@@ -146,8 +147,9 @@ export function closeReveal(content: Content, state: GameState, action: ActionOf
   return chain(cleared, queueMessages(content, cleared.state, ended));
 }
 
-export function arrivalFinished(_content: Content, state: GameState, action: ActionOf<'arrivalFinished'>): RuleResult {
+export function arrivalFinished(content: Content, state: GameState, action: ActionOf<'arrivalFinished'>): RuleResult {
   const arrival = state.arrival;
+  if (arrival === null && state.siteArrival !== null) return finishSiteArrival(content, state);
   if (arrival === null) return reject(state, action, 'noArrival');
   const progress = state.projects[arrival.projectId];
   return { state: { ...state, arrival: null,

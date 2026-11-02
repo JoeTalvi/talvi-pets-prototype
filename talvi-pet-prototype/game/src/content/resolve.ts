@@ -25,7 +25,7 @@ function resolverContext(c: Content, manifest?: AssetManifest) {
         if (!values.includes(id))
             issue('CHK-CORE-02', file, path, `Unknown ${family} id "${id}"`, alias);
     };
-    const tags = c.tags.map(t => t.id), types = c.charms.types.map(t => t.id), verbs = c.verbs.map(v => v.id), rooms = Object.keys(c.rooms), pets = Object.keys(c.pets), projects = c.projects.map(p => p.id);
+    const tags = c.tags.map(t => t.id), types = c.charms.types.map(t => t.id), verbs = c.verbs.map(v => v.id), rooms = Object.keys(c.rooms), pets = Object.keys(c.pets), projects = c.projects.map(p => p.id), sites = (c.street.sites ?? []).map(s => s.id);
     const asset = (id: string | undefined, type: 'image' | 'spritesheet', file: string, path: (string | number)[], alias?: string) => {
         if (id === undefined || !manifest)
             return;
@@ -33,7 +33,7 @@ function resolverContext(c: Content, manifest?: AssetManifest) {
         if (!entry || entry.type !== type)
             issue('CHK-CORE-03', file, path, `Asset "${id}" must resolve as ${type}`, alias);
     };
-    return { c, manifest, out, issue, ids, ref, asset, tags, types, verbs, rooms, pets, projects };
+    return { c, manifest, out, issue, ids, ref, asset, tags, types, verbs, rooms, pets, projects, sites };
 }
 type Resolver = ReturnType<typeof resolverContext>;
 function resolveIds(ctx: Resolver): void {
@@ -239,6 +239,29 @@ function resolveScenes(ctx: Resolver): void {
             key, i, 'sprite'
         ]));
 }
+/** WORK-034-2: pet homes, `greeted` pets, `space` reward sites; street sites — art ids, the resident pet, slot adjacency. */
+function resolveSites(ctx: Resolver): void {
+    const { c, ref, asset, pets, rooms, sites } = ctx;
+    for (const [id, p] of Object.entries(c.pets)) {
+        if (p.home?.kind === 'room') ref(p.home.roomId, rooms, `pets/${id}.json`, ['home', 'roomId'], 'room');
+        if (p.home?.kind === 'space') ref(p.home.siteId, sites, `pets/${id}.json`, ['home', 'siteId'], 'site');
+        p.wants.forEach((w, i) => {
+            w.conditions.forEach((x, j) => {
+                if (x.kind === 'greeted') ref(x.withPetId, pets, `pets/${id}.json`, ['wants', i, 'conditions', j, 'withPetId'], 'pet', 'CHK-009-02');
+            });
+            w.reward.forEach((r, k) => {
+                if (r.kind === 'space') ref(r.siteId, sites, `pets/${id}.json`, ['wants', i, 'reward', k, 'siteId'], 'site', 'CHK-009-06');
+            });
+        });
+    }
+    (c.street.sites ?? []).forEach((site, i) => {
+        asset(site.art.empty, 'image', 'street.json', ['sites', i, 'art', 'empty']);
+        asset(site.art.base, 'image', 'street.json', ['sites', i, 'art', 'base']);
+        ref(site.residentPetId, pets, 'street.json', ['sites', i, 'residentPetId'], 'pet');
+        site.slots.forEach((slot, j) => slot.adjacent.forEach((id, k) => ref(id, site.slots.map(other => other.id), 'street.json',
+            ['sites', i, 'slots', j, 'adjacent', k], 'slot')));
+    });
+}
 /** Content owns resolution; load.ts never imports sim. */
 export function resolveContent(c: Content, manifest?: AssetManifest): ContentIssue[] {
     const ctx = resolverContext(c, manifest);
@@ -248,5 +271,6 @@ export function resolveContent(c: Content, manifest?: AssetManifest): ContentIss
     resolvePets(ctx);
     resolveProjects(ctx);
     resolveScenes(ctx);
+    resolveSites(ctx);
     return ctx.out;
 }

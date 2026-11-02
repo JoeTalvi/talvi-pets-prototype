@@ -1,0 +1,156 @@
+{
+  "id": "owl-mate",
+  "name": "Hazel",
+  "portrait": "pets/owl-mate-portrait",
+  "sheet": "pets/owl-mate-sheet",
+  "home": {
+    "kind": "space",
+    "siteId": "garden"
+  },
+  "likes": [
+    {
+      "tag": "plant",
+      "weight": 3
+    },
+    {
+      "tag": "light",
+      "weight": 2
+    },
+    {
+      "tag": "tall",
+      "weight": 1
+    }
+  ],
+  "dislikes": [
+    "toy"
+  ],
+  "verbs": [
+    {
+      "verb": "perch",
+      "atStart": true
+    },
+    {
+      "verb": "look-at",
+      "atStart": true
+    }
+  ],
+  "lines": {
+    "greeting": [
+      "Good evening. The garden is lovely tonight.",
+      "Oh, hello. Mind the new shoots."
+    ],
+    "chatter": [
+      "The night air smells of leaves and soil.",
+      "I like to read the stars from out here.",
+      "Every little plant out here has its own story.",
+      "A garden is a very patient sort of book."
+    ],
+    "dislike": [
+      "That is a little too lively for a quiet garden.",
+      "Perhaps that belongs somewhere busier."
+    ],
+    "intro": [
+      "Hello. I am Hazel. I saw the lights of your little garden from far away.",
+      "It looked like a good place to read the night sky. May I stay?"
+    ],
+    "stripped": [
+      "Oh dear. Something from my garden has gone missing.",
+      "I was sure there was something lovely here. How odd."
+    ],
+    "wantAnnounce": {
+      "garden-supper": "A little supper among the leaves would be lovely.",
+      "garden-seat": "Could there be a seat beside the leaves?",
+      "greet-the-owl": "I should like to say hello to the Owl one evening."
+    },
+    "vignettes": {
+      "garden-supper": [
+        "Supper under the leaves. How very civilised.",
+        "I do like a little seed with my reading.",
+        "Thank you, neighbour."
+      ],
+      "garden-seat": [
+        "A seat among the leaves, just right for reading.",
+        "The leaves rustle like turning pages.",
+        "I shall sit here until the moon comes up."
+      ],
+      "greet-the-owl": [
+        "The Owl and I talked about leaves until late.",
+        "We read the same stars from different windows, it seems.",
+        "I think this garden will be home now."
+      ]
+    }
+  },
+  "wants": [
+    {
+      "id": "garden-supper",
+      "brief": "A little supper among the leaves",
+      "conditions": [
+        {
+          "kind": "tag",
+          "tag": "food"
+        },
+        {
+          "kind": "tag",
+          "tag": "plant"
+        }
+      ],
+      "reward": [
+        {
+          "kind": "vignette"
+        }
+      ],
+      "rewardLabel": "A little story"
+    },
+    {
+      "id": "garden-seat",
+      "brief": "A seat beside the leaves",
+      "conditions": [
+        {
+          "kind": "tag",
+          "tag": "seat"
+        },
+        {
+          "kind": "tag",
+          "tag": "plant"
+        },
+        {
+          "kind": "adjacent",
+          "tagA": "seat",
+          "tagB": "plant"
+        }
+      ],
+      "reward": [
+        {
+          "kind": "items",
+          "items": [
+            {
+              "typeId": "seed-dish",
+              "count": 1
+            },
+            {
+              "typeId": "cushion",
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "rewardLabel": "2 charms: Seed Dish, Cushion"
+    },
+    {
+      "id": "greet-the-owl",
+      "brief": "Say hello to the Owl",
+      "conditions": [
+        {
+          "kind": "greeted",
+          "withPetId": "owl"
+        }
+      ],
+      "reward": [
+        {
+          "kind": "vignette"
+        }
+      ],
+      "rewardLabel": "A little story"
+    }
+  ]
+}
