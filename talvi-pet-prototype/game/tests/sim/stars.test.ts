@@ -131,6 +131,9 @@ function scoringRoom() {
   return room;
 }
 
+/** DEC-043: a second Lamp comes from the TEST-002 arm. */
+const secondLamp: Action = { type: 'debugGrantCopies', typeId: 'lamp', count: 1 };
+
 describe('MEC-006 through the placeCharm/removeCharm dispatch', () => {
   const place = (slotId: string, typeId: string): Action => ({ type: 'placeCharm', slotId, typeId });
   const starsEvents = (events: SimEvent[]) => events.filter(event => event.type === 'stars.changed');
@@ -146,8 +149,7 @@ describe('MEC-006 through the placeCharm/removeCharm dispatch', () => {
 
   it('VERIFY-MEC-006-003/004 via reduce: repeat 12 → 13, removal 13 → 9 leaves hearts and wants untouched', () => {
     const { content, state } = scoringRoom();
-    const three = dispatch(content, state, [place('large-1', 'dog-bed'), place('floor-1', 'lamp'), place('wall-1', 'painting'),
-      { type: 'debugGrantCopies', typeId: 'lamp', count: 1 }]); // DEC-043: a second Lamp comes from the TEST-002 arm
+    const three = dispatch(content, state, [place('large-1', 'dog-bed'), place('floor-1', 'lamp'), place('wall-1', 'painting'), secondLamp]);
     const repeated = reduce(content, deepFreeze(three), place('floor-2', 'lamp'));
     expect(starsEvents(repeated.events)).toEqual([{ type: 'stars.changed', roomId: 'dog-room', from: 12, to: 13, delta: 1, max: 48 }]);
     const removed = reduce(content, repeated.state, { type: 'removeCharm', slotId: 'large-1' });
