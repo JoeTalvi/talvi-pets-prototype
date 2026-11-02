@@ -1,3 +1,4 @@
+import { giveCopies } from '../sim/helpers';
 // @vitest-environment jsdom
 import './setup';
 import { readFileSync } from 'node:fs';
@@ -13,7 +14,7 @@ const ICONS = ['ui/soft', 'ui/seat', 'charms/lamp', 'rooms/fixture'];
 const tick = (scene: InteriorScene, n = 1) => { for (let i = 0; i < n; i++) scene.update(0, 100); };
 const glyph = (scene: InteriorScene) => scene.bubble!.current()?.text ?? null;
 const childType = (scene: InteriorScene) => scene.bubble!.child?.constructor.name ?? null;
-const owning = (...ids: string[]) => (s: GameState) => { s.inventory.ownedTypeIds.push(...ids); };
+const owning = (...ids: string[]) => (s: GameState) => { giveCopies(s, [...ids]); };
 const play = (s: GameState) => { s.mode = 'play'; };
 const wantTwo = (s: GameState) => { s.pets.dog.fulfilledWantIds = ['soft-nap']; };
 
@@ -82,7 +83,7 @@ describe('VERIFY-MEC-008-016 verb end, removal and greeting', () => {
   it('VERIFY-MEC-008-016 partial: jsdom — entering the room greets: 🎵 shows on {to:greeting}, not before', async () => {
     const { scene, context, state } = await designSetup({ edit: s => {
       s.mode = 'play'; s.scene = { kind: 'street' };
-      s.avatar = { ...s.avatar, x: 480, y: 830, facing: 'up' };
+      s.avatar = { ...s.avatar, x: 480, y: 960, facing: 'up' };
     } });
     for (let i = 0; i < 20 && state().scene.kind === 'street'; i++) context.store.dispatch({ type: 'tick', dtMs: 100, move: { x: 0, y: -1 } });
     expect(linesOf(context, 'pet.reacted').at(-1)).toMatchObject({ reaction: 'greeting', walkOver: true });
@@ -131,7 +132,7 @@ describe('VERIFY-MEC-008-016 want bubble', () => {
       play(s);
       s.pets.dog.fulfilledWantIds = ['soft-nap', 'bright-corner'];
       s.rooms['dog-room'].placements['floor-1'] = 'fern';
-      s.inventory.ownedTypeIds.push('fern');
+      giveCopies(s, ['fern']);
     } });
     for (let i = 0; i < 400 && !linesOf(context, 'pet.wantBubble').length; i++) tick(scene);
     expect(linesOf(context, 'pet.wantBubble')[0]).toMatchObject({ tag: null });
@@ -187,5 +188,26 @@ describe('play-session Q19: a verb emote tap is logged as its own class', () => 
     scene.bubble!.show({ kind: 'emoji', class: 'verb', glyph: verb.emote, tapText: 'Dog is taking a look.' });
     scene.bubble!.tap();
     expect(linesOf(context, 'ui.bubbleTapped').at(-1)).toMatchObject({ petId: 'dog', class: 'verb' });
+  });
+});
+
+describe('VERIFY-MEC-007-020 stripped reaction (view)', () => {
+  it('VERIFY-MEC-007-020 (new) jsdom — pet.reacted {stripped} shows 😢 at once, tap shows the line; the clip stays idle', async () => {
+    const { scene, context, state } = await designSetup({ edit: s => {
+      play(s); wantTwo(s);
+      s.pets.dog.hearts = 1; s.pets.dog.heartCharms = ['dog-bed']; s.pets.dog.strippedPending = ['dog-bed'];
+      s.pets.dog.behaviour = { ...s.pets.dog.behaviour, phase: 'idle', timerMs: 100, target: null, verb: null, reaction: null };
+    } });
+    for (let i = 0; i < 20 && state().pets.dog.behaviour.reaction !== 'stripped'; i++) tick(scene);
+    const reacted = linesOf(context, 'pet.reacted').at(-1);
+    expect(reacted).toMatchObject({ petId: 'dog', reaction: 'stripped', typeId: 'dog-bed', slotId: null, walkOver: false });
+    expect(context.content.pets.dog.lines.stripped).toContain(reacted?.line);
+    expect(glyph(scene)).toBe('😢');
+    expect(scene.bubble!.current()).toMatchObject({ kind: 'emoji', class: 'stripped' });
+    expect(scene.pet!.clipFor({ phase: 'reacting', verb: null, reaction: 'stripped' })).toBe('pet-dog-idle');
+    expect(scene.pet!.anims.currentAnim?.key).toBe('pet-dog-idle');
+    scene.bubble!.tap();
+    expect(glyph(scene)).toBe(reacted?.line);
+    expect(state().pets.dog.strippedPending).toEqual([]);
   });
 });

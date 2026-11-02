@@ -28,6 +28,7 @@ describe('presentation §8.2 hudInterior stars (MEC-006 R5–R7)', () => {
     };
     step({ type: 'placeCharm', slotId: 'floor-1', typeId: 'lamp' });
     expect(fill.style.width).toBe(`${(4 / 48) * 100}%`);
+    context.store.dispatch({ type: 'debugGrantCopies', typeId: 'lamp', count: 1 }); // DEC-043: a second Lamp
     step({ type: 'placeCharm', slotId: 'floor-2', typeId: 'lamp' });
     step({ type: 'removeCharm', slotId: 'floor-1' });
     step({ type: 'removeCharm', slotId: 'floor-2' });

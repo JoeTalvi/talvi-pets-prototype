@@ -10,6 +10,8 @@ import { contextOf, type ViewContext } from '../context';
 import { startSceneFor } from '../startup';
 import { drawAlignment } from '../alignmentGrid';
 import { previewLayers, type Preview } from '../preview';
+import { DesignTint } from '../objects/DesignTint';
+import { Bubble, chatterBubble, reactionBubble, textFrom, verbBubble, wantBubble } from '../objects/Bubble';
 
 export const FADE_MS = 250;
 
@@ -21,6 +23,8 @@ export abstract class WorldScene extends Phaser.Scene {
   transitioning = false;
   alignment: Phaser.GameObjects.Graphics | null = null;
   preview!: Preview;
+  /** WORK-032-2 fix 4: the design-mode world tint every world scene owns (the street's stays off until it has a design mode, WORK-034). */
+  designTint!: DesignTint;
   /** Which TOOL-002 stage-1 layers this scene offers (Interior: four; Street: geometry). */
   protected abstract readonly previewKind: 'interior' | 'street';
   protected unsubscribes: (() => void)[] = [];
@@ -33,6 +37,8 @@ export abstract class WorldScene extends Phaser.Scene {
     this.context = contextOf(this);
     this.cameras.main.setScroll(0, (1080 - this.scale.gameSize.height) / 2);
     this.drawWorld();
+    this.designTint = new DesignTint(this);
+    this.syncDesignTint(this.context.store.getState());
     this.avatar = new AvatarSprite(this, this.context.store.getState().avatar.x, this.context.store.getState().avatar.y);
     this.joystick = new Joystick(this, this.context);
     this.subscribeCommon();
@@ -69,11 +75,42 @@ export abstract class WorldScene extends Phaser.Scene {
     else if (!on && this.alignment) { this.alignment.destroy(); this.alignment = null; }
   }
 
+  /** The tint follows `state.mode` (mode.changed, and the state at create so a reload or restart in design mode keeps it). */
+  syncDesignTint(state: Pick<GameState, 'mode'>): void { this.designTint.setOn(state.mode === 'design'); }
+
+  /** The scene's pet bubble, if it shows a pet (Interior: the resident; Street: the arrived site resident, WORK-034-3). */
+  protected petBubble(): Bubble | undefined { return undefined; }
+
+  /** mec-008 §2.1 / MEC-007 §3 consumers: every bubble fact comes from an event payload (the view computes no taste). */
+  protected subscribePetBubbles(): void {
+    const { content } = this.context;
+    const text = textFrom(content.strings);
+    const mine = (petId: string) => { const bubble = this.petBubble(); return bubble && bubble.petId === petId ? bubble : undefined; };
+    const name = (petId: string) => content.pets[petId]?.name ?? petId;
+    this.on('pet.reacted', event => {
+      const bubble = mine(event.petId);
+      const shown = reactionBubble(text, name(event.petId), event);
+      // Q11(a): the ladder grade after a verb ends arrives as `pet.reacted {walkOver:false}` and shows at once.
+      if (event.walkOver) bubble?.hold(shown); else bubble?.show(shown);
+    });
+    this.on('pet.verbStarted', event => {
+      const shown = verbBubble(content, name(event.petId), event.verb);
+      if (shown) mine(event.petId)?.show(shown);
+    });
+    this.on('pet.verbEnded', event => { mine(event.petId)?.clearClass('verb'); });
+    // Q12(a): a want whose unmet tags are all hidden arrives as `tag: null` and shows ❓.
+    this.on('pet.wantBubble', event => { mine(event.petId)?.show(wantBubble(content, text, name(event.petId), event.tag)); });
+    this.on('pet.tapped', event => {
+      const bubble = event.bubble.kind === 'want' ? wantBubble(content, text, name(event.petId), event.bubble.tag) : chatterBubble(event.bubble.line);
+      mine(event.petId)?.show(bubble);
+    });
+  }
   protected on<T extends SimEvent['type']>(type: T, fn: (event: EventOf<T>, stateAfter: GameState) => void): void {
     this.unsubscribes.push(this.context.store.subscribe(type, fn));
   }
 
   private subscribeCommon(): void {
+    this.on('mode.changed', (_event, after) => this.syncDesignTint(after));
     this.on('scene.changed', event => {
       this.transitioning = true;
       this.joystick.release();
@@ -87,6 +124,7 @@ export abstract class WorldScene extends Phaser.Scene {
   private teardown(): void {
     for (const off of this.unsubscribes.splice(0)) off();
     this.preview.destroy();
+    this.designTint.destroy();
     this.joystick.destroy();
   }
 }

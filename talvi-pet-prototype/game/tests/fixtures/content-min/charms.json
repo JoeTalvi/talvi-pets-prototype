@@ -166,11 +166,29 @@
     }
   ],
   "starterSet": [
-    "dog-bed",
-    "lamp",
-    "painting",
-    "stool",
-    "vase",
-    "picture"
+    {
+      "typeId": "dog-bed",
+      "count": 1
+    },
+    {
+      "typeId": "lamp",
+      "count": 1
+    },
+    {
+      "typeId": "painting",
+      "count": 1
+    },
+    {
+      "typeId": "stool",
+      "count": 1
+    },
+    {
+      "typeId": "vase",
+      "count": 1
+    },
+    {
+      "typeId": "picture",
+      "count": 1
+    }
   ]
 }

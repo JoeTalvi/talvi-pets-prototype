@@ -4,13 +4,15 @@ import { mulberry32 } from '../../src/sim/rng';
 import { ackFloorCents, activeProjectId, attentionVisible, chooserTypes, completeNowOffered } from '../../src/sim/select';
 import type { GameState } from '../../src/sim/state';
 
-/** Valid placeCharm/removeCharm in the current interior: an owned type of the slot's class. */
+/** Valid placeCharm/removeCharm in the current interior: a type of the slot's class with a copy available. */
 function decorate(content: Content, state: GameState, value: number): Action {
   const roomId = (state.scene as { roomId: string }).roomId;
   const slots = content.rooms[roomId].slots;
   const slot = slots[Math.floor(value * slots.length)];
   const filled = state.rooms[roomId].placements[slot.id] !== undefined;
-  const choices = chooserTypes(content, state, slot.id);
+  // DEC-043: only a type with a copy in hand (or the slot's own type, a same-type replace) is placeable.
+  const choices = chooserTypes(content, state, slot.id).filter(type =>
+    state.inventory.counts[type.id] > 0 || state.rooms[roomId].placements[slot.id] === type.id);
   if (filled && ((value * 7) % 1 < 0.3 || choices.length === 0)) return { type: 'removeCharm', slotId: slot.id };
   if (choices.length === 0) return { type: 'setDesignMode', on: false };
   return { type: 'placeCharm', slotId: slot.id, typeId: choices[Math.floor(((value * 13) % 1) * choices.length)].id };

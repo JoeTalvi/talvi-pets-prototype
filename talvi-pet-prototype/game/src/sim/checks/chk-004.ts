@@ -1,3 +1,4 @@
+import { itemTypeIds } from '../../content/schema/charms';
 import type { Content } from '../../content/types';
 import { finding, type Finding } from './types';
 import { typeSources, wantTags } from './coverage-data';
@@ -21,7 +22,8 @@ export function check004(c: Content): Finding[] {
             if (t.tags.some(tag => p.likes.some(l => l.tag === tag)) && t.tags.some(tag => p.dislikes.includes(tag)))
                 add('08', `/types/${i}/tags`, `"${t.id}" combines liked/disliked tags for "${p.id}"`);
     });
-    if (c.charms.starterSet.length < 6 || c.charms.starterSet.length > 8 || new Set(c.charms.starterSet).size !== c.charms.starterSet.length)
+    const starterIds = itemTypeIds(c.charms.starterSet);
+    if (starterIds.length < 6 || starterIds.length > 8 || new Set(starterIds).size !== starterIds.length)
         add('04', '/starterSet', 'starterSet requires 6–8 distinct ids', 'error');
     const used = new Set(Object.values(c.pets).flatMap(p => p.wants.flatMap(wantTags)));
     for (const tag of c.tags) {
@@ -43,7 +45,7 @@ export function check004(c: Content): Finding[] {
     ][i]) > .1))
         add('07', '/types', `Target catalogue is 24–30 types with size split within 10 percentage points of 60/25/15; found ${n}`);
     for (const cls of new Set(Object.values(c.rooms).flatMap(r => r.slots.map(s => s.sizeClass))))
-        if (!c.charms.types.some(t => t.sizeClass === cls && c.charms.starterSet.includes(t.id)))
+        if (!c.charms.types.some(t => t.sizeClass === cls && starterIds.includes(t.id)))
             add('09', '/starterSet', `No starter type of size class "${cls}"`);
     return out;
 }

@@ -53,6 +53,10 @@
       "Perhaps that belongs in a busier room.",
       "Oh dear. That will not sit quietly at all."
     ],
+    "stripped": [
+      "Oh dear. Something I was fond of has gone missing.",
+      "I was sure there was something lovely here. How odd."
+    ],
     "intro": [
       "Hello. I am the Owl. A leafy view and a high perch would suit me nicely.",
       "I am a quiet sort. I read the leaves, mostly at night."
@@ -108,9 +112,11 @@
           "tag": "tall"
         }
       ],
-      "reward": {
-        "kind": "vignette"
-      },
+      "reward": [
+        {
+          "kind": "vignette"
+        }
+      ],
       "rewardLabel": "A little story"
     },
     {
@@ -131,14 +137,26 @@
           "tagB": "plant"
         }
       ],
-      "reward": {
-        "kind": "types",
-        "typeIds": [
-          "potted-tree",
-          "night-light"
-        ]
-      },
-      "rewardLabel": "2 charm types: Potted Tree, Night Light"
+      "reward": [
+        {
+          "kind": "space",
+          "siteId": "garden"
+        },
+        {
+          "kind": "items",
+          "items": [
+            {
+              "typeId": "potted-tree",
+              "count": 1
+            },
+            {
+              "typeId": "night-light",
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "rewardLabel": "Garden + Potted Tree, Night Light"
     },
     {
       "id": "reading-nook",
@@ -158,10 +176,12 @@
           "hidden": true
         }
       ],
-      "reward": {
-        "kind": "verb",
-        "verb": "nap"
-      },
+      "reward": [
+        {
+          "kind": "verb",
+          "verb": "nap"
+        }
+      ],
       "rewardLabel": "New trick: nap"
     },
     {
@@ -182,14 +202,22 @@
           "tagB": "light"
         }
       ],
-      "reward": {
-        "kind": "types",
-        "typeIds": [
-          "mossy-log",
-          "standing-frame"
-        ]
-      },
-      "rewardLabel": "2 charm types: Mossy Log, Standing Frame"
+      "reward": [
+        {
+          "kind": "items",
+          "items": [
+            {
+              "typeId": "mossy-log",
+              "count": 1
+            },
+            {
+              "typeId": "standing-frame",
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "rewardLabel": "2 charms: Mossy Log, Standing Frame"
     },
     {
       "id": "night-garden",
@@ -208,9 +236,11 @@
           "min": 28
         }
       ],
-      "reward": {
-        "kind": "vignette"
-      },
+      "reward": [
+        {
+          "kind": "vignette"
+        }
+      ],
       "rewardLabel": "A little story"
     }
   ]

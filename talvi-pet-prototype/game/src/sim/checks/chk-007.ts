@@ -54,9 +54,7 @@ function checkProfiles(c: Content): Finding[] {
         if ((p.id === 'owl' && (!p.verbs.some(v => v.verb === 'perch') || p.verbs.some(v => v.verb === 'sit-on'))) || (p.id === 'dog' && p.verbs.some(v => v.verb === 'perch')))
             add('04', f, '/verbs', 'Owl requires perch without sit-on; Dog must not have perch');
         const acquired = new Set([
-            ...p.verbs.filter(v => v.atStart).map(v => v.verb), ...p.wants.flatMap(w => w.reward.kind === 'verb' ? [
-                w.reward.verb
-            ] : [])
+            ...p.verbs.filter(v => v.atStart).map(v => v.verb), ...p.wants.flatMap(w => w.reward.flatMap(r => r.kind === 'verb' ? [r.verb] : []))
         ]);
         p.likes.forEach((l, i) => {
             const v = c.verbs.find(v => v.tags.includes(l.tag));

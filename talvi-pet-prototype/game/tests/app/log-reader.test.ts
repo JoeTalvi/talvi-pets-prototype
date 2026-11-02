@@ -34,11 +34,11 @@ it('VERIFY-TOOL-007 sample: 30 lines, line 1 a complete session.started header, 
 it('VERIFY-TOOL-007 acceptance: --test TEST-006 --format text prints exactly the Hearts/unlock/want lines with 01:01.2 and 05:00.0', () => {
   const { out, code } = read('--test', 'TEST-006', '--format', 'text');
   expect(code).toBe(0);
-  expect(out.map(typeOf)).toEqual(['want.activated', 'want.progressed', 'want.fulfilled', 'heart.earned', 'types.unlocked',
+  expect(out.map(typeOf)).toEqual(['want.activated', 'want.progressed', 'want.fulfilled', 'heart.earned', 'items.granted',
     'want.activated', 'heart.earned', 'want.fulfilled']);
   expect(out.filter(line => typeOf(line) === 'heart.earned')).toEqual([
     '01:01.2  heart.earned  petId=dog hearts=1', '05:00.0  heart.earned  petId=dog hearts=2']);
-  expect(out).toContain('01:01.2  types.unlocked  typeIds=["cushion"] source=heart');
+  expect(out).toContain('01:01.2  items.granted  typeId=cushion count=1 source=heart');
 });
 
 it('VERIFY-TOOL-007 acceptance: --summary shows "hearts: 01:01.2, 05:00.0" with header fields, span, counts and timelines', () => {
@@ -88,7 +88,7 @@ it('VERIFY-TOOL-007 --format csv: t, mmss, type, then flattened keys; quoted cel
   expect(out[0].startsWith('t,mmss,type,petId,wantId,index,')).toBe(true);
   expect(out).toHaveLength(9);
   expect(out.find(line => line.startsWith('300000,05:00.0,heart.earned,dog,'))).toBeDefined();
-  expect(out.find(line => line.includes('types.unlocked'))).toContain('"[""cushion""]"');
+  expect(out.find(line => line.includes('items.granted'))).toContain('cushion');
 });
 
 it('VERIFY-TOOL-007 --format json and --out: the kept records as a JSON array written to the file', () => {

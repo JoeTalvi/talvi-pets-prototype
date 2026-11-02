@@ -151,6 +151,7 @@ describe('wall charm facing (play-session Q3, 2026-10-26)', () => {
   it('a wall charm drawn for the left wall is mirrored on a right-wall slot and not on a left-wall slot', async () => {
     const content = loadContent(manifest, patchFiles(files(), [{ file: 'rooms/dog-room.json', path: '/slots/9/wall', value: 'right' }]));
     const state = designIn(content, [], 1);
+    state.inventory.counts.picture += 1; // DEC-043: two pictures need two copies
     const context = contextFor(content, state);
     context.store.dispatch({ type: 'placeCharm', slotId: 'wall-1', typeId: 'picture' });
     context.store.dispatch({ type: 'placeCharm', slotId: 'wall-2', typeId: 'picture' });
@@ -226,8 +227,8 @@ const perchOn = async (slotId: string, typeId: string) => {
   const env = await enterOwlRoom();
   const { context, tick } = env;
   for (let i = 0; i < 10 && context.store.getState().dialogue.current !== null; i++) context.store.dispatch({ type: 'advanceDialogue' });
-  const owned = context.store.getState().inventory.ownedTypeIds;
-  expect(owned).toContain(typeId);
+  const owned = context.store.getState().inventory.counts;
+  expect(owned[typeId]).toBeGreaterThan(0);
   context.store.dispatch({ type: 'setDesignMode', on: true });
   context.store.dispatch({ type: 'placeCharm', slotId, typeId });
   expect(linesOf(context, 'action.rejected')).toEqual([]);

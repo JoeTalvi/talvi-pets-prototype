@@ -5,14 +5,14 @@ import type { SimEvent } from '../../src/sim/events';
 import { reduce } from '../../src/sim/reduce';
 import { initialState, type GameState } from '../../src/sim/state';
 import { feedArgs, feedRows, runFeedPreview } from '../../tools/feed-preview';
-import { deepFreeze } from './helpers';
+import { deepFreeze, orientationDone } from './helpers';
 
 const real = loadContent();
 type Roundup = Extract<SimEvent, { type: 'roundup.fired' }>;
 
 /** The game side: a fresh state, `debugSetSeed {1234}`, then the feed driven by `tick` alone. */
 function gameRoundups(seed: number, max: number): Roundup[] {
-  let state: GameState = initialState(real, 0);
+  let state: GameState = orientationDone(initialState(real, 0));
   for (const action of [{ type: 'debugSetSeed', seed } as const, { type: 'debugSetEventInterval', ms: 250 } as const])
     state = reduce(real, state, action).state;
   const fired: Roundup[] = [];

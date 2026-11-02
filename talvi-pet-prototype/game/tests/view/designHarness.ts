@@ -16,7 +16,7 @@ export const REAL_STRINGS: Patch[] = Object.entries({
   'tpp.hud.decorate': 'Decorate', 'tpp.hud.done': 'Done', 'tpp.stars.label': '{stars} / {max} ★',
   'tpp.chooser.empty': 'Nothing you own fits this spot yet.', 'tpp.sheet.replace': 'Replace', 'tpp.sheet.remove': 'Remove',
   'tpp.bubble.love': 'Just right!', 'tpp.bubble.like': 'I like this.', 'tpp.bubble.dislike': 'Not quite my thing.',
-  'tpp.bubble.interrupted': 'Where did it go?', 'tpp.bubble.greeting': 'Hello!', 'tpp.bubble.want': 'Something {tag} would be lovely.',
+  'tpp.bubble.interrupted': 'Where did it go?', 'tpp.bubble.greeting': 'Hello!', 'tpp.bubble.stripped': 'Something is missing.', 'tpp.bubble.want': 'Something {tag} would be lovely.',
   'tpp.bubble.wantHidden': 'Watch its reactions.', 'tpp.bubble.chatter': 'A thought to share.',
   'tpp.hud.attention': 'A home phase is ready, step outside', 'tpp.stars.delta': '{sign}{amount} ★',
   'tpp.stars.explain': 'New kinds of charm fill the bar; repeats add a little.',
@@ -29,7 +29,7 @@ export const REAL_STRINGS: Patch[] = Object.entries({
   'buildprojects.cutscene.popup.progress.congrats': "Another milestone down. Here's what you've earned so far.",
   'buildprojects.cutscene.popup.complete.congrats': "It's finished — go and have a look.", 'buildprojects.cutscene.popup.collect': 'Collect Rewards',
   'tpp.popup.skipWait': 'Skip the wait', 'tpp.popup.skipWaitFree': 'Free in this prototype', 'tpp.reveal.popupTitle': 'Someone is moving in',
-  'tpp.reveal.continue': 'Continue',
+  'tpp.reveal.continue': 'Continue', 'tpp.chooser.copies': '×{count}', 'tpp.chooser.noneLeft': 'none left',
   // WORK-023-1: the reveal panel and the completion beat read these from the real strings.json.
   ...Object.fromEntries((['tpp.reveal.panelTitle', 'tpp.reveal.locked', 'tpp.reveal.arrived'] as const).map(key => [key, (realStrings as Record<string, string>)[key]])),
   // WORK-021-1 strings merge: the former FALLBACK_STRINGS keys, read from the real strings.json they now live in.

@@ -27,7 +27,7 @@ function unionNames(path: string, alias: string): string[] {
   });
 }
 
-it('VERIFY-CORE-001: three set equalities at v1.4 — Action union = 24 actions, SimEvent union = 39 events, select exports = 27 selectors; CONTRACT_VERSION 1.4', () => {
+it('VERIFY-CORE-001: three set equalities at v1.5 — Action union = 28 actions, SimEvent union = 44 events, select exports = 32 selectors; CONTRACT_VERSION 1.5', () => {
   expectTypeOf<Action['type']>().toEqualTypeOf<typeof names.actionNames[number]>();
   expectTypeOf<SimEvent['type']>().toEqualTypeOf<typeof names.eventNames[number]>();
   const actions = new Set(unionNames('src/sim/actions.ts', 'Action'));
@@ -36,9 +36,9 @@ it('VERIFY-CORE-001: three set equalities at v1.4 — Action union = 24 actions,
   expect(actions).toEqual(new Set(names.actionNames));
   expect(events).toEqual(new Set(names.eventNames));
   expect(selectors).toEqual(new Set(names.selectorNames));
-  expect([actions.size, events.size, selectors.size]).toEqual([24, 39, 27]);
-  expect(CONTRACT_VERSION).toBe('1.4');
-  expect(names.CONTRACT_VERSION).toBe('1.4');
+  expect([actions.size, events.size, selectors.size]).toEqual([28, 44, 32]);
+  expect(CONTRACT_VERSION).toBe('1.5');
+  expect(names.CONTRACT_VERSION).toBe('1.5');
 });
 
 it.skipIf(!liveDocPresent)('VERIFY-CORE-001 drift: live core.md still declares the vendored version and names', () => {

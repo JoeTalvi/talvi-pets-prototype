@@ -2,6 +2,7 @@ import type { Content } from '../content/types';
 import { pointInPolygon } from './geometry';
 import { doorEnabled, phaseOf, starsOf } from './select';
 import type { GameState } from './state';
+import { playerSpace, sitesOf } from './space';
 
 type Check = (content: Content, state: GameState) => string | null;
 
@@ -32,18 +33,28 @@ const wantPrefix: Check = (content, state) => {
   return null;
 };
 
-/** Invariant 3: every placement is an owned, known type on a known slot of the same size class. */
+/** Invariant 3 (v1.5, DEC-043): every count is an integer ≥ 0; every placement is a granted (`counts` key), known
+ * type on a known slot of the same size class; per pet `strippedPending ⊆ heartCharms ⊆ counts keys`. */
 const placementsOwned: Check = (content, state) => {
-  for (const [roomId, room] of Object.entries(state.rooms)) {
-    for (const [slotId, typeId] of Object.entries(room.placements)) {
-      const slot = content.rooms[roomId]?.slots.find(candidate => candidate.id === slotId);
+  const counts = state.inventory.counts;
+  for (const [typeId, count] of Object.entries(counts))
+    if (!Number.isInteger(count) || count < 0) return `invariant 3: inventory.counts.${typeId} ${count} is not an integer ≥ 0`;
+  const spaces = [...Object.entries(state.rooms).map(([id, room]) => ({ where: `rooms.${id}`, placements: room.placements, slots: content.rooms[id]?.slots })),
+    ...sitesOf(content).map(site => ({ where: `spaces.${site.id}`, placements: state.spaces[site.id]?.placements ?? {}, slots: site.slots }))];
+  for (const space of spaces) {
+    for (const [slotId, typeId] of Object.entries(space.placements)) {
+      const slot = space.slots?.find(candidate => candidate.id === slotId);
       const type = content.charms.types.find(candidate => candidate.id === typeId);
-      const where = `rooms.${roomId}.placements.${slotId}`;
+      const where = `${space.where}.placements.${slotId}`;
       if (!slot) return `invariant 3: ${where} names an unknown slot`;
       if (!type) return `invariant 3: ${where} names unknown type "${typeId}"`;
-      if (!state.inventory.ownedTypeIds.includes(typeId)) return `invariant 3: ${where} type "${typeId}" not owned`;
+      if (!Object.hasOwn(counts, typeId)) return `invariant 3: ${where} type "${typeId}" never granted`;
       if (slot.sizeClass !== type.sizeClass) return `invariant 3: ${where} size ${type.sizeClass} ≠ slot ${slot.sizeClass}`;
     }
+  }
+  for (const [petId, pet] of Object.entries(state.pets)) {
+    if (pet.heartCharms.some(id => !Object.hasOwn(counts, id))) return `invariant 3: pets.${petId}.heartCharms ⊄ counts keys`;
+    if (pet.strippedPending.some(id => !pet.heartCharms.includes(id))) return `invariant 3: pets.${petId}.strippedPending ⊄ heartCharms`;
   }
   return null;
 };
@@ -65,9 +76,11 @@ const starsSum: Check = (content, state) => {
 };
 
 /** Invariant 5: a celebration only on the street; design mode only in an interior. */
-const sceneModes: Check = (_content, state) => {
+const sceneModes: Check = (content, state) => {
   if (state.celebration !== null && state.scene.kind !== 'street') return 'invariant 5: celebration open outside the street';
-  if (state.mode === 'design' && state.scene.kind !== 'interior') return 'invariant 5: mode design outside an interior';
+  // WORK-034-2 (MEC-001 as amended): design mode on the street needs an unlocked site.
+  if (state.mode === 'design' && state.scene.kind !== 'interior' && playerSpace(content, state) === null)
+    return 'invariant 5: mode design on the street with no unlocked site';
   return null;
 };
 

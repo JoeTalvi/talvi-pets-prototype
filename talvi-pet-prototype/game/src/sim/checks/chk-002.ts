@@ -1,3 +1,4 @@
+import { itemTypeIds } from '../../content/schema/charms';
 import type { Content } from '../../content/types';
 import { finding, type Finding } from './types';
 export function check002(c: Content): Finding[] {
@@ -11,7 +12,8 @@ export function check002(c: Content): Finding[] {
             add('01', base + '/goalCents', 'goalCents must be a positive integer divisible by 5');
         if (c.rooms[p.interiorRoomId]?.residentPetId !== p.residentPetId || c.projects.filter(q => q.interiorRoomId === p.interiorRoomId).length !== 1 || c.projects.filter(q => q.residentPetId === p.residentPetId).length !== 1)
             add('02', base, 'Project room/resident must agree and be unique');
-        if (p.phaseRewards.length !== 5 || new Set(p.phaseRewards.flat()).size !== p.phaseRewards.flat().length)
+        const phaseIds = itemTypeIds(p.phaseRewards.flat());
+        if (p.phaseRewards.length !== 5 || new Set(phaseIds).size !== phaseIds.length)
             add('03', base + '/phaseRewards', 'phaseRewards needs 5 arrays with no duplicate type within this project');
         p.phaseRewards.forEach((ts, j) => {
             if (ts.length !== 2)

@@ -57,6 +57,10 @@
       "I prefer things closer to paw level.",
       "A fine view, probably. I will stay down here."
     ],
+    "stripped": [
+      "Oh. Something I loved used to be right here.",
+      "I keep looking for my favourite thing. It has gone."
+    ],
     "intro": [
       "Oh! Hello. I am the Dog.",
       "A soft place, a good seat, and a bit of light. That is my sort of home."
@@ -111,14 +115,22 @@
           "tag": "seat"
         }
       ],
-      "reward": {
-        "kind": "types",
-        "typeIds": [
-          "rug",
-          "cushion"
-        ]
-      },
-      "rewardLabel": "2 charm types: Rug and Cushion"
+      "reward": [
+        {
+          "kind": "items",
+          "items": [
+            {
+              "typeId": "rug",
+              "count": 1
+            },
+            {
+              "typeId": "cushion",
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "rewardLabel": "2 charms: Rug and Cushion"
     },
     {
       "id": "bright-corner",
@@ -138,10 +150,12 @@
           "tagB": "plant"
         }
       ],
-      "reward": {
-        "kind": "verb",
-        "verb": "sit-on"
-      },
+      "reward": [
+        {
+          "kind": "verb",
+          "verb": "sit-on"
+        }
+      ],
       "rewardLabel": "New trick: sit on"
     },
     {
@@ -158,9 +172,11 @@
           "hidden": true
         }
       ],
-      "reward": {
-        "kind": "vignette"
-      },
+      "reward": [
+        {
+          "kind": "vignette"
+        }
+      ],
       "rewardLabel": "A little story"
     },
     {
@@ -181,14 +197,22 @@
           "tagB": "soft"
         }
       ],
-      "reward": {
-        "kind": "types",
-        "typeIds": [
-          "toy-chest",
-          "seed-dish"
-        ]
-      },
-      "rewardLabel": "2 charm types: Toy Chest and Seed Dish"
+      "reward": [
+        {
+          "kind": "items",
+          "items": [
+            {
+              "typeId": "toy-chest",
+              "count": 1
+            },
+            {
+              "typeId": "seed-dish",
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "rewardLabel": "2 charms: Toy Chest and Seed Dish"
     },
     {
       "id": "welcome-home",
@@ -212,9 +236,11 @@
           "min": 24
         }
       ],
-      "reward": {
-        "kind": "vignette"
-      },
+      "reward": [
+        {
+          "kind": "vignette"
+        }
+      ],
       "rewardLabel": "A little story"
     }
   ]

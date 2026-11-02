@@ -24,6 +24,7 @@ const bounds = params.get('bounds') === '1';
 // CN-12 (WORK-013J): row 2 `use` became `use-sit`; rows 4 and 5 add `use-lie` and `use-look`.
 // WORK-022-1 (gate fork Q-A): the Owl sheet adds `use-perch` in row 6; `?sheet=pets/owl-sheet` inspects it on the Dog room's petSpawn.
 // WORK-026-1 (ASSET-016 + gate fork Q-A): `?sheet=player/avatar-sheet` plays the six avatar clips on the same spawn.
+// WORK-034-1 (DEC-044, gate fork 10): `?sheet=pets/owl-mate-sheet` plays the Owl mate recolour (same clips as the Owl) on the same spawn.
 const clips = ['idle', 'walk', 'use-sit', 'react', 'use-lie', 'use-look', 'use-perch', 'idle-down', 'idle-up', 'idle-side', 'walk-down', 'walk-up', 'walk-side'];
 const clip = clips.includes(params.get('clip') ?? '') ? params.get('clip')! : 'idle';
 const showPet = params.get('pet') !== '0';

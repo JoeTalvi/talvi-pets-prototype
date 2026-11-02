@@ -58,7 +58,7 @@ describe('presentation §8.2 hudInterior', () => {
 });
 
 describe('VERIFY-MEC-004-009 / VERIFY-MEC-004-010 chooser contents', () => {
-  it('VERIFY-MEC-004-009 partial: jsdom half (Chrome half = work-014-2-chooser-open capture; iPhone half not-run (user, play session)) — floor-1 lists Lamp, Stool, Vase in owned order with sprite, name and tag icons, no counts', async () => {
+  it('VERIFY-MEC-004-009 partial: jsdom half (Chrome half = work-014-2-chooser-open capture; iPhone half not-run (user, play session)) — floor-1 lists Lamp, Stool, Vase in grant order with sprite, name, tag icons and the "×n" badge (rewritten WORK-033-2: "no counts" → "×n" = copiesOf)', async () => {
     const { root, context } = await designSetup();
     context.bus.emit({ type: 'slot.tapped', slotId: 'floor-1', filled: false });
     expect(q(root, '.tpp-chooser').hidden).toBe(false);
@@ -70,11 +70,60 @@ describe('VERIFY-MEC-004-009 / VERIFY-MEC-004-010 chooser contents', () => {
     expect(tags).toEqual([[['ui/light', 'Light']], [['ui/seat', 'Seat']], [['ui/food', 'Food']]]);
     expect(q(root, '.tpp-chooser-title').textContent).toBe('Small floor slot');
     expect(q(root, '.tpp-chooser .tpp-muted').textContent).toBe('3 charms you own');
-    expect(cards.some(c => /\d+\s*[×x]/.test(c.textContent ?? ''))).toBe(false);
+    expect(cards.map(c => c.querySelector('.tpp-charm-copies')!.textContent)).toEqual(['×1', '×1', '×1']);
+    expect(cards.map(c => [c.dataset.action, c.getAttribute('aria-disabled')])).toEqual([['place', null], ['place', null], ['place', null]]);
   });
 
-  it('VERIFY-MEC-004-010 partial: jsdom half — no wall type owned → wall-1 shows tpp.chooser.empty and no card; types.unlocked while open appends', async () => {
-    const { root, context } = await designSetup({ edit: s => { s.inventory.ownedTypeIds = ['dog-bed', 'lamp', 'stool', 'vase']; } });
+  it('VERIFY-MEC-004-009 (rewritten) — the badge reads copiesOf: two lamps read ×2 and the header counts copies in hand', async () => {
+    const { root, context } = await designSetup({ edit: s => { s.inventory.counts.lamp = 2; } });
+    context.bus.emit({ type: 'slot.tapped', slotId: 'floor-1', filled: false });
+    const badges = [...root.querySelectorAll('.tpp-chooser .tpp-charm-copies')].map(e => e.textContent);
+    expect(badges).toEqual(['×2', '×1', '×1']);
+    expect(q(root, '.tpp-chooser .tpp-muted').textContent).toBe('4 charms you own');
+  });
+
+});
+
+describe('VERIFY-MEC-004-015 / VERIFY-MEC-004-016 chooser counts (DEC-043)', () => {
+  it('VERIFY-MEC-004-015 (new) — a zero-count type stays at its grant position, greyed, "none left", aria-disabled; clicking it dispatches nothing and logs only input.tap', async () => {
+    const { root, context } = await designSetup({ edit: s => { s.inventory.counts.stool = 0; } });
+    context.bus.emit({ type: 'slot.tapped', slotId: 'floor-1', filled: false });
+    const cards = [...root.querySelectorAll<HTMLElement>('.tpp-chooser .tpp-charm-card')];
+    expect(cards.map(c => c.dataset.typeId)).toEqual(['lamp', 'stool', 'vase']);
+    const stool = cards[1];
+    expect([stool.getAttribute('aria-disabled'), stool.dataset.action, stool.classList.contains('none-left')]).toEqual(['true', undefined, true]);
+    expect(stool.querySelector('.tpp-charm-copies')!.textContent).toBe('none left');
+    expect(stool.querySelector('.tpp-charm-copies')!.getAttribute('data-string-key')).toBe('tpp.chooser.noneLeft');
+    expect(q(root, '.tpp-chooser .tpp-muted').textContent).toBe('2 charms you own');
+    const dispatch = vi.spyOn(context.store, 'dispatch');
+    const before = context.log.lines().length;
+    click(stool);
+    expect(dispatch).not.toHaveBeenCalled();
+    expect(context.log.lines().slice(before).map(l => l.type).filter(t => t !== 'input.tap')).toEqual([]);
+    expect(q(root, '.tpp-chooser').hidden).toBe(false);
+  });
+
+  it('VERIFY-MEC-004-016 (new) — while open the sheet refreshes on charm.placed / charm.removed / items.granted without reopening', async () => {
+    const { root, context } = await designSetup();
+    context.bus.emit({ type: 'slot.tapped', slotId: 'floor-1', filled: false });
+    const badge = (id: string) => root.querySelector(`.tpp-chooser .tpp-charm-card[data-type-id="${id}"] .tpp-charm-copies`)!.textContent;
+    context.store.dispatch({ type: 'placeCharm', slotId: 'floor-3', typeId: 'lamp' });
+    expect(badge('lamp')).toBe('none left');
+    expect(q(root, '.tpp-chooser .tpp-muted').textContent).toBe('2 charms you own');
+    context.store.dispatch({ type: 'removeCharm', slotId: 'floor-3' });
+    expect(badge('lamp')).toBe('×1');
+    context.store.dispatch({ type: 'debugGrantCopies', typeId: 'vase', count: 2 });
+    expect(badge('vase')).toBe('×3');
+    expect(q(root, '.tpp-chooser .tpp-muted').textContent).toBe('5 charms you own');
+    expect(linesOf(context, 'ui.chooserOpened')).toHaveLength(1);
+    expect(q(root, '.tpp-chooser').hidden).toBe(false);
+  });
+
+});
+
+describe('VERIFY-MEC-004-010 chooser empty state and placeholders', () => {
+  it('VERIFY-MEC-004-010 partial: jsdom half — no wall type granted → wall-1 shows tpp.chooser.empty and no card; items.granted while open appends', async () => {
+    const { root, context } = await designSetup({ edit: s => { s.inventory.counts = { 'dog-bed': 1, lamp: 1, stool: 1, vase: 1 }; } });
     context.bus.emit({ type: 'slot.tapped', slotId: 'wall-1', filled: false });
     expect(q(root, '.tpp-chooser .tpp-empty').textContent).toBe('Nothing you own fits this spot yet.');
     expect(root.querySelectorAll('.tpp-chooser .tpp-charm-card')).toHaveLength(0);
@@ -184,7 +233,7 @@ describe('mec-005 R12 close triggers', () => {
 });
 
 describe('mec-005 R8 replace', () => {
-  it('mec-005 R8 replace — Replace closes the sheet, opens the chooser for the slot (chooserOpened once), lamp listed; picking lamp replaces without a duplicate sprite', async () => {
+  it('mec-005 R8 replace + VERIFY-MEC-005-021 (new) — Replace closes the sheet, opens the chooser for the slot (chooserOpened once); the current type (lamp) is listed greyed and inert; picking another type replaces without a duplicate sprite (rewritten WORK-033-2: the same-type pick is no longer offered)', async () => {
     const { context, root, scene } = await designSetup();
     context.store.dispatch({ type: 'placeCharm', slotId: 'floor-3', typeId: 'lamp' });
     pointer(scene, 460, 450);
@@ -192,13 +241,22 @@ describe('mec-005 R8 replace', () => {
     expect(q(root, '.tpp-replaceRemove').parentElement!.hidden).toBe(true);
     expect(q(root, '.tpp-chooser').hidden).toBe(false);
     expect(cardNames(root)).toContain('Lamp');
-    click(root.querySelector('.tpp-charm-card[data-type-id="lamp"]'));
+    const lamp = q(root, '.tpp-charm-card[data-type-id="lamp"]');
+    expect([lamp.getAttribute('aria-disabled'), lamp.dataset.action, lamp.classList.contains('none-left')]).toEqual(['true', undefined, true]);
+    click(lamp);
+    expect(linesOf(context, 'charm.placed')).toHaveLength(1);
+    expect(q(root, '.tpp-chooser').hidden).toBe(false);
+    const other = q(root, '.tpp-charm-card[data-action="place"]');
+    const otherId = other.dataset.typeId!;
+    expect(otherId).not.toBe('lamp');
+    click(other);
     expect(linesOf(context, 'ui.sheetClosed', 'ui.chooserOpened', 'charm.placed').slice(-3)).toEqual([
       { type: 'ui.sheetClosed', slotId: 'floor-3' },
       { type: 'ui.chooserOpened', slotId: 'floor-3' },
-      { type: 'charm.placed', roomId: 'dog-room', slotId: 'floor-3', typeId: 'lamp', replacedTypeId: 'lamp' },
+      { type: 'charm.placed', roomId: 'dog-room', slotId: 'floor-3', typeId: otherId, replacedTypeId: 'lamp' },
     ]);
     expect(linesOf(context, 'ui.chooserOpened')).toHaveLength(1);
+    expect(context.store.getState().inventory.counts.lamp).toBe(1);
     expect(scene.children.list.filter(o => o === scene.charms.get('floor-3') || (o.type === 'Image' && (o as Phaser.GameObjects.Image).texture?.key === 'charms/lamp' && (o as Phaser.GameObjects.Image).alpha === 1))).toHaveLength(1);
   });
 

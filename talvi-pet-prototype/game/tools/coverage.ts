@@ -4,9 +4,11 @@ import { args, readInput, evaluate, output, findingText, zodText, fail, readCont
 import { coverage, coverageText } from './content/coverage';
 import { loadContent } from '../src/content/load';
 import type { Content } from '../src/content/types';
+import { itemTypeIds } from '../src/content/schema/charms';
+import { rewardItems } from '../src/content/schema/pet';
 import type { ConditionView } from '../src/sim/events';
 import { checkInvariants } from '../src/sim/invariants';
-import { boundaryCents, revealView, starsOf, wantConditions } from '../src/sim/select';
+import { boundaryCents, homeSpaceOf, revealView, starsOf, starsOfSpace, wantConditions } from '../src/sim/select';
 import { initialState, type GameState } from '../src/sim/state';
 import { GameStateSchema, parseSaveValue } from '../src/sim/state.schema';
 
@@ -57,15 +59,16 @@ export function syntheticState(content: Content, edit: (state: GameState) => voi
 
 /** `starter` | `phase:<n>` (starter + the first n phase rewards of the rising projects, content order) |
  * `hearts:<k>` (starter + the type rewards of the pet's first k wants) | `all`. Owned set only (§2.4). */
+/** The granted type ids (distinct, first-grant order); the panel preview holds one copy of each (DEC-043). */
 export function ownedSet(content: Content, petId: string, owned: string): string[] {
-  const starter = [...content.charms.starterSet];
+  const starter = itemTypeIds(content.charms.starterSet);
   const [kind, count] = owned.split(':'), n = Number(count);
   if (owned === 'starter') return starter;
   if (owned === 'all') return content.charms.types.map(type => type.id);
   if ((kind !== 'phase' && kind !== 'hearts') || !Number.isInteger(n) || n < 0) throw new Error('--owned must be starter|phase:<n>|hearts:<k>|all');
   const extra = kind === 'phase'
-    ? content.projects.filter(project => !project.completeAtStart).flatMap(project => project.phaseRewards).slice(0, n).flat()
-    : content.pets[petId].wants.slice(0, n).flatMap(want => (want.reward.kind === 'types' ? want.reward.typeIds : []));
+    ? itemTypeIds(content.projects.filter(project => !project.completeAtStart).flatMap(project => project.phaseRewards).slice(0, n).flat())
+    : itemTypeIds(content.pets[petId].wants.slice(0, n).flatMap(rewardItems));
   return [...new Set([...starter, ...extra])];
 }
 
@@ -75,6 +78,7 @@ const tagName = (content: Content, tag: string | undefined) => content.tags.find
 function conditionText(content: Content, view: ConditionView, max: number): string {
   const box = view.met ? '✓' : '☐';
   if (view.kind === 'adjacent') return `${box} ${tagName(content, view.tagA)} + ${tagName(content, view.tagB)} ${text(content, 'tpp.want.adjacent')}`;
+  if (view.kind === 'greeted') return `${box} greeted ${view.withPetId} (WORK-036)`;
   if (view.kind === 'stars') return `${box} ${text(content, 'tpp.want.starsFloor').replace('{min}', String(view.min))} (${view.current} / ${max})`;
   if (view.hidden) return `${box} ${text(content, 'tpp.want.hidden')}`;
   const note = view.availability === 'owned' ? '(owned)' : `— ${text(content, `tpp.want.availability.${view.availability}`)}`;
@@ -86,15 +90,16 @@ export function panelPreview(content: Content, preview: Extract<Preview, { kind:
   if (!pet) throw new Error(`Unknown pet "${preview.petId}"`);
   const index = pet.wants.findIndex(want => want.id === preview.wantId);
   if (index < 0) throw new Error(`Unknown want "${preview.wantId}" for pet ${preview.petId}`);
-  const roomId = Object.values(content.rooms).find(room => room.residentPetId === pet.id)!.id;
+  const home = homeSpaceOf(content, pet.id);
   const state = syntheticState(content, draft => {
-    draft.inventory.ownedTypeIds = ownedSet(content, pet.id, preview.owned);
+    draft.inventory.counts = Object.fromEntries(ownedSet(content, pet.id, preview.owned).map(id => [id, 1])); // one copy each, none placed
     draft.pets[pet.id].fulfilledWantIds = pet.wants.slice(0, index).map(want => want.id);
     draft.pets[pet.id].hearts = index;
     draft.pets[pet.id].introduced = true;
-    draft.scene = { kind: 'interior', roomId };
+    if (home.kind === 'room') draft.scene = { kind: 'interior', roomId: home.roomId };
+    else draft.spaces[home.siteId] = { ...draft.spaces[home.siteId], unlocked: true, arrivalDone: true };
   });
-  const conditions = wantConditions(content, state, pet.id), max = starsOf(content, state, roomId).max;
+  const conditions = wantConditions(content, state, pet.id), max = starsOfSpace(content, state, home).max;
   const want = pet.wants[index];
   return { data: { petId: pet.id, wantId: want.id, index: index + 1, owned: preview.owned, conditions },
     lines: [`panel  ${pet.id}  want ${index + 1} ${want.id}  owned ${preview.owned}`, `  ${want.brief}`,
@@ -118,7 +123,9 @@ export function starsPreview(content: Content, save: unknown, file: string) {
   const loaded = parseSaveValue(content, save);
   if ('discarded' in loaded) throw new SyntheticStateError(`--save ${file} discarded: ${loaded.discarded}`);
   const rooms = Object.keys(content.rooms).map(roomId => ({ roomId, ...starsOf(content, loaded.state, roomId) }));
-  return { data: rooms, lines: [`stars  ${file}`, ...rooms.map(room => `  ${room.roomId} ${room.points} / ${room.max}`)] };
+  const sites = content.street.sites.map(site => ({ siteId: site.id, ...starsOfSpace(content, loaded.state, { kind: 'site', siteId: site.id }) }));
+  return { data: [...rooms, ...sites], lines: [`stars  ${file}`, ...rooms.map(room => `  ${room.roomId} ${room.points} / ${room.max}`),
+    ...sites.map(site => `  site ${site.siteId} ${site.points} / ${site.max}`)] };
 }
 
 export function runPreview(content: Content, preview: Preview, readSave = (file: string) => JSON.parse(readFileSync(file, 'utf8')) as unknown) {

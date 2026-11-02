@@ -6,7 +6,7 @@ it('accepts synthetic minimum content with every error-level check and retains w
     const findings = runContentChecks(validContent(), manifest);
     expect(findings.filter(f => f.level === 'error')).toEqual([]);
     expect(findings.some(f => f.level === 'warning')).toBe(true);
-    expect(new Set(registeredIds).size).toBe(76);
+    expect(new Set(registeredIds).size).toBe(89); // WORK-032-1: CHK-001-11..14; WORK-033-1: CHK-009-17; WORK-034-2: CHK-001-15/16, CHK-005-09/10, CHK-009-18..21
 });
 for (const id of registeredIds)
     it(`${id} has an executable triggering JSON patch`, () => {
@@ -27,15 +27,9 @@ it('reports overlapping facts once, with every applicable alias', () => {
 });
 it('keeps hidden tags in coverage and rejects self/late Heart-only sources', () => {
     const c = validContent();
-    c.projects[1].phaseRewards[0] = [
-        'fern'
-    ];
+    c.projects[1].phaseRewards[0] = [{ typeId: 'fern', count: 1 }];
     const w = c.pets.dog.wants[2];
-    w.reward = {
-        kind: 'types', typeIds: [
-            'ball'
-        ]
-    };
+    w.reward = [{ kind: 'items', items: [{ typeId: 'ball', count: 1 }] }];
     const findings = runContentChecks(c, manifest, {
         only: [
             'CHK-009-09'

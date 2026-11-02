@@ -109,3 +109,17 @@ export function planCelebration(cue: CelebrationCue): CelebrationPlan {
   beats.push({ beat: 'finish', startMs: t, durationMs: 0 });
   return { beats, totalMs: t };
 }
+
+/**
+ * WORK-032-2 (DEC-048, gate fork defaults 4): the design-mode world tint, the Stars burst and the Heart moment — one place per value.
+ * The tint is a camera-fixed rectangle above every world sprite; the slot outlines draw in `OUTLINE_BAND` above it (order fork (c)).
+ */
+export const DESIGN_TINT = { color: 0x5b6f86, alpha: 0.25, depth: 1500 } as const;
+export const OUTLINE_BAND = DESIGN_TINT.depth + 1;
+/** Stars burst: `count` gold stars, launched `staggerMs` apart, each flying `flightMs` from the slot into the bar; all gone by `totalMs` (≤ 900). */
+export const STARS_BURST = { count: 8, staggerMs: 35, flightMs: 600, spreadPx: 70, totalMs: 900 } as const;
+/** Heart moment: dim + heart pop (`popMs`) for `totalMs`, skippable from `skipAfterMs`, fading out over `fadeOutMs`; then the vignette box. */
+export const HEART_MOMENT = { totalMs: 2200, skipAfterMs: 600, popMs: 520, fadeOutMs: 220, dimAlpha: 0.5, heartTopPct: 6, heartPx: 240,
+  petBaseY: 0.88, petScale: 2, spotlightPx: 340 } as const;
+/** The big `react` pet draws camera-fixed above the world, tint, outlines, confetti (7000) and pet bubbles (8000), below the flash (9000). */
+export const HEART_PET_DEPTH = 8500;

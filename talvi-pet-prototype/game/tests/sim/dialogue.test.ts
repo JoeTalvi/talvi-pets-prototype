@@ -104,15 +104,16 @@ it('VERIFY-MEC-008-004 / VERIFY-MEC-009-002 §6.2 chain order on placing the Dog
   const result = step(content, state, { type: 'placeCharm', slotId: 'large-1', typeId: 'dog-bed' });
   const kinds = types(result.events);
   expect(kinds.slice(0, kinds.indexOf('want.activated') + 1)).toEqual(['charm.placed', 'stars.changed',
-    'want.progressed', 'want.fulfilled', 'types.unlocked', 'heart.earned', 'dialogue.opened', 'want.activated']);
+    'want.progressed', 'want.fulfilled', 'items.granted', 'items.granted', 'heart.earned', 'dialogue.opened', 'want.activated']);
   expect(result.events[1]).toMatchObject({ from: 0, to: 4 });
   expect(result.events[2]).toMatchObject({ wantId: 'soft-nap', conditions: [{ met: true }, { met: true }] });
   expect(result.events[3]).toEqual({ type: 'want.fulfilled', petId: 'dog', wantId: 'soft-nap', hearts: 1,
-    reward: { kind: 'types', typeIds: ['rug', 'cushion'] }, focusSlotId: 'large-1' });
-  expect(result.events[4]).toEqual({ type: 'types.unlocked', typeIds: ['rug', 'cushion'], source: 'heart' });
-  expect(result.events[5]).toEqual({ type: 'heart.earned', petId: 'dog', hearts: 1 });
-  expect(result.events[6]).toMatchObject({ script: { source: 'vignette', wantId: 'soft-nap' } });
-  expect(result.events[7]).toEqual({ type: 'want.activated', petId: 'dog', wantId: 'bright-corner', index: 1 });
+    reward: [{ kind: 'items', items: [{ typeId: 'rug', count: 1 }, { typeId: 'cushion', count: 1 }] }], focusSlotId: 'large-1' });
+  expect(result.events[4]).toEqual({ type: 'items.granted', typeId: 'rug', count: 1, source: 'heart' });
+  expect(result.events[5]).toEqual({ type: 'items.granted', typeId: 'cushion', count: 1, source: 'heart' });
+  expect(result.events[6]).toEqual({ type: 'heart.earned', petId: 'dog', hearts: 1 });
+  expect(result.events[7]).toMatchObject({ script: { source: 'vignette', wantId: 'soft-nap' } });
+  expect(result.events[8]).toEqual({ type: 'want.activated', petId: 'dog', wantId: 'bright-corner', index: 1 });
   expect(result.state.dialogue.queue.map(script => [script.source, script.wantId]))
     .toEqual([['wantAnnounce', 'bright-corner']]);
   const pet = result.state.pets.dog;

@@ -1,24 +1,10 @@
-import { readdirSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import { expect, it } from 'vitest';
-import { loadContent, type ContentFiles } from '../../src/content/load';
 import type { Action } from '../../src/sim/actions';
 import { reduce } from '../../src/sim/reduce';
 import { chooserTypes } from '../../src/sim/select';
 import { initialState } from '../../src/sim/state';
 import { validContent } from '../content/helpers';
-import { advance, deepFreeze, eventsOf, owing, run } from './helpers';
-
-/** FX-REAL: every `src/content/**\/*.json`, read with node:fs, loaded without a manifest. */
-function realContent() {
-  const root = 'src/content', data: ContentFiles = {};
-  for (const name of readdirSync(root).filter(file => file.endsWith('.json')))
-    data[name] = JSON.parse(readFileSync(join(root, name), 'utf8'));
-  for (const dir of ['rooms', 'pets'])
-    for (const name of readdirSync(join(root, dir)).filter(file => file.endsWith('.json')))
-      data[`${dir}/${name}`] = JSON.parse(readFileSync(join(root, dir, name), 'utf8'));
-  return loadContent(undefined, data);
-}
+import { advance, deepFreeze, eventsOf, orientationDone, owing, realContent, run } from './helpers';
 
 const set = (cents: number): Action => ({ type: 'debugSetCurrent', projectId: 'pet-house', cents });
 
@@ -61,14 +47,14 @@ it('VERIFY-MEC-010-013 partial: node half (120 s of ticks) — frozen from initi
   expect(eventsOf(ticked.events, 'roundup.fired')).toEqual([]);
   expect(ticked.state.feed.sinceLastEventMs).toBe(0);
   expect(ticked.state.session.eventIntervalMs).toBeNull();
-  const control = advance(reduce, content, initialState(content, 1234), 120_000); // same span unfrozen: the clock does fire
+  const control = advance(reduce, content, orientationDone(initialState(content, 1234)), 120_000); // same span unfrozen: the clock does fire
   expect(eventsOf(control.events, 'roundup.fired').length).toBeGreaterThan(0);
 });
 
 it('VERIFY-MEC-010-004 two reducers given debugSetSeed 7 produce identical round-ups over 100 s', () => {
   const content = validContent();
   const streams = [1, 2].map(seed => {
-    const seeded = run(content, initialState(content, seed), [{ type: 'debugSetSeed', seed: 7 }]).state;
+    const seeded = run(content, orientationDone(initialState(content, seed)), [{ type: 'debugSetSeed', seed: 7 }]).state;
     expect(seeded.feed).toEqual({ rngState: 7, sinceLastEventMs: 0, eventCount: 0 });
     expect(seeded.session.seed).toBe(7);
     return advance(reduce, content, seeded, 100_000);
@@ -91,29 +77,49 @@ it('VERIFY-MEC-010-005 debugJumpPhase 305 → 600 with phase.reached 2; debugCom
   expect(state.projects['pet-house'].acknowledgedPhase).toBe(1);
 });
 
-it('VERIFY-MEC-010-006 debugUnlockAllTypes owns every type, starter order first, source debug', () => {
+it('VERIFY-MEC-010-006 debugUnlockAllTypes grants one copy of every ungranted type, starter order first, source debug', () => {
   const content = validContent();
   const action: Action = { type: 'debugUnlockAllTypes' };
   const { state, results } = run(content, initialState(content, 1), [action]);
-  const starter = content.charms.starterSet;
+  const starter = content.charms.starterSet.map(entry => entry.typeId);
   const rest = content.charms.types.map(type => type.id).filter(id => !starter.includes(id));
-  expect(state.inventory.ownedTypeIds).toEqual([...starter, ...rest]);
-  expect(results[0].events).toEqual([{ type: 'debug.applied', action }, { type: 'types.unlocked', typeIds: rest, source: 'debug' }]);
+  expect(Object.keys(state.inventory.counts)).toEqual([...starter, ...rest]);
+  expect(Object.values(state.inventory.counts).every(count => count === 1)).toBe(true);
+  expect(results[0].events).toEqual([{ type: 'debug.applied', action },
+    ...rest.map(typeId => ({ type: 'items.granted', typeId, count: 1, source: 'debug' }))]);
 });
 
-it('VERIFY-MEC-004-007 debugUnlockAllTypes on FX-REAL twice: every unowned type in file order, then []; small chooser starter first', () => {
+it('VERIFY-MEC-004-007 (rewritten) debugUnlockAllTypes on FX-REAL twice: one copy of every ungranted type in file order, then nothing; small chooser starter first', () => {
   const content = realContent();
   const { state, results } = run(content, initialState(content, 1), [{ type: 'debugUnlockAllTypes' }, { type: 'debugUnlockAllTypes' }]);
-  const starter = content.charms.starterSet;
+  const starter = content.charms.starterSet.map(entry => entry.typeId);
   const rest = content.charms.types.map(type => type.id).filter(id => !starter.includes(id));
-  expect(results[0].events[1]).toEqual({ type: 'types.unlocked', typeIds: rest, source: 'debug' });
-  expect(results[1].events[1]).toEqual({ type: 'types.unlocked', typeIds: [], source: 'debug' });
+  expect(eventsOf(results[0].events, 'items.granted').map(event => event.typeId)).toEqual(rest);
+  expect(results[1].events).toEqual([{ type: 'debug.applied', action: { type: 'debugUnlockAllTypes' } }]);
+  expect(results[1].state).toEqual(results[0].state);
   const roomId = Object.keys(content.rooms)[0];
   const small = content.rooms[roomId].slots.find(slot => slot.sizeClass === 'small')!;
   const inside = { ...state, scene: { kind: 'interior' as const, roomId } };
   const isSmall = (id: string) => content.charms.types.find(type => type.id === id)!.sizeClass === 'small';
   expect(chooserTypes(content, inside, small.id).map(type => type.id))
     .toEqual([...starter.filter(isSmall), ...rest.filter(isSmall)]);
+});
+
+it('VERIFY-MEC-010-016 (new) debugGrantCopies: +count copies, debug.applied then items.granted {debug}; invalidPayload and unknownType rejections', () => {
+  const content = validContent(), state = deepFreeze(initialState(content, 1));
+  const action: Action = { type: 'debugGrantCopies', typeId: 'lamp', count: 2 };
+  const granted = reduce(content, state, action);
+  expect(granted.state.inventory.counts.lamp).toBe(3);
+  expect(granted.events).toEqual([{ type: 'debug.applied', action },
+    { type: 'items.granted', typeId: 'lamp', count: 2, source: 'debug' }]);
+  for (const [bad, reason] of [[{ type: 'debugGrantCopies', typeId: 'lamp', count: 0 }, 'invalidPayload'],
+    [{ type: 'debugGrantCopies', typeId: 'lamp', count: 10 }, 'invalidPayload'],
+    [{ type: 'debugGrantCopies', typeId: 'lamp', count: 1.5 }, 'invalidPayload'],
+    [{ type: 'debugGrantCopies', typeId: 'nope', count: 1 }, 'unknownType']] as [Action, string][]) {
+    const result = reduce(content, state, bad);
+    expect(result.state).toBe(state);
+    expect(result.events).toEqual([{ type: 'action.rejected', action: bad, reason }]);
+  }
 });
 
 it('VERIFY-MEC-010-007 toggles and label write the session and emit their events after debug.applied (idempotent)', () => {

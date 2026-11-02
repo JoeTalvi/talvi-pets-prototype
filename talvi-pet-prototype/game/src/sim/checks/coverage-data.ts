@@ -1,5 +1,5 @@
 import type { Content } from '../../content/types';
-import type { Want } from '../../content/schema/pet';
+import { rewardItems, type Want } from '../../content/schema/pet';
 export const wantTags = (w: Want) => w.conditions.flatMap(x => x.kind === 'tag' ? [
     x.tag
 ] : []);
@@ -13,20 +13,20 @@ export type Source = {
 };
 export function typeSources(c: Content, typeId: string): Source[] {
     const sources: Source[] = [];
-    if (c.charms.starterSet.includes(typeId))
+    if (c.charms.starterSet.some(item => item.typeId === typeId))
         sources.push({
             kind: 'starter', typeId
         });
     for (const p of c.projects)
         p.phaseRewards.forEach((ts, i) => {
-            if (ts.includes(typeId))
+            if (ts.some(item => item.typeId === typeId))
                 sources.push({
                     kind: 'phase', typeId, projectId: p.id, phase: i + 1
                 });
         });
     for (const p of Object.values(c.pets))
         p.wants.forEach((w, i) => {
-            if (w.reward.kind === 'types' && w.reward.typeIds.includes(typeId))
+            if (rewardItems(w).some(item => item.typeId === typeId))
                 sources.push({
                     kind: 'heart', typeId, petId: p.id, heart: i + 1
                 });

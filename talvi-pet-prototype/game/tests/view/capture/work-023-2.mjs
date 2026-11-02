@@ -67,7 +67,7 @@ async function arrival(browser) {
     bubbleAt: { x: window.__walk.bubble.x, y: window.__walk.bubble.y, depth: window.__walk.bubble.depth }, anchor: window.__walk.sprite.bubbleAnchor(),
     boxHidden: document.querySelector('.tpp-dialogue').hidden }));
   const hud = await hudRead(w.page);
-  const still = await harnessShot(w.page, browser, captures, 'screen-5-street-arrival-1080', meta('arrival-held-box', { note: 'Owl at the pet-front door point with the 🎵 greeting; HUD "More homes coming"; the completion box held (mec-002 §2.6)' }));
+  const still = await harnessShot(w.page, browser, captures, 'screen-5-street-arrival-1080', meta('arrival-held-box', { note: 'Owl at the pet-front door point with the 🎵 greeting; no "More homes coming" HUD (retired by WORK-034-3, DEC-044); the completion box held (mec-002 §2.6)' }));
   await until(w.page, () => window.__walk.finished, null, 6000);
   await until(w.page, () => window.__boxShownAt !== undefined, null, 4000).catch(() => null);
   await w.page.waitForTimeout(1200);
@@ -153,7 +153,7 @@ function arrivalRow(a, entry) {
     after: { arrival: a.doorAfter.arrival, arrivalDone: a.doorAfter.arrivalDone }, heldBox: { hiddenDuringWalk: a.atDoor.boxHidden, shownAfterFinish: a.read.boxShownAt !== null, source: a.read.dialogue },
     enteredOwlRoom: entry.read.sceneChanged, still: a.still, loop: a.loop.outputs?.mp4 ?? a.loop.gap, taste: TASTE, sound: SOUND, iphone: IPHONE,
     note: 'doorEnabled is the sim selector (arrival === null && arrivalDone); read here as state.arrival/arrivalDone and proven by walking into pet-front' };
-  row.result = a.atStart.clip === 'pet-owl-walk' && a.atDoor.bubble?.text === '🎵' && a.read.finishedLines === 1 && a.hud.text === 'More homes coming' && a.hud.visible
+  row.result = a.atStart.clip === 'pet-owl-walk' && a.atDoor.bubble?.text === '🎵' && a.read.finishedLines === 1 && a.hud.text === null && !a.hud.visible /* "More homes coming" retired by WORK-034-3 (DEC-044) */
     && a.doorAfter.arrival === null && a.doorAfter.arrivalDone && a.atDoor.boxHidden && a.read.boxShownAt !== null && entry.read.sceneChanged?.to?.roomId === 'owl-room' ? 'pass' : 'fail';
   return row;
 }

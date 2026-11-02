@@ -5,7 +5,7 @@ import { deepFreeze } from './helpers';
 
 it('CONTRACT-STATE v1.4 initial session, avatar, projects and inventory match the authored content', () => {
   const content = deepFreeze(validContent()), state = initialState(content, 1234);
-  expect(state.schemaVersion).toBe(1);
+  expect(state.schemaVersion).toBe(2);
   expect(state.session).toEqual({ seed: 1234, eventIntervalMs: 20000, feedPresentation: 'events',
     starsVisible: true, muted: false, testerLabel: '', orientationShown: false });
   expect(state.scene).toEqual({ kind: 'street' });
@@ -15,8 +15,8 @@ it('CONTRACT-STATE v1.4 initial session, avatar, projects and inventory match th
     'starter-house': { currentCents: 1500, acknowledgedPhase: 5, complete: true, arrivalDone: true },
     'pet-house': { currentCents: 0, acknowledgedPhase: 0, complete: false, arrivalDone: false },
   });
-  expect(state.inventory.ownedTypeIds).toEqual(content.charms.starterSet);
-  expect(state.inventory.ownedTypeIds).not.toBe(content.charms.starterSet);
+  expect(state.inventory.counts).toEqual(Object.fromEntries(content.charms.starterSet.map(entry => [entry.typeId, entry.count])));
+  expect(Object.values(state.pets).every(pet => pet.heartCharms.length === 0 && pet.strippedPending.length === 0)).toBe(true);
   expect(state.feed).toEqual({ rngState: 1234, sinceLastEventMs: 0, eventCount: 0 });
   expect(state.celebration).toBeNull(); expect(state.arrival).toBeNull();
   expect(state.dialogue).toEqual({ current: null, queue: [] });

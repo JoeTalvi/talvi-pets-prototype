@@ -34,21 +34,23 @@ describe('VERIFY-TOOL-008 committed fixtures', () => {
   });
 });
 
-it('VERIFY-MEC-004-006 (fixture form): save-v1.milestone loads at step milestone; collectRewards emits types.unlocked without the pre-owned id', () => {
+it('VERIFY-MEC-004-006 (fixture form, rewritten): save-v1.milestone loads at step milestone; collectRewards emits one items.granted {phase} per phase item, the pre-owned bookshelf gains a copy', () => {
   const state = (parseSaveValue(content, JSON.parse(committed('save-v1.milestone.json'))) as { state: GameState }).state;
   expect(state.celebration!.step).toBe('milestone');
-  const owned = state.celebration!.unlockedTypeIds.filter(id => state.inventory.ownedTypeIds.includes(id));
+  const owned = state.celebration!.unlockedTypeIds.filter(id => Object.hasOwn(state.inventory.counts, id));
   expect(owned).toEqual(['bookshelf']);
-  const first = reduce(content, state, { type: 'collectRewards' }).events[0];
-  expect(first).toMatchObject({ type: 'types.unlocked' });
-  expect((first as { typeIds: string[] }).typeIds).toEqual(state.celebration!.unlockedTypeIds.filter(id => id !== 'bookshelf'));
+  const result = reduce(content, state, { type: 'collectRewards' });
+  const granted = result.events.filter(event => event.type === 'items.granted');
+  expect(granted.map(event => (event as { typeId: string }).typeId)).toEqual(state.celebration!.unlockedTypeIds);
+  expect(granted.every(event => (event as { source: string; count: number }).source === 'phase' && (event as { count: number }).count === 1)).toBe(true);
+  expect(result.state.inventory.counts.bookshelf).toBe(state.inventory.counts.bookshelf + 1);
 });
 
 it('VERIFY-MEC-008-012 / VERIFY-MEC-009-020 (FX-SAVE-V1-VIGNETTE shape): vignette current at index 0, hearts 1, Heart bundle owned', () => {
   const state = stateOf('save-v1.vignette.json');
   expect(state.dialogue.current).toMatchObject({ source: 'vignette', index: 0, wantId: 'soft-nap' });
   expect(state.pets.dog.hearts).toBe(1);
-  expect(state.inventory.ownedTypeIds).toEqual(expect.arrayContaining(['rug', 'cushion']));
+  expect(state.inventory.counts).toMatchObject({ rug: 1, cushion: 1 });
 });
 
 describe('VERIFY-TOOL-008 CLI', () => {
@@ -57,7 +59,7 @@ describe('VERIFY-TOOL-008 CLI', () => {
     writeFileSync(steps, JSON.stringify({ seed: 1, steps: [{ action: { type: 'setDesignMode', on: true } }] }));
     const result = fixture(['--steps', steps, '--content', 'tests/fixtures/content-min', '--out', out]);
     expect(result.status).toBe(1);
-    expect(result.stderr).toContain('step 0: setDesignMode rejected: notInterior');
+    expect(result.stderr).toContain('step 0: setDesignMode rejected: siteLocked');
     expect(existsSync(out)).toBe(false);
   });
   it('VERIFY-TOOL-008 a set outside the tools.md §2.4 fields exits 1 and writes nothing', () => {

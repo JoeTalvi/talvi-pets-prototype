@@ -41,6 +41,9 @@
     "dislike": [
       "That is not for me."
     ],
+    "stripped": [
+      "Something is missing."
+    ],
     "intro": [
       "This is a synthetic fixture."
     ],
@@ -69,9 +72,11 @@
           "tag": "light"
         }
       ],
-      "reward": {
-        "kind": "vignette"
-      },
+      "reward": [
+        {
+          "kind": "vignette"
+        }
+      ],
       "rewardLabel": "Story"
     }
   ]

@@ -67,7 +67,7 @@
         "path": "/avatar",
         "value": {
           "x": 465,
-          "y": 830,
+          "y": 960,
           "facing": "up",
           "immunityMs": 0,
           "facingCandidate": null
@@ -138,8 +138,8 @@
     },
     {
       "set": {
-        "path": "/inventory/ownedTypeIds/-",
-        "value": "bookshelf"
+        "path": "/inventory/counts/bookshelf",
+        "value": 1
       }
     },
     {
