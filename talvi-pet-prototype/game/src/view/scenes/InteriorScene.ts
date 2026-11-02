@@ -156,11 +156,13 @@ export class InteriorScene extends WorldScene {
     this.charms.set(slotId, sprite);
     return sprite;
   }
-  /** A charm image at the slot (wall paintings projected; other wall art is drawn for the left wall and mirrored on the
-   * right; a floor-standing charm sits on the slot's floor line); the fill preview layer reuses it. */
+  /** A charm image at the slot (wall paintings projected; other wall art is drawn for its type's `wallArtFacing` wall, default
+   * left, and mirrored on the other wall; a floor-standing charm sits on the slot's floor line); the fill preview layer reuses it. */
   charmSprite(slot: Slot, key: string): CharmSprite {
-    const standing = slot.floorY !== undefined && this.context.content.charms.types.some(t => t.sprite === key && t.standsOnFloor);
-    if (key !== 'charms/painting' || !slot.wall) return new CharmSprite(this, slot.x, standing ? slot.floorY! : slot.y, key).setFlipX(slot.wall === 'right');
+    const type = this.context.content.charms.types.find(t => t.sprite === key);
+    const standing = slot.floorY !== undefined && type?.standsOnFloor === true;
+    const flip = slot.wall !== undefined && slot.wall !== (type?.wallArtFacing ?? 'left');
+    if (key !== 'charms/painting' || !slot.wall) return new CharmSprite(this, slot.x, standing ? slot.floorY! : slot.y, key).setFlipX(flip);
     const sourceHash = this.context.manifest.entries.find(e => e.id === key)?.hash ?? '';
     try { return new CharmSprite(this, slot.x, slot.y, key, { side: slot.wall, sourceHash }); }
     catch (error) {

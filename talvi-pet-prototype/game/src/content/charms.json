@@ -167,7 +167,8 @@
       "tags": [
         "plant"
       ],
-      "sprite": "charms/hanging-plant"
+      "sprite": "charms/hanging-plant",
+      "wallArtFacing": "right"
     },
     {
       "id": "lantern",
