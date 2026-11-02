@@ -3183,8 +3183,8 @@
       "prompt": "A single wide, flat, overgrown garden plot lying on the ground, seen from a three-quarter top-down view, isolated on a plain pure white background. An untended oval patch of earth covered in long grass tufts, a few weeds and three or four small grey stones. Everything stays low and flat on the ground; nothing tall. No fence, no sign, no lettering, no house, no characters.",
       "refs": [
         "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/production/pet_house_lv3.png",
-        "<GAME>/public/assets/world/tile-grass-base.png",
-        "<GAME>/public/assets/world/bush-1.png"
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/game/public/assets/world/tile-grass-base.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/game/public/assets/world/bush-1.png"
       ],
       "postProcess": "WORK-034-1 / TASK-218: JPEG candidate converted to PNG (sips); evidence/WORK-034-1/recipes/site-cutout.ts (SHA-256 ef71f2e9c99a4db9e2369fbd0f57bb948038b2afee75f0456a408fe53fb62681): border flood-fill white key (min RGB >= 228, chroma <= 22), 3 px soft alpha band, crop to opaque bbox, common area-average scale 0.5024 for both states, 640x320 canvas, base-centre (bottom row, centred x); 8-bit RGBA via tools/assets/refit.ts encodePng.",
       "batch": "tier2-m4",
@@ -3211,7 +3211,7 @@
       "refs": [
         "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/world/1793643528453-8bz7ix/candidate_002.png",
         "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/production/pet_house_lv3.png",
-        "<GAME>/public/assets/world/tile-grass-base.png"
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/game/public/assets/world/tile-grass-base.png"
       ],
       "postProcess": "WORK-034-1 / TASK-218: JPEG candidate converted to PNG (sips); evidence/WORK-034-1/recipes/site-cutout.ts (SHA-256 ef71f2e9c99a4db9e2369fbd0f57bb948038b2afee75f0456a408fe53fb62681): border flood-fill white key (min RGB >= 228, chroma <= 22), 3 px soft alpha band, crop to opaque bbox, common area-average scale 0.5024 for both states, 640x320 canvas, base-centre (bottom row, centred x); 8-bit RGBA via tools/assets/refit.ts encodePng.",
       "batch": "tier2-m4",
