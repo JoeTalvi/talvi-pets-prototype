@@ -71,7 +71,7 @@ describe('WORK-032-1 fix 1: round-ups wait for every dialogue (MEC-002 feed paus
   });
 
   it('VERIFY-MEC-002-006 kept: a frozen interval banks nothing with no dialogue open', () => {
-    let state = drain(reduce(content, initialState(content, 7), tick(0, 0, 0)).state).state;
+    const state = drain(reduce(content, initialState(content, 7), tick(0, 0, 0)).state).state;
     state.session.eventIntervalMs = null;
     const result = advance(reduce, content, state, 60_000);
     expect(result.state.feed.sinceLastEventMs).toBe(0);
