@@ -1,0 +1,30 @@
+{"t":0,"wall":"2026-10-27T15:00:00.000Z","type":"session.started","build":"tpp-0.0.0+development","schemaVersion":1,"seed":1234,"cadence":20000,"feedPresentation":"events","testerLabel":"sample","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Chrome/141.0.0.0 Safari/537.36","viewport":{"w":1920,"h":1080,"dpr":2}}
+{"t":1850,"wall":"2026-10-27T15:00:01.850Z","type":"input.joystick","phase":"start"}
+{"t":4120,"wall":"2026-10-27T15:00:04.120Z","type":"input.joystick","phase":"end","ms":2270}
+{"t":4300,"wall":"2026-10-27T15:00:04.300Z","type":"scene.changed","from":{"kind":"street"},"to":{"kind":"interior","roomId":"dog-room"},"doorId":"starter-front"}
+{"t":9800,"wall":"2026-10-27T15:00:09.800Z","type":"want.activated","petId":"dog","wantId":"soft-nap","index":0}
+{"t":15200,"wall":"2026-10-27T15:00:15.200Z","type":"input.tap","x":812,"y":640,"target":"slot"}
+{"t":15900,"wall":"2026-10-27T15:00:15.900Z","type":"charm.placed","roomId":"dog-room","slotId":"floor-1","typeId":"dog-bed","replacedTypeId":null}
+{"t":15900,"wall":"2026-10-27T15:00:15.900Z","type":"stars.changed","roomId":"dog-room","from":0,"to":4,"delta":4,"max":48}
+{"t":15900,"wall":"2026-10-27T15:00:15.900Z","type":"want.progressed","petId":"dog","wantId":"soft-nap","conditions":[{"kind":"tag","met":true,"hidden":false,"tag":"soft"}]}
+{"t":16400,"wall":"2026-10-27T15:00:16.400Z","type":"pet.reacted","petId":"dog","reaction":"love","slotId":"floor-1","typeId":"dog-bed","line":null,"walkOver":true}
+{"t":20000,"wall":"2026-10-27T15:00:20.000Z","type":"roundup.fired","projectId":"pet-house","merchantId":"corner-bakery","merchantName":"Corner Bakery","amountCents":425,"changeCents":75,"currentCents":75}
+{"t":40000,"wall":"2026-10-27T15:00:40.000Z","type":"roundup.fired","projectId":"pet-house","merchantId":"coffee","merchantName":"Coffee","amountCents":380,"changeCents":20,"currentCents":95}
+{"t":52300,"wall":"2026-10-27T15:00:52.300Z","type":"charm.placed","roomId":"dog-room","slotId":"wall-1","typeId":"lamp","replacedTypeId":null}
+{"t":52300,"wall":"2026-10-27T15:00:52.300Z","type":"stars.changed","roomId":"dog-room","from":4,"to":7,"delta":3,"max":48}
+{"t":61214,"wall":"2026-10-27T15:01:01.214Z","type":"want.fulfilled","petId":"dog","wantId":"soft-nap","hearts":1,"reward":{"kind":"types","typeIds":["cushion"]},"focusSlotId":"floor-1"}
+{"t":61214,"wall":"2026-10-27T15:01:01.214Z","type":"heart.earned","petId":"dog","hearts":1}
+{"t": 61214, "wall": "2026-10-27T15:01:01.214Z", "type": "types.unl
+{"t":61214,"wall":"2026-10-27T15:01:01.214Z","type":"types.unlocked","typeIds":["cushion"],"source":"heart"}
+{"t":61214,"wall":"2026-10-27T15:01:01.214Z","type":"want.activated","petId":"dog","wantId":"bright-corner","index":1}
+{"t":75000,"wall":"2026-10-27T15:01:15.000Z","type":"stars.visibilityChanged","visible":false}
+{"t":75000,"wall":"2026-10-27T15:01:15.000Z","type":"debug.applied","action":{"type":"debugSetStarsVisible","on":false}}
+{"t":98000,"wall":"2026-10-27T15:01:38.000Z","type":"action.rejected","action":{"type":"placeCharm","slotId":"floor-1","typeId":"fern"},"reason":"typeNotOwned"}
+{"t":120000,"wall":"2026-10-27T15:02:00.000Z","type":"debug.applied","action":{"type":"debugSetEventInterval","ms":null}}
+{"t":150000,"wall":"2026-10-27T15:02:30.000Z","type":"completeNow.shown","projectId":"pet-house","priceCents":1405}
+{"t":181000,"wall":"2026-10-27T15:03:01.000Z","type":"phase.reached","projectId":"pet-house","phase":1,"currentCents":300}
+{"t":182500,"wall":"2026-10-27T15:03:02.500Z","type":"ui.revealPanel","open":true}
+{"t":240000,"wall":"2026-10-27T15:04:00.000Z","type":"charm.placed","roomId":"dog-room","slotId":"floor-2","typeId":"cushion","replacedTypeId":null}
+{"t":300000,"wall":"2026-10-27T15:05:00.000Z","type":"heart.earned","petId":"dog","hearts":2}
+{"t":300000,"wall":"2026-10-27T15:05:00.000Z","type":"want.fulfilled","petId":"dog","wantId":"bright-corner","hearts":2,"reward":{"kind":"types","typeIds":["fern"]},"focusSlotId":"wall-1"}
+{"t":301200,"wall":"2026-10-27T15:05:01.200Z","type":"log.exported","method":"download","lines":29}

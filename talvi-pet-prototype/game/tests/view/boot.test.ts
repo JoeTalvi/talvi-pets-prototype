@@ -119,3 +119,16 @@ describe('VERIFY-PRES-013 error screen', () => {
     writeEvidence('error-screen.html', screen.outerHTML);
   });
 });
+it('VERIFY-ASSET-005 the six avatar clip keys exist after the BootScene.create registration loop over the real manifest, with ASSET-016 frame ranges and manifest rates', async () => {
+  const scene = await createGame();
+  const { realManifest, addTexture } = await import('./sceneHarness');
+  const { registerClips } = await import('@view/anims');
+  for (const entry of realManifest.entries) if (entry.type === 'spritesheet') { addTexture(scene, entry.id, entry.px!.w, entry.px!.h, entry.frame); registerClips(scene, entry); }
+  const ranges = { 'idle-down': [0, 3], 'idle-up': [6, 9], 'idle-side': [12, 15], 'walk-down': [18, 23], 'walk-up': [24, 29], 'walk-side': [30, 35] };
+  for (const [clip, [start, end]] of Object.entries(ranges)) {
+    const anim = scene.anims.get(`avatar-${clip}`)!;
+    expect(scene.anims.exists(`avatar-${clip}`)).toBe(true);
+    expect(anim.frames.map(f => f.frame.name)).toEqual(Array.from({ length: end - start + 1 }, (_, i) => start + i));
+    expect(anim.frameRate).toBe(clip.startsWith('walk') ? 10 : 6);
+  }
+});

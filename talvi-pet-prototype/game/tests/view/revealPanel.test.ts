@@ -105,7 +105,7 @@ describe('mec-003 §3.3 reveal panel close and hide', () => {
 
   it(`${t}hidden on scene.changed to an interior (the door walk) with no record`, () => {
     const state = owing(content, 1, 1260);
-    state.avatar = { ...state.avatar, x: 200, y: 830, facing: 'up', immunityMs: 0 };
+    state.avatar = { ...state.avatar, x: 480, y: 830, facing: 'up', immunityMs: 0 };
     const s = setup(state);
     click(s.link);
     expect(s.panel.hidden).toBe(false);

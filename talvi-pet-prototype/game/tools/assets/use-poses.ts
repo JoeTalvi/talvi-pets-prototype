@@ -15,7 +15,7 @@ import { flags, readJson } from './common';
 import { decodeRgba, encodePng, opaqueBox, type Box, type Rgba } from './refit';
 export interface Key { backgroundMin: number; backgroundChroma: number; dilation: number; holeMinArea: number }
 export interface Pose { clip: string; row: number; source: string; sha256: string; cells: number; exclude?: [number, number][]; scale: number; head: { sourcePx: number; referencePx: number; framesPx?: number[] }; standing?: { referencePx: number; tolerancePx: number } }
-export interface Config { frame: { w: number; h: number }; grid: { columns: number; rows: number }; base: { git: string; path: string; sha256: string; copyRows: number[] }; key: Key; headTolerancePx: number; poses: Pose[] }
+export interface Config { frame: { w: number; h: number }; grid: { columns: number; rows: number }; base?: { git: string; path: string; sha256: string; copyRows: number[] }; key: Key; headTolerancePx: number; poses: Pose[] }
 const sha = (b: Uint8Array) => createHash('sha256').update(b).digest('hex');
 /** JPEG bytes (the Asset-Bot candidates are JFIF data under a .png name) decoded by ffmpeg, the tool check-assets already uses. */
 function jpegRgba(b: Buffer): Rgba {
@@ -214,19 +214,24 @@ export function buildRow(pose: Pose, config: Config, sheet: Rgba, workflowRoot: 
         headPx: { source: pose.head.sourcePx, scaled: Math.round(pose.head.sourcePx * pose.scale * 10) / 10, reference: pose.head.referencePx,
             ...(pose.head.framesPx ? { framesSource: pose.head.framesPx, framesScaled: pose.head.framesPx.map(px => Math.round(px * pose.scale * 10) / 10) } : {}) }, frames };
 }
-/** Whole sheet: committed base rows copied, pose rows built, every other cell transparent. */
+/** Whole sheet: committed base rows copied (when `base` is configured; without it the sheet starts fully transparent), pose
+ * rows built, every other cell transparent. */
 export function buildSheet(config: Config, gameRoot: string): { png: Buffer; report: Record<string, unknown> } {
-    const base = execFileSync('git', ['show', `${config.base.git}:./${config.base.path}`], { cwd: gameRoot, maxBuffer: 64 * 1024 * 1024 });
-    if (sha(base) !== config.base.sha256)
-        throw new Error(`Base ${config.base.git}:${config.base.path} SHA-256 ${sha(base)} differs from config ${config.base.sha256}`);
-    const src = decodeRgba(base), { w, h } = config.frame, sheet: Rgba = { w: config.grid.columns * w, h: config.grid.rows * h, data: new Uint8Array(config.grid.columns * w * config.grid.rows * h * 4) };
-    if (src.w !== sheet.w)
-        throw new Error(`Base sheet width ${src.w} differs from ${sheet.w}`);
-    for (const row of config.base.copyRows)
-        blit(src, sheet, 0, row * h, 0, row * h, sheet.w, h);
+    const { w, h } = config.frame, sheet: Rgba = { w: config.grid.columns * w, h: config.grid.rows * h, data: new Uint8Array(config.grid.columns * w * config.grid.rows * h * 4) };
+    if (config.base) {
+        const base = execFileSync('git', ['show', `${config.base.git}:./${config.base.path}`], { cwd: gameRoot, maxBuffer: 64 * 1024 * 1024 });
+        if (sha(base) !== config.base.sha256)
+            throw new Error(`Base ${config.base.git}:${config.base.path} SHA-256 ${sha(base)} differs from config ${config.base.sha256}`);
+        const src = decodeRgba(base);
+        if (src.w !== sheet.w)
+            throw new Error(`Base sheet width ${src.w} differs from ${sheet.w}`);
+        for (const row of config.base.copyRows)
+            blit(src, sheet, 0, row * h, 0, row * h, sheet.w, h);
+    }
     const rows = config.poses.map(pose => buildRow(pose, config, sheet, resolve(gameRoot, '..')));
     const png = encodePng(sheet);
-    return { png, report: { base: `${config.base.git}:${config.base.path}`, baseSha256: config.base.sha256, copyRows: config.base.copyRows, size: [sheet.w, sheet.h], sha256: sha(png), bytes: png.length, rows } };
+    const base = config.base ? { base: `${config.base.git}:${config.base.path}`, baseSha256: config.base.sha256, copyRows: config.base.copyRows } : { base: null };
+    return { png, report: { ...base, size: [sheet.w, sheet.h], sha256: sha(png), bytes: png.length, rows } };
 }
 export function main(args: string[]): number {
     const opts = flags(args, ['config', 'out']);

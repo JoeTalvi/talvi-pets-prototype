@@ -74,12 +74,12 @@ describe('presentation §9 audio subscriber', () => {
 });
 
 describe('gate sound-absent, locked and failure audio', () => {
-  it('gate sound-absent audio plays only manifest ids and records nothing for absent heart/reaction', () => {
+  it('gate playtest-m3 audio: all five sfx ids are in the manifest; ids outside the available set play and record nothing', () => {
     const available = manifestAudioIds();
-    expect([...available]).toEqual(['sfx/place']);
+    expect([...available].sort()).toEqual([...ALL].sort());
     const { content, state } = dogRoomDesign();
     const { player, calls } = fakePlayer();
-    const { store, records } = wired(state, content, available, player);
+    const { store, records } = wired(state, content, new Set(['sfx/place']), player);
     store.dispatch(place);
     expect(calls).toEqual([{ play: ['sfx/place', 0.6] }]);
     expect(records).toEqual([]);
