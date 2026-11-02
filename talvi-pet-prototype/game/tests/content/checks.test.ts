@@ -6,7 +6,7 @@ it('accepts synthetic minimum content with every error-level check and retains w
     const findings = runContentChecks(validContent(), manifest);
     expect(findings.filter(f => f.level === 'error')).toEqual([]);
     expect(findings.some(f => f.level === 'warning')).toBe(true);
-    expect(new Set(registeredIds).size).toBe(76);
+    expect(new Set(registeredIds).size).toBe(80); // WORK-032-1: CHK-001-11..14
 });
 for (const id of registeredIds)
     it(`${id} has an executable triggering JSON patch`, () => {

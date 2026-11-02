@@ -224,13 +224,14 @@ async function test004() {
 async function enterDogRoom() {
   mark('walkIn');
   await drainAll(800);
-  await steer(page, 480, 905, () => Math.abs(window.__tpp.store.getState().avatar.x - 480) < 40 || window.__tpp.store.getState().scene.kind === 'interior', 40000);
-  await steer(page, 480, 795, () => window.__tpp.store.getState().scene.roomId === 'dog-room', 30000);
+  // WORK-032-1: approach starter-front (425..525 x 880..930) from below, then walk up into it.
+  await steer(page, 475, 965, () => { const s = window.__tpp.store.getState(); return (Math.abs(s.avatar.x - 475) < 30 && s.avatar.y > 940) || s.scene.kind === 'interior'; }, 40000);
+  await steer(page, 475, 895, () => window.__tpp.store.getState().scene.roomId === 'dog-room', 30000);
   await waitScene(page, 'Interior', 800);
   await drainAll(1500);
   mark('inside');
   const s = await getState(page);
-  beat('walk into the Starter House (door 425..535) → scene dog-room; intro drained', s.scene.roomId === 'dog-room' && !s.dialogue.current, 'scene dog-room; no dialogue open', { scene: s.scene, avatar: s.avatar });
+  beat('walk into the Starter House (door 425..525 x 880..930, from below) → scene dog-room; intro drained', s.scene.roomId === 'dog-room' && !s.dialogue.current, 'scene dog-room; no dialogue open', { scene: s.scene, avatar: s.avatar });
 }
 
 // ---- TEST-001 inside: row 8 off and on --------------------------------------------------------------------------------------

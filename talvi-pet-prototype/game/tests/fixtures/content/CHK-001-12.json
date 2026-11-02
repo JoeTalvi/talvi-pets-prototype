@@ -1,0 +1,11 @@
+[
+  {
+    "file": "street.json",
+    "path": "/playerSpawn",
+    "value": {
+      "x": 700,
+      "y": 820,
+      "facing": "down"
+    }
+  }
+]

@@ -296,7 +296,9 @@ async function arrivalBeat() {
 
 async function owlRoom() {
   mark('owlDoor');
-  await steer(page, 1500, 790, () => window.__tpp.store.getState().scene.kind === 'interior', 25000, 10);
+  // WORK-032-1: pet-front (1440..1540 x 940..990) sits below the Pet House base; get below it, then walk up into it.
+  await steer(page, 1490, 1000, () => { const s = window.__tpp.store.getState(); return (Math.abs(s.avatar.x - 1490) < 20 && s.avatar.y > 990) || s.scene.kind === 'interior'; }, 25000, 10);
+  await steer(page, 1490, 950, () => window.__tpp.store.getState().scene.kind === 'interior', 25000, 10);
   await waitScene(page, 'Interior', 0);
   await until(page, () => window.__tpp.log.lines().some(l => l.type === 'pet.reacted' && l.reaction === 'greeting' && l.petId === 'owl'), null, 6000);
   await page.waitForTimeout(400);
@@ -342,8 +344,10 @@ async function dogReturn() {
   await waitScene(page, 'Street', 600);
   await drainAll(800);
   // leave the pet-front spawn sideways first so the steer never re-enters the Pet House door (the rect sits right above the spawn)
-  await steer(page, 480, 905, () => window.__tpp.store.getState().avatar.x < 540, 40000);
-  await steer(page, 480, 795, () => window.__tpp.store.getState().scene.roomId === 'dog-room', 30000);
+  // WORK-032-1: the pet-front spawn (1490, 1000) is just below its rect, so walk left along y 1000 first, then below starter-front, then up.
+  await steer(page, 1300, 1000, () => window.__tpp.store.getState().avatar.x < 1320, 40000);
+  await steer(page, 475, 965, () => window.__tpp.store.getState().avatar.x < 505 || window.__tpp.store.getState().scene.kind === 'interior', 40000);
+  await steer(page, 475, 895, () => window.__tpp.store.getState().scene.roomId === 'dog-room', 30000);
   await waitScene(page, 'Interior', 600);
   await drainAll(1200);
   const tuning = await page.evaluate(() => window.__tpp.content?.tuning ?? null);

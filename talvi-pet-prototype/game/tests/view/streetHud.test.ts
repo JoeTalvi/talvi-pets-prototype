@@ -63,7 +63,7 @@ describe('VERIFY-MEC-002-026 street HUD bar', () => {
   it(`${t}hidden in an interior, shown on the street; the door walk (scene.changed) hides it`, () => {
     expect(hud(designIn(content)).section.hidden).toBe(true);
     const state = owing(content, 1, 1260);
-    state.avatar = { ...state.avatar, x: 480, y: 830, facing: 'up', immunityMs: 0 };
+    state.avatar = { ...state.avatar, x: 480, y: 900, facing: 'up', immunityMs: 0 };
     const h = hud(state);
     expect(h.section.hidden).toBe(false);
     h.dispatch({ type: 'tick', dtMs: 16, move: { x: 0, y: -1 } });

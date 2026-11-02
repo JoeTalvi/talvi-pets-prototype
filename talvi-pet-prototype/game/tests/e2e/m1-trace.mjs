@@ -103,7 +103,9 @@ async function orientation() {
 // ---- 0:30 door, greeting, intro, want 1 ---------------------------------------------------------------------------------
 async function doorGreetingIntro() {
   mark('doorStart');
-  const joy = await joystickHold(page, -90, 0, () => window.__tpp.store.getState().avatar.x <= 425, null, 15000);
+  // WORK-032-1: starter-front sits below the house base; drop below the rect so the joystick walk passes under it.
+  await holdUntil(page, 'KeyS', () => window.__tpp.store.getState().avatar.y >= 945);
+  const joy = await joystickHold(page, -90, 0, () => window.__tpp.store.getState().avatar.x <= 480, null, 15000);
   await sampling(true);
   const inRoom = await holdUntil(page, 'KeyW', () => window.__tpp.store.getState().scene.kind === 'interior');
   await waitScene(page, 'Interior', 300);
@@ -334,7 +336,8 @@ async function celebrationBeat() {
 // ---- 5:00 back inside, Fern beside the lamp, want 2, Heart 2, sit-on --------------------------------------------------------
 async function fernBeat() {
   await drainAll(1200);
-  const back = await steer(page, 420, 795, () => window.__tpp.store.getState().scene.kind === 'interior', 30000);
+  await steer(page, 475, 965, () => { const s = window.__tpp.store.getState(); return (Math.abs(s.avatar.x - 475) < 30 && s.avatar.y > 940) || s.scene.kind === 'interior'; }, 30000);
+  const back = await steer(page, 475, 895, () => window.__tpp.store.getState().scene.kind === 'interior', 30000);
   await waitScene(page, 'Interior', 900);
   await drainAll(1200);
   await toggleEnabled();

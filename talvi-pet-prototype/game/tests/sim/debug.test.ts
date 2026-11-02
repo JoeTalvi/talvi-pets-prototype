@@ -7,7 +7,7 @@ import { reduce } from '../../src/sim/reduce';
 import { chooserTypes } from '../../src/sim/select';
 import { initialState } from '../../src/sim/state';
 import { validContent } from '../content/helpers';
-import { advance, deepFreeze, eventsOf, owing, run } from './helpers';
+import { advance, deepFreeze, eventsOf, orientationDone, owing, run } from './helpers';
 
 /** FX-REAL: every `src/content/**\/*.json`, read with node:fs, loaded without a manifest. */
 function realContent() {
@@ -61,14 +61,14 @@ it('VERIFY-MEC-010-013 partial: node half (120 s of ticks) — frozen from initi
   expect(eventsOf(ticked.events, 'roundup.fired')).toEqual([]);
   expect(ticked.state.feed.sinceLastEventMs).toBe(0);
   expect(ticked.state.session.eventIntervalMs).toBeNull();
-  const control = advance(reduce, content, initialState(content, 1234), 120_000); // same span unfrozen: the clock does fire
+  const control = advance(reduce, content, orientationDone(initialState(content, 1234)), 120_000); // same span unfrozen: the clock does fire
   expect(eventsOf(control.events, 'roundup.fired').length).toBeGreaterThan(0);
 });
 
 it('VERIFY-MEC-010-004 two reducers given debugSetSeed 7 produce identical round-ups over 100 s', () => {
   const content = validContent();
   const streams = [1, 2].map(seed => {
-    const seeded = run(content, initialState(content, seed), [{ type: 'debugSetSeed', seed: 7 }]).state;
+    const seeded = run(content, orientationDone(initialState(content, seed)), [{ type: 'debugSetSeed', seed: 7 }]).state;
     expect(seeded.feed).toEqual({ rngState: 7, sinceLastEventMs: 0, eventCount: 0 });
     expect(seeded.session.seed).toBe(7);
     return advance(reduce, content, seeded, 100_000);

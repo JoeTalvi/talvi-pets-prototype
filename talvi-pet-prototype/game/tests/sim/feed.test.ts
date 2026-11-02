@@ -7,7 +7,7 @@ import { generateRoundup } from '../../src/sim/rules/feed';
 import { activeProjectId } from '../../src/sim/select';
 import { initialState, type GameState } from '../../src/sim/state';
 import { validContent } from '../content/helpers';
-import { advance, deepFreeze, tick } from './helpers';
+import { advance, deepFreeze, orientationDone, tick } from './helpers';
 
 const fired = (events: SimEvent[]) => events.filter(event => event.type === 'roundup.fired');
 
@@ -20,7 +20,7 @@ function dogRoom(seed: number): GameState {
 
 it('VERIFY-MEC-002-002 one round-up on the 200th 100 ms tick, credited to pet-house', () => {
   const content = validContent();
-  let state = initialState(content, 1);
+  let state = orientationDone(initialState(content, 1));
   const firedAt: number[] = [];
   let last: SimEvent[] = [];
   for (let index = 1; index <= 200; index++) {
@@ -107,7 +107,7 @@ it('VERIFY-MEC-002-006 frozen feed: debugSetEventInterval {ms:null} then 20 min 
 
 it('VERIFY-MEC-002-005 goal cap: debugSetCurrent 1490 then ticks → 1500, phase.reached 5, one feed.stopped, then silence', () => {
   const content = validContent();
-  const set = reduce(content, initialState(content, 1), { type: 'debugSetCurrent', projectId: 'pet-house', cents: 1490 }).state;
+  const set = reduce(content, orientationDone(initialState(content, 1)), { type: 'debugSetCurrent', projectId: 'pet-house', cents: 1490 }).state;
   const result = advance(reduce, content, set, 20_000);
   expect(fired(result.events)).toHaveLength(1);
   expect(result.state.projects['pet-house'].currentCents).toBe(1500);
@@ -120,7 +120,7 @@ it('VERIFY-MEC-002-005 goal cap: debugSetCurrent 1490 then ticks → 1500, phase
 
 it('VERIFY-MEC-002-007 interval change: at 19 s, {ms:250} resets the clock; the first event is on the third 100 ms tick; {ms:100} is invalidInterval', () => {
   const content = validContent();
-  const waited = advance(reduce, content, initialState(content, 1), 19_000).state;
+  const waited = advance(reduce, content, orientationDone(initialState(content, 1)), 19_000).state;
   expect(waited.feed.sinceLastEventMs).toBe(19_000);
   const changed = reduce(content, waited, { type: 'debugSetEventInterval', ms: 250 }).state;
   expect(changed.feed.sinceLastEventMs).toBe(0);

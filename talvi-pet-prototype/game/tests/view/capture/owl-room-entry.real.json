@@ -16,8 +16,8 @@
       "kind": "street"
     },
     "avatar": {
-      "x": 1500,
-      "y": 840,
+      "x": 1490,
+      "y": 960,
       "facing": "up",
       "immunityMs": 0,
       "facingCandidate": null
