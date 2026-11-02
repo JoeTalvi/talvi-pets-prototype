@@ -65,7 +65,7 @@ export class PetSprite extends Phaser.GameObjects.Sprite {
     this.depthOverride = depth;
     this.setDepth(depth ?? depthAtBase(this.y));
   }
-  /** WORK-013K: `reacting` with love/like plays the rear-up `react`; dislike/interrupted, greeting and idle stay `idle`. */
+  /** WORK-013K: `reacting` with love/like plays the rear-up `react`; dislike/interrupted/stripped, greeting and idle stay `idle`. */
   clipFor(input: ClipInput): string {
     const sheet = `pets/${this.petId}-sheet`;
     if (input.phase === 'walking') return clipKey(sheet, 'walk')!;

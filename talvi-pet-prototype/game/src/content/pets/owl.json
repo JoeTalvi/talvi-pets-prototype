@@ -53,6 +53,10 @@
       "Perhaps that belongs in a busier room.",
       "Oh dear. That will not sit quietly at all."
     ],
+    "stripped": [
+      "Oh dear. Something I was fond of has gone missing.",
+      "I was sure there was something lovely here. How odd."
+    ],
     "intro": [
       "Hello. I am the Owl. A leafy view and a high perch would suit me nicely.",
       "I am a quiet sort. I read the leaves, mostly at night."
@@ -148,7 +152,7 @@
           ]
         }
       ],
-      "rewardLabel": "2 charm types: Potted Tree, Night Light"
+      "rewardLabel": "2 charms: Potted Tree, Night Light"
     },
     {
       "id": "reading-nook",
@@ -209,7 +213,7 @@
           ]
         }
       ],
-      "rewardLabel": "2 charm types: Mossy Log, Standing Frame"
+      "rewardLabel": "2 charms: Mossy Log, Standing Frame"
     },
     {
       "id": "night-garden",

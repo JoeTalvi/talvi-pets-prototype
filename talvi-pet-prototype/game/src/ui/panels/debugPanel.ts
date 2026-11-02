@@ -7,6 +7,8 @@ import { parseSave, STORAGE_KEYS } from '@app/persistence';
 import { SAVE_SCHEMA_VERSION } from '@sim/state.schema';
 import type { ViewContext, FpsSample, FpsState } from '@view/context';
 import { debugPanel } from './templates/debugPanel';
+import { escapeHtml } from './templates/shared';
+import type { Content } from '@content/types';
 import { setAlignmentGrid } from '../overlay';
 import { noPreview, PREVIEW_LAYERS } from '@view/preview/layer';
 
@@ -99,7 +101,7 @@ export function createDebugPanel(root: HTMLElement, context: ViewContext): Debug
     }
     refresh();
   };
-  const extras = decorate(section, row);
+  const extras = decorate(section, row, content);
   const refresh = () => renderRows(context, row, view, extras, pre);
 
   function open(): void {
@@ -176,11 +178,13 @@ function renderRows(context: ViewContext, row: (name: string) => HTMLElement, vi
 type Extras = { noProject: HTMLElement; caption: HTMLElement; sample: HTMLButtonElement; renderReset(confirm: boolean): void };
 
 /** Runtime additions the static template lacks: title, row-2 limits, row-4 caption, the note, the sampler button, the reset confirm. */
-function decorate(section: HTMLElement, row: (name: string) => HTMLElement): Extras {
+function decorate(section: HTMLElement, row: (name: string) => HTMLElement, content: Content): Extras {
   const interval = inputOf(row('Event interval'));
   Object.assign(interval, { min: '250', step: '250' }); interval.setAttribute('aria-label', 'Custom interval ms');
   inputOf(row('Feed seed')).setAttribute('aria-label', 'Feed seed');
   inputOf(row('Set current progress')).setAttribute('aria-label', 'Current cents');
+  row('Grant copies').querySelector('select')!.innerHTML = content.charms.types   // row 19: catalogue order, by name
+    .map(type => `<option value="${escapeHtml(type.id)}">${escapeHtml(type.name)}</option>`).join('');
   const caption = document.createElement('small'); row('Set current progress').querySelector('div')!.append(caption);
   section.querySelector('.tpp-debug-scroll > p:not(.tpp-debug-error)')?.remove();
   const noProject = document.createElement('p'); noProject.className = 'tpp-debug-note'; noProject.textContent = 'All projects complete'; noProject.hidden = true;
@@ -220,6 +224,9 @@ function bindDispatchRows(b: Binding): void {
   go('Jump to next phase', 0, () => { const id = project(); return id ? { type: 'debugJumpPhase', projectId: id } : null; });
   go('Complete project', 0, () => { const id = project(); return id ? { type: 'debugCompleteProject', projectId: id } : null; });
   go('Unlock all charm types', 0, () => ({ type: 'debugUnlockAllTypes' }));
+  // Row 19 (WORK-033-2, TEST-002 arm): n copies of one type; the sim validates the count (1..9) and rejects otherwise.
+  go('Grant copies', 0, () => ({ type: 'debugGrantCopies', typeId: row('Grant copies').querySelector('select')!.value,
+    count: Number(inputOf(row('Grant copies')).value) }));
   go('Feed presentation', 0, () => ({ type: 'debugSetFeedPresentation', mode: 'events' }));
   go('Feed presentation', 1, () => ({ type: 'debugSetFeedPresentation', mode: 'trickle' }));
   const flip = (name: string, action: () => Action) => listen(switchOf(row(name)), () => dispatchFrom(name, action()));

@@ -588,6 +588,7 @@
     "tpp.bubble.dislike": "Fixture",
     "tpp.bubble.interrupted": "Fixture",
     "tpp.bubble.greeting": "Fixture",
+    "tpp.bubble.stripped": "Fixture",
     "tpp.bubble.want": "Fixture",
     "tpp.bubble.wantHidden": "Fixture",
     "tpp.bubble.chatter": "Fixture",
@@ -748,6 +749,9 @@
       "dislike": [
         "That is not for me."
       ],
+      "stripped": [
+        "Something is missing."
+      ],
       "intro": [
         "This is a synthetic fixture."
       ],
@@ -900,6 +904,9 @@
       ],
       "dislike": [
         "That is not for me."
+      ],
+      "stripped": [
+        "Something is missing."
       ],
       "intro": [
         "This is a synthetic fixture."

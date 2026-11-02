@@ -1,9 +1,9 @@
 import type { CharmType } from '@content/schema/charms';
-import { chooserTypes, slotOf } from '@sim/select';
+import { chooserTypes, copiesOf, placementAt, slotOf } from '@sim/select';
 import type { ViewContext } from '@view/context';
 import { outlinePoints } from '@view/objects/SlotOutline';
-import { chooser } from './templates/chooser';
-import { escapeHtml, image, type TemplateOptions } from './templates/shared';
+import { charmCard, chooser } from './templates/chooser';
+import { escapeHtml, type TemplateOptions } from './templates/shared';
 import { assetsFrom, createText, type Panel, type Text } from '../overlay';
 
 export type ChooserCloseReason = 'pick' | 'cancel' | 'modeExit' | 'dialogue';
@@ -22,10 +22,12 @@ export function tagPills(context: ViewContext, o: TemplateOptions, tagIds: reado
   }).join('');
 }
 
-function cardsMarkup(context: ViewContext, o: TemplateOptions, types: readonly CharmType[]): string {
-  return types.map(type => `<button type="button" class="tpp-charm-card" data-action="place" data-type-id="${escapeHtml(type.id)}">`
-    + `${image(o, type.sprite)}<span class="tpp-charm-name">${escapeHtml(type.name)}</span>`
-    + `<span class="tpp-tags">${tagPills(context, o, type.tags)}</span></button>`).join('');
+/** DEC-043 / fork default 6: "×n" per card; zero-count types stay in grant order, greyed and inert. MEC-005 R12: in the
+ * Replace chooser the slot's current type is inert too (the UI never offers a same-type replace). */
+function cardsMarkup(context: ViewContext, o: TemplateOptions, types: readonly CharmType[], copies: (id: string) => number,
+  currentTypeId: string | null): string {
+  return types.map(type => charmCard(o, { typeId: type.id, sprite: type.sprite, name: type.name,
+    tagsHtml: tagPills(context, o, type.tags), copies: copies(type.id), inert: type.id === currentTypeId })).join('');
 }
 
 export type Bounds = { x: number; y: number; w: number; h: number };
@@ -75,16 +77,21 @@ function cropCardPictures(sheet: HTMLElement): void {
   }
 }
 
-/** MEC-004 R7/R8: title by size class, owned count, the `chooserTypes` cards in owned order, or the empty line. */
+/** MEC-004 R7/R8: title by size class, the copies in hand among the listed cards, the `chooserTypes` cards in grant
+ * order (zero-count included), or the empty line when no granted type has this size class. */
 function sheetMarkup(context: ViewContext, o: TemplateOptions, slotId: string): string {
   const text = o.text as Text;
+  const { content } = context;
   const state = context.store.getState();
-  const size = slotOf(context.content, state, slotId)?.sizeClass ?? 'small';
-  const types = chooserTypes(context.content, state, slotId);
+  const size = slotOf(content, state, slotId)?.sizeClass ?? 'small';
+  const types = chooserTypes(content, state, slotId);
+  const copies = (typeId: string) => copiesOf(content, state, typeId);
+  const currentTypeId = state.scene.kind === 'interior' ? placementAt(content, state, state.scene.roomId, slotId) : null;
   const title = span(text, 'tpp.chooser.slot', 'tpp-chooser-title', { size: text(`tpp.chooser.size.${size}`) });
-  const count = span(text, 'tpp.chooser.count', 'tpp-muted', { count: types.length });
+  const inHand = types.reduce((sum, type) => sum + copies(type.id), 0);
+  const count = span(text, 'tpp.chooser.count', 'tpp-muted', { count: inHand });
   const body = types.length === 0 ? `<p class="tpp-empty">${span(text, 'tpp.chooser.empty', '')}</p>`
-    : `<div class="tpp-chooser-cards">${cardsMarkup(context, o, types)}</div>`;
+    : `<div class="tpp-chooser-cards">${cardsMarkup(context, o, types, copies, currentTypeId)}</div>`;
   return `<header>${title}${count}</header>${body}${span(text, 'tpp.chooser.scroll', 'tpp-scroll-hint')}`;
 }
 
@@ -137,6 +144,14 @@ function locatorOf(context: ViewContext, o: TemplateOptions, slotId: string): HT
   return aside;
 }
 
+/** A refresh while open (copies moved) keeps the card strip's scroll position. */
+function keepScroll(sheet: HTMLElement, rerender: () => void): void {
+  const scrollLeft = sheet.querySelector<HTMLElement>('.tpp-chooser-cards')?.scrollLeft ?? 0;
+  rerender();
+  const strip = sheet.querySelector<HTMLElement>('.tpp-chooser-cards');
+  if (strip) strip.scrollLeft = scrollLeft;
+}
+
 /** Presentation §8.2 `chooser` / MEC-005 R12: opens on `slot.tapped {filled:false}`; a card dispatches `placeCharm`. */
 export function createChooser(root: HTMLElement, context: ViewContext): Panel {
   const { store, log, bus } = context;
@@ -148,7 +163,7 @@ export function createChooser(root: HTMLElement, context: ViewContext): Panel {
 
   const render = () => {
     if (slotId === null) return;
-    sheet.innerHTML = sheetMarkup(context, o, slotId);
+    keepScroll(sheet, () => { sheet.innerHTML = sheetMarkup(context, o, slotId!); });
     cropCardPictures(sheet);
     section.querySelector('.tpp-chooser-locator')?.remove();
     const locator = locatorOf(context, o, slotId);
@@ -180,7 +195,8 @@ export function createChooser(root: HTMLElement, context: ViewContext): Panel {
     store.subscribe('dialogue.opened', () => close('dialogue')),
     store.subscribe('scene.changed', () => close('cancel')),
     store.subscribe('state.reset', () => close('cancel')),
-    store.subscribe('items.granted', render),
+    // DEC-043: copies move while the sheet is open (grant, place elsewhere, remove) → refresh badges and the header.
+    ...(['items.granted', 'charm.placed', 'charm.removed'] as const).map(type => store.subscribe(type, render)),
   ];
   return {
     open, close: reason => close(reason as ChooserCloseReason | undefined),

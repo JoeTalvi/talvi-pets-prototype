@@ -57,6 +57,10 @@
       "I prefer things closer to paw level.",
       "A fine view, probably. I will stay down here."
     ],
+    "stripped": [
+      "Oh. Something I loved used to be right here.",
+      "I keep looking for my favourite thing. It has gone."
+    ],
     "intro": [
       "Oh! Hello. I am the Dog.",
       "A soft place, a good seat, and a bit of light. That is my sort of home."
@@ -126,7 +130,7 @@
           ]
         }
       ],
-      "rewardLabel": "2 charm types: Rug and Cushion"
+      "rewardLabel": "2 charms: Rug and Cushion"
     },
     {
       "id": "bright-corner",
@@ -208,7 +212,7 @@
           ]
         }
       ],
-      "rewardLabel": "2 charm types: Toy Chest and Seed Dish"
+      "rewardLabel": "2 charms: Toy Chest and Seed Dish"
     },
     {
       "id": "welcome-home",

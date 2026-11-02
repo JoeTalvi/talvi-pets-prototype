@@ -7,7 +7,7 @@ import type { GameState } from './state';
  * yields the canonical key order; unknown keys (e.g. an obsolete `projects[*].guess`, DEC-039) are stripped. */
 const FacingSchema = z.enum(['left', 'right', 'up', 'down']);
 const PhaseSchema = z.union([z.literal(0), z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(5)]);
-const ReactionSchema = z.enum(['love', 'like', 'dislike', 'interrupted', 'greeting']);
+const ReactionSchema = z.enum(['love', 'like', 'dislike', 'interrupted', 'greeting', 'stripped']);
 
 const DialogueScriptSchema = z.object({
   source: z.enum(['orientation', 'intro', 'wantAnnounce', 'vignette', 'phaseMessage', 'completionMessage', 'tutorial']),

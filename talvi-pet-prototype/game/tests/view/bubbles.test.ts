@@ -190,3 +190,24 @@ describe('play-session Q19: a verb emote tap is logged as its own class', () => 
     expect(linesOf(context, 'ui.bubbleTapped').at(-1)).toMatchObject({ petId: 'dog', class: 'verb' });
   });
 });
+
+describe('VERIFY-MEC-007-020 stripped reaction (view)', () => {
+  it('VERIFY-MEC-007-020 (new) jsdom — pet.reacted {stripped} shows 😢 at once, tap shows the line; the clip stays idle', async () => {
+    const { scene, context, state } = await designSetup({ edit: s => {
+      play(s); wantTwo(s);
+      s.pets.dog.hearts = 1; s.pets.dog.heartCharms = ['dog-bed']; s.pets.dog.strippedPending = ['dog-bed'];
+      s.pets.dog.behaviour = { ...s.pets.dog.behaviour, phase: 'idle', timerMs: 100, target: null, verb: null, reaction: null };
+    } });
+    for (let i = 0; i < 20 && state().pets.dog.behaviour.reaction !== 'stripped'; i++) tick(scene);
+    const reacted = linesOf(context, 'pet.reacted').at(-1);
+    expect(reacted).toMatchObject({ petId: 'dog', reaction: 'stripped', typeId: 'dog-bed', slotId: null, walkOver: false });
+    expect(context.content.pets.dog.lines.stripped).toContain(reacted?.line);
+    expect(glyph(scene)).toBe('😢');
+    expect(scene.bubble!.current()).toMatchObject({ kind: 'emoji', class: 'stripped' });
+    expect(scene.pet!.clipFor({ phase: 'reacting', verb: null, reaction: 'stripped' })).toBe('pet-dog-idle');
+    expect(scene.pet!.anims.currentAnim?.key).toBe('pet-dog-idle');
+    scene.bubble!.tap();
+    expect(glyph(scene)).toBe(reacted?.line);
+    expect(state().pets.dog.strippedPending).toEqual([]);
+  });
+});

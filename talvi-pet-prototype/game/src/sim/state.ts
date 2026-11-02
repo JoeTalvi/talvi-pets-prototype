@@ -67,7 +67,7 @@ export type PetBehaviour = { phase: 'idle' | 'walking' | 'using' | 'reacting' | 
                       x: number; y: number; facing: 'left' | 'right'; timerMs: number;
                       target: { slotId: SlotId } | { wanderPointId: string } | null;
                       verb: VerbId | null; reaction: Reaction | null };
-export type Reaction = 'love' | 'like' | 'dislike' | 'interrupted' | 'greeting';
+export type Reaction = 'love' | 'like' | 'dislike' | 'interrupted' | 'greeting' | 'stripped';
 
 export type Scene = GameState['scene'];
 
