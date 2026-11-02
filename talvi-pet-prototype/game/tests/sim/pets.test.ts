@@ -6,7 +6,7 @@ import { reduce } from '../../src/sim/reduce';
 import { initialState, type GameState, type PetBehaviour } from '../../src/sim/state';
 import { files, manifest, patchFiles, validContent } from '../content/helpers';
 import { loadContent } from '../../src/content/load';
-import { advance, deepFreeze, designIn, dogLikesLight, eventsOf, tick } from './helpers';
+import { advance, deepFreeze, designIn, dogLikesLight, eventsOf, tick, giveCopies } from './helpers';
 
 const place = (slotId: string, typeId: string): Action => ({ type: 'placeCharm', slotId, typeId });
 const remove = (slotId: string): Action => ({ type: 'removeCharm', slotId });
@@ -84,7 +84,7 @@ it('VERIFY-MEC-007-003 recent-target penalty: the recent equal-weight slot is ch
 it('VERIFY-MEC-007-004 only plant charms: wander targets only, no pet.verbStarted; never the same wander point twice in a row (fork #36 resolved 2026-10-26)', () => {
   const content = validContent();
   const state = designIn(content, ['soft-nap']);
-  state.inventory.ownedTypeIds.push('fern');
+  giveCopies(state, ['fern']);
   state.rooms['dog-room'].placements = { 'floor-1': 'fern', 'floor-3': 'fern', 'floor-5': 'fern' };
   const { events } = advance(reduce, content, state, 1_200_000);
   const targets = eventsOf(events, 'pet.phaseChanged').filter(event => event.to === 'walking').map(event => event.target);
@@ -177,7 +177,7 @@ function scripted(content: Content, seed: number) {
   const plan: Record<number, Action> = { 50: place('floor-1', 'lamp'), 400: place('floor-3', 'rug'),
     900: place('wall-1', 'painting'), 1300: remove('floor-1'), 1600: place('floor-5', 'stool') };
   let state = designIn(content, [], seed);
-  state.inventory.ownedTypeIds.push('rug');
+  giveCopies(state, ['rug']);
   const events: SimEvent[] = [];
   for (let index = 0; index < 2000; index++) {
     const result = reduce(content, state, plan[index] ?? tick(0, 0, 100));

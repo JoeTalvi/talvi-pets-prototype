@@ -3,7 +3,10 @@
     "file": "projects.json",
     "path": "/projects/0/phaseRewards/0",
     "value": [
-      "lamp"
+      {
+        "typeId": "lamp",
+        "count": 1
+      }
     ]
   }
 ]

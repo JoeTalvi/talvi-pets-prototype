@@ -5,12 +5,12 @@ import type { Action } from '../../src/sim/actions';
 import { reduce } from '../../src/sim/reduce';
 import type { GameState } from '../../src/sim/state';
 import { files, manifest, patchFiles, validContent } from '../content/helpers';
-import { deepFreeze, designIn, dogLikesLight, eventsOf } from './helpers';
+import { deepFreeze, designIn, dogLikesLight, eventsOf, giveCopies } from './helpers';
 
 const place = (slotId: string, typeId: string): Action => ({ type: 'placeCharm', slotId, typeId });
 
 function placed(content: Content, state: GameState, slotId: string, typeId: string) {
-  if (!state.inventory.ownedTypeIds.includes(typeId)) state.inventory.ownedTypeIds.push(typeId);
+  if (!state.inventory.counts[typeId]) giveCopies(state, [typeId]);
   const result = reduce(content, deepFreeze(state), place(slotId, typeId));
   expect(eventsOf(result.events, 'action.rejected')).toEqual([]);
   expect(JSON.parse(JSON.stringify(result.state))).toEqual(result.state);
@@ -81,7 +81,7 @@ it('VERIFY-MEC-007-012 fulfilment walk: exactly one pet.reacted love at focusSlo
 it('VERIFY-MEC-007-008 replace under a using pet: pet.verbEnded, no 🤔, then the new charm’s rule (none → idle)', () => {
   const content = validContent();
   const state = designIn(content, ['soft-nap']);
-  state.inventory.ownedTypeIds.push('fern');
+  giveCopies(state, ['fern']);
   state.rooms['dog-room'].placements = { 'floor-1': 'stool' };
   state.pets.dog.behaviour = { ...state.pets.dog.behaviour, phase: 'using', x: 200, y: 480, timerMs: 7000, target: { slotId: 'floor-1' }, verb: 'sit-on' };
   const result = placed(content, state, 'floor-1', 'fern');

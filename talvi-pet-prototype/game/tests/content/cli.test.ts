@@ -30,7 +30,7 @@ it('JSON findings exactly equal the shared registry and output is byte-stable', 
     const report = JSON.parse(a.stdout);
     expect(report.findings).toEqual(runContentChecks(validContent(), manifest));
     expect(report.counts).toMatchObject({
-        errors: 0, checks: 80, files: 13
+        errors: 0, checks: 81, files: 13
     });
 });
 it('returns 1 and located asymmetry; 2 only for strict warnings', () => {
@@ -115,7 +115,7 @@ it('coverage A–F reports actual source timeline and Stars reachability', () =>
         max: 48, reachableMax: 42
     });
     expect(report.pets.dog.rewardKinds).toEqual({
-        types: 1, verb: 1, vignette: 1
+        items: 1, verb: 1, vignette: 1
     });
     expect(report.projects['pet-house'].cards).toHaveLength(5);
     const txt = cli([], 'coverage').stdout;

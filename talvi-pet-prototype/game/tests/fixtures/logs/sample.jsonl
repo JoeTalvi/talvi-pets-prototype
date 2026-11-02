@@ -15,7 +15,7 @@
 {"t":61214,"wall":"2026-10-27T15:01:01.214Z","type":"want.fulfilled","petId":"dog","wantId":"soft-nap","hearts":1,"reward":{"kind":"types","typeIds":["cushion"]},"focusSlotId":"floor-1"}
 {"t":61214,"wall":"2026-10-27T15:01:01.214Z","type":"heart.earned","petId":"dog","hearts":1}
 {"t": 61214, "wall": "2026-10-27T15:01:01.214Z", "type": "types.unl
-{"t":61214,"wall":"2026-10-27T15:01:01.214Z","type":"types.unlocked","typeIds":["cushion"],"source":"heart"}
+{"t":61214,"wall":"2026-10-27T15:01:01.214Z","type":"items.granted","typeId":"cushion","count":1,"source":"heart"}
 {"t":61214,"wall":"2026-10-27T15:01:01.214Z","type":"want.activated","petId":"dog","wantId":"bright-corner","index":1}
 {"t":75000,"wall":"2026-10-27T15:01:15.000Z","type":"stars.visibilityChanged","visible":false}
 {"t":75000,"wall":"2026-10-27T15:01:15.000Z","type":"debug.applied","action":{"type":"debugSetStarsVisible","on":false}}

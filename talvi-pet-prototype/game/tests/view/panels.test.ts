@@ -73,8 +73,8 @@ describe('VERIFY-MEC-004-009 / VERIFY-MEC-004-010 chooser contents', () => {
     expect(cards.some(c => /\d+\s*[×x]/.test(c.textContent ?? ''))).toBe(false);
   });
 
-  it('VERIFY-MEC-004-010 partial: jsdom half — no wall type owned → wall-1 shows tpp.chooser.empty and no card; types.unlocked while open appends', async () => {
-    const { root, context } = await designSetup({ edit: s => { s.inventory.ownedTypeIds = ['dog-bed', 'lamp', 'stool', 'vase']; } });
+  it('VERIFY-MEC-004-010 partial: jsdom half — no wall type granted → wall-1 shows tpp.chooser.empty and no card; items.granted while open appends', async () => {
+    const { root, context } = await designSetup({ edit: s => { s.inventory.counts = { 'dog-bed': 1, lamp: 1, stool: 1, vase: 1 }; } });
     context.bus.emit({ type: 'slot.tapped', slotId: 'wall-1', filled: false });
     expect(q(root, '.tpp-chooser .tpp-empty').textContent).toBe('Nothing you own fits this spot yet.');
     expect(root.querySelectorAll('.tpp-chooser .tpp-charm-card')).toHaveLength(0);

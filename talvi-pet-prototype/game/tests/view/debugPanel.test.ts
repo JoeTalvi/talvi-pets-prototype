@@ -355,7 +355,7 @@ describe('VERIFY-TOOL-006 row 17 fixture', () => {
     load(s, text);
     const stored = s.storage.getItem(STORAGE_KEYS.save)!;
     const parsed = JSON.parse(stored);
-    expect(parsed.schemaVersion).toBe(1);
+    expect(parsed.schemaVersion).toBe(2);
     expect(typeof parsed.savedAt).toBe('string');
     expect(parsed.state).toEqual((parseSave(content, text) as { state: GameState }).state);
     expect(linesOf(s.context, 'save.loaded')).toEqual([{ type: 'save.loaded', source: 'fixture', bytes: new TextEncoder().encode(stored).length }]);

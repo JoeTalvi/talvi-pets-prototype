@@ -3,12 +3,30 @@
     "file": "charms.json",
     "path": "/starterSet",
     "value": [
-      "dog-bed",
-      "lamp",
-      "painting",
-      "stool",
-      "vase",
-      "bowl"
+      {
+        "typeId": "dog-bed",
+        "count": 1
+      },
+      {
+        "typeId": "lamp",
+        "count": 1
+      },
+      {
+        "typeId": "painting",
+        "count": 1
+      },
+      {
+        "typeId": "stool",
+        "count": 1
+      },
+      {
+        "typeId": "vase",
+        "count": 1
+      },
+      {
+        "typeId": "bowl",
+        "count": 1
+      }
     ]
   }
 ]
