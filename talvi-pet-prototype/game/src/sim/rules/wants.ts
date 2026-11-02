@@ -1,11 +1,12 @@
 import { ContentError, type Content } from '../../content/load';
 import { rewardItems, type Condition, type Pet, type Want } from '../../content/schema/pet';
 import type { ConditionView, RuleResult, SimEvent } from '../events';
-import type { GameState, PetId, RoomId, SlotId, TagId, WantId } from '../state';
+import type { GameState, PetId, SlotId, TagId, WantId } from '../state';
 import { buildScript, enqueueScript } from './dialogue';
 import { grantItems, ownsTag } from './inventory';
 import type { PlacementChange } from './slots';
-import { starsOf } from './stars';
+import { homeSpaceOf, placementsOf, sameSpace, spaceDef, type SpaceRef } from '../space';
+import { starsOfSpace } from './stars';
 
 type Availability = NonNullable<ConditionView['availability']>;
 
@@ -16,20 +17,17 @@ function petOf(content: Content, petId: PetId): Pet {
   return pet;
 }
 
-function homeOf(content: Content, petId: PetId): RoomId {
-  const room = Object.values(content.rooms).find(candidate => candidate.residentPetId === petId);
-  if (!room) throw new Error(`Missing room for pet ${petId}`);
-  return room.id;
-}
+/** The pet's home space (a room, or for a space-homed pet its site; WORK-034-2). */
+const homeOf = homeSpaceOf;
 
 function tagsOf(content: Content, typeId: string): readonly TagId[] {
   return content.charms.types.find(type => type.id === typeId)?.tags ?? [];
 }
 
-/** Slot ids of the room (file order) whose placement carries `tag`. */
-function slotsWithTag(content: Content, state: GameState, roomId: RoomId, tag: TagId): SlotId[] {
-  const placements = state.rooms[roomId].placements;
-  return content.rooms[roomId].slots.map(slot => slot.id)
+/** Slot ids of the space (file order) whose placement carries `tag`. */
+function slotsWithTag(content: Content, state: GameState, ref: SpaceRef, tag: TagId): SlotId[] {
+  const placements = placementsOf(state, ref);
+  return spaceDef(content, ref).slots.map(slot => slot.id)
     .filter(slotId => placements[slotId] !== undefined && tagsOf(content, placements[slotId]).includes(tag));
 }
 
@@ -71,22 +69,24 @@ export function tagAvailability(content: Content, state: GameState, tag: TagId):
   return availabilityFor(content, state, tag, null);
 }
 
-function adjacentMet(content: Content, state: GameState, roomId: RoomId, tagA: TagId, tagB: TagId): boolean {
-  const slots = content.rooms[roomId].slots;
-  const withA = new Set(slotsWithTag(content, state, roomId, tagA));
-  const withB = new Set(slotsWithTag(content, state, roomId, tagB));
+function adjacentMet(content: Content, state: GameState, ref: SpaceRef, tagA: TagId, tagB: TagId): boolean {
+  const slots = spaceDef(content, ref).slots;
+  const withA = new Set(slotsWithTag(content, state, ref, tagA));
+  const withB = new Set(slotsWithTag(content, state, ref, tagB));
   return slots.some(slot => slot.adjacent.some(other => other !== slot.id &&
     ((withA.has(slot.id) && withB.has(other)) || (withB.has(slot.id) && withA.has(other)))));
 }
 
 function viewOf(content: Content, state: GameState, petId: PetId, want: Want, condition: Condition): ConditionView {
   const roomId = homeOf(content, petId);
+  // DEC-046: `greeted` is met by greeting `withPetId`, which WORK-036 builds; until then it is never met (never hidden).
+  if (condition.kind === 'greeted') return { kind: 'greeted', met: false, hidden: false, withPetId: condition.withPetId };
   if (condition.kind === 'adjacent') {
     const { tagA, tagB } = condition;
     return { kind: 'adjacent', met: adjacentMet(content, state, roomId, tagA, tagB), hidden: false, tagA, tagB };
   }
   if (condition.kind === 'stars') {
-    const current = starsOf(content, state, roomId).points;
+    const current = starsOfSpace(content, state, roomId).points;
     return { kind: 'stars', met: current >= condition.min, hidden: false, min: condition.min, current };
   }
   const met = slotsWithTag(content, state, roomId, condition.tag).length > 0;
@@ -159,9 +159,19 @@ export function activateFirstWant(content: Content, state: GameState, petId: Pet
   return activate(content, state, petId);
 }
 
-function applyRewardEntry(content: Content, state: GameState, petId: PetId, reward: Want['reward'][number]): RuleResult {
+/** DEC-044 (MEC-009 reward `space`): unlock the site; already unlocked emits nothing. */
+export function unlockSpace(state: GameState, siteId: string, petId: PetId, wantId: WantId | null): RuleResult {
+  const space = state.spaces[siteId];
+  if (!space) throw new Error(`Unknown site id "${siteId}"`);
+  if (space.unlocked) return { state, events: [] };
+  return { state: { ...state, spaces: { ...state.spaces, [siteId]: { ...space, unlocked: true } } },
+    events: [{ type: 'space.unlocked', siteId, petId, wantId }] };
+}
+
+function applyRewardEntry(content: Content, state: GameState, petId: PetId, want: Want, reward: Want['reward'][number]): RuleResult {
   if (reward.kind === 'items') return grantItems(content, state, reward.items, 'heart');
   if (reward.kind === 'vignette') return { state, events: [] };
+  if (reward.kind === 'space') return unlockSpace(state, reward.siteId, petId, want.id);
   const pet = state.pets[petId];
   const verbs = pet.verbs.includes(reward.verb) ? pet.verbs : [...pet.verbs, reward.verb];
   return { state: { ...state, pets: { ...state.pets, [petId]: { ...pet, verbs } } },
@@ -171,7 +181,7 @@ function applyRewardEntry(content: Content, state: GameState, petId: PetId, rewa
 /** Fork default 9 (v1.5): every reward entry in list order (items → `items.granted`, verb → `verb.unlocked`). */
 function applyReward(content: Content, state: GameState, petId: PetId, want: Want): RuleResult {
   return want.reward.reduce<RuleResult>((result, entry) =>
-    chain(result, applyRewardEntry(content, result.state, petId, entry)), { state, events: [] });
+    chain(result, applyRewardEntry(content, result.state, petId, want, entry)), { state, events: [] });
 }
 
 /** DEC-043 / OQ-26: the types placed in the home room whose tags meet any of the want's tag conditions
@@ -179,9 +189,9 @@ function applyReward(content: Content, state: GameState, petId: PetId, want: Wan
 function creditHeartCharms(content: Content, state: GameState, petId: PetId, want: Want): GameState {
   const tags = want.conditions.flatMap(condition => condition.kind === 'tag' ? [condition.tag] : []);
   const roomId = homeOf(content, petId);
-  const placements = state.rooms[roomId].placements;
+  const placements = placementsOf(state, roomId);
   const credited = [...state.pets[petId].heartCharms];
-  for (const slot of content.rooms[roomId].slots) {
+  for (const slot of spaceDef(content, roomId).slots) {
     const typeId = placements[slot.id];
     if (typeId !== undefined && !credited.includes(typeId) && tagsOf(content, typeId).some(tag => tags.includes(tag)))
       credited.push(typeId);
@@ -208,15 +218,22 @@ export function fulfil(content: Content, state: GameState, petId: PetId, focusSl
 
 /** R12: the placed slot when its type carries a want tag, else the first slot (room order)
  * carrying the first tag condition's tag. */
-function focusSlotOf(content: Content, state: GameState, roomId: RoomId, want: Want, change: PlacementChange): SlotId {
+function focusSlotOf(content: Content, state: GameState, roomId: SpaceRef, want: Want, change: PlacementChange): SlotId {
   const tags = want.conditions.flatMap(condition => condition.kind === 'tag' ? [condition.tag] : []);
   if (change.kind === 'placed' && tagsOf(content, change.typeId).some(tag => tags.includes(tag))) return change.slotId;
   return slotsWithTag(content, state, roomId, tags[0])[0];
 }
 
-/** MEC-009 R9 (placement-chain link after stars): home-only, introduced resident with an active want. */
-export function afterRoomChange(content: Content, state: GameState, roomId: RoomId, change: PlacementChange): RuleResult {
-  const petId = content.rooms[roomId]?.residentPetId;
+function residentOfChanged(content: Content, state: GameState, ref: SpaceRef): PetId | null {
+  if (ref.kind === 'site' && !state.spaces[ref.siteId]?.arrivalDone) return null;
+  const petId = ref.kind === 'room' ? content.rooms[ref.roomId]?.residentPetId : spaceDef(content, ref).residentPetId;
+  return petId && state.pets[petId] && sameSpace(homeOf(content, petId), ref) ? petId : null;
+}
+
+/** MEC-009 R9 (placement-chain link after stars): home-only, introduced resident with an active want; a site's
+ * resident only once it has arrived (WORK-034-2). */
+export function afterRoomChange(content: Content, state: GameState, roomId: SpaceRef, change: PlacementChange): RuleResult {
+  const petId = residentOfChanged(content, state, roomId);
   const active = petId ? activeWant(content, state, petId) : null;
   if (!petId || !state.pets[petId].introduced || active === null) return { state, events: [] };
   const wantId = active.want.id;

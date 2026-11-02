@@ -9,6 +9,9 @@ export const ConditionSchema = z.discriminatedUnion('kind', [
         kind: z.literal('adjacent'), tagA: Id, tagB: Id
     }), z.object({
         kind: z.literal('stars'), min: z.number()
+    }), z.object({
+        // DEC-046: met by greeting `withPetId`; evaluated only from WORK-036 (false until then)
+        kind: z.literal('greeted'), withPetId: Id
     })
 ]);
 export const RewardSchema = z.discriminatedUnion('kind', [
@@ -18,6 +21,9 @@ export const RewardSchema = z.discriminatedUnion('kind', [
         kind: z.literal('verb'), verb: Id
     }), z.object({
         kind: z.literal('vignette')
+    }), z.object({
+        // DEC-044: unlocks an outdoor site
+        kind: z.literal('space'), siteId: Id
     })
 ]);
 /** Fork default 9 (v1.5): a want's reward is a list of 1–3 entries, at most one per kind. */
@@ -26,8 +32,12 @@ export const RewardListSchema = z.array(RewardSchema).min(1).max(3)
 export const WantSchema = z.object({
     id: Id, brief: z.string().min(1).max(60), conditions: z.array(ConditionSchema), reward: RewardListSchema, rewardLabel: z.string().max(40)
 });
+/** WORK-034-2: absent = the room whose `residentPetId` is the pet. */
+export const HomeSchema = z.discriminatedUnion('kind', [
+    z.object({ kind: z.literal('room'), roomId: Id }), z.object({ kind: z.literal('space'), siteId: Id })
+]);
 export const PetSchema = z.object({
-    id: Id, name: z.string().min(1), portrait: AssetId, sheet: AssetId, likes: z.array(z.object({
+    id: Id, name: z.string().min(1), portrait: AssetId, sheet: AssetId, home: HomeSchema.optional(), likes: z.array(z.object({
         tag: Id, weight: z.number(), hidden: z.boolean().optional()
     })).min(2).max(4), dislikes: z.array(Id), verbs: z.array(z.object({
         verb: Id, atStart: z.boolean()
@@ -41,6 +51,7 @@ export type Pet = z.infer<typeof PetSchema>;
 export type Want = z.infer<typeof WantSchema>;
 export type Reward = z.infer<typeof RewardSchema>;
 export type Condition = z.infer<typeof ConditionSchema>;
+export type Home = z.infer<typeof HomeSchema>;
 export type RewardList = z.infer<typeof RewardListSchema>;
 /** The items a want's reward grants (empty when it has no `items` entry). */
 export const rewardItems = (want: { reward: RewardList }): Item[] =>

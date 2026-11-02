@@ -7,6 +7,7 @@ import { petDraw, petPick, petRoll, phaseChanged, toIdle, withBehaviour } from '
 import { ladderFor, typeOf, usingSlotOf, verbEndedOf, verbFor, verbOfTag } from './reactions';
 import type { PlacementChange } from './slots';
 import { activeWant } from './wants';
+import { placementsOf, roomRef, scenePet, spaceDef, type SpaceDef, type SpaceRef } from '../space';
 
 /** MEC-007 §3 selectors. */
 export function residentPet(content: Content, state: GameState): PetId | null {
@@ -19,7 +20,8 @@ export function petUsingSlot(content: Content, state: GameState, roomId: RoomId,
   return petId && behaviour && usingSlotOf(behaviour) === slotId ? petId : null;
 }
 
-type Step = { content: Content; state: GameState; petId: PetId; roomId: RoomId; dtMs: number };
+type Step = { content: Content; state: GameState; petId: PetId; ref: SpaceRef; def: SpaceDef; dtMs: number };
+const placed = (step: Step) => placementsOf(step.state, step.ref);
 type Point = { x: number; y: number; facing?: 'left' | 'right' };
 
 function transition(step: Step, state: GameState, next: PetBehaviour, events: SimEvent[] = []): RuleResult {
@@ -33,16 +35,18 @@ function countdown(step: Step): RuleResult {
 }
 
 function slotHolds(step: Step, slotId: SlotId): boolean {
-  return step.state.rooms[step.roomId].placements[slotId] !== undefined;
+  return placed(step)[slotId] !== undefined;
 }
 
 /** §2.4 step 1–2: slots holding a liked tag whose verb the pet has, weighted (recent × penalty). */
 function candidates(step: Step): { slotId: SlotId; weight: number }[] {
-  const { content, state, petId, roomId } = step;
+  const { content, state, petId } = step;
+  // No slot use on the street (WORK-034-2, tier 1): a site's resident only wanders.
+  if (step.ref.kind !== 'room') return [];
   const pet = content.pets[petId];
   const { verbs, recentTargets } = state.pets[petId];
-  return content.rooms[roomId].slots.flatMap(slot => {
-    const typeId = state.rooms[roomId].placements[slot.id];
+  return step.def.slots.flatMap(slot => {
+    const typeId = placed(step)[slot.id];
     if (typeId === undefined) return [];
     const liked = pet.likes.filter(like => typeOf(content, typeId).tags.includes(like.tag));
     if (!liked.some(like => verbs.includes(verbOfTag(content, like.tag) ?? ''))) return [];
@@ -55,7 +59,7 @@ function candidates(step: Step): { slotId: SlotId; weight: number }[] {
 /** §2.4 step 4 (fork #36 resolved 2026-10-26): one draw among the wander points other than the one the pet stands on,
  * so it never wanders to the same point twice in a row. */
 function wanderTarget(step: Step): { target: PetBehaviour['target']; state: GameState } {
-  const points = step.content.rooms[step.roomId].wanderPoints;
+  const points = step.def.wanderPoints;
   const { x, y } = step.state.pets[step.petId].behaviour;
   const others = points.filter(point => point.x !== x || point.y !== y);
   const pick = petPick(step.state, step.petId, others.length > 0 ? others : points);
@@ -76,7 +80,7 @@ function strippedReaction(step: Step): RuleResult {
 
 /** §2.2 idle timeout → walking toward the §2.4 target; a pending stripped charm is looked for first. */
 function decide(step: Step): RuleResult {
-  const { content, petId, roomId } = step;
+  const { content, petId } = step;
   // The existing hold: no reaction bubble while a dialogue is open; it waits for a later decide.
   if (step.state.pets[petId].strippedPending.length > 0 && step.state.dialogue.current === null) return strippedReaction(step);
   const behaviour = step.state.pets[petId].behaviour;
@@ -90,14 +94,14 @@ function decide(step: Step): RuleResult {
   const total = list.reduce((sum, candidate) => sum + candidate.weight, 0);
   let cumulative = 0;
   const chosen = list.find(candidate => (cumulative += candidate.weight) >= draw.value * total) ?? list[list.length - 1];
-  const typeId = step.state.rooms[roomId].placements[chosen.slotId];
+  const typeId = placed(step)[chosen.slotId];
   const verb = verbFor(content, typeOf(content, typeId), content.pets[petId], step.state.pets[petId].verbs);
   return transition(step, draw.state, { ...behaviour, phase: 'walking', timerMs: 0,
     target: { slotId: chosen.slotId }, verb, reaction: null });
 }
 
 function targetPoint(step: Step, target: PetBehaviour['target']): Point | null {
-  const room = step.content.rooms[step.roomId];
+  const room = step.def;
   if (target === null) return null;
   if ('slotId' in target) return room.slots.find(slot => slot.id === target.slotId)?.anchor ?? null;
   return room.wanderPoints.find(point => point.id === target.wanderPointId) ?? null;
@@ -135,7 +139,7 @@ function walk(step: Step): RuleResult {
   if (remaining <= stepPx)
     return arrive(step, { ...behaviour, x: point.x, y: point.y, facing: point.facing ?? facing });
   const next = { x: behaviour.x + dx / remaining * stepPx, y: behaviour.y + dy / remaining * stepPx };
-  const inside = pointInPolygon(next, step.content.rooms[step.roomId].walkArea);
+  const inside = pointInPolygon(next, step.def.walkArea);
   return { state: withBehaviour(step.state, step.petId, { ...behaviour, ...(inside ? next : {}), facing }), events: [] };
 }
 
@@ -153,7 +157,7 @@ function endVerb(step: Step): RuleResult {
   const { content, petId } = step;
   const behaviour = step.state.pets[petId].behaviour;
   const slotId = usingSlotOf(behaviour)!;
-  const typeId = step.state.rooms[step.roomId].placements[slotId];
+  const typeId = placed(step)[slotId];
   const events = verbEndedOf(petId, behaviour);
   const reaction = typeId === undefined ? 'none' : ladderFor(content, content.pets[petId], typeOf(content, typeId),
     activeWant(content, step.state, petId)?.want ?? null);
@@ -167,10 +171,10 @@ function endVerb(step: Step): RuleResult {
 
 /** §2.2 row 1 / §2.7: on every entry, walk to the wander point nearest the avatar's spawn. */
 function greet(step: Step): RuleResult {
-  const { content, state, petId, roomId } = step;
+  const { content, state, petId } = step;
   const behaviour = state.pets[petId].behaviour;
   const distance = (point: { x: number; y: number }) => Math.hypot(point.x - state.avatar.x, point.y - state.avatar.y);
-  const nearest = content.rooms[roomId].wanderPoints
+  const nearest = step.def.wanderPoints
     .reduce((best, point) => (distance(point) < distance(best) ? point : best));
   const pick = petPick(state, petId, content.pets[petId].lines.greeting);
   return transition(step, pick.state, { ...behaviour, phase: 'walking', timerMs: 0,
@@ -187,10 +191,10 @@ function awaitGreeting(step: Step): RuleResult {
 
 /** MEC-007 §2.2 `stepPet`: at most one transition per tick; the timer overshoot is not carried. */
 export function stepPet(content: Content, state: GameState, petId: PetId, dtMs: number,
-  eventsSoFar: readonly SimEvent[]): RuleResult {
-  const roomId = (state.scene as { roomId: RoomId }).roomId;
-  const step: Step = { content, state, petId, roomId, dtMs };
-  if (eventsSoFar.some(event => event.type === 'scene.changed' && event.to.kind === 'interior' && event.to.roomId === roomId))
+  eventsSoFar: readonly SimEvent[], ref: SpaceRef = roomRef((state.scene as { roomId: RoomId }).roomId)): RuleResult {
+  const step: Step = { content, state, petId, ref, def: spaceDef(content, ref), dtMs };
+  // The entry greeting is an interior behaviour; a site's resident does not greet on street entry (WORK-034-2).
+  if (ref.kind === 'room' && eventsSoFar.some(event => event.type === 'scene.changed' && event.to.kind === 'interior' && event.to.roomId === ref.roomId))
     return content.tuning.greetingDelayMs > 0 ? awaitGreeting(step) : greet(step);
   const behaviour = state.pets[petId].behaviour;
   const expired = behaviour.timerMs - dtMs <= 0;
@@ -200,21 +204,23 @@ export function stepPet(content: Content, state: GameState, petId: PetId, dtMs: 
   return behaviour.phase === 'using' ? endVerb(step) : afterBubble(step);
 }
 
-/** Core §4 step 4: only the resident pet of the current interior is stepped. */
+/** Core §4 step 4: only the pet sharing the player's scene is stepped — the current interior's resident, or on the
+ * street an arrived site's resident (DEC-045, WORK-034-2). */
 export function stepResidentPet(content: Content, state: GameState, action: TickAction,
   eventsSoFar: readonly SimEvent[]): RuleResult {
-  const petId = residentPet(content, state);
-  return petId === null ? { state, events: [] } : stepPet(content, state, petId, action.dtMs, eventsSoFar);
+  const here = scenePet(content, state);
+  return here === null ? { state, events: [] } : stepPet(content, state, here.petId, action.dtMs, eventsSoFar, here.ref);
 }
 
 /** MEC-007 §2.3 removal rows (placement-chain link): 🤔 when the used slot is emptied; idle,
  * no bubble, when the pet was walking to or reacting at it. */
 export function afterRemoval(content: Content, before: GameState, current: GameState,
   change: PlacementChange): RuleResult {
-  const roomId = (before.scene as { roomId: RoomId }).roomId;
+  if (change.space.kind !== 'room') return { state: current, events: [] }; // no slot use on the street (WORK-034-2)
+  const roomId = change.space.roomId;
   const petId = content.rooms[roomId]?.residentPetId;
   if (change.kind !== 'removed' || !petId || !current.pets[petId]) return { state: current, events: [] };
-  const step: Step = { content, state: current, petId, roomId, dtMs: 0 };
+  const step: Step = { content, state: current, petId, ref: change.space, def: spaceDef(content, change.space), dtMs: 0 };
   const behaviour = current.pets[petId].behaviour;
   const { slotId, typeId } = change;
   if (usingSlotOf(behaviour) === slotId)

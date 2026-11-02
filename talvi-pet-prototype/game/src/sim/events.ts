@@ -2,23 +2,30 @@ import type { RewardList } from '../content/schema/pet';
 import type { Action } from './actions';
 import type {
   CharmTypeId, DialogueScript, DoorId, GameState, PetBehaviour, PetId,
-  ProjectId, Reaction, RoomId, Scene, SlotId, TagId, VerbId, WantId,
+  ProjectId, Reaction, RoomId, Scene, SiteId, SlotId, TagId, VerbId, WantId,
 } from './state';
 
 export type ConditionView = {
-  kind: 'tag' | 'adjacent' | 'stars'; met: boolean; hidden: boolean;
-  tag?: TagId; tagA?: TagId; tagB?: TagId; min?: number; current?: number;
+  kind: 'tag' | 'adjacent' | 'stars' | 'greeted'; met: boolean; hidden: boolean;
+  withPetId?: PetId; tag?: TagId; tagA?: TagId; tagB?: TagId; min?: number; current?: number;
   availability?: 'owned' | 'nextPhase' | 'laterPhase' | 'heart' | 'never';
 };
+
+/** WORK-034-2: a placement event names exactly one of `roomId` / `siteId`. */
+type SpaceKey = { roomId: RoomId; siteId?: undefined } | { siteId: SiteId; roomId?: undefined };
 
 /** Exact completed-change notifications, core.md §3; controller records excluded. */
 export type SimEvent =
   | { type: 'scene.changed'; from: Scene; to: Scene; doorId: DoorId }
   | { type: 'mode.changed'; mode: 'play' | 'design' }
-  | { type: 'charm.placed'; roomId: RoomId; slotId: SlotId; typeId: CharmTypeId; replacedTypeId: CharmTypeId | null }
-  | { type: 'charm.removed'; roomId: RoomId; slotId: SlotId; typeId: CharmTypeId; interruptedPetId: PetId | null }
+  | ({ type: 'charm.placed'; slotId: SlotId; typeId: CharmTypeId; replacedTypeId: CharmTypeId | null } & SpaceKey)
+  | ({ type: 'charm.removed'; slotId: SlotId; typeId: CharmTypeId; interruptedPetId: PetId | null } & SpaceKey)
   | { type: 'charm.stripped'; roomId: RoomId; slotId: SlotId; typeId: CharmTypeId; petId: PetId }
   | { type: 'stars.changed'; roomId: RoomId; from: number; to: number; delta: number; max: number }
+  | { type: 'space.stars.changed'; siteId: SiteId; from: number; to: number; delta: number; max: number }
+  | { type: 'space.unlocked'; siteId: SiteId; petId: PetId; wantId: WantId | null }
+  | { type: 'space.arrivalStarted'; siteId: SiteId; petId: PetId }
+  | { type: 'pet.arrived'; petId: PetId; siteId: SiteId }
   | { type: 'stars.visibilityChanged'; visible: boolean }
   | { type: 'want.activated'; petId: PetId; wantId: WantId; index: number }
   | { type: 'want.progressed'; petId: PetId; wantId: WantId; conditions: ConditionView[] }

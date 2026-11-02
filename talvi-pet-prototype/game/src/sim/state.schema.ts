@@ -2,6 +2,7 @@ import { z } from 'zod';
 import type { Content } from '../content/types';
 import { checkInvariants } from './invariants';
 import type { GameState } from './state';
+import { homeSpaceOf, spaceDef } from './space';
 
 /** CONTRACT-STATE / CONTRACT-PERSIST v1.5 (core §1, §8). Keys follow the core §1 field order, so a parse
  * yields the canonical key order; unknown keys (e.g. an obsolete `projects[*].guess`, DEC-039) are stripped. */
@@ -26,7 +27,7 @@ const PetBehaviourSchema = z.object({
 const PetSchema = z.object({
   hearts: z.number().int().min(0), fulfilledWantIds: z.array(z.string()),
   revealedHiddenTags: z.record(z.string(), z.array(z.string())), verbs: z.array(z.string()),
-  introduced: z.boolean(), behaviour: PetBehaviourSchema, rngState: z.number().int(),
+  introduced: z.boolean(), outside: z.boolean(), behaviour: PetBehaviourSchema, rngState: z.number().int(),
   recentTargets: z.array(z.string()), wantBubbleInMs: z.number(),
   heartCharms: z.array(z.string()), strippedPending: z.array(z.string()),
 });
@@ -53,8 +54,10 @@ export const GameStateSchema = z.object({
   feed: z.object({ rngState: z.number().int(), sinceLastEventMs: z.number(), eventCount: z.number().int() }),
   celebration: CelebrationSchema.nullable(),
   arrival: z.object({ projectId: z.string(), petId: z.string() }).nullable(),
+  siteArrival: z.object({ siteId: z.string(), petId: z.string() }).nullable(),
   inventory: z.object({ counts: z.record(z.string(), z.number()) }),
   rooms: z.record(z.string(), z.object({ placements: z.record(z.string(), z.string()) })),
+  spaces: z.record(z.string(), z.object({ unlocked: z.boolean(), placements: z.record(z.string(), z.string()), arrivalDone: z.boolean() })),
   pets: z.record(z.string(), PetSchema),
 });
 
@@ -76,6 +79,12 @@ function unknownContentId(content: Content, state: GameState): boolean {
   if (Object.keys(state.inventory.counts).some(id => !types.has(id))) return true;
   if (state.celebration && (!state.projects[state.celebration.projectId] || state.celebration.unlockedTypeIds.some(id => !types.has(id)))) return true;
   if (state.arrival && (!state.projects[state.arrival.projectId] || !state.pets[state.arrival.petId])) return true;
+  if (!sameKeys(state.spaces, content.street.sites.map(site => site.id))) return true;
+  if (state.siteArrival && (!state.spaces[state.siteArrival.siteId] || !state.pets[state.siteArrival.petId])) return true;
+  for (const site of content.street.sites) {
+    const slots = new Set(site.slots.map(slot => slot.id));
+    if (Object.entries(state.spaces[site.id].placements).some(([slotId, typeId]) => !slots.has(slotId) || !types.has(typeId))) return true;
+  }
   for (const [roomId, room] of Object.entries(state.rooms)) {
     const slots = new Set(content.rooms[roomId].slots.map(slot => slot.id));
     if (Object.entries(room.placements).some(([slotId, typeId]) => !slots.has(slotId) || !types.has(typeId))) return true;
@@ -86,8 +95,7 @@ function unknownContentId(content: Content, state: GameState): boolean {
 function unknownPetId(content: Content, petId: string, pet: GameState['pets'][string], verbs: Set<string>,
   types: Set<string>): boolean {
   const wants = new Set(content.pets[petId].wants.map(want => want.id));
-  const room = Object.values(content.rooms).find(candidate => candidate.residentPetId === petId);
-  const slots = new Set(room?.slots.map(slot => slot.id) ?? []);
+  const slots = new Set(spaceDef(content, homeSpaceOf(content, petId)).slots.map(slot => slot.id));
   const target = pet.behaviour.target;
   return pet.fulfilledWantIds.some(id => !wants.has(id)) || Object.keys(pet.revealedHiddenTags).some(id => !wants.has(id))
     || pet.verbs.some(id => !verbs.has(id)) || [...pet.heartCharms, ...pet.strippedPending].some(id => !types.has(id)) || pet.recentTargets.some(id => !slots.has(id))

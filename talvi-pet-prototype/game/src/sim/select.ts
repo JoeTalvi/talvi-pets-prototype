@@ -3,7 +3,8 @@ import type { Door } from '../content/schema/common';
 import type { GameState } from './state';
 
 export { chooserTypes, copiesOf, ownsTag } from './rules/inventory';
-export { starsOf } from './rules/stars';
+export { starsOf, starsOfSpace } from './rules/stars';
+export { scenePet, playerSpace, homeSpaceOf } from './space';
 export { slotOf, placementAt } from './rules/slots';
 export { residentPet, petUsingSlot } from './rules/pets';
 export { revealProjectId, revealView, revealPopupView } from './rules/reveal';
@@ -30,7 +31,7 @@ export function typeUnlockPhase(content: Content, typeId: string): {
 
 export function inputFrozen(_content: Content, state: GameState): boolean {
     return state.dialogue.current !== null || state.celebration !== null ||
-        state.arrival !== null || state.mode === 'design';
+        state.arrival !== null || state.siteArrival !== null || state.mode === 'design';
 }
 
 export function doorEnabled(content: Content, state: GameState, door: Door): boolean {

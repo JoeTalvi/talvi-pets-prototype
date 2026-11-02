@@ -95,7 +95,9 @@ function noReaction(at: Placement, state: GameState): RuleResult {
  * a fulfilment in this dispatch replaces the ladder with ❤️ at `focusSlotId` (core §6.2). */
 export function afterPlacement(content: Content, before: GameState, current: GameState,
   change: PlacementChange, eventsSoFar: readonly SimEvent[]): RuleResult {
-  const roomId = (before.scene as { roomId: RoomId }).roomId;
+  // Placement reactions stay room-only (WORK-034-2, tier 1): the site's resident does not walk over to a placed charm.
+  if (change.space.kind !== 'room') return { state: current, events: [] };
+  const roomId = change.space.roomId;
   const petId = content.rooms[roomId]?.residentPetId;
   if (change.kind !== 'placed' || !petId || !current.pets[petId]) return { state: current, events: [] };
   const fulfilled = eventsSoFar.find(event => event.type === 'want.fulfilled' && event.petId === petId);

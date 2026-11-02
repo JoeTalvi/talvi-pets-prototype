@@ -25,7 +25,7 @@ function resolverContext(c: Content, manifest?: AssetManifest) {
         if (!values.includes(id))
             issue('CHK-CORE-02', file, path, `Unknown ${family} id "${id}"`, alias);
     };
-    const tags = c.tags.map(t => t.id), types = c.charms.types.map(t => t.id), verbs = c.verbs.map(v => v.id), rooms = Object.keys(c.rooms), pets = Object.keys(c.pets), projects = c.projects.map(p => p.id);
+    const tags = c.tags.map(t => t.id), types = c.charms.types.map(t => t.id), verbs = c.verbs.map(v => v.id), rooms = Object.keys(c.rooms), pets = Object.keys(c.pets), projects = c.projects.map(p => p.id), sites = c.street.sites.map(s => s.id);
     const asset = (id: string | undefined, type: 'image' | 'spritesheet', file: string, path: (string | number)[], alias?: string) => {
         if (id === undefined || !manifest)
             return;
@@ -33,7 +33,7 @@ function resolverContext(c: Content, manifest?: AssetManifest) {
         if (!entry || entry.type !== type)
             issue('CHK-CORE-03', file, path, `Asset "${id}" must resolve as ${type}`, alias);
     };
-    return { c, manifest, out, issue, ids, ref, asset, tags, types, verbs, rooms, pets, projects };
+    return { c, manifest, out, issue, ids, ref, asset, tags, types, verbs, rooms, pets, projects, sites };
 }
 type Resolver = ReturnType<typeof resolverContext>;
 function resolveIds(ctx: Resolver): void {
@@ -110,7 +110,7 @@ function resolveRooms(ctx: Resolver): void {
     }
 }
 function resolvePets(ctx: Resolver): void {
-    const { c, ids, ref, asset, tags, types, verbs } = ctx;
+    const { c, ids, ref, asset, tags, types, verbs, pets, rooms, sites } = ctx;
     for (const [id, p] of Object.entries(c.pets)) {
         const f = `pets/${id}.json`;
         asset(p.portrait, 'image', f, [
@@ -119,6 +119,8 @@ function resolvePets(ctx: Resolver): void {
         asset(p.sheet, 'spritesheet', f, [
             'sheet'
         ]);
+        if (p.home?.kind === 'room') ref(p.home.roomId, rooms, f, ['home', 'roomId'], 'room');
+        if (p.home?.kind === 'space') ref(p.home.siteId, sites, f, ['home', 'siteId'], 'site');
         p.likes.forEach((l, i) => ref(l.tag, tags, f, [
             'likes', i, 'tag'
         ], 'tag', 'CHK-007-02'));
@@ -137,6 +139,10 @@ function resolvePets(ctx: Resolver): void {
                     ref(x.tag, tags, f, [
                         'wants', i, 'conditions', j, 'tag'
                     ], 'tag', 'CHK-009-02');
+                if (x.kind === 'greeted')
+                    ref(x.withPetId, pets, f, [
+                        'wants', i, 'conditions', j, 'withPetId'
+                    ], 'pet', 'CHK-009-02');
                 if (x.kind === 'adjacent')
                     for (const key of [
                         'tagA', 'tagB'
@@ -154,6 +160,10 @@ function resolvePets(ctx: Resolver): void {
                     ref(r.verb, verbs, f, [
                         'wants', i, 'reward', k, 'verb'
                     ], 'verb', 'CHK-009-06');
+                if (r.kind === 'space')
+                    ref(r.siteId, sites, f, [
+                        'wants', i, 'reward', k, 'siteId'
+                    ], 'site', 'CHK-009-06');
             });
         });
     }
@@ -194,7 +204,7 @@ function resolveProjects(ctx: Resolver): void {
     ]));
 }
 function resolveScenes(ctx: Resolver): void {
-    const { c, issue, ids, ref, asset, projects } = ctx;
+    const { c, issue, ids, ref, asset, projects, pets } = ctx;
     const scenes = [
         {
             id: 'street', file: 'street.json', doors: c.street.houses.map(h => h.door)
@@ -224,6 +234,13 @@ function resolveScenes(ctx: Resolver): void {
                 ], 'door', 'CHK-001-03');
         });
     }
+    c.street.sites.forEach((site, i) => {
+        asset(site.art.empty, 'image', 'street.json', ['sites', i, 'art', 'empty']);
+        asset(site.art.base, 'image', 'street.json', ['sites', i, 'art', 'base']);
+        ref(site.residentPetId, pets, 'street.json', ['sites', i, 'residentPetId'], 'pet');
+        site.slots.forEach((slot, j) => slot.adjacent.forEach((id, k) => ref(id, site.slots.map(other => other.id), 'street.json',
+            ['sites', i, 'slots', j, 'adjacent', k], 'slot')));
+    });
     c.street.houses.forEach((h, i) => {
         ref(h.projectId, projects, 'street.json', [
             'houses', i, 'projectId'
