@@ -25,7 +25,7 @@ function resolverContext(c: Content, manifest?: AssetManifest) {
         if (!values.includes(id))
             issue('CHK-CORE-02', file, path, `Unknown ${family} id "${id}"`, alias);
     };
-    const tags = c.tags.map(t => t.id), types = c.charms.types.map(t => t.id), verbs = c.verbs.map(v => v.id), rooms = Object.keys(c.rooms), pets = Object.keys(c.pets), projects = c.projects.map(p => p.id), sites = c.street.sites.map(s => s.id);
+    const tags = c.tags.map(t => t.id), types = c.charms.types.map(t => t.id), verbs = c.verbs.map(v => v.id), rooms = Object.keys(c.rooms), pets = Object.keys(c.pets), projects = c.projects.map(p => p.id), sites = (c.street.sites ?? []).map(s => s.id);
     const asset = (id: string | undefined, type: 'image' | 'spritesheet', file: string, path: (string | number)[], alias?: string) => {
         if (id === undefined || !manifest)
             return;
@@ -234,7 +234,7 @@ function resolveScenes(ctx: Resolver): void {
                 ], 'door', 'CHK-001-03');
         });
     }
-    c.street.sites.forEach((site, i) => {
+    (c.street.sites ?? []).forEach((site, i) => {
         asset(site.art.empty, 'image', 'street.json', ['sites', i, 'art', 'empty']);
         asset(site.art.base, 'image', 'street.json', ['sites', i, 'art', 'base']);
         ref(site.residentPetId, pets, 'street.json', ['sites', i, 'residentPetId'], 'pet');

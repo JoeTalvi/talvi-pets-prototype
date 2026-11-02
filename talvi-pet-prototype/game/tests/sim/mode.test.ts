@@ -18,7 +18,7 @@ it('VERIFY-MEC-001-010 mode rejects street, dialogue, and duplicate entry atomic
   const action: Action = { type: 'setDesignMode', on: true };
   const street: GameState = { ...state, scene: { kind: 'street' } };
   const open: GameState = { ...state, dialogue: { current: dialogue, queue: [] } };
-  for (const [candidate, reason] of [[street, 'notInterior'], [open, 'dialogueOpen']] as const) {
+  for (const [candidate, reason] of [[street, 'siteLocked'], [open, 'dialogueOpen']] as const) {
     const result = reduce(content, deepFreeze(candidate), action);
     expect(result.state).toBe(candidate);
     expect(result.events).toEqual([{ type: 'action.rejected', action, reason }]);

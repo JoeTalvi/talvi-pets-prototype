@@ -48,6 +48,7 @@
     },
     "celebration": null,
     "arrival": null,
+    "siteArrival": null,
     "inventory": {
       "counts": {
         "dog-bed": 1,
@@ -66,6 +67,7 @@
         "placements": {}
       }
     },
+    "spaces": {},
     "pets": {
       "dog": {
         "hearts": 0,
@@ -76,6 +78,7 @@
           "look-at"
         ],
         "introduced": false,
+        "outside": false,
         "behaviour": {
           "phase": "idle",
           "x": 800,
@@ -101,6 +104,7 @@
           "look-at"
         ],
         "introduced": false,
+        "outside": false,
         "behaviour": {
           "phase": "idle",
           "x": 800,

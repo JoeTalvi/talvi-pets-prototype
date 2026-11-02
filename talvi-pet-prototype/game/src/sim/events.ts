@@ -11,15 +11,13 @@ export type ConditionView = {
   availability?: 'owned' | 'nextPhase' | 'laterPhase' | 'heart' | 'never';
 };
 
-/** WORK-034-2: a placement event names exactly one of `roomId` / `siteId`. */
-type SpaceKey = { roomId: RoomId; siteId?: undefined } | { siteId: SiteId; roomId?: undefined };
-
 /** Exact completed-change notifications, core.md §3; controller records excluded. */
 export type SimEvent =
   | { type: 'scene.changed'; from: Scene; to: Scene; doorId: DoorId }
   | { type: 'mode.changed'; mode: 'play' | 'design' }
-  | ({ type: 'charm.placed'; slotId: SlotId; typeId: CharmTypeId; replacedTypeId: CharmTypeId | null } & SpaceKey)
-  | ({ type: 'charm.removed'; slotId: SlotId; typeId: CharmTypeId; interruptedPetId: PetId | null } & SpaceKey)
+  // WORK-034-2: a placement event names exactly one of `roomId` (an interior) / `siteId` (a street site)
+  | { type: 'charm.placed'; roomId?: RoomId; siteId?: SiteId; slotId: SlotId; typeId: CharmTypeId; replacedTypeId: CharmTypeId | null }
+  | { type: 'charm.removed'; roomId?: RoomId; siteId?: SiteId; slotId: SlotId; typeId: CharmTypeId; interruptedPetId: PetId | null }
   | { type: 'charm.stripped'; roomId: RoomId; slotId: SlotId; typeId: CharmTypeId; petId: PetId }
   | { type: 'stars.changed'; roomId: RoomId; from: number; to: number; delta: number; max: number }
   | { type: 'space.stars.changed'; siteId: SiteId; from: number; to: number; delta: number; max: number }

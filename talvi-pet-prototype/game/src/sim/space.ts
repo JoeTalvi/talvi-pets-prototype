@@ -11,11 +11,14 @@ export type SpaceDef = {
   petSpawn: Point & { facing: 'left' | 'right' }; residentPetId: PetId;
 };
 
+/** The street's sites; content built without the zod default (tests) has none. */
+export const sitesOf = (content: Content): Site[] => content.street.sites ?? [];
+
 export const roomRef = (roomId: RoomId): SpaceRef => ({ kind: 'room', roomId });
 export const siteRef = (siteId: SiteId): SpaceRef => ({ kind: 'site', siteId });
 
 export function siteOf(content: Content, siteId: SiteId): Site {
-  const site = content.street.sites.find(candidate => candidate.id === siteId);
+  const site = sitesOf(content).find(candidate => candidate.id === siteId);
   if (!site) throw new Error(`Unknown site id "${siteId}"`);
   return site;
 }
@@ -54,7 +57,7 @@ export function withSpacePlacements(state: GameState, ref: SpaceRef, placements:
  * (or the first unlocked site when no slot is named). */
 export function playerSpace(content: Content, state: GameState, slotId?: SlotId): SpaceRef | null {
   if (state.scene.kind === 'interior') return roomRef(state.scene.roomId);
-  const site = content.street.sites.find(candidate => state.spaces[candidate.id]?.unlocked &&
+  const site = sitesOf(content).find(candidate => state.spaces[candidate.id]?.unlocked &&
     (slotId === undefined || candidate.slots.some(slot => slot.id === slotId)));
   return site ? siteRef(site.id) : null;
 }
@@ -65,7 +68,7 @@ export function scenePet(content: Content, state: GameState): { petId: PetId; re
     const petId = content.rooms[state.scene.roomId]?.residentPetId;
     return petId ? { petId, ref: roomRef(state.scene.roomId) } : null;
   }
-  const site = content.street.sites.find(candidate => state.spaces[candidate.id]?.arrivalDone);
+  const site = sitesOf(content).find(candidate => state.spaces[candidate.id]?.arrivalDone);
   return site ? { petId: site.residentPetId, ref: siteRef(site.id) } : null;
 }
 

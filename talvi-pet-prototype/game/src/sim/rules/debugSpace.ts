@@ -2,7 +2,7 @@ import type { Content } from '../../content/types';
 import type { Action } from '../actions';
 import type { RuleResult } from '../events';
 import type { GameState } from '../state';
-import { placementsOf, siteOf, siteRef } from '../space';
+import { placementsOf, siteOf, siteRef, sitesOf } from '../space';
 import { grantItems } from './inventory';
 import { placeAt, type SlotsResult } from './slots';
 import { maybeStartSiteArrival } from './sites';
@@ -19,7 +19,7 @@ const applied = (action: Action, result: RuleResult): RuleResult =>
   ({ state: result.state, events: [{ type: 'debug.applied', action }, ...result.events] });
 const chain = (result: RuleResult, next: RuleResult): RuleResult =>
   ({ state: next.state, events: [...result.events, ...next.events] });
-const knownSite = (content: Content, siteId: string) => content.street.sites.some(site => site.id === siteId);
+const knownSite = (content: Content, siteId: string) => sitesOf(content).some(site => site.id === siteId);
 
 /** The pet whose want rewards the site (else the site's resident): the `space.unlocked` petId of a debug unlock. */
 function unlockerOf(content: Content, siteId: string): string {

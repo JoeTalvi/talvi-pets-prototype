@@ -1,6 +1,6 @@
 import type { Content } from '../content/types';
 import { petSeed } from './rng';
-import { homeSpaceOf, spaceDef } from './space';
+import { homeSpaceOf, sitesOf, spaceDef } from './space';
 
 /** CONTRACT-STATE/ACTIONS/EVENTS/SELECT v1.5 (core.md + WORK-033-1 amendment); no derived view state. */
 export const CONTRACT_VERSION = '1.5' as const;
@@ -120,7 +120,7 @@ export function initialState(content: Content, seed: number): GameState {
     celebration: null, arrival: null, siteArrival: null,
     inventory: { counts: starterCounts(content) },
     rooms: Object.fromEntries(Object.keys(content.rooms).map(id => [id, { placements: {} }])),
-    spaces: Object.fromEntries(content.street.sites.map(site => [site.id, { unlocked: false, placements: {}, arrivalDone: false }])),
+    spaces: Object.fromEntries(sitesOf(content).map(site => [site.id, { unlocked: false, placements: {}, arrivalDone: false }])),
     pets: initialPets(content, seed),
   };
 }

@@ -2,7 +2,7 @@ import { z } from 'zod';
 import type { Content } from '../content/types';
 import { checkInvariants } from './invariants';
 import type { GameState } from './state';
-import { homeSpaceOf, spaceDef } from './space';
+import { homeSpaceOf, sitesOf, spaceDef } from './space';
 
 /** CONTRACT-STATE / CONTRACT-PERSIST v1.5 (core §1, §8). Keys follow the core §1 field order, so a parse
  * yields the canonical key order; unknown keys (e.g. an obsolete `projects[*].guess`, DEC-039) are stripped. */
@@ -79,9 +79,9 @@ function unknownContentId(content: Content, state: GameState): boolean {
   if (Object.keys(state.inventory.counts).some(id => !types.has(id))) return true;
   if (state.celebration && (!state.projects[state.celebration.projectId] || state.celebration.unlockedTypeIds.some(id => !types.has(id)))) return true;
   if (state.arrival && (!state.projects[state.arrival.projectId] || !state.pets[state.arrival.petId])) return true;
-  if (!sameKeys(state.spaces, content.street.sites.map(site => site.id))) return true;
+  if (!sameKeys(state.spaces, sitesOf(content).map(site => site.id))) return true;
   if (state.siteArrival && (!state.spaces[state.siteArrival.siteId] || !state.pets[state.siteArrival.petId])) return true;
-  for (const site of content.street.sites) {
+  for (const site of sitesOf(content)) {
     const slots = new Set(site.slots.map(slot => slot.id));
     if (Object.entries(state.spaces[site.id].placements).some(([slotId, typeId]) => !slots.has(slotId) || !types.has(typeId))) return true;
   }

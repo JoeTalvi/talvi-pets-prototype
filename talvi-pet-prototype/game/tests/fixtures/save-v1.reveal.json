@@ -60,6 +60,7 @@
       "skipTaken": false
     },
     "arrival": null,
+    "siteArrival": null,
     "inventory": {
       "counts": {
         "dog-bed": 0,
@@ -89,6 +90,7 @@
         "placements": {}
       }
     },
+    "spaces": {},
     "pets": {
       "dog": {
         "hearts": 1,
@@ -101,6 +103,7 @@
           "look-at"
         ],
         "introduced": true,
+        "outside": false,
         "behaviour": {
           "phase": "walking",
           "x": 800,
@@ -130,6 +133,7 @@
           "look-at"
         ],
         "introduced": false,
+        "outside": false,
         "behaviour": {
           "phase": "idle",
           "x": 800,

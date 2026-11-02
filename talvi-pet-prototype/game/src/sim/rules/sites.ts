@@ -1,7 +1,7 @@
 import type { Content } from '../../content/types';
 import type { RuleResult } from '../events';
 import type { GameState } from '../state';
-import { siteRef } from '../space';
+import { siteRef, sitesOf } from '../space';
 import { buildScript, enqueueScript } from './dialogue';
 import { starsOfSpace } from './stars';
 import { activateFirstWant } from './wants';
@@ -14,7 +14,7 @@ const chain = (result: RuleResult, next: RuleResult): RuleResult =>
 export function maybeStartSiteArrival(content: Content, state: GameState): RuleResult {
   if (state.scene.kind !== 'street' || state.mode !== 'play' || state.dialogue.current !== null ||
     state.celebration !== null || state.arrival !== null || state.siteArrival !== null) return { state, events: [] };
-  const site = content.street.sites.find(candidate => {
+  const site = sitesOf(content).find(candidate => {
     const space = state.spaces[candidate.id];
     return space.unlocked && !space.arrivalDone &&
       starsOfSpace(content, state, siteRef(candidate.id)).points >= candidate.arrivalAtStars;
@@ -27,7 +27,7 @@ export function maybeStartSiteArrival(content: Content, state: GameState): RuleR
 /** Core §6.3/§6.4 for a site: the resident stands at `petSpawn`, is introduced (intro script, then its first want). */
 export function finishSiteArrival(content: Content, state: GameState): RuleResult {
   const { siteId, petId } = state.siteArrival!;
-  const site = content.street.sites.find(candidate => candidate.id === siteId)!;
+  const site = sitesOf(content).find(candidate => candidate.id === siteId)!;
   const pet = state.pets[petId];
   const { x, y, facing } = site.petSpawn;
   const arrived: GameState = { ...state, siteArrival: null,

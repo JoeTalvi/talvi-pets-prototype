@@ -93,10 +93,12 @@ describe('VERIFY-MEC-009-026 "n charms" reward labels (DEC-043)', () => {
   it('VERIFY-MEC-009-026 (new) — every items reward in the real pets reads "<copies> charms: …" (Owl want 2 "2 charms: Potted Tree, Night Light"); no "charm types" remains', () => {
     for (const pet of ['dog', 'owl']) for (const want of real(pet).wants) {
       const copies = want.reward.flatMap(entry => entry.items ?? []).reduce((sum, item) => sum + item.count, 0);
-      if (copies > 0) expect(want.rewardLabel).toMatch(new RegExp(`^${copies} charms: `));
+      // WORK-034-2: a reward that also unlocks a site names the site and the charms instead of "<copies> charms: …".
+      const unlocksSite = want.reward.some(entry => entry.kind === 'space');
+      if (copies > 0 && !unlocksSite) expect(want.rewardLabel).toMatch(new RegExp(`^${copies} charms: `));
       expect(want.rewardLabel).not.toMatch(/charm types/);
       expect(want.rewardLabel.length).toBeLessThanOrEqual(40);
     }
-    expect(real('owl').wants[1].rewardLabel).toBe('2 charms: Potted Tree, Night Light');
+    expect(real('owl').wants[1].rewardLabel).toBe('Garden + Potted Tree, Night Light');
   });
 });
