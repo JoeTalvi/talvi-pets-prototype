@@ -16,12 +16,14 @@ function mountLayer(onPointer: (e: Event) => void): HTMLElement {
   const el = document.createElement('div');
   el.className = 'tpp-heart-moment'; el.dataset.panel = 'heartMoment';
   const dim = `rgba(40, 28, 18, ${HEART_MOMENT.dimAlpha})`, spot = HEART_MOMENT.spotlightPx;
+  // The spotlight centres on the big pet: its feet at `petBaseY`, a 256 px frame scaled by `petScale` (as a share of 1080).
+  const spotY = Math.round(HEART_MOMENT.petBaseY * 100 - (128 * HEART_MOMENT.petScale) / 1080 * 100);
   Object.assign(el.style, { position: 'absolute', inset: '0', display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
     paddingTop: `${HEART_MOMENT.heartTopPct}%`, boxSizing: 'border-box', pointerEvents: 'auto', zIndex: 'var(--z-popup)',
-    background: `radial-gradient(ellipse ${spot}px ${spot}px at 50% ${HEART_MOMENT.petBaseY * 100 - 18}%, transparent 55%, ${dim} 100%)` });
+    background: `radial-gradient(ellipse ${spot}px ${spot}px at 50% ${spotY}%, transparent 55%, ${dim} 100%)` });
   const heart = document.createElement('span');
   heart.className = 'tpp-heart-moment-heart'; heart.textContent = '♥'; heart.setAttribute('aria-hidden', 'true');
-  Object.assign(heart.style, { font: '800 300px/1 var(--font-body)', color: 'var(--red)',
+  Object.assign(heart.style, { font: `800 ${HEART_MOMENT.heartPx}px/1 var(--font-body)`, color: 'var(--red)',
     textShadow: '0 0 40px rgba(255, 214, 170, 0.85), 0 10px 0 rgba(58, 42, 31, 0.55)' });
   el.append(heart);
   for (const type of ['pointerdown', 'pointerup', 'click']) el.addEventListener(type, onPointer);

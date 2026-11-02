@@ -119,7 +119,7 @@ export const OUTLINE_BAND = DESIGN_TINT.depth + 1;
 /** Stars burst: `count` gold stars, launched `staggerMs` apart, each flying `flightMs` from the slot into the bar; all gone by `totalMs` (≤ 900). */
 export const STARS_BURST = { count: 8, staggerMs: 35, flightMs: 600, spreadPx: 70, totalMs: 900 } as const;
 /** Heart moment: dim + heart pop (`popMs`) for `totalMs`, skippable from `skipAfterMs`, fading out over `fadeOutMs`; then the vignette box. */
-export const HEART_MOMENT = { totalMs: 2200, skipAfterMs: 600, popMs: 520, fadeOutMs: 220, dimAlpha: 0.5, heartTopPct: 12,
-  petBaseY: 0.86, petScale: 1.5, spotlightPx: 300 } as const;
-/** The big `react` pet draws camera-fixed under the confetti (7000), above the world, tint, outlines and attention marks. */
-export const HEART_PET_DEPTH = 6900;
+export const HEART_MOMENT = { totalMs: 2200, skipAfterMs: 600, popMs: 520, fadeOutMs: 220, dimAlpha: 0.5, heartTopPct: 6, heartPx: 240,
+  petBaseY: 0.88, petScale: 2, spotlightPx: 340 } as const;
+/** The big `react` pet draws camera-fixed above the world, tint, outlines, confetti (7000) and pet bubbles (8000), below the flash (9000). */
+export const HEART_PET_DEPTH = 8500;
