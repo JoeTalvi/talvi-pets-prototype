@@ -28,7 +28,7 @@ async function room(browser) {
 async function fix4(browser) {
   const w = await room(browser);
   const play = await shot(w.page, browser, captures, 'fix4-tint-play-1080', { save: 'dog-room-intro-done' });
-  await w.page.locator('.tpp-design-toggle').click();
+  await w.page.locator('.tpp-design-toggle:not(.tpp-site-toggle)').click();
   await w.page.waitForTimeout(500);
   const hud = await w.page.evaluate(() => { const r = document.querySelector('#overlay') ?? document.querySelector('#panels').parentElement; return { filter: getComputedStyle(r).filter, panelsFilter: getComputedStyle(document.querySelector('#panels')).filter }; });
   const design = await shot(w.page, browser, captures, 'fix4-tint-design-1080', { save: 'dog-room-intro-done', mode: 'design' });
@@ -59,7 +59,7 @@ async function fix5(browser) {
 
 async function fix6a(browser) {
   const w = await room(browser);
-  await w.page.locator('.tpp-design-toggle').click();
+  await w.page.locator('.tpp-design-toggle:not(.tpp-site-toggle)').click();
   await w.page.waitForTimeout(400);
   const rec = await startStreamRecording(w.page, join(EV, 'frames-fix6a'));
   await w.page.waitForTimeout(300);
@@ -69,7 +69,7 @@ async function fix6a(browser) {
   await dispatch(w.page, { type: 'placeCharm', slotId: 'floor-3', typeId });
   const burst = await w.page.evaluate(() => ({ stars: document.querySelectorAll('.tpp-burst-star').length, pe: getComputedStyle(document.querySelector('.tpp-stars-burst')).pointerEvents }));
   await w.page.waitForTimeout(200);
-  await w.page.locator('.tpp-design-toggle').click(); // a tap during the burst is handled
+  await w.page.locator('.tpp-design-toggle:not(.tpp-site-toggle)').click(); // a tap during the burst is handled
   const modeAfterTap = (await getState(w.page)).mode;
   await w.page.waitForTimeout(800);
   const gone = await w.page.evaluate(() => document.querySelectorAll('.tpp-stars-burst').length === 0);
