@@ -16,6 +16,15 @@ export function pointInPolygon(p: Point, poly: readonly Point[]): boolean {
     }
     return inside;
 }
+/** Axis-aligned rect, half-open like door rects: [x, x + w) × [y, y + h). */
+export type Rect = { x: number; y: number; w: number; h: number };
+export function pointInRect(p: Point, r: Rect): boolean {
+    return p.x >= r.x && p.x < r.x + r.w && p.y >= r.y && p.y < r.y + r.h;
+}
+/** MEC-001 R3 as amended by WORK-032-1: walkable = inside the walk area and outside every blocker. */
+export function walkable(p: Point, walkArea: readonly Point[], blockers: readonly Rect[] = []): boolean {
+    return pointInPolygon(p, walkArea) && !blockers.some(r => pointInRect(p, r));
+}
 /** Signed shoelace area. */
 export function polygonArea(poly: readonly Point[]): number {
     return poly.reduce((area, p, i) => {
