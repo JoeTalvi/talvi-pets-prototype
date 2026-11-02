@@ -6,6 +6,7 @@ import type { GameState } from '@sim/state';
 import { createStore, type Store } from '@app/store';
 import { createLog, type Log, type SessionHeader } from '@app/log';
 import { createPersistence, loadSave } from '@app/persistence';
+import { SAVE_SCHEMA_VERSION } from '@sim/state.schema';
 import { createPresentationBus } from '@app/presentationBus';
 import { createKeyboard } from '@app/input/keyboard';
 import { installPointerRouting } from '@app/input/pointerRouting';
@@ -27,7 +28,7 @@ import '@ui/styles/panels.css';
 const FRESH_SEED = 1234;
 
 function headerFor(state: GameState): SessionHeader {
-  return { build: `tpp-${pkg.version}+${import.meta.env.MODE}`, schemaVersion: 1, seed: state.session.seed,
+  return { build: `tpp-${pkg.version}+${import.meta.env.MODE}`, schemaVersion: SAVE_SCHEMA_VERSION, seed: state.session.seed,
     cadence: state.session.eventIntervalMs, feedPresentation: state.session.feedPresentation,
     testerLabel: state.session.testerLabel, userAgent: navigator.userAgent,
     viewport: { w: innerWidth, h: innerHeight, dpr: devicePixelRatio } };
