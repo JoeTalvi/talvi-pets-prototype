@@ -13,7 +13,7 @@ export const ConditionSchema = z.discriminatedUnion('kind', [
 ]);
 export const RewardSchema = z.discriminatedUnion('kind', [
     z.object({
-        kind: z.literal('items'), items: z.array(ItemSchema).min(1).max(2)
+        kind: z.literal('items'), items: z.array(ItemSchema) // 1–2 entries: CHK-009-06
     }), z.object({
         kind: z.literal('verb'), verb: Id
     }), z.object({

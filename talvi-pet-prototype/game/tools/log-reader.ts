@@ -76,7 +76,7 @@ export const PRESETS: Record<TestId, { match: Matcher[]; firstOnly?: string[] }>
     debugOf('debugSetEventInterval', 'debugSetFeedPresentation')] },
   'TEST-004': { match: ['ui.revealPanel', 'celebration.stepped', 'celebration.started'].map(typeMatcher) },
   'TEST-005': { match: ['pet.reacted', 'pet.tapped', 'ui.bubbleTapped', 'pet.verbStarted', 'charm.placed'].map(typeMatcher) },
-  'TEST-006': { match: ['heart.earned', 'types.unlocked', 'verb.unlocked', 'want.*'].map(typeMatcher) },
+  'TEST-006': { match: ['heart.earned', 'items.granted', 'verb.unlocked', 'want.*'].map(typeMatcher) },
   'TEST-007': { match: ['session.started', 'input.joystick', 'input.drag', 'input.tap', 'charm.placed'].map(typeMatcher), firstOnly: ['charm.placed'] },
   'TEST-008': { match: [typeMatcher('session.started'), debugOf('debugSetEventInterval')] },
 };
