@@ -328,7 +328,9 @@ async function owlPerch() {
   const copiesBefore = await page.evaluate(() => { const c = window.__tpp.store.getState().inventory.counts; return { fern: c.fern, 'lamp-planter': c['lamp-planter'], 'perch-branch': c['perch-branch'] }; });
   await place('floor-3', 'lamp-planter');
   await waitLine(page, 'want.fulfilled', { wantId: 'leafy-perch' }, 8000);
-  const using = await until(page, () => { const b = window.__tpp.store.getState().pets.owl.behaviour; return b.phase === 'using' && b.verb === 'perch'; }, null, 15000);
+  // As-built the Owl looks at the new piece (~9 s) before perching, so wait for the perch verb itself (30 s ceiling).
+  const using = await waitLine(page, 'pet.verbStarted', { petId: 'owl', verb: 'perch' }, 30000)
+    && await until(page, () => { const b = window.__tpp.store.getState().pets.owl.behaviour; return b.phase === 'using' && b.verb === 'perch'; }, null, 2000);
   const clip = await page.evaluate(() => window.__tpp.game.scene.getScene('Interior').pet?.anims?.currentAnim?.key ?? null);
   await page.waitForTimeout(500);
   await still('owl-perching-1080', 'the Owl perching on the perch-branch at wall-2 (use-perch clip)');
