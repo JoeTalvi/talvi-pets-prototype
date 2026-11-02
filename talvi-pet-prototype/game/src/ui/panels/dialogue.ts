@@ -1,12 +1,13 @@
 import type { Content } from '@content/types';
 import type { DialogueScript, GameState } from '@sim/state';
 import { residentPet } from '@sim/select';
+import { createHeartMoment, type HeartMoment } from '@view/celebration/heartMoment';
 import type { ViewContext } from '@view/context';
 import { dialogue } from './templates/dialogue';
 import { image } from './templates/shared';
 import { assetsFrom, createText, type Panel, type Text } from '../overlay';
 
-export type Dialogue = Panel & { isDeferred(): boolean };
+export type Dialogue = Panel & { isDeferred(): boolean; heartMoment: HeartMoment };
 
 /** What the same dispatch emitted before `dialogue.opened` (mec-008 §2.7): the fulfilment chain or the first-entry greeting walk. */
 type Arm = { kind: 'fulfil'; focusSlotId: string } | { kind: 'greeting' };
@@ -103,7 +104,11 @@ export function createDialogue(root: HTMLElement, context: ViewContext): Dialogu
     if (wasHidden) animate(parts.box, [{ transform: `translateY(${top ? -BOX_H : BOX_H}px)` }, { transform: 'translateY(0)' }], SLIDE_MS);
   };
   const hide = () => { parts.section.hidden = true; parts.section.dataset.state = 'closed'; };
-  const deferral = createDeferral(context, show);
+  // WORK-032-2 fix 6b: while the Heart moment plays, a box that would show waits for the moment's end (the vignette comes after it).
+  let pendingShow = false;
+  const moment = createHeartMoment(root, () => { if (pendingShow) { pendingShow = false; show(); } });
+  const gatedShow = () => { if (moment.active()) pendingShow = true; else show(); };
+  const deferral = createDeferral(context, gatedShow);
   let arm: Arm | null = null;
   const setArm = (next: Arm) => { arm = next; queueMicrotask(() => { arm = null; }); };
   // Tap anywhere: the transparent backdrop covers the canvas while open, so no tap reaches the world (mec-008 §2.6).
@@ -112,14 +117,30 @@ export function createDialogue(root: HTMLElement, context: ViewContext): Dialogu
     store.dispatch({ type: 'advanceDialogue' }); // logged by `dialogue.advanced`/`closed`; no `ui.*` record
   };
   parts.section.addEventListener('click', onClick);
-  const offs = subscribe(context, { show, hide, deferral, setArm, takeArm: () => { const a = arm; arm = null; return a; }, parts });
+  const offs = subscribe(context, { show: gatedShow, hide, deferral, setArm, takeArm: () => { const a = arm; arm = null; return a; }, parts });
+  offs.push(...subscribeHeartMoment(context, moment, {
+    // A scene change cancels the moment and a box it held shows as it would have without it; reset and close drop it.
+    cancel(showHeld) { const held = pendingShow; pendingShow = false; moment.cancel(); if (showHeld && held) show(); },
+  }));
   // Reload (core §6.2): an open script renders from state at once, no deferral, unless the arrival walk is replaying (mec-002 §2.6 hold).
   if (store.getState().arrival !== null && store.getState().dialogue.current !== null) deferral.holdForArrival();
   else show();
   return {
     isDeferred: () => deferral.active(),
-    destroy() { deferral.clear(); for (const off of offs) off(); parts.section.removeEventListener('click', onClick); parts.section.remove(); },
+    heartMoment: moment,
+    destroy() { deferral.clear(); moment.cancel(); for (const off of offs) off(); parts.section.removeEventListener('click', onClick); parts.section.remove(); },
   };
+}
+
+/** WORK-032-2 fix 6b: `heart.earned` in an interior starts the moment; it ends on its own timer or is cancelled here. */
+function subscribeHeartMoment(context: ViewContext, moment: HeartMoment, h: { cancel(showHeld: boolean): void }): (() => void)[] {
+  const { store } = context;
+  return [
+    store.subscribe('heart.earned', (_event, after) => { if (after.scene.kind === 'interior') moment.start(); }),
+    store.subscribe('scene.changed', () => h.cancel(true)),
+    store.subscribe('state.reset', () => h.cancel(false)),
+    store.subscribe('dialogue.closed', (_event, after) => { if (after.dialogue.current === null && moment.active()) h.cancel(false); }),
+  ];
 }
 
 type Hooks = { show(): void; hide(): void; deferral: ReturnType<typeof createDeferral>; setArm(a: Arm): void; takeArm(): Arm | null; parts: Parts };

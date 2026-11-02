@@ -253,7 +253,7 @@ describe('presentation §7.4 completion hooks', () => {
     expect(explode).not.toHaveBeenCalled();
     clock.advance(1);
     const emitter = scene.children.list.find(c => c instanceof Phaser.GameObjects.Particles.ParticleEmitter) as Phaser.GameObjects.Particles.ParticleEmitter;
-    const rect = scene.children.list.find(c => c instanceof Phaser.GameObjects.Rectangle) as Phaser.GameObjects.Rectangle;
+    const rect = scene.children.list.find(c => c instanceof Phaser.GameObjects.Rectangle && c !== scene.designTint.rect) as Phaser.GameObjects.Rectangle;
     expect([emitter.depth, emitter.texture.key, explode.mock.calls[0][0]]).toEqual([CONFETTI_DEPTH, 'confetti', 60]);
     expect([scene.textures.get('confetti').source[0].width, scene.textures.get('confetti').source[0].height]).toEqual([8, 12]);
     expect([rect.depth, rect.scrollFactorX, rect.scrollFactorY, rect.alpha, rect.fillColor]).toEqual([FLASH_DEPTH, 0, 0, 0.75, 0xffffff]);

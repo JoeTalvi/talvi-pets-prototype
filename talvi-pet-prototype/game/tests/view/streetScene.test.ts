@@ -48,7 +48,7 @@ describe('presentation §4 StreetScene', () => {
     expect([...scene.houses.values()].map(h => [h.projectId, h.x, h.y, h.originX, h.originY, h.depth, h.texture.key]))
       .toEqual(content.street.houses.map(h => [h.projectId, h.x, h.y, 0.5, 1, h.y, 'houses/fixture']));
     expect(scene.children.list.some(c => c.type === 'Text' && /placeholder/.test((c as Phaser.GameObjects.Text).text))).toBe(false);
-    expect(scene.children.list.filter(c => c.type === 'Rectangle')).toHaveLength(0);
+    expect(scene.children.list.filter(c => c.type === 'Rectangle' && c !== scene.designTint.rect)).toHaveLength(0);
     expect(scene.preview).toBeDefined();
   });
 
