@@ -1,5 +1,6 @@
 import type { ViewContext } from '@view/context';
-import { placementAt } from '@sim/select';
+import { playerSpace, slotOf } from '@sim/select';
+import { placementsOf } from '@sim/space';
 import { replaceRemove } from './templates/replaceRemove';
 import { image, type TemplateOptions } from './templates/shared';
 import { assetsFrom, createText, type Panel } from '../overlay';
@@ -34,9 +35,10 @@ export function createReplaceRemove(root: HTMLElement, context: ViewContext): Pa
 
   const fill = (id: string) => {
     const state = store.getState();
-    const roomId = state.scene.kind === 'interior' ? state.scene.roomId : '';
-    const type = content.charms.types.find(t => t.id === placementAt(content, state, roomId, id));
-    const slot = content.rooms[roomId]?.slots.find(s => s.id === id);
+    // WORK-034-3: the slot and its charm in the player's space — the interior room, or on the street the unlocked site holding it.
+    const ref = playerSpace(content, state, id);
+    const type = content.charms.types.find(t => t.id === (ref ? placementsOf(state, ref)[id] : undefined));
+    const slot = slotOf(content, state, id);
     if (!type || !slot) return false;
     section.querySelector('[data-asset-id]')!.outerHTML = image(o, type.sprite);
     section.querySelector('.tpp-sheet-name')!.textContent = type.name;

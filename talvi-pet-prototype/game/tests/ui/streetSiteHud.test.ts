@@ -94,3 +94,20 @@ describe('VERIFY-T2-SITE-104 (panel half) the want panel shows the mate\'s want 
     expect(panel.textContent).toContain(content.pets['owl-mate'].wants[0].brief ?? '');
   });
 });
+
+describe('VERIFY-T2-SITE-103 (sheet half) the replace/remove sheet opens over an occupied garden slot', () => {
+  it('slot.tapped {filled:true} on the street opens the sheet with the placed charm; Remove dispatches removeCharm (count +1)', () => {
+    const h = hud();
+    const small = content.charms.types.find(t => t.sizeClass === 'small')!;
+    h.dispatch({ type: 'debugUnlockSpace', siteId: 'garden' }, { type: 'setDesignMode', on: true },
+      { type: 'debugGrantCopies', typeId: small.id, count: 1 }, { type: 'placeCharm', slotId: 'garden-small-1', typeId: small.id });
+    const before = h.context.store.getState().inventory.counts[small.id];
+    h.context.bus.emit({ type: 'slot.tapped', slotId: 'garden-small-1', filled: true });
+    const layer = h.host.querySelector<HTMLElement>('.tpp-replaceRemove')!.parentElement!;
+    expect(layer.hidden).toBe(false);
+    expect(h.host.querySelector('.tpp-replaceRemove .tpp-sheet-name')!.textContent).toBe(small.name);
+    h.host.querySelector<HTMLElement>('.tpp-replaceRemove [data-action="remove"]')!.click();
+    expect(h.context.store.getState().spaces.garden.placements['garden-small-1']).toBeUndefined();
+    expect(h.context.store.getState().inventory.counts[small.id]).toBe(before + 1);
+  });
+});
