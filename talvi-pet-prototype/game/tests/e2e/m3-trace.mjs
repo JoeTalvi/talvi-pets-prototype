@@ -4,12 +4,13 @@
 // (keyboard, canvas and panel taps, the debug rows by label); window.__tpp only to read. One continuous CDP screencast cut into loops by marks.
 // Beat order (the reset clears the log, so every arm the reader must see in the final export runs after it): seed + five SFX + first tap →
 // tester label → TEST-008 reset "Start frozen" + one real 120 s wait → Playtest restored → TEST-003 (street) → TEST-004 (street "?") →
-// walk into the Starter House → TEST-001 → TEST-005/006 → TEST-007 → mute → exports (Download, Copy, Share hidden / stub) → R-9 → errors →
-// storage + reload → quota (own context). Writes trace-report.json, trace-log.jsonl, storage-reads.json, rows/*, exports/*, loops/*, captures/*.
+// walk into the Starter House → TEST-001 → want-panel "2 charms" (WORK-033-2) → TEST-005/006 → scarcity block (place lamp → "none left" → inert
+// click → remove → "×1") → strip reaction (remove the Heart bed → 😢, bed back, row 19 still) (WORK-033-2) → TEST-007 → mute → exports
+// (Download, Copy, Share hidden / stub) → R-9 → errors → storage + reload → quota (own context) → tier 1 save reset (own context, WORK-033-2). Writes trace-report.json, trace-log.jsonl, storage-reads.json, rows/*, exports/*, loops/*, captures/*.
 import { mkdtempSync, rmSync, readFileSync, existsSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { base, evidenceRoot, sha, launch, boot, waitScene, lines, getState, count, first, strip, eq, until, waitLine, tapSlot, steer, joystickHold,
+import { GAME_DIR, base, evidenceRoot, sha, launch, boot, waitScene, lines, getState, count, first, strip, eq, until, waitLine, tapSlot, steer, joystickHold,
   domRead, shot, encode, startStreamRecording, exportLog, writeJson, setDebug, WORK, MILESTONE } from './lib/harness.mjs';
 
 const loopsDir = join(evidenceRoot, 'loops'), capturesDir = join(evidenceRoot, 'captures'), rowsDir = join(evidenceRoot, 'rows'), exportsDir = join(evidenceRoot, 'exports');
@@ -287,6 +288,110 @@ async function test005006() {
     { reacted: react.map(strip).slice(0, 3), fulfilled: strip(wf[0]), heart: strip(h[0]), unlocked: unl.map(strip), 'inventory.counts[dog-bed]': dogBedCopies }, { line: h[0] });
 }
 
+// ---- WORK-033-2: the Dog's first want reads "Reward: 2 charms: Rug and Cushion" (before the bed; the TEST-005/006 beat is unmoved) --
+async function wantPanelLabel() {
+  await until(page, () => { const p = document.querySelector('.tpp-wantPanel'); return p && !p.hidden && p.offsetParent !== null; }, null, 5000);
+  const reward = await page.evaluate(() => document.querySelector('.tpp-wantPanel .tpp-want-reward')?.textContent ?? null);
+  await still('want-panel-2-charms-1080', 'WORK-033-2 (DEC-043): the Dog\'s first want panel reads "Reward: 2 charms: Rug and Cushion"', { rewardLine: reward });
+  beat('"n charms": the Dog\'s first want panel reward line reads "Reward: 2 charms: Rug and Cushion" (VERIFY-MEC-009-026 browser half)',
+    reward === 'Reward: 2 charms: Rug and Cushion', 'Reward: 2 charms: Rug and Cushion', { rewardLine: reward });
+}
+
+// ---- WORK-033-2 scarcity block (DEC-043): place → "none left" → inert click → remove → "×1" again --------------------------------
+const cardsRead = () => page.evaluate(() => [...document.querySelectorAll('.tpp-chooser .tpp-charm-card')].map(c => ({ typeId: c.dataset.typeId,
+  label: c.querySelector('.tpp-charm-copies')?.textContent ?? null, ariaDisabled: c.getAttribute('aria-disabled'), action: c.dataset.action ?? null })));
+const emptySmall = (s, except = []) => ['floor-1', 'floor-2', 'floor-3', 'floor-4', 'floor-5', 'floor-6', 'floor-7']
+  .filter(id => !s.rooms['dog-room'].placements[id] && !except.includes(id));
+async function openChooser(slotId) { await tapSlot(page, slotId); return until(page, () => !document.querySelector('.tpp-chooser').hidden, null, 3000); }
+async function closeChooser() { await page.locator('.tpp-chooser .tpp-dismiss-backdrop').click({ position: { x: 40, y: 40 } }); await page.waitForTimeout(300); }
+async function removeAt(slotId) {
+  await tapSlot(page, slotId);
+  await until(page, () => { const s = document.querySelector('.tpp-replaceRemove'); return s && s.offsetParent !== null; }, null, 3000);
+  await page.locator('.tpp-replaceRemove [data-action="remove"]').click();
+  await page.waitForTimeout(400);
+}
+async function scarcity() {
+  await designOn();
+  mark('scarcityStart');
+  const t = lastT();
+  const [lampSlot, otherSlot] = emptySmall(await getState(page));
+  await place(lampSlot, 'lamp');
+  const afterPlace = (await getState(page)).inventory.counts;
+  beat('scarcity: Decorate → place lamp at an empty small slot → charm.placed; inventory.counts.lamp 0', afterPlace.lamp === 0 && (await refresh(), linesAfter('charm.placed', t, { typeId: 'lamp' }).length === 1),
+    'charm.placed {lamp}; counts.lamp 0', { slotId: lampSlot, counts: afterPlace });
+  await openChooser(otherSlot);
+  await page.waitForTimeout(250);
+  const cards = await cardsRead(), counts = (await getState(page)).inventory.counts;
+  await still('chooser-none-left-1080', 'WORK-033-2: the chooser after the only lamp is placed — lamp greyed "none left" at its grant position, the others "×n"', { cards });
+  const lamp = cards.find(c => c.typeId === 'lamp');
+  const others = cards.filter(c => c.typeId !== 'lamp');
+  const othersOk = others.length > 0 && others.every(c => (counts[c.typeId] > 0 ? c.label === `×${counts[c.typeId]}` && c.action === 'place' : c.label === 'none left'));
+  beat('scarcity: another empty small slot → the chooser lists lamp greyed "none left" (aria-disabled, no place action) and every other card "×n" = copies in hand',
+    lamp && lamp.label === 'none left' && lamp.ariaDisabled === 'true' && lamp.action === null && othersOk, 'lamp {none left, aria-disabled true}; others ×n', { slotId: otherSlot, cards, counts });
+  const tc = lastT();
+  // a real pointer click; force skips Playwright's actionability check, which treats aria-disabled as "not enabled"
+  await page.locator('.tpp-chooser .tpp-charm-card[data-type-id="lamp"]').click({ force: true });
+  await page.waitForTimeout(500);
+  await refresh();
+  const inert = linesAfter('charm.placed', tc).length === 0 && linesAfter('action.rejected', tc).length === 0 && !(await page.evaluate(() => document.querySelector('.tpp-chooser').hidden));
+  beat('scarcity: clicking the greyed lamp card → no charm.placed, no action.rejected; the chooser stays open', inert, 'no charm.placed; no action.rejected', { after: all.filter(l => l.t >= tc).map(strip) });
+  await closeChooser();
+  await removeAt(lampSlot);
+  await openChooser(otherSlot);
+  await page.waitForTimeout(250);
+  const restored = await cardsRead(), countsBack = (await getState(page)).inventory.counts;
+  mark('scarcityEnd');
+  const lampBack = restored.find(c => c.typeId === 'lamp');
+  beat('scarcity: remove the lamp → charm.removed; counts.lamp 1; its card shows "×1" again at the same position (place → remove → count restored)',
+    countsBack.lamp === 1 && lampBack?.label === '×1' && lampBack.action === 'place' && restored.findIndex(c => c.typeId === 'lamp') === cards.findIndex(c => c.typeId === 'lamp'),
+    'counts.lamp 1; lamp card ×1, placeable, same index', { cards: restored, counts: countsBack });
+  await closeChooser();
+  row('mec-004-015', { verify: 'VERIFY-MEC-004-009 / 015 / 016 (browser half)', placedAt: lampSlot, chooserAt: otherSlot, noneLeftCards: cards, restoredCards: restored });
+}
+
+// ---- WORK-033-2 strip reaction (DEC-043 / OQ-26): remove the Heart bed → charm.stripped → Done → 😢 + a line, once ---------------
+async function stripReaction() {
+  await designOn();
+  mark('stripStart');
+  const t = lastT();
+  await removeAt('large-1');
+  await refresh();
+  const removed = linesAfter('charm.removed', t, { slotId: 'large-1' }), stripped = linesAfter('charm.stripped', t, { typeId: 'dog-bed' });
+  const kinds = all.filter(l => l.t >= t).map(l => l.type);
+  beat('strip: remove the Dog bed (it earned Heart 1) → charm.removed then charm.stripped {dog-bed}; strippedPending [dog-bed]',
+    removed.length === 1 && stripped.length === 1 && kinds.indexOf('charm.stripped') > kinds.indexOf('charm.removed'),
+    'charm.removed {large-1} then charm.stripped {roomId dog-room, slotId large-1, typeId dog-bed, petId dog}', { removed: strip(removed[0]), stripped: strip(stripped[0]), pending: (await getState(page)).pets.dog.strippedPending });
+  await designOff();
+  const td = Date.now();
+  const got = await waitLine(page, 'pet.reacted', { reaction: 'stripped' }, 15000);
+  const bubble = await page.evaluate(() => window.__tpp.game.scene.getScene('Interior').bubble?.current() ?? null);
+  await still('stripped-reaction-1080', 'WORK-033-2: the Dog looks for its bed — one 😢 and a stripped line', { bubble });
+  await page.waitForTimeout(2500);
+  mark('stripEnd');
+  await refresh();
+  const st = await getState(page), reacted = linesAfter('pet.reacted', t, { reaction: 'stripped' });
+  const ok = got && reacted.length === 1 && reacted[0].typeId === 'dog-bed' && typeof reacted[0].line === 'string' && reacted[0].line.length > 0
+    && bubble?.text === '😢' && bubble?.class === 'stripped' && st.pets.dog.strippedPending.length === 0 && st.pets.dog.hearts === 1;
+  beat('strip: Done → within 15 s pet.reacted {dog, stripped, typeId dog-bed, line non-null} once; the 😢 bubble visible; strippedPending empty; Hearts still 1 (VERIFY-MEC-007-019/020 browser half)',
+    ok, 'pet.reacted {stripped} ×1 with a line; bubble 😢 class stripped; strippedPending []; hearts 1',
+    { reacted: reacted.map(strip), bubble, waitedMs: Date.now() - td, strippedPending: st.pets.dog.strippedPending, hearts: st.pets.dog.hearts }, { line: reacted[0] });
+  row('mec-007-019', { verify: 'VERIFY-MEC-007-019 / 020 (browser half)', reacted: reacted.map(strip), bubble, hearts: st.pets.dog.hearts });
+  const tb = lastT();
+  await place('large-1', 'dog-bed');
+  await drainAll(1200);
+  await designOff();
+  await refresh();
+  const back = (await getState(page)).rooms['dog-room'].placements['large-1'] === 'dog-bed';
+  beat('strip: put the bed back → charm.placed {large-1 dog-bed}; no further stripped reaction', back && linesAfter('charm.placed', tb, { typeId: 'dog-bed' }).length === 1, 'large-1 holds dog-bed', { placements: (await getState(page)).rooms['dog-room'].placements });
+  // the TEST-002 arm's row, shown (not used: the trace keeps the default scarcity)
+  await setDebug(page, true);
+  await debugRow('Grant copies').scrollIntoViewIfNeeded();
+  const grantRow = await debugRow('Grant copies').evaluate(r => ({ options: r.querySelectorAll('select option').length, count: r.querySelector('input').value, button: r.querySelector('button').textContent }));
+  await still('debug-grant-copies-1080', 'WORK-033-2: debug row 19 "Grant copies" (the TEST-002 arm)', { grantRow });
+  await setDebug(page, false);
+  beat('debug row 19 "Grant copies" present after row 18 with a type select, a count input (default 1) and Grant', grantRow.options > 0 && grantRow.count === '1' && grantRow.button === 'Grant', 'select options > 0; count 1; Grant', grantRow);
+}
+
 // ---- mute (row 10) both ways ------------------------------------------------------------------------------------------------------
 async function mute() {
   const t = lastT();
@@ -369,7 +474,7 @@ try {
   w = await boot(browser, { height: 1080, save: SEED_TEXT, query: QUERY, contextOptions: { permissions: ['clipboard-read', 'clipboard-write'] } });
   page = w.page;
   stream = await startStreamRecording(page, streamDir);
-  for (const fn of [seedBoot, testerLabel, test008, test003, test004, enterDogRoom, test001, test005006, test007, mute, exportsBeat, r9]) {
+  for (const fn of [seedBoot, testerLabel, test008, test003, test004, enterDogRoom, test001, wantPanelLabel, test005006, scarcity, stripReaction, test007, mute, exportsBeat, r9]) {
     try { await fn(); } catch (error) { beat(`${fn.name}: no uncaught error`, false, 'the beat runs', String(error).slice(0, 800)); }
   }
   mark('traceEnd');
@@ -418,6 +523,23 @@ try {
   row('mec-010-014', { verify: 'VERIFY-MEC-010-014 (browser half)', ...quota });
   beat('quota: one forced QuotaExceededError on the tpp.log mirror → exactly one log.quota; the game continues (a placement succeeds); no app.error (VERIFY-MEC-010-014 browser half)',
     quota.thrown && quota.logQuota.length === 1 && placed && !quota.appError.length && !quota.pageErrors.length, 'log.quota ×1; placement large-1 dog-bed; app.error 0', quota);
+  // WORK-033-2 save reset (own context): a tier 1 save (schemaVersion 1) is discarded and a fresh state is saved at schemaVersion 2
+  const tier1 = readFileSync(join(GAME_DIR, 'tests/fixtures/save-bad/schema-1-tier1.json'), 'utf8');
+  const sr = await boot(browser, { height: 1080, save: tier1, query: QUERY });
+  await waitScene(sr.page, 'Street', 1500);
+  const saveReset = await sr.page.evaluate(async () => {
+    for (let i = 0; i < 40 && JSON.parse(localStorage.getItem('tpp.save') ?? '{}').schemaVersion !== 2; i++) await new Promise(r => setTimeout(r, 100));
+    const saved = JSON.parse(localStorage.getItem('tpp.save') ?? 'null');
+    return { discarded: window.__tpp.log.lines().filter(l => l.type === 'save.discarded').map(({ t, type, reason }) => ({ t, type, reason })),
+      scene: window.__tpp.store.getState().scene, savedSchemaVersion: saved?.schemaVersion ?? null, savedScene: saved?.state?.scene ?? null };
+  });
+  const saveResetErrors = { consoleErrors: sr.errors.consoleErrors, pageErrors: sr.errors.pageErrors };
+  await sr.context.close();
+  const tier1Version = JSON.parse(tier1).schemaVersion;
+  row('save-reset', { verify: 'WORK-033-1 fork default 7 (browser half)', fixture: 'tests/fixtures/save-bad/schema-1-tier1.json', fixtureSchemaVersion: tier1Version, ...saveReset, ...saveResetErrors });
+  beat('save reset: a tier 1 save (schema-1-tier1.json) in tpp.save → save.discarded {reason schemaVersion}; scene street; a fresh state saved at schemaVersion 2',
+    tier1Version === 1 && saveReset.discarded.length === 1 && saveReset.discarded[0].reason === 'schemaVersion' && saveReset.scene.kind === 'street' && saveReset.savedSchemaVersion === 2 && !saveResetErrors.pageErrors.length,
+    'save.discarded {schemaVersion} ×1; scene street; tpp.save schemaVersion 2', { ...saveReset, ...saveResetErrors });
 } finally { await browser.close(); }
 
 // rows/*.json and the arms table
@@ -435,6 +557,8 @@ const LOOPS = [
   ['trace-joystick', marks.joyStart - 300, marks.joyEnd + 300, 'desktop joystick drag (TEST-007)'],
   ['trace-reset-frozen', marks.resetStart - 300, marks.resetDone + 1500, 'row 12 Reset → Start frozen → fresh street (TEST-008)'],
   ['trace-exports', marks.exportsStart, marks.exportsEnd + 300, 'Download · Copy · Share hidden · Share stub'],
+  ['scarcity-chooser', marks.scarcityStart, marks.scarcityEnd + 600, 'WORK-033-2: place the only lamp → "none left" in the chooser → inert click → remove → "×1" again'],
+  ['stripped-reaction', marks.stripStart, marks.stripEnd, 'WORK-033-2: remove the Heart bed → Done → the Dog\'s 😢 and a stripped line'],
 ];
 report.loops = [];
 for (const [name, a, b, target] of LOOPS) {
