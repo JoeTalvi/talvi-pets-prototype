@@ -48,6 +48,9 @@ describe('VERIFY-WORK-032-2-06 Stars burst (WORK-032-2 fix 6a)', () => {
     expect(bursts(root)).toHaveLength(1);
   });
 
+});
+
+describe('VERIFY-WORK-032-2-06 Stars burst (cont.)', () => {
   it('VERIFY-WORK-032-2-06: a loss shows the red delta only; no burst', async () => {
     const { root, context } = await designSetup({ edit: st => { st.rooms['dog-room'].placements['floor-1'] = 'lamp'; } });
     context.store.dispatch({ type: 'removeCharm', slotId: 'floor-1' });
