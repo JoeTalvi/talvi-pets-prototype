@@ -30,7 +30,7 @@ it('JSON findings exactly equal the shared registry and output is byte-stable', 
     const report = JSON.parse(a.stdout);
     expect(report.findings).toEqual(runContentChecks(validContent(), manifest));
     expect(report.counts).toMatchObject({
-        errors: 0, checks: 76, files: 13
+        errors: 0, checks: 80, files: 13
     });
 });
 it('returns 1 and located asymmetry; 2 only for strict warnings', () => {

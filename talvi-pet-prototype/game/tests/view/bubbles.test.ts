@@ -82,7 +82,7 @@ describe('VERIFY-MEC-008-016 verb end, removal and greeting', () => {
   it('VERIFY-MEC-008-016 partial: jsdom — entering the room greets: 🎵 shows on {to:greeting}, not before', async () => {
     const { scene, context, state } = await designSetup({ edit: s => {
       s.mode = 'play'; s.scene = { kind: 'street' };
-      s.avatar = { ...s.avatar, x: 480, y: 830, facing: 'up' };
+      s.avatar = { ...s.avatar, x: 480, y: 960, facing: 'up' };
     } });
     for (let i = 0; i < 20 && state().scene.kind === 'street'; i++) context.store.dispatch({ type: 'tick', dtMs: 100, move: { x: 0, y: -1 } });
     expect(linesOf(context, 'pet.reacted').at(-1)).toMatchObject({ reaction: 'greeting', walkOver: true });

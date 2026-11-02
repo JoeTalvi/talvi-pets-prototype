@@ -1,0 +1,12 @@
+[
+  {
+    "file": "street.json",
+    "path": "/houses/0/blockers/1",
+    "value": {
+      "x": 400,
+      "y": 880,
+      "w": 150,
+      "h": 40
+    }
+  }
+]

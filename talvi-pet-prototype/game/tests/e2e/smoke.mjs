@@ -55,7 +55,9 @@ async function bootStep(browser) {
 }
 
 async function doorStep(page) {
-  const left = await holdUntil(page, 'KeyA', () => window.__tpp.store.getState().avatar.x <= 480);
+  // WORK-032-1: starter-front sits below the house base (425..525 x 880..930); drop below it first so the KeyA walk passes under the rect.
+  const down = await holdUntil(page, 'KeyS', () => window.__tpp.store.getState().avatar.y >= 945);
+  const left = down && await holdUntil(page, 'KeyA', () => window.__tpp.store.getState().avatar.x <= 480);
   // One clock (review B-1): page performance.now() for every end. A store listener stamps scene.changed as it is emitted, and a
   // rAF watcher started before KeyW stamps Interior active and the end of its camera fade-in. The log's t is session-relative and is not used here.
   await page.evaluate(() => {
@@ -74,7 +76,7 @@ async function doorStep(page) {
   await until(page, () => window.__tppDoorTiming.fadeInDone !== null, null, 5000);
   const at = await page.evaluate(() => window.__tppDoorTiming);
   const sc = (await lines(page)).find(l => l.type === 'scene.changed') ?? null;
-  step('door: KeyA/KeyW to starter-front → scene.changed {to: interior dog-room}', left && inRoom && sc?.to?.kind === 'interior' && sc.to.roomId === 'dog-room', 'scene.changed to interior dog-room', { reachedDoorX: left, inRoom, keysMs: Date.now() - tKeys, sceneChanged: strip(sc) });
+  step('door: KeyS/KeyA/KeyW to starter-front from below → scene.changed {to: interior dog-room}', left && inRoom && sc?.to?.kind === 'interior' && sc.to.roomId === 'dog-room', 'scene.changed to interior dog-room', { reachedDoorX: left, inRoom, keysMs: Date.now() - tKeys, sceneChanged: strip(sc) });
   const since = end => (at.sceneChanged !== null && end !== null ? Math.round(end - at.sceneChanged) : null);
   const visibleMs = since(at.fadeInDone), activeMs = since(at.interiorActive);
   // PRES-005: scene.changed → room visible ≈ 500 ms (±1 frame); window 500 ± 100 ms covers the frame plus headless rAF jitter. Interior active recorded, not gated.

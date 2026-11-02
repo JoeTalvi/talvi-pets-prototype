@@ -143,7 +143,7 @@ it('VERIFY-MEC-007-011 greeting on entry: scene.changed, pet.reacted greeting, w
   const content = validContent();
   const state = initialState(content, 1);
   state.session.orientationShown = true;
-  state.avatar = { ...state.avatar, x: 480, y: 820 };
+  state.avatar = { ...state.avatar, x: 480, y: 900 };
   const entered = step(content, state, tick(0, 0, 100));
   const kinds = entered.events.map(event => event.type);
   expect(kinds.slice(0, 3)).toEqual(['scene.changed', 'pet.reacted', 'pet.phaseChanged']);
@@ -200,7 +200,7 @@ it('play-session Q6: with greetingDelayMs the greeting walk starts after the doo
   const content = loadContent(manifest, patchFiles(files(), [{ file: 'tuning.json', path: '/greetingDelayMs', value: 520 }]));
   const state = initialState(content, 1);
   state.session.orientationShown = true;
-  state.avatar = { ...state.avatar, x: 480, y: 820 };
+  state.avatar = { ...state.avatar, x: 480, y: 900 };
   const entered = step(content, state, tick(0, 0, 100));
   expect(eventsOf(entered.events, 'pet.reacted')).toEqual([]);
   expect(entered.state.pets.dog.behaviour).toMatchObject({ phase: 'idle', reaction: 'greeting' });
