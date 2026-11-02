@@ -171,7 +171,7 @@ async function bedBeat() {
   const placed = first(all, 'charm.placed', { slotId: 'large-1', typeId: 'dog-bed' }), stars = first(all, 'stars.changed', { from: 0, to: 4 });
   const fulfilled = first(all, 'want.fulfilled', { wantId: 'soft-nap' }), heart = first(all, 'heart.earned', { hearts: 1 }), love = all.find(l => l.type === 'pet.reacted' && l.t >= (placed?.t ?? 0) && l.reaction !== 'greeting');
   const using = all.find(l => l.type === 'pet.phaseChanged' && l.to === 'using' && l.t >= (placed?.t ?? 0)), reacting = all.find(l => l.type === 'pet.phaseChanged' && l.to === 'reacting' && l.t >= (placed?.t ?? 0));
-  const unlocked = all.filter(l => l.type === 'types.unlocked' && l.t >= (placed?.t ?? 0));
+  const unlocked = all.filter(l => l.type === 'items.granted' && l.source === 'heart' && l.t >= (placed?.t ?? 0));
   const vignette = all.find(l => l.type === 'dialogue.opened' && l.script?.source === 'vignette');
   const dogSamples = samples.filter(x => x.dog);
   const usingSamples = dogSamples.filter(x => x.dog.phase === 'using'), walkSamples = dogSamples.filter(x => x.dog.phase === 'walking');
@@ -181,8 +181,8 @@ async function bedBeat() {
     "pet.phaseChanged reacting → using {verb nap}; pet.reacted (love ❤️); Dog depth above the bed (930) while using",
     { reacting: strip(reacting), using: strip(using), reaction: strip(love), walkSamples: walkSamples.length, usingSamples: usingSamples.length, usingDepths: [...new Set(usingSamples.map(x => x.dog.depth))].slice(0, 5), usingAnims: [...new Set(usingSamples.map(x => x.dog.anim))], walkFlipX: [...new Set(walkSamples.map(x => x.dog.flipX))], walkDepthEqY: walkSamples.every(x => x.dog.depth === x.dog.y) },
     { line: using, deviation: 'gate default (verbatim): "bed anchor onto the cushion with a draw-above rule for the using pet; keep the wall-anchor facing; both captured as loops for the user\'s rewind decision."' });
-  beat('1:00 want 1 fulfilled → heart.earned {1}; reward named (rug, cushion unlocked)', fulfilled && heart && unlocked.some(u => ['rug', 'cushion'].every(t => u.typeIds.includes(t))),
-    "want.fulfilled {soft-nap}; heart.earned {hearts 1}; types.unlocked {rug, cushion}", { fulfilled: strip(fulfilled), heart: strip(heart), unlocked: unlocked.map(strip) }, { line: heart });
+  beat('1:00 want 1 fulfilled → heart.earned {1}; reward named (rug, cushion unlocked)', fulfilled && heart && ['rug', 'cushion'].every(t => unlocked.some(u => u.typeId === t)),
+    "want.fulfilled {soft-nap}; heart.earned {hearts 1}; items.granted {rug, 1, heart}, {cushion, 1, heart}", { fulfilled: strip(fulfilled), heart: strip(heart), unlocked: unlocked.map(strip) }, { line: heart });
   const timeline = await vis(), shownV = timeline.find(v => v.panel === 'dialogue' && !v.hidden && placed && v.t >= wallOf(placed));
   const def = { charmPlacedWall: placed?.wall, usingWall: using?.wall, vignetteOpenedWall: vignette?.wall, boxShownWall: shownV && new Date(shownV.t).toISOString(),
     boxAfterPlacedMs: shownV && placed ? shownV.t - wallOf(placed) : null, boxAfterReactingMs: shownV && reacting ? shownV.t - wallOf(reacting) : null };
@@ -422,8 +422,8 @@ try {
   writeJson(join(evidenceRoot, 'storage-reads.json'), storage);
   const lm = storage.logMirror;
   const stable = Object.entries(cmp).filter(([k]) => !['feed', 'pets'].includes(k));
-  beat('storage: tpp.save parses (schemaVersion 1) and equals the in-memory state on reload (tick-driven feed/pets excepted); tpp.log has session.started, periodic save.written, input.joystick and input.tap',
-    saved.schemaVersion === 1 && stable.every(([, v]) => v) && lm.sessionStarted >= 1 && lm.saveWritten > 1 && lm.inputJoystick >= 1 && lm.inputTap >= 1, 'as stated', { endOfTrace: { schemaVersion: saved.schemaVersion, perKeyEqualOnReload: cmp, inMemoryDiffKeysAtRead: storage.endOfTrace.inMemoryDiffKeys }, logMirror: lm });
+  beat('storage: tpp.save parses (schemaVersion 2) and equals the in-memory state on reload (tick-driven feed/pets excepted); tpp.log has session.started, periodic save.written, input.joystick and input.tap',
+    saved.schemaVersion === 2 && stable.every(([, v]) => v) && lm.sessionStarted >= 1 && lm.saveWritten > 1 && lm.inputJoystick >= 1 && lm.inputTap >= 1, 'as stated', { endOfTrace: { schemaVersion: saved.schemaVersion, perKeyEqualOnReload: cmp, inMemoryDiffKeysAtRead: storage.endOfTrace.inMemoryDiffKeys }, logMirror: lm });
   beat('storage: one audio.locked line in tpp.log (WORK-004-2 capture note)', lm.audioLocked === 1 && count(all, 'audio.locked') === 1, 'exactly one audio.locked',
     { mirror: lm.audioLocked, memory: count(all, 'audio.locked'), cause: 'createAudio records audio.locked only when a sound plays while game.sound.locked; the first sound (sfx/place) follows real taps, which unlock audio, so the record is not reached through real inputs in this flow' });
   beat('reload mid-celebration (the save just before Collect) → milestone popup open at once over the framed house', storage.midCelebrationReload.popupOpenAtStreetActive && storage.midCelebrationReload.popupOpen && storage.midCelebrationReload.stepped === 0,

@@ -280,10 +280,11 @@ async function test005006() {
   await designOff();
   mark('bedEnd');
   await refresh();
-  const react = linesAfter('pet.reacted', t), wf = linesAfter('want.fulfilled', t), h = linesAfter('heart.earned', t), unl = linesAfter('types.unlocked', t);
-  beat('TEST-005/006: place the Dog bed (large-1) → pet.reacted; want 1 fulfilled → heart.earned (Hearts 1), types.unlocked; vignette drained',
-    react.length && wf.length && h[0]?.hearts === 1 && unl.length && !(await getState(page)).dialogue.current, 'pet.reacted; want.fulfilled; heart.earned {hearts 1}; types.unlocked',
-    { reacted: react.map(strip).slice(0, 3), fulfilled: strip(wf[0]), heart: strip(h[0]), unlocked: strip(unl[0]) }, { line: h[0] });
+  const react = linesAfter('pet.reacted', t), wf = linesAfter('want.fulfilled', t), h = linesAfter('heart.earned', t), unl = linesAfter('items.granted', t);
+  const after = await getState(page), dogBedCopies = after.inventory.counts['dog-bed'];
+  beat('TEST-005/006: place the Dog bed (large-1) → pet.reacted; want 1 fulfilled → heart.earned (Hearts 1), items.granted; vignette drained',
+    react.length && wf.length && h[0]?.hearts === 1 && unl.length && !after.dialogue.current && dogBedCopies === 0, 'pet.reacted; want.fulfilled; heart.earned {hearts 1}; items.granted; inventory.counts[dog-bed] 0',
+    { reacted: react.map(strip).slice(0, 3), fulfilled: strip(wf[0]), heart: strip(h[0]), unlocked: unl.map(strip), 'inventory.counts[dog-bed]': dogBedCopies }, { line: h[0] });
 }
 
 // ---- mute (row 10) both ways ------------------------------------------------------------------------------------------------------
@@ -393,9 +394,9 @@ try {
     logMirror: { lines: mirror.length, sessionStarted: count(mirror, 'session.started'), saveWritten: count(mirror, 'save.written'), heartEarned: count(mirror, 'heart.earned'), logExported: count(mirror, 'log.exported'), firstType: mirror[0]?.type ?? null } };
   writeJson(join(evidenceRoot, 'storage-reads.json'), storage);
   const stable = Object.entries(cmp).filter(([k]) => !['feed', 'pets', 'session'].includes(k));
-  beat('storage: tpp.save parses (schemaVersion 1) and equals the in-memory state on reload (tick-driven feed/pets/session excepted); the tpp.log mirror holds the session lines',
-    saved.schemaVersion === 1 && stable.every(([, v]) => v) && storage.logMirror.sessionStarted === 1 && storage.logMirror.firstType === 'session.started' && storage.logMirror.heartEarned >= 1,
-    'schemaVersion 1; per-key equal; mirror starts with session.started and holds heart.earned', { perKeyEqual: cmp, logMirror: storage.logMirror });
+  beat('storage: tpp.save parses (schemaVersion 2) and equals the in-memory state on reload (tick-driven feed/pets/session excepted); the tpp.log mirror holds the session lines',
+    saved.schemaVersion === 2 && stable.every(([, v]) => v) && storage.logMirror.sessionStarted === 1 && storage.logMirror.firstType === 'session.started' && storage.logMirror.heartEarned >= 1,
+    'schemaVersion 2; per-key equal; mirror starts with session.started and holds heart.earned', { perKeyEqual: cmp, logMirror: storage.logMirror });
   // quota (own context): Storage.setItem throws QuotaExceededError once for tpp.log
   const q = await boot(browser, { height: 1080, save: SEED_TEXT, query: QUERY, init: () => {
     const orig = Storage.prototype.setItem; let thrown = false;

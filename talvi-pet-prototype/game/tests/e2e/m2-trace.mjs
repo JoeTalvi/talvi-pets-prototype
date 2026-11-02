@@ -131,10 +131,10 @@ async function wants34() {
   mark('wantsEnd');
   await refresh();
   const f3 = first(all, 'want.fulfilled', { wantId: 'feels-like-home' }), f4 = first(all, 'want.fulfilled', { wantId: 'snack-time' });
-  const h3 = first(all, 'heart.earned', { hearts: 3 }), h4 = first(all, 'heart.earned', { hearts: 4 }), unl = first(all, 'types.unlocked', {}, f4?.t ?? Infinity);
-  beat('6:00–10:00 Dog wants 3 (feels-like-home: plant + hidden toy → ball at floor-1) and 4 (snack-time: food beside soft → food-bowl at floor-7 by the bed): want.fulfilled ×2, Hearts 3–4, toy-chest + seed-dish unlocked',
-    f3 && f4 && h3 && h4 && unl && ['toy-chest', 'seed-dish'].every(t => unl.typeIds.includes(t)), 'want.fulfilled {feels-like-home}, {snack-time}; heart.earned {3}, {4}; types.unlocked {toy-chest, seed-dish}',
-    { wantPanelBefore3: w3, wantPanelBefore4: w4, f3: strip(f3), f4: strip(f4), h3: strip(h3), h4: strip(h4), unlocked: strip(unl) },
+  const h3 = first(all, 'heart.earned', { hearts: 3 }), h4 = first(all, 'heart.earned', { hearts: 4 }), unl = all.filter(l => l.type === 'items.granted' && l.source === 'heart' && l.t >= (f4?.t ?? Infinity));
+  beat('6:00–10:00 Dog wants 3 (feels-like-home: plant + hidden toy → ball at floor-1) and 4 (snack-time: food beside soft → food-bowl at floor-7 by the bed): want.fulfilled ×2, Hearts 3–4, toy-chest + seed-dish granted',
+    f3 && f4 && h3 && h4 && ['toy-chest', 'seed-dish'].every(t => unl.some(u => u.typeId === t)), 'want.fulfilled {feels-like-home}, {snack-time}; heart.earned {3}, {4}; items.granted {toy-chest, 1, heart}, {seed-dish, 1, heart}',
+    { wantPanelBefore3: w3, wantPanelBefore4: w4, f3: strip(f3), f4: strip(f4), h3: strip(h3), h4: strip(h4), unlocked: unl.map(strip) },
     { line: h4, deviation: 'design §4 6:00–10:00 says one want includes "room ≥ 24 ★"; the authored Dog wants 3–4 (WORK-024-1) carry no stars condition (want 5 welcome-home has stars 24); content as authored' });
 }
 
@@ -323,7 +323,10 @@ async function owlRoom() {
 async function owlPerch() {
   mark('perchStart');
   await place('wall-2', 'perch-branch');
-  await place('floor-3', 'fern');
+  // WORK-033-1 (DEC-043, one copy each): the only fern stands in the Dog room (floor-4 since M1); the Owl's plant comes
+  // from the Pet House phase 2 lamp-planter (plant + light), never by stripping the Dog's room.
+  const copiesBefore = await page.evaluate(() => { const c = window.__tpp.store.getState().inventory.counts; return { fern: c.fern, 'lamp-planter': c['lamp-planter'], 'perch-branch': c['perch-branch'] }; });
+  await place('floor-3', 'lamp-planter');
   await waitLine(page, 'want.fulfilled', { wantId: 'leafy-perch' }, 8000);
   const using = await until(page, () => { const b = window.__tpp.store.getState().pets.owl.behaviour; return b.phase === 'using' && b.verb === 'perch'; }, null, 15000);
   const clip = await page.evaluate(() => window.__tpp.game.scene.getScene('Interior').pet?.anims?.currentAnim?.key ?? null);
@@ -334,8 +337,9 @@ async function owlPerch() {
   mark('perchEnd');
   await refresh();
   const f = first(all, 'want.fulfilled', { wantId: 'leafy-perch' }), h = all.find(l => l.type === 'heart.earned' && l.petId === 'owl'), vig = all.find(l => l.type === 'dialogue.opened' && l.script?.source === 'vignette' && l.t >= (f?.t ?? Infinity));
-  beat("12:00–20:00 the Owl's first want fulfilled (perch-branch at wall-2 + fern at floor-3) → Heart 1 (Owl), vignette; the Owl perches (use-perch)", f && h?.hearts === 1 && vig && using && clip === 'pet-owl-use-perch',
-    'want.fulfilled {leafy-perch}; heart.earned {owl, 1}; dialogue.opened {vignette}; behaviour using/perch; clip pet-owl-use-perch', { fulfilled: strip(f), heart: strip(h), vignette: vig?.script?.lines, using, clip }, { line: h });
+  const copiesAfter = await page.evaluate(() => { const c = window.__tpp.store.getState().inventory.counts; return { fern: c.fern, 'lamp-planter': c['lamp-planter'], 'perch-branch': c['perch-branch'] }; });
+  beat("12:00–20:00 the Owl's first want fulfilled (perch-branch at wall-2 + lamp-planter at floor-3, one copy each) → Heart 1 (Owl), vignette; the Owl perches (use-perch)", f && h?.hearts === 1 && vig && using && clip === 'pet-owl-use-perch' && copiesAfter['lamp-planter'] === 0 && copiesAfter['perch-branch'] === 0,
+    'want.fulfilled {leafy-perch}; heart.earned {owl, 1}; dialogue.opened {vignette}; behaviour using/perch; clip pet-owl-use-perch; counts lamp-planter 0, perch-branch 0', { fulfilled: strip(f), heart: strip(h), vignette: vig?.script?.lines, using, clip, copiesBefore, copiesAfter }, { line: h });
 }
 
 async function dogReturn() {
@@ -419,8 +423,8 @@ try {
     midArrivalReload: midArrival, revealReload: atReveal };
   writeJson(join(evidenceRoot, 'storage-reads.json'), storage);
   const stable = Object.entries(cmp).filter(([k]) => !['feed', 'pets', 'session'].includes(k));
-  beat('storage: tpp.save parses (schemaVersion 1) and equals the in-memory state on reload (tick-driven feed/pets/session excepted); tpp.log has the session lines',
-    saved.schemaVersion === 1 && stable.every(([, v]) => v) && storage.logMirror.sessionStarted >= 1 && storage.logMirror.projectCompleted === 1 && storage.logMirror.arrivalFinished === 1, 'as stated (save.written is not recorded by this head: src/app/log.ts lists it but no module records it; counted, not gated)', { perKeyEqual: cmp, logMirror: storage.logMirror });
+  beat('storage: tpp.save parses (schemaVersion 2) and equals the in-memory state on reload (tick-driven feed/pets/session excepted); tpp.log has the session lines',
+    saved.schemaVersion === 2 && stable.every(([, v]) => v) && storage.logMirror.sessionStarted >= 1 && storage.logMirror.projectCompleted === 1 && storage.logMirror.arrivalFinished === 1, 'as stated (save.written is not recorded by this head: src/app/log.ts lists it but no module records it; counted, not gated)', { perKeyEqual: cmp, logMirror: storage.logMirror });
   beat('reload mid-arrival → the walk replays and finishes once', midArrival?.replayed && midArrival.finished && midArrival.arrivalFinished === 1 && !midArrival.consoleErrors.length, 'ArrivalWalk created on boot; finished; arrival.finished ×1', midArrival);
   beat('reload at the completing reveal → the reveal popup reopens and the beat reaches complete', atReveal?.open && atReveal.complete && !atReveal.consoleErrors.length, 'reveal popup visible; dataset.state complete', atReveal);
 } finally { await browser.close(); }
@@ -437,7 +441,7 @@ const LOOPS = [
   ['trace-arrival-walk', marks.continue2 - 300, marks.heldDrained + 500, 'walk → 🎵 → fade → held boxes'],
   ['trace-reveal-panel', marks.panelOpen - 300, marks.panelClosed + 300, 'icon → panel → close'],
   ['trace-owl-room-entry', marks.owlDoor, marks.perchStart, 'door → greeting → intro → want 1'],
-  ['trace-owl-perch-heart', marks.perchStart, marks.perchEnd, 'perch-branch + fern → want 1 → Heart 1 → perch'],
+  ['trace-owl-perch-heart', marks.perchStart, marks.perchEnd, 'perch-branch + lamp-planter → want 1 → Heart 1 → perch'],
   ['trace-dog-room-return', marks.dogReturn, marks.dogReturnEnd, 'out of the Owl room → Starter House → the Dog using a charm'],
 ];
 report.loops = [];
