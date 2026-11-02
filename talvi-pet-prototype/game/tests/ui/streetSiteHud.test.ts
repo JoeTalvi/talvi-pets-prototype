@@ -79,3 +79,18 @@ describe('VERIFY-T2-SITE-106 the space reward announcement (toast)', () => {
     expect(toasts[0].querySelector('[data-string-key="tpp.toast.space"]')!.textContent).toBe('A garden plot is open on the street');
   });
 });
+
+describe('VERIFY-T2-SITE-104 (panel half) the want panel shows the mate\'s want on the street in design mode (FLAG)', () => {
+  it('hidden on the street in play; the mate\'s active want while decorating the street', () => {
+    const h = hud();
+    const panel = h.host.querySelector<HTMLElement>('.tpp-wantPanel')!;
+    h.dispatch({ type: 'debugUnlockSpace', siteId: 'garden' }, { type: 'debugFillSpace', siteId: 'garden' });
+    for (let i = 0; i < 400 && h.context.store.getState().siteArrival; i++) h.dispatch({ type: 'arrivalFinished' });
+    while (h.context.store.getState().dialogue.current) h.dispatch({ type: 'advanceDialogue' });
+    expect(h.context.store.getState().spaces.garden.arrivalDone).toBe(true);
+    expect(panel.hidden).toBe(true);
+    h.dispatch({ type: 'setDesignMode', on: true });
+    expect(panel.hidden).toBe(false);
+    expect(panel.textContent).toContain(content.pets['owl-mate'].wants[0].brief ?? '');
+  });
+});

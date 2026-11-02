@@ -2,7 +2,7 @@ import type { Content } from '@content/types';
 import type { Want } from '@content/schema/pet';
 import type { ConditionView } from '@sim/events';
 import type { GameState, PetId } from '@sim/state';
-import { activeWant, residentPet, wantConditions } from '@sim/select';
+import { activeWant, residentPet, scenePet, wantConditions } from '@sim/select';
 import type { ViewContext } from '@view/context';
 import { wantPanel } from './templates/wantPanel';
 import { escapeHtml } from './templates/shared';
@@ -60,6 +60,15 @@ function panelMarkup(content: Content, text: Text, state: GameState, petId: PetI
   return wantMarkup(content, text, active.want, { pills: views.map(v => pillOf(content, text, v)).join(''), note: notesOf(text, views, expanded) });
 }
 
+/** WORK-034-3: the interior's resident, or on the street in design mode the arrived site resident (the Owl's mate), mirroring the
+ * interior where the panel shows the resident's want while decorating. */
+function panelPet(content: Content, state: GameState): string | null {
+  const resident = residentPet(content, state);
+  if (resident !== null || state.scene.kind !== 'street' || state.mode !== 'design') return resident;
+  const shared = scenePet(content, state);
+  return shared?.ref.kind === 'site' ? shared.petId : null;
+}
+
 /** Presentation §8.2 `wantPanel` (MEC-009 View row): states a–d and exhausted from `select.activeWant` / `select.wantConditions`. */
 export function createWantPanel(root: HTMLElement, context: ViewContext): WantPanel {
   const { content, store, log } = context;
@@ -70,7 +79,7 @@ export function createWantPanel(root: HTMLElement, context: ViewContext): WantPa
   let flash: Want | null = null;
   const render = () => {
     const state = store.getState();
-    const petId = residentPet(content, state);
+    const petId = panelPet(content, state);
     // M2 play session: the panel stays behind the pet's introduction until the intro box closes.
     section.hidden = petId === null || state.dialogue.current?.source === 'intro';
     if (petId === null) { flash = null; return; }
@@ -87,7 +96,7 @@ export function createWantPanel(root: HTMLElement, context: ViewContext): WantPa
   const offs = [...RENDER_ON.map(type => store.subscribe(type, () => render())),
     // State d (order fork 2): the flash holds while the reward dialogue is open and gives way to the next want once it closes.
     store.subscribe('want.fulfilled', (event, after) => {
-      if (event.petId !== residentPet(content, after)) return;
+      if (event.petId !== panelPet(content, after)) return;
       flash = after.dialogue.current !== null ? content.pets[event.petId].wants.find(w => w.id === event.wantId) ?? null : null;
       render();
     }),
