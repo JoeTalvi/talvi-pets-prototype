@@ -121,6 +121,9 @@ describe('VERIFY-T2-SITE-105 / -104 the mate\'s site arrival walk and the mate o
     expect(scene.children.list.filter(c => c.type === 'Sprite' && (c as { petId?: string }).petId === 'owl-mate').length).toBe(1);
   });
 
+});
+
+describe('VERIFY-T2-SITE-104 the mate on the street after a reload (DEC-045)', () => {
   it('absent before the arrival, present after a reload; synced from behaviour; a tap dispatches tapPet; a reload mid-walk replays it', async () => {
     const { context } = await street();
     context.store.dispatch({ type: 'debugUnlockSpace', siteId: 'garden' });
