@@ -257,11 +257,11 @@
     }
   ],
   "starterSet": [
-    "dog-bed",
-    "lamp",
-    "ball",
-    "food-bowl",
-    "painting",
-    "bookshelf"
+    { "typeId": "dog-bed", "count": 1 },
+    { "typeId": "lamp", "count": 1 },
+    { "typeId": "ball", "count": 1 },
+    { "typeId": "food-bowl", "count": 1 },
+    { "typeId": "painting", "count": 1 },
+    { "typeId": "bookshelf", "count": 1 }
   ]
 }

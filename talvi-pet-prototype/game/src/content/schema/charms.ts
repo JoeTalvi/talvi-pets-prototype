@@ -12,8 +12,13 @@ export const CharmTypeSchema = z.object({
     // The wall a non-painting wall charm's art is drawn for (WORK-032-2 fix 5); absent = 'left', mirrored on the other wall.
     wallArtFacing: z.enum(['left', 'right']).optional()
 });
+/** DEC-043 (CONTRACT-CONTENT v1.5): every award names copies, `{ typeId, count }`, count an integer 1..9. */
+export const ItemSchema = z.object({ typeId: Id, count: z.number().int().min(1).max(9) });
 export const CharmsSchema = z.object({
-    types: z.array(CharmTypeSchema), starterSet: z.array(Id)
+    types: z.array(CharmTypeSchema), starterSet: z.array(ItemSchema)
 });
+export type Item = z.infer<typeof ItemSchema>;
+/** The type ids an award list names, in list order (duplicates kept). */
+export const itemTypeIds = (items: readonly Item[]): string[] => items.map(item => item.typeId);
 export type CharmType = z.infer<typeof CharmTypeSchema>;
 export type Charms = z.infer<typeof CharmsSchema>;

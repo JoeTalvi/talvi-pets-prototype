@@ -32,8 +32,12 @@ const wantPrefix: Check = (content, state) => {
   return null;
 };
 
-/** Invariant 3: every placement is an owned, known type on a known slot of the same size class. */
+/** Invariant 3 (v1.5, DEC-043): every count is an integer ≥ 0; every placement is a granted (`counts` key), known
+ * type on a known slot of the same size class; per pet `strippedPending ⊆ heartCharms ⊆ counts keys`. */
 const placementsOwned: Check = (content, state) => {
+  const counts = state.inventory.counts;
+  for (const [typeId, count] of Object.entries(counts))
+    if (!Number.isInteger(count) || count < 0) return `invariant 3: inventory.counts.${typeId} ${count} is not an integer ≥ 0`;
   for (const [roomId, room] of Object.entries(state.rooms)) {
     for (const [slotId, typeId] of Object.entries(room.placements)) {
       const slot = content.rooms[roomId]?.slots.find(candidate => candidate.id === slotId);
@@ -41,9 +45,13 @@ const placementsOwned: Check = (content, state) => {
       const where = `rooms.${roomId}.placements.${slotId}`;
       if (!slot) return `invariant 3: ${where} names an unknown slot`;
       if (!type) return `invariant 3: ${where} names unknown type "${typeId}"`;
-      if (!state.inventory.ownedTypeIds.includes(typeId)) return `invariant 3: ${where} type "${typeId}" not owned`;
+      if (!Object.hasOwn(counts, typeId)) return `invariant 3: ${where} type "${typeId}" never granted`;
       if (slot.sizeClass !== type.sizeClass) return `invariant 3: ${where} size ${type.sizeClass} ≠ slot ${slot.sizeClass}`;
     }
+  }
+  for (const [petId, pet] of Object.entries(state.pets)) {
+    if (pet.heartCharms.some(id => !Object.hasOwn(counts, id))) return `invariant 3: pets.${petId}.heartCharms ⊄ counts keys`;
+    if (pet.strippedPending.some(id => !pet.heartCharms.includes(id))) return `invariant 3: pets.${petId}.strippedPending ⊄ heartCharms`;
   }
   return null;
 };

@@ -22,6 +22,7 @@ export type Action =
   | { type: 'debugJumpPhase'; projectId: ProjectId }
   | { type: 'debugCompleteProject'; projectId: ProjectId }
   | { type: 'debugUnlockAllTypes' }
+  | { type: 'debugGrantCopies'; typeId: CharmTypeId; count: number }
   | { type: 'debugSetStarsVisible'; on: boolean }
   | { type: 'debugSetMuted'; on: boolean }
   | { type: 'debugSetTesterLabel'; text: string }

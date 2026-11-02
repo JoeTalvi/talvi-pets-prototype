@@ -8,7 +8,7 @@ import {
 } from './rules/celebration';
 import {
   debugProgress, debugSetCurrent, debugSetEventInterval, debugSetSeed, debugSetting, debugSimulatePurchase,
-  debugUnlockAllTypes, reset,
+  debugGrantCopies, debugUnlockAllTypes, reset,
 } from './rules/debug';
 import { advanceDialogue, stepScripts } from './rules/dialogue';
 import { stepDoors } from './rules/doors';
@@ -48,6 +48,9 @@ const payloadValid: Record<Action['type'], (action: Payload) => boolean> = {
   debugSetFeedPresentation: action => action.mode === 'events' || action.mode === 'trickle',
   debugSetSeed: action => isInteger(action.seed),
   debugSetCurrent: action => isString(action.projectId) && isInteger(action.cents),
+  // TEST-002 arm: count an integer 1..9 (CONTRACT-CONTENT item count range).
+  debugGrantCopies: action => isString(action.typeId) && isInteger(action.count) &&
+    (action.count as number) >= 1 && (action.count as number) <= 9,
   debugJumpPhase: action => isString(action.projectId),
   debugCompleteProject: action => isString(action.projectId),
   debugSetStarsVisible: action => isBoolean(action.on),
@@ -112,13 +115,13 @@ const handlers: Handlers = {
   placeCharm: (content, state, action) => runPlacement(content, state, applyPlace(content, state, action)),
   removeCharm: (content, state, action) => runPlacement(content, state, applyRemove(content, state, action)),
   acknowledgeProject, cutsceneFinished, collectRewards, skipWait, closeReveal, arrivalFinished,
-  debugSimulatePurchase, debugSetEventInterval, debugSetSeed, debugSetCurrent, debugUnlockAllTypes, reset,
+  debugSimulatePurchase, debugSetEventInterval, debugSetSeed, debugSetCurrent, debugUnlockAllTypes, debugGrantCopies, reset,
   debugJumpPhase: debugProgress, debugCompleteProject: debugProgress,
   debugSetFeedPresentation: debugSetting, debugSetStarsVisible: debugSetting, debugSetMuted: debugSetting,
   debugSetTesterLabel: debugSetting,
 };
 
-/** CONTRACT-ACTIONS v1.4: apply fully, or reject with `result.state === state`. Every action is handled. */
+/** CONTRACT-ACTIONS v1.5: apply fully, or reject with `result.state === state`. Every action is handled. */
 export function reduce(content: Content, state: GameState, action: Action): RuleResult {
   const validate = payloadValid[action?.type];
   if (!validate || !validate(action as unknown as Payload))

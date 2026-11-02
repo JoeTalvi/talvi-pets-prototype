@@ -18,9 +18,9 @@ export function coverage(c: Content, findings: Finding[], opts: {
                         id: w.id, announcePresent: !!p.lines.wantAnnounce[w.id], vignettePresent: !!p.lines.vignettes[w.id]?.length, vignetteLines: p.lines.vignettes[w.id]?.length ?? 0
                     }))
                 }, rewardKinds: Object.fromEntries([
-                    'types', 'verb', 'vignette'
+                    'items', 'verb', 'vignette'
                 ].map(k => [
-                    k, p.wants.filter(w => w.reward.kind === k).length
+                    k, p.wants.filter(w => w.reward.some(r => r.kind === k)).length
                 ]))
             }
         ])),
@@ -85,5 +85,5 @@ function wantCoverage(c: Content, petId: string, w: Want, index: number, finding
         const applicable = n !== '16' || (petId === 'dog' && index === 0);
         return [id, { status: !applicable ? 'not-applicable' : matches.some(f => f.level === 'error') ? 'error' : matches.length ? 'warning' : 'pass', findings: matches }];
     }));
-    return { id: w.id, index, brief: w.brief, rewardKind: w.reward.kind, tags, checks, findings: relevant };
+    return { id: w.id, index, brief: w.brief, rewardKind: w.reward.map(r => r.kind).join('+'), tags, checks, findings: relevant };
 }

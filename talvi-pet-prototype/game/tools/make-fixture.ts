@@ -7,7 +7,7 @@ import type { Action } from '../src/sim/actions';
 import { checkInvariants } from '../src/sim/invariants';
 import { reduce } from '../src/sim/reduce';
 import { initialState, type GameState } from '../src/sim/state';
-import { GameStateSchema, parseSaveValue, SaveSchema } from '../src/sim/state.schema';
+import { GameStateSchema, parseSaveValue, SaveSchema, SAVE_SCHEMA_VERSION } from '../src/sim/state.schema';
 import { readContentFiles } from './content/io';
 
 /** TOOL-008 (tools.md §3): steps-driven fixture saves over `reduce`, byte-stable, canonical key order. */
@@ -22,7 +22,7 @@ export type StepsFile = { seed: number; steps: Step[] };
 export class FixtureError extends Error {}
 
 /** tools.md §2.4 direct-edit rule: only what no action reaches. */
-const SETTABLE = [/^\/scene(\/.*)?$/, /^\/avatar(\/.*)?$/, /^\/pets\/[^/]+\/introduced$/, /^\/inventory\/ownedTypeIds(\/(\d+|-))?$/];
+const SETTABLE = [/^\/scene(\/.*)?$/, /^\/avatar(\/.*)?$/, /^\/pets\/[^/]+\/introduced$/, /^\/inventory\/counts(\/[^/]+)?$/];
 
 /** RFC 6901 subset: `~1` → `/`, `~0` → `~`, arrays by index or `-` (append). */
 function setPointer(state: GameState, path: string, value: unknown): void {
@@ -79,7 +79,7 @@ export function canonicalSave(content: Content, state: GameState): string {
   if (violations.length > 0) throw new FixtureError(`invariants: ${violations.join('; ')}`);
   const sanity = reduce(content, state, { type: 'tick', dtMs: 0, move: { x: 0, y: 0 } });
   if (sanity.events.some(event => event.type === 'action.rejected')) throw new FixtureError('sanity tick rejected');
-  return JSON.stringify(SaveSchema.parse({ schemaVersion: 1, savedAt: SAVED_AT, state }), null, 2) + '\n';
+  return JSON.stringify(SaveSchema.parse({ schemaVersion: SAVE_SCHEMA_VERSION, savedAt: SAVED_AT, state }), null, 2) + '\n';
 }
 
 export function generateFixture(content: Content, steps: StepsFile, seed = steps.seed): string {

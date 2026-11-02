@@ -1,8 +1,8 @@
 import type { Content } from '../content/types';
 import { petSeed } from './rng';
 
-/** CONTRACT-STATE/ACTIONS/EVENTS/SELECT v1.4 (core.md); no derived view state. */
-export const CONTRACT_VERSION = '1.4' as const;
+/** CONTRACT-STATE/ACTIONS/EVENTS/SELECT v1.5 (core.md + WORK-033-1 amendment); no derived view state. */
+export const CONTRACT_VERSION = '1.5' as const;
 export type RoomId = string;
 export type ProjectId = string;
 export type CharmTypeId = string;
@@ -14,7 +14,7 @@ export type VerbId = string;
 export type DoorId = string;
 
 export type GameState = {
-  schemaVersion: 1;
+  schemaVersion: 2;                // v1.5: tier 1 saves (version 1) are discarded on load, no migration (DEC-043)
   session: {                      // persisted so a tester's build sticks across reloads (MEC-010)
     seed: number;                 // feed seed shown in the debug panel (DEC-027)
     eventIntervalMs: number | null; // null = frozen (TEST-008); default tuning.eventIntervalMs = 20000; ≥ 250 otherwise
@@ -41,7 +41,9 @@ export type GameState = {
     unlockedTypeIds: CharmTypeId[]; step: 'cutscene' | 'milestone' | 'reveal'; skipTaken: boolean;
   } | null;
   arrival: { projectId: ProjectId; petId: PetId } | null; // completing celebration → arrivalFinished
-  inventory: { ownedTypeIds: CharmTypeId[] };  // a set; array order = unlock order (chooser order, mec-004)
+  // DEC-043: copies in hand per type (placed copies are not counted); key order = first grant (chooser order);
+  // a key is never deleted, a type at 0 keeps its place ("none left").
+  inventory: { counts: Record<CharmTypeId, number> };
   rooms: Record<RoomId, { placements: Record<SlotId, CharmTypeId> }>; // absent key = empty slot
   pets: Record<PetId, {
     hearts: number;               // = fulfilledWantIds.length (DEC-023)
@@ -53,6 +55,8 @@ export type GameState = {
     rngState: number;             // pet RNG stream; initial (seed ^ (0x9E3779B9 × (i + 1))) >>> 0, i = pet index in content order
     recentTargets: SlotId[];      // last tuning.recentTargetsKept slots used (mec-007)
     wantBubbleInMs: number;       // countdown to the next want bubble; initial tuning.wantBubbleEveryMs (mec-008)
+    heartCharms: CharmTypeId[];   // distinct types credited at any fulfilment (tag-matching home placements), first-credit order
+    strippedPending: CharmTypeId[]; // Heart charms removed from the home room whose reaction has not played; FIFO, distinct
   }>;
 };
 export type Facing = 'left' | 'right' | 'up' | 'down';
@@ -78,16 +82,23 @@ function initialPets(content: Content, seed: number): GameState['pets'] {
       behaviour: { phase: 'idle', ...room.petSpawn, timerMs: content.tuning.idleMs.min,
         target: null, verb: null, reaction: null },
       rngState: petSeed(seed, index), recentTargets: [],
-      wantBubbleInMs: content.tuning.wantBubbleEveryMs,
+      wantBubbleInMs: content.tuning.wantBubbleEveryMs, heartCharms: [], strippedPending: [],
     }];
   }));
+}
+
+/** The starter set in file order with its counts (a repeated type adds up). */
+function starterCounts(content: Content): Record<CharmTypeId, number> {
+  const counts: Record<CharmTypeId, number> = {};
+  for (const { typeId, count } of content.charms.starterSet) counts[typeId] = (counts[typeId] ?? 0) + count;
+  return counts;
 }
 
 /** Validated content enters here; orientation is enqueued by a later tick module. */
 export function initialState(content: Content, seed: number): GameState {
   if (!Number.isFinite(seed)) throw new RangeError('Initial seed must be finite');
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     session: { seed, eventIntervalMs: content.tuning.eventIntervalMs,
       feedPresentation: 'events', starsVisible: true, muted: false,
       testerLabel: '', orientationShown: false },
@@ -101,7 +112,7 @@ export function initialState(content: Content, seed: number): GameState {
     }])),
     feed: { rngState: seed >>> 0, sinceLastEventMs: 0, eventCount: 0 },
     celebration: null, arrival: null,
-    inventory: { ownedTypeIds: [...content.charms.starterSet] },
+    inventory: { counts: starterCounts(content) },
     rooms: Object.fromEntries(Object.keys(content.rooms).map(id => [id, { placements: {} }])),
     pets: initialPets(content, seed),
   };

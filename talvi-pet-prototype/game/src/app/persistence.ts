@@ -1,10 +1,11 @@
 import type { Content } from '@content/types';
 import { initialState, type GameState } from '@sim/state';
-import { parseSaveValue, type DiscardReason } from '@sim/state.schema';
+import { parseSaveValue, SAVE_SCHEMA_VERSION, type DiscardReason } from '@sim/state.schema';
 import { STORAGE_KEYS, type Log } from './log';
 import type { Store } from './store';
 
-/** CONTRACT-PERSIST v1.4 (core §8, TECH-007): `tpp.save` = `{ schemaVersion: 1, savedAt, state }`. */
+/** CONTRACT-PERSIST v1.5 (core §8, TECH-007): `tpp.save` = `{ schemaVersion: 2, savedAt, state }`; any other
+ * version (every tier 1 save is 1) is discarded `'schemaVersion'` and the game starts fresh (DEC-043, no migration). */
 export { STORAGE_KEYS };
 
 export type SaveRecorder = Pick<Log, 'record' | 'recordQuota'>;
@@ -64,7 +65,7 @@ export function createPersistence(options: PersistenceOptions): Persistence {
     const state = pending;
     cancel();
     if (!state) return;
-    const json = JSON.stringify({ schemaVersion: 1, savedAt: wall(), state });
+    const json = JSON.stringify({ schemaVersion: SAVE_SCHEMA_VERSION, savedAt: wall(), state });
     // Play-session Q18: a routine write is not logged (it filled the 5,000-line ring in ≈ 21 min); failures still are.
     try { storage.setItem(STORAGE_KEYS.save, json); }
     catch (error) { if (isQuota(error)) { log.recordQuota(); return; } throw error; }
