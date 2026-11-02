@@ -5,7 +5,8 @@
 // Beat order (the reset clears the log, so every arm the reader must see in the final export runs after it): seed + five SFX + first tap →
 // tester label → TEST-008 reset "Start frozen" + one real 120 s wait → Playtest restored → TEST-003 (street) → TEST-004 (street "?") →
 // walk into the Starter House → TEST-001 → want-panel "2 charms" (WORK-033-2) → TEST-005/006 → scarcity block (place lamp → "none left" → inert
-// click → remove → "×1") → strip reaction (remove the Heart bed → 😢, bed back, row 19 still) (WORK-033-2) → TEST-007 → mute → exports
+// click → remove → "×1") → strip reaction (remove the Heart bed → 😢, bed back, row 19 still) (WORK-033-2) → TEST-007 → garden site
+// (WORK-034-3: row 20 unlock → walk out → street Decorate → 2 outdoor placements → Done → the mate's site arrival → input unfreezes → wander → 1 remove → walk back into the Dog room) → mute → exports
 // (Download, Copy, Share hidden / stub) → R-9 → errors → storage + reload → quota (own context) → tier 1 save reset (own context, WORK-033-2). Writes trace-report.json, trace-log.jsonl, storage-reads.json, rows/*, exports/*, loops/*, captures/*.
 import { mkdtempSync, rmSync, readFileSync, existsSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
@@ -36,6 +37,11 @@ async function still(point, note, extra = {}) {
 }
 const linesAfter = (type, t, m = {}) => all.filter(l => l.type === type && l.t >= t && Object.entries(m).every(([k, v]) => JSON.stringify(l[k]) === JSON.stringify(v)));
 const lastT = () => all.at(-1)?.t ?? 0;
+/** WORK-034-3 (review WORK-034-2-1 A1): a log-index cursor. Several records can share one `t` (one dispatch, one frame), so
+ * `linesAfter(type, lastT())` also counts the records of the action that set `lastT`; `linesSince` counts only records appended
+ * after the cursor was taken. */
+const cursor = () => all.length;
+const linesSince = (type, from, m = {}) => all.slice(from).filter(l => l.type === type && Object.entries(m).every(([k, v]) => JSON.stringify(l[k]) === JSON.stringify(v)));
 
 async function tapBox(limit = 12) {
   let taps = 0;
@@ -328,13 +334,14 @@ async function scarcity() {
   const othersOk = others.length > 0 && others.every(c => (counts[c.typeId] > 0 ? c.label === `×${counts[c.typeId]}` && c.action === 'place' : c.label === 'none left'));
   beat('scarcity: another empty small slot → the chooser lists lamp greyed "none left" (aria-disabled, no place action) and every other card "×n" = copies in hand',
     lamp && lamp.label === 'none left' && lamp.ariaDisabled === 'true' && lamp.action === null && othersOk, 'lamp {none left, aria-disabled true}; others ×n', { slotId: otherSlot, cards, counts });
-  const tc = lastT();
+  await refresh();
+  const tc = cursor();
   // a real pointer click; force skips Playwright's actionability check, which treats aria-disabled as "not enabled"
   await page.locator('.tpp-chooser .tpp-charm-card[data-type-id="lamp"]').click({ force: true });
   await page.waitForTimeout(500);
   await refresh();
-  const inert = linesAfter('charm.placed', tc).length === 0 && linesAfter('action.rejected', tc).length === 0 && !(await page.evaluate(() => document.querySelector('.tpp-chooser').hidden));
-  beat('scarcity: clicking the greyed lamp card → no charm.placed, no action.rejected; the chooser stays open', inert, 'no charm.placed; no action.rejected', { after: all.filter(l => l.t >= tc).map(strip) });
+  const inert = linesSince('charm.placed', tc).length === 0 && linesSince('action.rejected', tc).length === 0 && !(await page.evaluate(() => document.querySelector('.tpp-chooser').hidden));
+  beat('scarcity: clicking the greyed lamp card → no charm.placed, no action.rejected; the chooser stays open', inert, 'no charm.placed; no action.rejected', { after: all.slice(tc).map(strip) });
   await closeChooser();
   await removeAt(lampSlot);
   await openChooser(otherSlot);
@@ -390,6 +397,131 @@ async function stripReaction() {
   await still('debug-grant-copies-1080', 'WORK-033-2: debug row 19 "Grant copies" (the TEST-002 arm)', { grantRow });
   await setDebug(page, false);
   beat('debug row 19 "Grant copies" present after row 18 with a type select, a count input (default 1) and Grant', grantRow.options > 0 && grantRow.count === '1' && grantRow.button === 'Grant', 'select options > 0; count 1; Grant', grantRow);
+}
+
+// ---- WORK-034-3 garden site + the Owl's mate (DEC-044/045, gate fork 11): unlock (row 20) → walk out → Decorate on the street →
+// two outdoor placements by real taps (Stars 0 → 4 → 8, counts −1 each) → Done → space.arrivalStarted → the walk → arrival.finished,
+// pet.arrived → the mate wanders; want.activated {owl-mate, 0}; input unfreezes; one remove (count +1, Stars 8 → 4) ------------------
+const streetSlotPoint = slotId => page.evaluate(slotId => {
+  const street = window.__tpp.game.scene.getScene('Street'), outline = street.outlines.get(slotId);
+  const pts = outline.polygon.points, c = pts.reduce((a, p) => ({ x: a.x + p.x / pts.length, y: a.y + p.y / pts.length }), { x: 0, y: 0 });
+  const rect = window.__tpp.game.canvas.getBoundingClientRect(), scale = rect.width / 1920, cam = street.cameras.main;
+  return { x: rect.left + (c.x - cam.scrollX) * scale, y: rect.top + (c.y - cam.scrollY) * scale };
+}, slotId);
+async function tapStreetSlot(slotId) { const pt = await streetSlotPoint(slotId); await page.mouse.click(pt.x, pt.y, { delay: 40 }); await page.waitForTimeout(350); }
+const siteHud = () => page.evaluate(() => {
+  const toggle = document.querySelector('.tpp-site-toggle'), pill = document.querySelector('.tpp-site-pill');
+  const vis = el => !!el && !el.hidden && el.offsetParent !== null;
+  return { toggle: vis(toggle) ? toggle.textContent : null, stars: vis(pill) ? pill.querySelector('[data-string-key="tpp.stars.label"]').textContent : null,
+    moreHomes: document.querySelector('.tpp-more-homes') !== null };
+});
+const siteView = () => page.evaluate(() => {
+  const street = window.__tpp.game.scene.getScene('Street');
+  return { art: street.siteArt.get('garden')?.texture.key ?? null, outlinesShown: [...street.outlines.values()].filter(o => o.visible).map(o => o.slotId),
+    charms: [...street.charms.keys()], pet: street.pet ? { petId: street.pet.petId, x: street.pet.x, y: street.pet.y, anim: street.pet.anims.currentAnim?.key ?? null } : null,
+    walking: street.arrival ? { petId: street.arrival.arrival.petId, fades: street.arrival.fades } : null };
+});
+async function placeOutdoor(slotId) {
+  await tapStreetSlot(slotId);
+  await until(page, () => !document.querySelector('.tpp-chooser').hidden, null, 3000);
+  const typeId = await page.evaluate(() => [...document.querySelectorAll('.tpp-chooser .tpp-charm-card[data-action="place"]')]
+    .map(c => c.dataset.typeId).find(id => !Object.values(window.__tpp.store.getState().spaces.garden.placements).includes(id)) ?? null);
+  return typeId;
+}
+async function gardenSite() {
+  await drainAll(800);
+  mark('gardenStart');
+  await rowButton('Unlock garden', 0); await setDebug(page, false);
+  await refresh();
+  const unlocked = linesAfter('space.unlocked', 0, { siteId: 'garden' });
+  await steer(page, 693, 575, () => window.__tpp.store.getState().scene.kind === 'street', 30000);
+  await waitScene(page, 'Street', 900);
+  await drainAll(800); await dismissToast();
+  const v0 = await siteView(), h0 = await siteHud(), s0 = await getState(page);
+  await still('site-unlocked-hud-1080', 'WORK-034-3: the street with the garden unlocked (base art), Decorate and the site Stars on the HUD', { view: v0, hud: h0, spaces: s0.spaces });
+  beat('garden: row 20 Unlock garden → space.unlocked {garden}; walk out → the street shows world/site-garden-base, HUD Decorate + "0 / 24 ★"; no "More homes coming"',
+    unlocked.length === 1 && v0.art === 'world/site-garden-base' && h0.toggle === 'Decorate' && h0.stars === '0 / 24 ★' && !h0.moreHomes && s0.spaces.garden.unlocked,
+    'space.unlocked ×1; art base; Decorate; 0 / 24 ★', { view: v0, hud: h0, unlocked: unlocked.map(strip) });
+  // Decorate (real click) → 6 outlines at the site only
+  await refresh(); const td = cursor();
+  await page.click('.tpp-site-toggle'); await page.waitForTimeout(450);
+  const v1 = await siteView();
+  mark('placementStart');
+  const counts0 = (await getState(page)).inventory.counts;
+  const first = await placeOutdoor('garden-small-1');
+  await still('site-design-outlines-1080', 'WORK-034-3: street design mode — tint, the six garden outlines, the chooser open over garden-small-1', { view: await siteView() });
+  await page.click(`.tpp-chooser .tpp-charm-card[data-type-id="${first}"]`); await page.waitForTimeout(500);
+  const s1 = await getState(page), h1 = await siteHud();
+  const second = await placeOutdoor('garden-small-2');
+  await page.click(`.tpp-chooser .tpp-charm-card[data-type-id="${second}"]`); await page.waitForTimeout(500);
+  mark('placementEnd');
+  const s2 = await getState(page), h2 = await siteHud(), v2 = await siteView();
+  await still('site-placed-8stars-1080', 'WORK-034-3: two charms at the garden, site Stars 8 / 24', { view: v2, hud: h2 });
+  await refresh();
+  const placed = linesSince('charm.placed', td).filter(l => l.siteId === 'garden'), starsCh = linesSince('space.stars.changed', td, { siteId: 'garden' });
+  beat('garden: Decorate → design mode, outlines at the 6 garden slots only; tap garden-small-1 → chooser → card → charm.placed {siteId garden}; again at garden-small-2 → Stars 0 → 4 → 8; counts −1 each',
+    s1.mode === 'design' && v1.outlinesShown.length === 6 && v1.outlinesShown.every(id => id.startsWith('garden-')) && first && second && first !== second && placed.length === 2
+      && h1.stars === '4 / 24 ★' && h2.stars === '8 / 24 ★' && s1.inventory.counts[first] === counts0[first] - 1 && s2.inventory.counts[second] === counts0[second] - 1 && h2.toggle === 'Done',
+    'outlines 6 (garden); charm.placed ×2 {garden}; 4 / 24 ★ then 8 / 24 ★; counts −1 each', { outlines: v1.outlinesShown, first, second, placed: placed.map(strip), starsChanged: starsCh.map(strip), hud: [h1, h2], counts: { before: counts0, afterFirst: s1.inventory.counts, afterSecond: s2.inventory.counts } });
+  // Done → the site arrival
+  await refresh(); const ta = cursor();
+  mark('arrivalStart');
+  await page.click('.tpp-site-toggle');
+  await waitLine(page, 'space.arrivalStarted', { siteId: 'garden', petId: 'owl-mate' }, 5000);
+  const walking = await siteView();
+  const arrived = await waitLine(page, 'pet.arrived', { petId: 'owl-mate', siteId: 'garden' }, 20000);
+  await page.waitForTimeout(150);
+  mark('arrivalEnd');
+  const vA = await siteView();
+  await still('mate-arrived-1080', 'WORK-034-3: the Owl\'s mate at its spawn after the arrival walk (no fade; hand-over to the street sprite)', { view: vA });
+  await drainAll(1500);
+  await refresh();
+  const started = linesSince('space.arrivalStarted', ta), finished = linesSince('arrival.finished', ta, { petId: 'owl-mate' }), petArrived = linesSince('pet.arrived', ta), want0 = linesSince('want.activated', ta, { petId: 'owl-mate', index: 0 });
+  const sA = await getState(page);
+  beat('garden: Done → space.arrivalStarted {garden, owl-mate} (as-built name, WORK-034-2 fork 1) → the walk (no fade) → arrival.finished {owl-mate} ×1, pet.arrived {owl-mate, garden} → the mate on the street; want.activated {owl-mate, index 0}',
+    started.length === 1 && walking.walking?.petId === 'owl-mate' && walking.walking.fades === false && arrived && finished.length === 1 && petArrived.length === 1 && vA.pet?.petId === 'owl-mate' && !vA.walking && want0.length === 1 && sA.spaces.garden.arrivalDone,
+    'space.arrivalStarted ×1; walk fades false; arrival.finished ×1; pet.arrived ×1; street pet owl-mate; want.activated {owl-mate, 0}', { walking, afterArrival: vA, started: started.map(strip), finished: finished.map(strip), petArrived: petArrived.map(strip), want: want0.map(strip) });
+  // input unfreezes (review A2 MUST): siteArrival null, a real key press moves the avatar
+  const before = (await getState(page)).avatar;
+  await page.keyboard.down('ArrowRight'); await page.waitForTimeout(500); await page.keyboard.up('ArrowRight'); await page.waitForTimeout(200);
+  const after = await getState(page);
+  beat('garden: input unfreezes after the arrival — siteArrival null, mode play, no dialogue; a real ArrowRight hold moves the avatar',
+    after.siteArrival === null && after.mode === 'play' && !after.dialogue.current && after.avatar.x > before.x, 'avatar.x increases', { before, after: after.avatar, siteArrival: after.siteArrival, mode: after.mode });
+  // wander: ≥ 2 idle ↔ walk switches of the mate within 25 s
+  mark('wanderStart');
+  await refresh(); const tw = cursor();
+  await until(page, from => window.__tpp.log.lines().slice(from).filter(l => l.type === 'pet.phaseChanged' && l.petId === 'owl-mate').length >= 4, tw, 25000).catch(() => null);
+  await page.waitForTimeout(600);
+  mark('wanderEnd');
+  await refresh();
+  const phases = linesSince('pet.phaseChanged', tw, { petId: 'owl-mate' }).map(l => `${l.from}→${l.to}`);
+  const vW = await siteView();
+  beat('garden: the mate idles and wanders on the street — ≥ 2 idle ↔ walk switches (pet.phaseChanged) and its sprite follows behaviour', phases.filter(p => p.includes('walking')).length >= 2 && vW.pet?.petId === 'owl-mate',
+    '≥ 2 phase switches through walking', { phases, view: vW });
+  // one remove (count +1, Stars 8 → 4)
+  await refresh(); const tr = cursor();
+  const cBefore = (await getState(page)).inventory.counts[first];
+  await page.click('.tpp-site-toggle'); await page.waitForTimeout(450);
+  await tapStreetSlot('garden-small-1');
+  await until(page, () => { const sh = document.querySelector('.tpp-replaceRemove'); return sh && sh.offsetParent !== null; }, null, 3000);
+  await page.locator('.tpp-replaceRemove [data-action="remove"]').click(); await page.waitForTimeout(450);
+  const hR = await siteHud(), sR = await getState(page);
+  await page.click('.tpp-site-toggle'); await page.waitForTimeout(450);
+  await refresh();
+  mark('gardenEnd');
+  const removed = linesSince('charm.removed', tr, { siteId: 'garden', slotId: 'garden-small-1' });
+  beat('garden: Decorate → tap the occupied garden-small-1 → replace/remove sheet → Remove → charm.removed {garden}; count +1; Stars 8 → 4; Done',
+    removed.length === 1 && sR.inventory.counts[first] === cBefore + 1 && hR.stars === '4 / 24 ★' && (await getState(page)).mode === 'play',
+    'charm.removed ×1; count +1; 4 / 24 ★', { removed: removed.map(strip), counts: { before: cBefore, after: sR.inventory.counts[first] }, hud: hR });
+  row('t2-site', { verify: 'VERIFY-T2-SITE-101..106 (browser half)', first, second, phases, view: vW });
+  // back into the Dog room so the later beats (mute, exports) run where they always ran: the mate's wander on the street writes
+  // pet.phaseChanged lines that would fall between the export and its log.exported record
+  await steer(page, 475, 965, () => { const s = window.__tpp.store.getState(); return (Math.abs(s.avatar.x - 475) < 30 && s.avatar.y > 940) || s.scene.kind === 'interior'; }, 40000);
+  await steer(page, 475, 895, () => window.__tpp.store.getState().scene.roomId === 'dog-room', 30000);
+  await waitScene(page, 'Interior', 800);
+  await drainAll(1500);
+  const back = await getState(page);
+  beat('garden: walk back into the Starter House → scene dog-room (the later beats run where they always ran)', back.scene.roomId === 'dog-room' && !back.dialogue.current, 'scene dog-room', { scene: back.scene });
 }
 
 // ---- mute (row 10) both ways ------------------------------------------------------------------------------------------------------
@@ -474,7 +606,7 @@ try {
   w = await boot(browser, { height: 1080, save: SEED_TEXT, query: QUERY, contextOptions: { permissions: ['clipboard-read', 'clipboard-write'] } });
   page = w.page;
   stream = await startStreamRecording(page, streamDir);
-  for (const fn of [seedBoot, testerLabel, test008, test003, test004, enterDogRoom, test001, wantPanelLabel, test005006, scarcity, stripReaction, test007, mute, exportsBeat, r9]) {
+  for (const fn of [seedBoot, testerLabel, test008, test003, test004, enterDogRoom, test001, wantPanelLabel, test005006, scarcity, stripReaction, test007, gardenSite, mute, exportsBeat, r9]) {
     try { await fn(); } catch (error) { beat(`${fn.name}: no uncaught error`, false, 'the beat runs', String(error).slice(0, 800)); }
   }
   mark('traceEnd');
@@ -559,6 +691,9 @@ const LOOPS = [
   ['trace-exports', marks.exportsStart, marks.exportsEnd + 300, 'Download · Copy · Share hidden · Share stub'],
   ['scarcity-chooser', marks.scarcityStart, marks.scarcityEnd + 600, 'WORK-033-2: place the only lamp → "none left" in the chooser → inert click → remove → "×1" again'],
   ['stripped-reaction', marks.stripStart, marks.stripEnd, 'WORK-033-2: remove the Heart bed → Done → the Dog\'s 😢 and a stripped line'],
+  ['site-placement', marks.placementStart - 300, marks.placementEnd + 300, 'WORK-034-3: tap a garden outline → chooser → placed → site Stars (×2)'],
+  ['mate-arrival', marks.arrivalStart - 300, marks.arrivalEnd + 600, 'WORK-034-3: Done → the mate walks the garden arrivalPath → 🎵 → hand-over to the street sprite (no fade)'],
+  ['mate-wander', marks.wanderStart, marks.wanderEnd, 'WORK-034-3: the mate idles and wanders on the street'],
 ];
 report.loops = [];
 for (const [name, a, b, target] of LOOPS) {

@@ -5,7 +5,9 @@ import { assetsFrom, createText, type Panel } from '../overlay';
 
 export type Toast = Panel & { queued(): number };
 
-type Item = { merchantName: string; amountCents: number; changeCents: number; causeName: string };
+type Item = { kind: 'roundup'; merchantName: string; amountCents: number; changeCents: number; causeName: string }
+  /** WORK-034-3: the `space` reward announcement (`space.unlocked`), one line through the same toast shell. */
+  | { kind: 'space' };
 
 /** Q14(a) (play session 2026-10-26): a dialogue or popup holds at most the latest 2 round-ups; older held ones are dropped (the project bar already counts them). */
 const IN_MS = 150, OUT_MS = 200, HELD_MAX = 2;
@@ -33,9 +35,16 @@ export function createToast(root: HTMLElement, context: ViewContext): Toast {
   const pump = () => {
     if (timer !== null || queue.length === 0 || blocked(store.getState())) return;
     const item = queue.shift()!;
-    line.textContent = text('tpp.toast.roundup', { merchant: item.merchantName, amount: `$${(item.amountCents / 100).toFixed(2)}`,
-      change: `${item.changeCents}¢`, cause: item.causeName });
-    delta.textContent = text('tpp.toast.delta', { change: `${item.changeCents}¢` });
+    section.dataset.kind = item.kind;
+    if (item.kind === 'space') {
+      line.dataset.stringKey = 'tpp.toast.space'; line.textContent = text('tpp.toast.space');
+      delta.hidden = true;
+    } else {
+      line.dataset.stringKey = 'tpp.toast.roundup';
+      line.textContent = text('tpp.toast.roundup', { merchant: item.merchantName, amount: `$${(item.amountCents / 100).toFixed(2)}`,
+        change: `${item.changeCents}¢`, cause: item.causeName });
+      delta.hidden = false; delta.textContent = text('tpp.toast.delta', { change: `${item.changeCents}¢` });
+    }
     section.hidden = false; section.dataset.state = 'visible';
     animate(section, [{ opacity: 0, transform: 'translateY(-24px)' }, { opacity: 1, transform: 'translateY(0)' }], IN_MS);
     later(IN_MS + content.tuning.toastMs, () => {
@@ -48,10 +57,12 @@ export function createToast(root: HTMLElement, context: ViewContext): Toast {
       // mec-010 row 10b: the trickle arm shows no toasts, so its events are dropped, never held.
       if (after.session.feedPresentation === 'trickle') return;
       const causeName = content.projects.find(p => p.id === event.projectId)?.causeName ?? '';
-      queue.push({ merchantName: event.merchantName, amountCents: event.amountCents, changeCents: event.changeCents, causeName });
+      queue.push({ kind: 'roundup', merchantName: event.merchantName, amountCents: event.amountCents, changeCents: event.changeCents, causeName });
       if (blocked(after)) queue.splice(0, Math.max(0, queue.length - HELD_MAX));
       pump();
     }),
+    // The Owl's want story is open when the garden unlocks: the announcement waits in the queue and shows after it (Q7(a)).
+    store.subscribe('space.unlocked', () => { queue.push({ kind: 'space' }); pump(); }),
     store.subscribe('dialogue.closed', () => pump()),
     store.subscribe('celebration.ended', () => pump()),
     store.subscribe('state.reset', () => { queue.length = 0; if (timer !== null) clearTimeout(timer); timer = null; hide(); }),

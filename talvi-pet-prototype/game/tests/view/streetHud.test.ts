@@ -71,11 +71,12 @@ describe('VERIFY-MEC-002-026 street HUD bar', () => {
     expect(h.section.hidden).toBe(true);
   });
 
-  it(`${t}"More homes coming" iff activeProjectId === null (debugCompleteProject)`, () => {
+  it(`${t}WORK-034-3: "More homes coming" is retired (interim contract) — absent with or without an active project`, () => {
     const h = hud(owing(content, 1, 1260));
-    expect(h.q('.tpp-more-homes').hidden).toBe(true);
+    expect(h.section.querySelector('.tpp-more-homes')).toBeNull();
     h.dispatch({ type: 'debugCompleteProject', projectId: 'pet-house' });
-    expect([h.q('.tpp-more-homes').hidden, h.q('.tpp-more-homes').textContent]).toEqual([false, 'More homes coming']);
+    expect(h.section.querySelector('.tpp-more-homes')).toBeNull();
+    expect(h.section.textContent).not.toContain('More homes coming');
   });
 });
 
