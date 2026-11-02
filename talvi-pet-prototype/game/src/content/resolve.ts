@@ -110,7 +110,7 @@ function resolveRooms(ctx: Resolver): void {
     }
 }
 function resolvePets(ctx: Resolver): void {
-    const { c, ids, ref, asset, tags, types, verbs, pets, rooms, sites } = ctx;
+    const { c, ids, ref, asset, tags, types, verbs } = ctx;
     for (const [id, p] of Object.entries(c.pets)) {
         const f = `pets/${id}.json`;
         asset(p.portrait, 'image', f, [
@@ -119,8 +119,6 @@ function resolvePets(ctx: Resolver): void {
         asset(p.sheet, 'spritesheet', f, [
             'sheet'
         ]);
-        if (p.home?.kind === 'room') ref(p.home.roomId, rooms, f, ['home', 'roomId'], 'room');
-        if (p.home?.kind === 'space') ref(p.home.siteId, sites, f, ['home', 'siteId'], 'site');
         p.likes.forEach((l, i) => ref(l.tag, tags, f, [
             'likes', i, 'tag'
         ], 'tag', 'CHK-007-02'));
@@ -139,10 +137,6 @@ function resolvePets(ctx: Resolver): void {
                     ref(x.tag, tags, f, [
                         'wants', i, 'conditions', j, 'tag'
                     ], 'tag', 'CHK-009-02');
-                if (x.kind === 'greeted')
-                    ref(x.withPetId, pets, f, [
-                        'wants', i, 'conditions', j, 'withPetId'
-                    ], 'pet', 'CHK-009-02');
                 if (x.kind === 'adjacent')
                     for (const key of [
                         'tagA', 'tagB'
@@ -160,10 +154,6 @@ function resolvePets(ctx: Resolver): void {
                     ref(r.verb, verbs, f, [
                         'wants', i, 'reward', k, 'verb'
                     ], 'verb', 'CHK-009-06');
-                if (r.kind === 'space')
-                    ref(r.siteId, sites, f, [
-                        'wants', i, 'reward', k, 'siteId'
-                    ], 'site', 'CHK-009-06');
             });
         });
     }
@@ -204,7 +194,7 @@ function resolveProjects(ctx: Resolver): void {
     ]));
 }
 function resolveScenes(ctx: Resolver): void {
-    const { c, issue, ids, ref, asset, projects, pets } = ctx;
+    const { c, issue, ids, ref, asset, projects } = ctx;
     const scenes = [
         {
             id: 'street', file: 'street.json', doors: c.street.houses.map(h => h.door)
@@ -234,13 +224,6 @@ function resolveScenes(ctx: Resolver): void {
                 ], 'door', 'CHK-001-03');
         });
     }
-    (c.street.sites ?? []).forEach((site, i) => {
-        asset(site.art.empty, 'image', 'street.json', ['sites', i, 'art', 'empty']);
-        asset(site.art.base, 'image', 'street.json', ['sites', i, 'art', 'base']);
-        ref(site.residentPetId, pets, 'street.json', ['sites', i, 'residentPetId'], 'pet');
-        site.slots.forEach((slot, j) => slot.adjacent.forEach((id, k) => ref(id, site.slots.map(other => other.id), 'street.json',
-            ['sites', i, 'slots', j, 'adjacent', k], 'slot')));
-    });
     c.street.houses.forEach((h, i) => {
         ref(h.projectId, projects, 'street.json', [
             'houses', i, 'projectId'
@@ -256,6 +239,29 @@ function resolveScenes(ctx: Resolver): void {
             key, i, 'sprite'
         ]));
 }
+/** WORK-034-2: pet homes, `greeted` pets, `space` reward sites; street sites — art ids, the resident pet, slot adjacency. */
+function resolveSites(ctx: Resolver): void {
+    const { c, ref, asset, pets, rooms, sites } = ctx;
+    for (const [id, p] of Object.entries(c.pets)) {
+        if (p.home?.kind === 'room') ref(p.home.roomId, rooms, `pets/${id}.json`, ['home', 'roomId'], 'room');
+        if (p.home?.kind === 'space') ref(p.home.siteId, sites, `pets/${id}.json`, ['home', 'siteId'], 'site');
+        p.wants.forEach((w, i) => {
+            w.conditions.forEach((x, j) => {
+                if (x.kind === 'greeted') ref(x.withPetId, pets, `pets/${id}.json`, ['wants', i, 'conditions', j, 'withPetId'], 'pet', 'CHK-009-02');
+            });
+            w.reward.forEach((r, k) => {
+                if (r.kind === 'space') ref(r.siteId, sites, `pets/${id}.json`, ['wants', i, 'reward', k, 'siteId'], 'site', 'CHK-009-06');
+            });
+        });
+    }
+    (c.street.sites ?? []).forEach((site, i) => {
+        asset(site.art.empty, 'image', 'street.json', ['sites', i, 'art', 'empty']);
+        asset(site.art.base, 'image', 'street.json', ['sites', i, 'art', 'base']);
+        ref(site.residentPetId, pets, 'street.json', ['sites', i, 'residentPetId'], 'pet');
+        site.slots.forEach((slot, j) => slot.adjacent.forEach((id, k) => ref(id, site.slots.map(other => other.id), 'street.json',
+            ['sites', i, 'slots', j, 'adjacent', k], 'slot')));
+    });
+}
 /** Content owns resolution; load.ts never imports sim. */
 export function resolveContent(c: Content, manifest?: AssetManifest): ContentIssue[] {
     const ctx = resolverContext(c, manifest);
@@ -265,5 +271,6 @@ export function resolveContent(c: Content, manifest?: AssetManifest): ContentIss
     resolvePets(ctx);
     resolveProjects(ctx);
     resolveScenes(ctx);
+    resolveSites(ctx);
     return ctx.out;
 }

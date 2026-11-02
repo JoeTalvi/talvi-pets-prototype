@@ -2,7 +2,7 @@ import type { CharmType } from '../../content/schema/charms';
 import type { Pet, Want } from '../../content/schema/pet';
 import type { Content } from '../../content/types';
 import type { RuleResult, SimEvent } from '../events';
-import type { CharmTypeId, GameState, PetBehaviour, PetId, Reaction, RoomId, SlotId, TagId, VerbId } from '../state';
+import type { CharmTypeId, GameState, PetBehaviour, PetId, Reaction, SlotId, TagId, VerbId } from '../state';
 import { petPick, phaseChanged, toIdle, withBehaviour } from './petBehaviour';
 import type { PlacementChange } from './slots';
 import { activeWant, hiddenTagOf } from './wants';
