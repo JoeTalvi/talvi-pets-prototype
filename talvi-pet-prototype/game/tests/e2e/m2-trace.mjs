@@ -260,7 +260,7 @@ async function arrivalBeat() {
   report.midArrivalSave = await page.evaluate(() => localStorage.getItem('tpp.save'));
   await until(page, () => window.__walk.bubble.current() !== null, null, 5000);
   const atDoor = await page.evaluate(() => ({ bubble: window.__walk.bubble.current(), boxHidden: document.querySelector('.tpp-dialogue').hidden }));
-  await still('screen-5-street-arrival-1080', 'the Owl at the pet-front door with 🎵; HUD "More homes coming"; held box hidden (renders screen 5)');
+  await still('screen-5-street-arrival-1080', 'the Owl at the pet-front door with 🎵; no "More homes coming" HUD (retired by WORK-034-3, DEC-044); held box hidden (renders screen 5)');
   await until(page, () => window.__walk.finished, null, 8000);
   mark('arrivalFinished');
   await page.waitForTimeout(800);
@@ -273,9 +273,9 @@ async function arrivalBeat() {
   const stamps = await page.evaluate(() => window.__stamps), af = all.filter(l => l.type === 'arrival.finished');
   const s = await getState(page), hud = await hudMore();
   report.arrival = { atStart, atDoor, stamps, held: held && { source: held.source, lines: held.lines }, heldLines, hud };
-  beat('12:00 Continue → arrival.started → walk (pet-owl-walk) → 🎵 at the door → fade → arrival.finished once; door enabled; HUD "More homes coming" (VERIFY-MEC-002-025 arrival half)',
-    first(all, 'arrival.started') && atStart.clip === 'pet-owl-walk' && atDoor.bubble?.text === '🎵' && af.length === 1 && s.arrival === null && s.projects['pet-house'].arrivalDone && hud.text === 'More homes coming' && hud.visible,
-    'arrival.started; walk clip; 🎵; arrival.finished ×1; state.arrival null + arrivalDone; HUD text', report.arrival, { line: af[0] });
+  beat('12:00 Continue → arrival.started → walk (pet-owl-walk) → 🎵 at the door → fade → arrival.finished once; door enabled; no "More homes coming" HUD (retired by WORK-034-3, DEC-044) (VERIFY-MEC-002-025 arrival half)',
+    first(all, 'arrival.started') && atStart.clip === 'pet-owl-walk' && atDoor.bubble?.text === '🎵' && af.length === 1 && s.arrival === null && s.projects['pet-house'].arrivalDone && hud.text === null && !hud.visible,
+    'arrival.started; walk clip; 🎵; arrival.finished ×1; state.arrival null + arrivalDone; HUD .tpp-more-homes absent', report.arrival, { line: af[0] });
   beat('12:00 held phase/completion boxes open only after arrival.finished and drain one tap per line (VERIFY-MEC-008-015/-017 on the trace)', atDoor.boxHidden && (held ? heldLines.length >= 1 : true) && !(await getState(page)).dialogue.current,
     'box hidden at the door; after arrival.finished the held boxes open and drain', { held: report.arrival.held, heldLines, result: held ? 'measured' : 'not-run (content optional, mec-008 §2.5)' });
   await page.waitForTimeout(500);
