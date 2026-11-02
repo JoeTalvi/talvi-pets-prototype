@@ -1,5 +1,5 @@
 import type { Content } from '../../src/content/types';
-import type { Want } from '../../src/content/schema/pet';
+import { rewardItems, type Want } from '../../src/content/schema/pet';
 import type { Finding } from '../../src/sim/checks';
 import { tagSources, typeSources, allGrantedTypes, reachableMax } from '../../src/sim/checks/coverage-data';
 import { petLineCount } from '../../src/sim/checks/chk-008';
@@ -26,7 +26,7 @@ export function coverage(c: Content, findings: Finding[], opts: {
         ])),
         types: Object.fromEntries(c.charms.types.map(t => [
             t.id, {
-                sources: typeSources(c, t.id), phase: typeUnlockPhase(c, t.id), doubleGrant: typeSources(c, t.id).length > 1
+                sources: typeSources(c, t.id), phase: typeUnlockPhase(c, t.id), doubleGrant: typeSources(c, t.id).length > 1, copies: copiesBySource(c, t.id)
             }
         ])),
         projects: Object.fromEntries(c.projects.filter(p => !p.completeAtStart && (!opts.project || opts.project === p.id)).map(p => [
@@ -47,6 +47,15 @@ export function coverage(c: Content, findings: Finding[], opts: {
         ])), findings
     };
 }
+/** DEC-043: copies of one type granted by each source (starter, every project phase, every Heart). */
+function copiesBySource(c: Content, typeId: string): { starter: number; phase: number; heart: number } {
+    const sum = (items: { typeId: string; count: number }[]) => items.filter(item => item.typeId === typeId).reduce((n, item) => n + item.count, 0);
+    return {
+        starter: sum(c.charms.starterSet),
+        phase: sum(c.projects.flatMap(p => p.phaseRewards.flat())),
+        heart: sum(Object.values(c.pets).flatMap(p => p.wants.flatMap(rewardItems)))
+    };
+}
 export function coverageText(c: Content, r: ReturnType<typeof coverage>): string {
     const lines = [
         'A — Want coverage'
@@ -62,6 +71,7 @@ export function coverageText(c: Content, r: ReturnType<typeof coverage>): string
             }
         }
     }
+    lines.push('B0 — Copies granted per type by source (DEC-043)', ...Object.entries(r.types).map(([id, t]) => `  ${id}: starter ${t.copies.starter}, phase ${t.copies.phase}, heart ${t.copies.heart}`));
     lines.push('B — Type unlock timeline', JSON.stringify(r.types, null, 2), 'C — Clue cards', JSON.stringify(r.projects, null, 2), 'D — Dialogue lines', JSON.stringify(Object.fromEntries(Object.entries(r.pets).map(([id, p]) => [
         id, p.lines
     ])), null, 2), 'E — Reward kinds', JSON.stringify(Object.fromEntries(Object.entries(r.pets).map(([id, p]) => [
@@ -79,7 +89,7 @@ function wantCoverage(c: Content, petId: string, w: Want, index: number, finding
         }] : []);
     const relevant = findings.filter(f => (f.file === `pets/${petId}.json` && (f.path === '/wants' || f.path === `/wants/${index}` || f.path.startsWith(`/wants/${index}/`))) ||
         (f.ids.includes('CHK-009-08') && tags.some(t => t.tag === f.details?.tag)));
-    const checks = Object.fromEntries(['08', '09', '10', '12', '13', '15', '16'].map(n => {
+    const checks = Object.fromEntries(['08', '09', '10', '12', '13', '15', '16', '17'].map(n => {
         const id = `CHK-009-${n}`;
         const matches = relevant.filter(f => f.ids.includes(id));
         const applicable = n !== '16' || (petId === 'dog' && index === 0);
