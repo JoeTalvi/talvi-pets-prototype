@@ -1,0 +1,127 @@
+{
+  "seed": 1234,
+  "steps": [
+    {
+      "action": {
+        "type": "tick",
+        "dtMs": 0,
+        "move": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "action": {
+        "type": "advanceDialogue"
+      },
+      "repeat": "drain"
+    },
+    {
+      "action": {
+        "type": "debugSetCurrent",
+        "projectId": "pet-house",
+        "cents": 1500
+      }
+    },
+    {
+      "action": {
+        "type": "acknowledgeProject",
+        "projectId": "pet-house"
+      }
+    },
+    {
+      "action": {
+        "type": "cutsceneFinished"
+      }
+    },
+    {
+      "action": {
+        "type": "collectRewards"
+      }
+    },
+    {
+      "action": {
+        "type": "closeReveal"
+      }
+    },
+    {
+      "action": {
+        "type": "advanceDialogue"
+      },
+      "repeat": "drain"
+    },
+    {
+      "action": {
+        "type": "arrivalFinished"
+      }
+    },
+    {
+      "action": {
+        "type": "advanceDialogue"
+      },
+      "repeat": "drain"
+    },
+    {
+      "action": {
+        "type": "debugFulfilActiveWant",
+        "petId": "owl"
+      }
+    },
+    {
+      "action": {
+        "type": "advanceDialogue"
+      },
+      "repeat": "drain"
+    },
+    {
+      "action": {
+        "type": "debugFulfilActiveWant",
+        "petId": "owl"
+      }
+    },
+    {
+      "action": {
+        "type": "advanceDialogue"
+      },
+      "repeat": "drain"
+    },
+    {
+      "action": {
+        "type": "setDesignMode",
+        "on": true
+      }
+    },
+    {
+      "action": {
+        "type": "placeCharm",
+        "slotId": "garden-large-1",
+        "typeId": "potted-tree"
+      }
+    },
+    {
+      "action": {
+        "type": "placeCharm",
+        "slotId": "garden-small-3",
+        "typeId": "night-light"
+      }
+    },
+    {
+      "action": {
+        "type": "setDesignMode",
+        "on": false
+      }
+    },
+    {
+      "action": {
+        "type": "arrivalFinished"
+      }
+    },
+    {
+      "action": {
+        "type": "advanceDialogue"
+      },
+      "repeat": "drain"
+    }
+  ]
+}
