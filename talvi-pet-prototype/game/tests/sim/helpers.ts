@@ -104,3 +104,9 @@ export function run(content: Content, state: GameState, actions: Action[]): { st
 export const act = (type: 'cutsceneFinished' | 'collectRewards' | 'skipWait' | 'closeReveal' | 'arrivalFinished') =>
   ({ type }) as Action;
 export const ack: Action = { type: 'acknowledgeProject', projectId: 'pet-house' };
+
+/** WORK-032-1 fix 1: the feed banks nothing until the orientation is shown and closed; feed-mechanics rows start
+ * from a state whose orientation is already done so they measure the clock, not the opening. */
+export function orientationDone(state: GameState): GameState {
+  return { ...state, session: { ...state.session, orientationShown: true } };
+}

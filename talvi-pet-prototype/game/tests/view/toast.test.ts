@@ -58,7 +58,9 @@ describe('core §9 Q7(a)', () => {
     const s = await setup(st => { st.session.orientationShown = false; });
     s.context.store.dispatch({ type: 'tick', dtMs: 0, move: { x: 0, y: 0 } });
     expect(s.state().dialogue.current).not.toBeNull();
-    fireRoundups(s, 2);
+    // WORK-032-1 fix 1: the feed banks nothing while a dialogue is open, so the held round-ups come from the debug purchase.
+    for (let i = 0; i < 2; i++) s.context.store.dispatch({ type: 'debugSimulatePurchase' });
+    expect(fires(s)).toHaveLength(2);
     expect([toast(s).hidden, s.panels.toast.queued()]).toEqual([true, 2]);
     for (let i = 0; i < 10 && s.state().dialogue.current !== null; i++) s.context.store.dispatch({ type: 'advanceDialogue' });
     expect([toast(s).hidden, s.panels.toast.queued()]).toEqual([false, 1]);
