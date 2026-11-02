@@ -3166,6 +3166,60 @@
       "recordedBy": "WORK-034-1 / TASK-214",
       "history": [],
       "note": "WORK-034-1 MILESTONE-009 batch tier2-m4 under DEC-040/DEC-044/DEC-048; recolour of pets/owl-portrait: slate blue-grey plumage, cream face kept, frames identical; origin authored (not derived) because VERIFY-ASSET-007 makes a derived row inherit the parent's accepted status, which this lane may not record; creative verdict at the MILESTONE-009 play session; not status accepted"
+    },
+    {
+      "id": "world/site-garden-empty",
+      "type": "image",
+      "url": "world/site-garden-empty.png",
+      "px": {
+        "w": 640,
+        "h": 320
+      },
+      "status": "ai-placeholder",
+      "origin": "asset-bot",
+      "source": "Asset-Bot run /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/world/1793643528453-8bz7ix/candidate_002.png (JPEG bytes, SHA-256 1e0ea38d9bd83bdcedbae005bf0a5e984b3f648c90ad08f57c94ed992947c2b1), chosen of 3",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 9410,
+      "prompt": "A single wide, flat, overgrown garden plot lying on the ground, seen from a three-quarter top-down view, isolated on a plain pure white background. An untended oval patch of earth covered in long grass tufts, a few weeds and three or four small grey stones. Everything stays low and flat on the ground; nothing tall. No fence, no sign, no lettering, no house, no characters.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/production/pet_house_lv3.png",
+        "<GAME>/public/assets/world/tile-grass-base.png",
+        "<GAME>/public/assets/world/bush-1.png"
+      ],
+      "postProcess": "WORK-034-1 / TASK-218: JPEG candidate converted to PNG (sips); evidence/WORK-034-1/recipes/site-cutout.ts (SHA-256 ef71f2e9c99a4db9e2369fbd0f57bb948038b2afee75f0456a408fe53fb62681): border flood-fill white key (min RGB >= 228, chroma <= 22), 3 px soft alpha band, crop to opaque bbox, common area-average scale 0.5024 for both states, 640x320 canvas, base-centre (bottom row, centred x); 8-bit RGBA via tools/assets/refit.ts encodePng.",
+      "batch": "tier2-m4",
+      "hash": "d37fcab78bcc0117160583812b484bb97e5dad211a1692fb09fe4b3e2c8f16c1",
+      "recordedAt": "2026-11-02",
+      "recordedBy": "WORK-034-1 / TASK-218",
+      "history": [],
+      "note": "WORK-034-1 MILESTONE-009 batch tier2-m4 under DEC-040/DEC-044/DEC-048; site state empty: overgrown untended patch (long grass tufts, a few stones), shown while the site is locked; canvas 640x320, base-centre pivot (origin 0.5, 1), world anchor {x: 380, y: 955}, ground decal above the ground tiles and below everything else; creative verdict at the MILESTONE-009 play session; not status accepted"
+    },
+    {
+      "id": "world/site-garden-base",
+      "type": "image",
+      "url": "world/site-garden-base.png",
+      "px": {
+        "w": 640,
+        "h": 320
+      },
+      "status": "ai-placeholder",
+      "origin": "asset-bot",
+      "source": "Asset-Bot run /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/world/1793643557629-3dt236/candidate_002.png (JPEG bytes, SHA-256 ad543dd4972bdd772e38a66bc8991bc83c90dbc859605207cc73f22585493f03), chosen of 3",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 9420,
+      "prompt": "The same oval garden plot as Image 1, with exactly the same oval outline, size and position, now cleared and ready: all long grass and weeds removed, smooth dark brown mulch beds, a curving path of flat pale stepping stones across it, and a low edge of small flat pale stones around the rim. Everything lies flat on the ground; nothing tall. Isolated on a plain pure white background. No plants, no fence, no sign, no lettering, no house, no characters.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/world/1793643528453-8bz7ix/candidate_002.png",
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/production/pet_house_lv3.png",
+        "<GAME>/public/assets/world/tile-grass-base.png"
+      ],
+      "postProcess": "WORK-034-1 / TASK-218: JPEG candidate converted to PNG (sips); evidence/WORK-034-1/recipes/site-cutout.ts (SHA-256 ef71f2e9c99a4db9e2369fbd0f57bb948038b2afee75f0456a408fe53fb62681): border flood-fill white key (min RGB >= 228, chroma <= 22), 3 px soft alpha band, crop to opaque bbox, common area-average scale 0.5024 for both states, 640x320 canvas, base-centre (bottom row, centred x); 8-bit RGBA via tools/assets/refit.ts encodePng.",
+      "batch": "tier2-m4",
+      "hash": "2d406fc17162990bf1b53aeedd828df0d95d9065cbf91a37f0a7774f4d0ab200",
+      "recordedAt": "2026-11-02",
+      "recordedBy": "WORK-034-1 / TASK-218",
+      "history": [],
+      "note": "WORK-034-1 MILESTONE-009 batch tier2-m4 under DEC-040/DEC-044/DEC-048; site state base: cleared plot (two mulch beds, stepping-stone path, low stone edge), shown once unlocked; charms sit on it; canvas 640x320, base-centre pivot (origin 0.5, 1), world anchor {x: 380, y: 955}, ground decal above the ground tiles and below everything else; creative verdict at the MILESTONE-009 play session; not status accepted"
     }
   ]
 }
