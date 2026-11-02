@@ -62,9 +62,23 @@ function wanderTarget(step: Step): { target: PetBehaviour['target']; state: Game
   return { target: { wanderPointId: pick.item.id }, state: pick.state };
 }
 
-/** §2.2 idle timeout → walking toward the §2.4 target. */
+/** DEC-043 / OQ-26: looking for a stripped Heart charm — one sad emote and one `lines.stripped` line, once per type (FIFO). */
+function strippedReaction(step: Step): RuleResult {
+  const { content, petId } = step;
+  const pet = step.state.pets[petId];
+  const [typeId, ...rest] = pet.strippedPending;
+  const pick = petPick(step.state, petId, content.pets[petId].lines.stripped);
+  const state = { ...pick.state, pets: { ...pick.state.pets, [petId]: { ...pick.state.pets[petId], strippedPending: rest } } };
+  return transition(step, state, { ...pet.behaviour, phase: 'reacting', timerMs: content.tuning.bubbleTextMs,
+    target: null, verb: null, reaction: 'stripped' },
+  [{ type: 'pet.reacted', petId, reaction: 'stripped', slotId: null, typeId, line: pick.item, walkOver: false }]);
+}
+
+/** §2.2 idle timeout → walking toward the §2.4 target; a pending stripped charm is looked for first. */
 function decide(step: Step): RuleResult {
   const { content, petId, roomId } = step;
+  // The existing hold: no reaction bubble while a dialogue is open; it waits for a later decide.
+  if (step.state.pets[petId].strippedPending.length > 0 && step.state.dialogue.current === null) return strippedReaction(step);
   const behaviour = step.state.pets[petId].behaviour;
   const list = candidates(step);
   if (list.length === 0) {

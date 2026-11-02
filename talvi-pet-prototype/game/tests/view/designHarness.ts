@@ -16,7 +16,7 @@ export const REAL_STRINGS: Patch[] = Object.entries({
   'tpp.hud.decorate': 'Decorate', 'tpp.hud.done': 'Done', 'tpp.stars.label': '{stars} / {max} ★',
   'tpp.chooser.empty': 'Nothing you own fits this spot yet.', 'tpp.sheet.replace': 'Replace', 'tpp.sheet.remove': 'Remove',
   'tpp.bubble.love': 'Just right!', 'tpp.bubble.like': 'I like this.', 'tpp.bubble.dislike': 'Not quite my thing.',
-  'tpp.bubble.interrupted': 'Where did it go?', 'tpp.bubble.greeting': 'Hello!', 'tpp.bubble.want': 'Something {tag} would be lovely.',
+  'tpp.bubble.interrupted': 'Where did it go?', 'tpp.bubble.greeting': 'Hello!', 'tpp.bubble.stripped': 'Something is missing.', 'tpp.bubble.want': 'Something {tag} would be lovely.',
   'tpp.bubble.wantHidden': 'Watch its reactions.', 'tpp.bubble.chatter': 'A thought to share.',
   'tpp.hud.attention': 'A home phase is ready, step outside', 'tpp.stars.delta': '{sign}{amount} ★',
   'tpp.stars.explain': 'New kinds of charm fill the bar; repeats add a little.',

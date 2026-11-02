@@ -32,7 +32,9 @@ export const PetSchema = z.object({
     })).min(2).max(4), dislikes: z.array(Id), verbs: z.array(z.object({
         verb: Id, atStart: z.boolean()
     })), lines: z.object({
-        greeting: z.array(z.string()), chatter: z.array(z.string()), dislike: z.array(z.string()), intro: z.array(z.string()), wantAnnounce: z.record(z.string(), z.string()), vignettes: z.record(z.string(), z.array(z.string()))
+        greeting: z.array(z.string()), chatter: z.array(z.string()), dislike: z.array(z.string()), intro: z.array(z.string()), wantAnnounce: z.record(z.string(), z.string()), vignettes: z.record(z.string(), z.array(z.string())),
+        // DEC-043 / OQ-26 (WORK-033-2): the stripped-charm reaction's line, 1–3 entries
+        stripped: z.array(z.string().min(1).max(140)).min(1).max(3)
     }), wants: z.array(WantSchema)
 });
 export type Pet = z.infer<typeof PetSchema>;
