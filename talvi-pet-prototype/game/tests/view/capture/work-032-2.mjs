@@ -64,8 +64,8 @@ async function fix6a(browser) {
   const rec = await startStreamRecording(w.page, join(EV, 'frames-fix6a'));
   await w.page.waitForTimeout(300);
   const t0 = Date.now();
-  const typeId = await w.page.evaluate(() => { const { store, content } = window.__tpp, owned = store.getState().inventory.ownedTypeIds;
-    return content.charms.types.find(t => owned.includes(t.id) && t.sizeClass === 'small').id; });
+  const typeId = await w.page.evaluate(() => { const { store, content } = window.__tpp, counts = store.getState().inventory.counts;
+    return content.charms.types.find(t => counts[t.id] > 0 && t.sizeClass === 'small').id; });
   await dispatch(w.page, { type: 'placeCharm', slotId: 'floor-3', typeId });
   const burst = await w.page.evaluate(() => ({ stars: document.querySelectorAll('.tpp-burst-star').length, pe: getComputedStyle(document.querySelector('.tpp-stars-burst')).pointerEvents }));
   await w.page.waitForTimeout(200);

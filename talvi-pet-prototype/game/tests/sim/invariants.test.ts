@@ -139,7 +139,7 @@ function validRoomState(): { content: Content; state: GameState } {
 const breakers: [number, string, (state: GameState) => void][] = [
   [1, 'acknowledgedPhase above phaseOf', state => { state.projects['pet-house'].acknowledgedPhase = 3; }],
   [2, 'hearts ≠ fulfilledWantIds.length', state => { state.pets.dog.hearts = 1; }],
-  [3, 'placed type not owned', state => { state.inventory.ownedTypeIds = state.inventory.ownedTypeIds.filter(id => id !== 'lamp'); }],
+  [3, 'placed type not owned', state => { delete state.inventory.counts.lamp; }],
   [5, 'design mode on the street', state => { state.scene = { kind: 'street' }; }],
   [6, 'complete with acknowledgedPhase 4', state => {
     Object.assign(state.projects['pet-house'], { currentCents: 1500, acknowledgedPhase: 4, complete: true });

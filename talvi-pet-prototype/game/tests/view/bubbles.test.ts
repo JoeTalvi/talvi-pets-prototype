@@ -1,3 +1,4 @@
+import { giveCopies } from '../sim/helpers';
 // @vitest-environment jsdom
 import './setup';
 import { readFileSync } from 'node:fs';
@@ -13,7 +14,7 @@ const ICONS = ['ui/soft', 'ui/seat', 'charms/lamp', 'rooms/fixture'];
 const tick = (scene: InteriorScene, n = 1) => { for (let i = 0; i < n; i++) scene.update(0, 100); };
 const glyph = (scene: InteriorScene) => scene.bubble!.current()?.text ?? null;
 const childType = (scene: InteriorScene) => scene.bubble!.child?.constructor.name ?? null;
-const owning = (...ids: string[]) => (s: GameState) => { s.inventory.ownedTypeIds.push(...ids); };
+const owning = (...ids: string[]) => (s: GameState) => { giveCopies(s, [...ids]); };
 const play = (s: GameState) => { s.mode = 'play'; };
 const wantTwo = (s: GameState) => { s.pets.dog.fulfilledWantIds = ['soft-nap']; };
 
@@ -131,7 +132,7 @@ describe('VERIFY-MEC-008-016 want bubble', () => {
       play(s);
       s.pets.dog.fulfilledWantIds = ['soft-nap', 'bright-corner'];
       s.rooms['dog-room'].placements['floor-1'] = 'fern';
-      s.inventory.ownedTypeIds.push('fern');
+      giveCopies(s, ['fern']);
     } });
     for (let i = 0; i < 400 && !linesOf(context, 'pet.wantBubble').length; i++) tick(scene);
     expect(linesOf(context, 'pet.wantBubble')[0]).toMatchObject({ tag: null });

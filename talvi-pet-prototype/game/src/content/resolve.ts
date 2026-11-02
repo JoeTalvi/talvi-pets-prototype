@@ -81,8 +81,8 @@ function resolveCatalogue(ctx: Resolver): void {
             'types', i, 'sprite'
         ], 'CHK-004-03');
     });
-    c.charms.starterSet.forEach((t, i) => ref(t, types, 'charms.json', [
-        'starterSet', i
+    c.charms.starterSet.forEach((t, i) => ref(t.typeId, types, 'charms.json', [
+        'starterSet', i, 'typeId'
     ], 'charm', 'CHK-004-04'));
     c.verbs.forEach((v, i) => v.tags.forEach((t, j) => ref(t, tags, 'verbs.json', [
         'verbs', i, 'tags', j
@@ -145,14 +145,16 @@ function resolvePets(ctx: Resolver): void {
                             'wants', i, 'conditions', j, key
                         ], 'tag', 'CHK-009-03');
             });
-            if (w.reward.kind === 'types')
-                w.reward.typeIds.forEach((t, j) => ref(t, types, f, [
-                    'wants', i, 'reward', 'typeIds', j
-                ], 'charm', 'CHK-009-06'));
-            if (w.reward.kind === 'verb')
-                ref(w.reward.verb, verbs, f, [
-                    'wants', i, 'reward', 'verb'
-                ], 'verb', 'CHK-009-06');
+            w.reward.forEach((r, k) => {
+                if (r.kind === 'items')
+                    r.items.forEach((t, j) => ref(t.typeId, types, f, [
+                        'wants', i, 'reward', k, 'items', j, 'typeId'
+                    ], 'charm', 'CHK-009-06'));
+                if (r.kind === 'verb')
+                    ref(r.verb, verbs, f, [
+                        'wants', i, 'reward', k, 'verb'
+                    ], 'verb', 'CHK-009-06');
+            });
         });
     }
 }
@@ -168,8 +170,8 @@ function resolveProjects(ctx: Resolver): void {
         ref(p.residentPetId, pets, f, [
             ...base, 'residentPetId'
         ], 'pet', 'CHK-002-02');
-        p.phaseRewards.forEach((ts, j) => ts.forEach((t, k) => ref(t, types, f, [
-            ...base, 'phaseRewards', j, k
+        p.phaseRewards.forEach((ts, j) => ts.forEach((t, k) => ref(t.typeId, types, f, [
+            ...base, 'phaseRewards', j, k, 'typeId'
         ], 'charm', 'CHK-002-03')));
         p.clueCards.forEach((card, j) => {
             asset(card.icon, 'image', f, [

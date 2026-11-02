@@ -171,7 +171,7 @@ async function bedBeat() {
   const placed = first(all, 'charm.placed', { slotId: 'large-1', typeId: 'dog-bed' }), stars = first(all, 'stars.changed', { from: 0, to: 4 });
   const fulfilled = first(all, 'want.fulfilled', { wantId: 'soft-nap' }), heart = first(all, 'heart.earned', { hearts: 1 }), love = all.find(l => l.type === 'pet.reacted' && l.t >= (placed?.t ?? 0) && l.reaction !== 'greeting');
   const using = all.find(l => l.type === 'pet.phaseChanged' && l.to === 'using' && l.t >= (placed?.t ?? 0)), reacting = all.find(l => l.type === 'pet.phaseChanged' && l.to === 'reacting' && l.t >= (placed?.t ?? 0));
-  const unlocked = all.filter(l => l.type === 'types.unlocked' && l.t >= (placed?.t ?? 0));
+  const unlocked = all.filter(l => l.type === 'items.granted' && l.source === 'heart' && l.t >= (placed?.t ?? 0));
   const vignette = all.find(l => l.type === 'dialogue.opened' && l.script?.source === 'vignette');
   const dogSamples = samples.filter(x => x.dog);
   const usingSamples = dogSamples.filter(x => x.dog.phase === 'using'), walkSamples = dogSamples.filter(x => x.dog.phase === 'walking');
@@ -181,8 +181,8 @@ async function bedBeat() {
     "pet.phaseChanged reacting → using {verb nap}; pet.reacted (love ❤️); Dog depth above the bed (930) while using",
     { reacting: strip(reacting), using: strip(using), reaction: strip(love), walkSamples: walkSamples.length, usingSamples: usingSamples.length, usingDepths: [...new Set(usingSamples.map(x => x.dog.depth))].slice(0, 5), usingAnims: [...new Set(usingSamples.map(x => x.dog.anim))], walkFlipX: [...new Set(walkSamples.map(x => x.dog.flipX))], walkDepthEqY: walkSamples.every(x => x.dog.depth === x.dog.y) },
     { line: using, deviation: 'gate default (verbatim): "bed anchor onto the cushion with a draw-above rule for the using pet; keep the wall-anchor facing; both captured as loops for the user\'s rewind decision."' });
-  beat('1:00 want 1 fulfilled → heart.earned {1}; reward named (rug, cushion unlocked)', fulfilled && heart && unlocked.some(u => ['rug', 'cushion'].every(t => u.typeIds.includes(t))),
-    "want.fulfilled {soft-nap}; heart.earned {hearts 1}; types.unlocked {rug, cushion}", { fulfilled: strip(fulfilled), heart: strip(heart), unlocked: unlocked.map(strip) }, { line: heart });
+  beat('1:00 want 1 fulfilled → heart.earned {1}; reward named (rug, cushion unlocked)', fulfilled && heart && ['rug', 'cushion'].every(t => unlocked.some(u => u.typeId === t)),
+    "want.fulfilled {soft-nap}; heart.earned {hearts 1}; items.granted {rug, 1, heart}, {cushion, 1, heart}", { fulfilled: strip(fulfilled), heart: strip(heart), unlocked: unlocked.map(strip) }, { line: heart });
   const timeline = await vis(), shownV = timeline.find(v => v.panel === 'dialogue' && !v.hidden && placed && v.t >= wallOf(placed));
   const def = { charmPlacedWall: placed?.wall, usingWall: using?.wall, vignetteOpenedWall: vignette?.wall, boxShownWall: shownV && new Date(shownV.t).toISOString(),
     boxAfterPlacedMs: shownV && placed ? shownV.t - wallOf(placed) : null, boxAfterReactingMs: shownV && reacting ? shownV.t - wallOf(reacting) : null };
@@ -289,6 +289,15 @@ async function celebrationBeat() {
   await sampling(true);
   const out = await steer(page, 693, 575, () => window.__tpp.store.getState().scene.kind === 'street', 30000);
   await page.waitForFunction(() => window.__tpp.game.scene.isActive('Street'), null, { timeout: 10000 });
+  // WORK-033-1: since the 2026-10-26 play session ("Wait for tap", a969075) arriving on the street no longer starts an owed
+  // celebration; the player taps the house (the m2 trace's walkOutAndTap path). Stale since then, failing identically at 0dd59ad.
+  await page.waitForTimeout(600);
+  const iconBeforeTap = await page.evaluate(() => window.__tpp.game.scene.getScene('Street').houses.get('pet-house').icon.visible);
+  const tapPoint = await page.evaluate(() => {
+    const st = window.__tpp.game.scene.getScene('Street'), h = st.houses.get('pet-house'), b = h.getBounds(), cam = st.cameras.main, r = window.__tpp.game.canvas.getBoundingClientRect(), k = r.width / 1920;
+    return { x: r.left + (b.centerX - cam.scrollX) * k, y: r.top + (b.centerY + b.height * 0.15 - cam.scrollY) * k };
+  });
+  await page.mouse.click(tapPoint.x, tapPoint.y, { delay: 40 });
   const opened = await until(page, () => !document.querySelector('.tpp-milestonePopup').hidden, null, 25000);
   mark('popupOpen');
   await sampling(false);
@@ -299,9 +308,9 @@ async function celebrationBeat() {
   const stepped = all.find(l => l.type === 'celebration.stepped' && l.step === 'milestone' && l.t >= (cs?.t ?? 0));
   const icon = await page.evaluate(() => window.__tpp.game.scene.getScene('Street').houses.get('pet-house').icon.visible);
   const outFade = samples.filter(x => sc && x.t >= wallOf(sc) && x.scene === 'street').slice(0, 30);
-  beat('4:00 walk out → street (VERIFY-PRES-005 out); attention icon / tap the house', out && sc && cs,
-    'scene.changed {to street}; celebration.started {0 → 1}', { sceneChanged: strip(sc), celebrationStarted: strip(cs), iconVisibleAtPopup: icon, acknowledge: all.filter(l => l.type === 'action.rejected' || (l.type === 'input.tap' && /house/.test(l.target ?? ''))).map(strip), avatarDuringOutFade: [...new Set(outFade.map(x => `${x.storeAvatar.x},${x.storeAvatar.y}`))] },
-    { line: cs, deviation: 'mec-002 §2 "Arrival on the street (onStreetEntered)" (normative): arriving on the street with a phase owed acknowledges it in the door tick, so the celebration starts on entry; the design §4 4:00 "on the street, taps the house" step and the street attention icon are not reachable after a phase reached inside (the icon + tap path is read in m1-rows MEC-002-028 from a reload onto the street). Proposed design §4 text: "Player leaves through the door; arriving on the street starts the cutscene"' });
+  beat('4:00 walk out → street (VERIFY-PRES-005 out); attention icon / tap the house', out && sc && cs && iconBeforeTap && cs.t > sc.t,
+    'scene.changed {to street}; attention icon visible; tap the house → celebration.started {0 → 1}', { sceneChanged: strip(sc), celebrationStarted: strip(cs), iconBeforeTap, tapPoint, iconVisibleAtPopup: icon, acknowledge: all.filter(l => l.type === 'action.rejected' || (l.type === 'input.tap' && /house/.test(l.target ?? ''))).map(strip), avatarDuringOutFade: [...new Set(outFade.map(x => `${x.storeAvatar.x},${x.storeAvatar.y}`))] },
+    { line: cs, deviation: 'WORK-033-1 re-pin: the mec-002 amendment of 2026-10-26 (play session "Wait for tap") removed the street-arrival acknowledgement; the design §4 4:00 "on the street, taps the house" step is the as-built path (as in the m2 trace walkOutAndTap)' });
   const dom = await domRead(page);
   const project = (await getState(page)).projects['pet-house'];
   const price = `$${((1500 - project.currentCents) / 100).toFixed(2)}`;
@@ -422,9 +431,9 @@ try {
   writeJson(join(evidenceRoot, 'storage-reads.json'), storage);
   const lm = storage.logMirror;
   const stable = Object.entries(cmp).filter(([k]) => !['feed', 'pets'].includes(k));
-  beat('storage: tpp.save parses (schemaVersion 1) and equals the in-memory state on reload (tick-driven feed/pets excepted); tpp.log has session.started, periodic save.written, input.joystick and input.tap',
-    saved.schemaVersion === 1 && stable.every(([, v]) => v) && lm.sessionStarted >= 1 && lm.saveWritten > 1 && lm.inputJoystick >= 1 && lm.inputTap >= 1, 'as stated', { endOfTrace: { schemaVersion: saved.schemaVersion, perKeyEqualOnReload: cmp, inMemoryDiffKeysAtRead: storage.endOfTrace.inMemoryDiffKeys }, logMirror: lm });
-  beat('storage: one audio.locked line in tpp.log (WORK-004-2 capture note)', lm.audioLocked === 1 && count(all, 'audio.locked') === 1, 'exactly one audio.locked',
+  beat('storage: tpp.save parses (schemaVersion 2) and equals the in-memory state on reload (tick-driven feed/pets excepted); tpp.log has session.started, periodic save.written, input.joystick and input.tap',
+    saved.schemaVersion === 2 && stable.every(([, v]) => v) && lm.sessionStarted >= 1 && lm.inputJoystick >= 1 && lm.inputTap >= 1, 'as stated (save.written counted, not gated: play-session Q18 stopped logging routine writes, as the m2 trace notes)', { endOfTrace: { schemaVersion: saved.schemaVersion, perKeyEqualOnReload: cmp, inMemoryDiffKeysAtRead: storage.endOfTrace.inMemoryDiffKeys }, logMirror: lm });
+  beat('storage: at most one audio.locked line in tpp.log (WORK-004-2 capture note; the m3 trace rule)', lm.audioLocked <= 1 && count(all, 'audio.locked') <= 1, 'audio.locked ≤ 1',
     { mirror: lm.audioLocked, memory: count(all, 'audio.locked'), cause: 'createAudio records audio.locked only when a sound plays while game.sound.locked; the first sound (sfx/place) follows real taps, which unlock audio, so the record is not reached through real inputs in this flow' });
   beat('reload mid-celebration (the save just before Collect) → milestone popup open at once over the framed house', storage.midCelebrationReload.popupOpenAtStreetActive && storage.midCelebrationReload.popupOpen && storage.midCelebrationReload.stepped === 0,
     'milestone popup visible when the Street is active; no celebration.stepped dispatched', storage.midCelebrationReload);

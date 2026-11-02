@@ -111,13 +111,21 @@
           "tag": "seat"
         }
       ],
-      "reward": {
-        "kind": "types",
-        "typeIds": [
-          "rug",
-          "cushion"
-        ]
-      },
+      "reward": [
+        {
+          "kind": "items",
+          "items": [
+            {
+              "typeId": "rug",
+              "count": 1
+            },
+            {
+              "typeId": "cushion",
+              "count": 1
+            }
+          ]
+        }
+      ],
       "rewardLabel": "2 charm types: Rug and Cushion"
     },
     {
@@ -138,10 +146,12 @@
           "tagB": "plant"
         }
       ],
-      "reward": {
-        "kind": "verb",
-        "verb": "sit-on"
-      },
+      "reward": [
+        {
+          "kind": "verb",
+          "verb": "sit-on"
+        }
+      ],
       "rewardLabel": "New trick: sit on"
     },
     {
@@ -158,9 +168,11 @@
           "hidden": true
         }
       ],
-      "reward": {
-        "kind": "vignette"
-      },
+      "reward": [
+        {
+          "kind": "vignette"
+        }
+      ],
       "rewardLabel": "A little story"
     },
     {
@@ -181,13 +193,21 @@
           "tagB": "soft"
         }
       ],
-      "reward": {
-        "kind": "types",
-        "typeIds": [
-          "toy-chest",
-          "seed-dish"
-        ]
-      },
+      "reward": [
+        {
+          "kind": "items",
+          "items": [
+            {
+              "typeId": "toy-chest",
+              "count": 1
+            },
+            {
+              "typeId": "seed-dish",
+              "count": 1
+            }
+          ]
+        }
+      ],
       "rewardLabel": "2 charm types: Toy Chest and Seed Dish"
     },
     {
@@ -212,9 +232,11 @@
           "min": 24
         }
       ],
-      "reward": {
-        "kind": "vignette"
-      },
+      "reward": [
+        {
+          "kind": "vignette"
+        }
+      ],
       "rewardLabel": "A little story"
     }
   ]

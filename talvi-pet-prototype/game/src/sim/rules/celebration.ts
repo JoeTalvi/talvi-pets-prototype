@@ -3,7 +3,7 @@ import type { Action } from '../actions';
 import type { RuleResult, SimEvent } from '../events';
 import type { GameState, ProjectId } from '../state';
 import { buildScript, enqueueScript } from './dialogue';
-import { grantTypes } from './inventory';
+import { grantItems } from './inventory';
 import {
   completeNowOffered, completeNowPriceCents, creditProject, owedPhases, phaseOf, projectOf,
 } from './projects';
@@ -29,8 +29,8 @@ export function startCelebration(content: Content, state: GameState, projectId: 
   const toPhase = phaseOf(state.projects[projectId].currentCents, project.goalCents);
   const unlockedTypeIds: string[] = [];
   for (let phase = fromPhase + 1; phase <= toPhase; phase++)
-    for (const id of project.phaseRewards[phase - 1] ?? [])
-      if (!unlockedTypeIds.includes(id)) unlockedTypeIds.push(id);
+    for (const { typeId } of project.phaseRewards[phase - 1] ?? [])
+      if (!unlockedTypeIds.includes(typeId)) unlockedTypeIds.push(typeId);
   const completes = toPhase === 5;
   const celebration: Celebration = { projectId, fromPhase, toPhase, completes,
     unlockedTypeIds, step: 'cutscene', skipTaken: false };
@@ -73,7 +73,9 @@ export function cutsceneFinished(content: Content, state: GameState,
 function collect(content: Content, state: GameState): RuleResult {
   const celebration = state.celebration as Celebration;
   const { projectId, fromPhase, toPhase, completes } = celebration;
-  const granted = grantTypes(content, state, celebration.unlockedTypeIds, 'phase');
+  // DEC-043: every item of phases fromPhase+1..toPhase, phase then list order, one `items.granted` each.
+  const items = projectOf(content, projectId).phaseRewards.slice(fromPhase, toPhase).flat();
+  const granted = grantItems(content, state, items, 'phase');
   const project = granted.state.projects[projectId];
   const next: GameState = { ...granted.state,
     projects: { ...granted.state.projects, [projectId]: { ...project,

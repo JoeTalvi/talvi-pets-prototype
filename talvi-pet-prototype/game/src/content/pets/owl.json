@@ -108,9 +108,11 @@
           "tag": "tall"
         }
       ],
-      "reward": {
-        "kind": "vignette"
-      },
+      "reward": [
+        {
+          "kind": "vignette"
+        }
+      ],
       "rewardLabel": "A little story"
     },
     {
@@ -131,13 +133,21 @@
           "tagB": "plant"
         }
       ],
-      "reward": {
-        "kind": "types",
-        "typeIds": [
-          "potted-tree",
-          "night-light"
-        ]
-      },
+      "reward": [
+        {
+          "kind": "items",
+          "items": [
+            {
+              "typeId": "potted-tree",
+              "count": 1
+            },
+            {
+              "typeId": "night-light",
+              "count": 1
+            }
+          ]
+        }
+      ],
       "rewardLabel": "2 charm types: Potted Tree, Night Light"
     },
     {
@@ -158,10 +168,12 @@
           "hidden": true
         }
       ],
-      "reward": {
-        "kind": "verb",
-        "verb": "nap"
-      },
+      "reward": [
+        {
+          "kind": "verb",
+          "verb": "nap"
+        }
+      ],
       "rewardLabel": "New trick: nap"
     },
     {
@@ -182,13 +194,21 @@
           "tagB": "light"
         }
       ],
-      "reward": {
-        "kind": "types",
-        "typeIds": [
-          "mossy-log",
-          "standing-frame"
-        ]
-      },
+      "reward": [
+        {
+          "kind": "items",
+          "items": [
+            {
+              "typeId": "mossy-log",
+              "count": 1
+            },
+            {
+              "typeId": "standing-frame",
+              "count": 1
+            }
+          ]
+        }
+      ],
       "rewardLabel": "2 charm types: Mossy Log, Standing Frame"
     },
     {
@@ -208,9 +228,11 @@
           "min": 28
         }
       ],
-      "reward": {
-        "kind": "vignette"
-      },
+      "reward": [
+        {
+          "kind": "vignette"
+        }
+      ],
       "rewardLabel": "A little story"
     }
   ]

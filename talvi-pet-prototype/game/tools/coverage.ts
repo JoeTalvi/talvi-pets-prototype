@@ -4,6 +4,8 @@ import { args, readInput, evaluate, output, findingText, zodText, fail, readCont
 import { coverage, coverageText } from './content/coverage';
 import { loadContent } from '../src/content/load';
 import type { Content } from '../src/content/types';
+import { itemTypeIds } from '../src/content/schema/charms';
+import { rewardItems } from '../src/content/schema/pet';
 import type { ConditionView } from '../src/sim/events';
 import { checkInvariants } from '../src/sim/invariants';
 import { boundaryCents, revealView, starsOf, wantConditions } from '../src/sim/select';
@@ -57,15 +59,16 @@ export function syntheticState(content: Content, edit: (state: GameState) => voi
 
 /** `starter` | `phase:<n>` (starter + the first n phase rewards of the rising projects, content order) |
  * `hearts:<k>` (starter + the type rewards of the pet's first k wants) | `all`. Owned set only (§2.4). */
+/** The granted type ids (distinct, first-grant order); the panel preview holds one copy of each (DEC-043). */
 export function ownedSet(content: Content, petId: string, owned: string): string[] {
-  const starter = [...content.charms.starterSet];
+  const starter = itemTypeIds(content.charms.starterSet);
   const [kind, count] = owned.split(':'), n = Number(count);
   if (owned === 'starter') return starter;
   if (owned === 'all') return content.charms.types.map(type => type.id);
   if ((kind !== 'phase' && kind !== 'hearts') || !Number.isInteger(n) || n < 0) throw new Error('--owned must be starter|phase:<n>|hearts:<k>|all');
   const extra = kind === 'phase'
-    ? content.projects.filter(project => !project.completeAtStart).flatMap(project => project.phaseRewards).slice(0, n).flat()
-    : content.pets[petId].wants.slice(0, n).flatMap(want => (want.reward.kind === 'types' ? want.reward.typeIds : []));
+    ? itemTypeIds(content.projects.filter(project => !project.completeAtStart).flatMap(project => project.phaseRewards).slice(0, n).flat())
+    : itemTypeIds(content.pets[petId].wants.slice(0, n).flatMap(rewardItems));
   return [...new Set([...starter, ...extra])];
 }
 
@@ -88,7 +91,7 @@ export function panelPreview(content: Content, preview: Extract<Preview, { kind:
   if (index < 0) throw new Error(`Unknown want "${preview.wantId}" for pet ${preview.petId}`);
   const roomId = Object.values(content.rooms).find(room => room.residentPetId === pet.id)!.id;
   const state = syntheticState(content, draft => {
-    draft.inventory.ownedTypeIds = ownedSet(content, pet.id, preview.owned);
+    draft.inventory.counts = Object.fromEntries(ownedSet(content, pet.id, preview.owned).map(id => [id, 1])); // one copy each, none placed
     draft.pets[pet.id].fulfilledWantIds = pet.wants.slice(0, index).map(want => want.id);
     draft.pets[pet.id].hearts = index;
     draft.pets[pet.id].introduced = true;

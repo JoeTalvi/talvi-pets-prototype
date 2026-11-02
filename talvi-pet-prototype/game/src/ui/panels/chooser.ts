@@ -180,7 +180,7 @@ export function createChooser(root: HTMLElement, context: ViewContext): Panel {
     store.subscribe('dialogue.opened', () => close('dialogue')),
     store.subscribe('scene.changed', () => close('cancel')),
     store.subscribe('state.reset', () => close('cancel')),
-    store.subscribe('types.unlocked', render),
+    store.subscribe('items.granted', render),
   ];
   return {
     open, close: reason => close(reason as ChooserCloseReason | undefined),

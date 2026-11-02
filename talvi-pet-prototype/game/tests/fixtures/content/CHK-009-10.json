@@ -3,15 +3,24 @@
     "file": "projects.json",
     "path": "/projects/1/phaseRewards/0",
     "value": [
-      "ball"
+      {
+        "typeId": "ball",
+        "count": 1
+      }
     ]
   },
   {
     "file": "projects.json",
     "path": "/projects/1/phaseRewards/1",
     "value": [
-      "lamp-planter",
-      "fern"
+      {
+        "typeId": "lamp-planter",
+        "count": 1
+      },
+      {
+        "typeId": "fern",
+        "count": 1
+      }
     ]
   }
 ]

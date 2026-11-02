@@ -222,7 +222,7 @@ async function mec004() {
   await drain(page); await toggle(page, 'design');
   await tapSlot(page, 'floor-3'); await chooserOpen(page); await page.waitForTimeout(300);
   const cards = await page.evaluate(() => [...document.querySelectorAll('.tpp-chooser .tpp-charm-card')].map(c => ({ typeId: c.dataset.typeId, img: !!c.querySelector('img'), slot: !!c.querySelector('.tpp-asset-slot'), name: c.querySelector('.tpp-charm-name, h3, strong')?.textContent ?? c.innerText.split('\n')[0], tags: c.querySelectorAll('.tpp-tag').length, text: c.innerText.replace(/\s+/g, ' ').trim() })));
-  const owned = (await getState(page)).inventory.ownedTypeIds;
+  const owned = Object.keys((await getState(page)).inventory.counts);
   const png1 = await still(page, 'chooser-small', { seededSave: 'dog-room-intro-done (real)', note: 'chooser on the empty small slot floor-3' });
   await w.context.close();
   const smallOwned = owned.filter(id => ['lamp', 'ball', 'food-bowl', 'fern', 'cushion', 'rug', 'lamp-planter', 'tall-lamp', 'stool', 'toy-basket', 'lantern'].includes(id));
@@ -319,7 +319,7 @@ async function mec008009() {
   const box0 = await domRead(page);
   const png = await still(page, 'mec-009-020-reload-vignette-1080', { seededSave: 'save-v1.vignette.real.json', note: 'reload mid-chain: the vignette box open at line 0' });
   // a view replay of the pet sequence = the fulfilment chain re-emitted after the reload; the sim continuing the saved behaviour (phase changes) is not one
-  const petSeq = all0.filter(l => ['pet.reacted', 'heart.earned', 'want.fulfilled', 'charm.placed', 'types.unlocked'].includes(l.type)).map(strip);
+  const petSeq = all0.filter(l => ['pet.reacted', 'heart.earned', 'want.fulfilled', 'charm.placed', 'items.granted'].includes(l.type)).map(strip);
   const continuation = all0.filter(l => l.type === 'pet.phaseChanged').map(strip);
   // -017: taps on the room, the HUD and the Dog → one dialogue transition each; nothing reaches the world
   const hud = await page.locator('.tpp-design-toggle').boundingBox(), dog = s0.pets.dog.behaviour;
@@ -346,7 +346,7 @@ async function mec008009() {
   const wa = beatOf(t, "0:30 want panel"), wb = beatOf(t, '2:00 want 2 panel'), wd = beatOf(t, '5:00 want.fulfilled');
   rowFile('mec-009', [
     row('VERIFY-MEC-009-020', 'Chrome (no pet sequence)', s0.pets.dog.hearts >= 1 && box0.dialogue.visible && s0.dialogue.current?.index === 0 && petSeq.length === 0 ? 'pass' : 'fail', 'Hearts and unlocks present, box open at line 0, no view replay of the pet sequence',
-      { hearts: s0.pets.dog.hearts, owned: s0.inventory.ownedTypeIds, current: s0.dialogue.current && { source: s0.dialogue.current.source, index: s0.dialogue.current.index }, petSequenceLines: petSeq, simContinuation: continuation, savedBehaviour: JSON.parse(save('save-v1.vignette')).state.pets.dog.behaviour }, [png]),
+      { hearts: s0.pets.dog.hearts, owned: s0.inventory.counts, current: s0.dialogue.current && { source: s0.dialogue.current.source, index: s0.dialogue.current.index }, petSequenceLines: petSeq, simContinuation: continuation, savedBehaviour: JSON.parse(save('save-v1.vignette')).state.pets.dog.behaviour }, [png]),
     row('VERIFY-MEC-009-021', 'Chrome', wa?.ok && wb?.ok && wd?.ok ? 'pass' : 'fail', 'states a → b → d across the trace, reward named before earned, ♥ updates', { a: wa?.found, b: wb?.found, d: wd?.found?.wantFlash ?? null },
       ['trace-report.json', 'captures/screen-10-want-state-a-1080-001.png', 'captures/screen-10-want-state-b-1080-001.png', 'captures/screen-10-want-state-d-1080-001.png']),
     row('VERIFY-MEC-009-013 (action-path half)', 'none exists', 'not-run', 'vignette then announce in order (the trace)', beatOf(t, 'VERIFY-MEC-009-013')?.found ?? null, ['trace-report.json'], 'unreachable under Q6(a)')]);
@@ -400,7 +400,7 @@ async function contentWalk() {
   await debugClick(page, 'Unlock all charm types'); await setDebug(page, false);
   await drain(page);
   const types = await page.evaluate(() => window.__tpp.content.charms.types ? window.__tpp.content.charms.types.map(t => ({ id: t.id, sizeClass: t.sizeClass })) : Object.values(window.__tpp.content.charms).map(t => ({ id: t.id, sizeClass: t.sizeClass })));
-  const owned = (await getState(page)).inventory.ownedTypeIds;
+  const owned = Object.keys((await getState(page)).inventory.counts);
   const placedReads = [], stills = [];
   await toggle(page, 'design');
   for (const [cls, slots] of Object.entries(CLASSES)) {

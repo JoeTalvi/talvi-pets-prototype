@@ -51,7 +51,7 @@ describe('CONTRACT-ACTIONS v1.4 reduce', () => {
   });
 });
 
-it('CONTRACT-ACTIONS v1.4 reduce handles all 24 actions: a minimal dispatch of each returns a RuleResult, none throws', () => {
+it('CONTRACT-ACTIONS v1.5 reduce handles all 25 actions: a minimal dispatch of each returns a RuleResult, none throws', () => {
   const { content, state } = dogRoomDesign();
   const minimal: Record<Action['type'], Action> = {
     tick: tick(), setDesignMode: { type: 'setDesignMode', on: false },
@@ -65,7 +65,8 @@ it('CONTRACT-ACTIONS v1.4 reduce handles all 24 actions: a minimal dispatch of e
     debugSetSeed: { type: 'debugSetSeed', seed: 7 }, debugSetCurrent: { type: 'debugSetCurrent', projectId: 'pet-house', cents: 10 },
     debugJumpPhase: { type: 'debugJumpPhase', projectId: 'pet-house' },
     debugCompleteProject: { type: 'debugCompleteProject', projectId: 'pet-house' },
-    debugUnlockAllTypes: { type: 'debugUnlockAllTypes' }, debugSetStarsVisible: { type: 'debugSetStarsVisible', on: false },
+    debugUnlockAllTypes: { type: 'debugUnlockAllTypes' }, debugGrantCopies: { type: 'debugGrantCopies', typeId: 'lamp', count: 1 },
+    debugSetStarsVisible: { type: 'debugSetStarsVisible', on: false },
     debugSetMuted: { type: 'debugSetMuted', on: true }, debugSetTesterLabel: { type: 'debugSetTesterLabel', text: ' T1 ' },
     reset: { type: 'reset' },
   };

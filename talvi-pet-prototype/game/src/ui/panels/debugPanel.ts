@@ -4,6 +4,7 @@ import type { SimEvent } from '@sim/events';
 import type { GameState } from '@sim/state';
 import { activeProjectId, starsOf } from '@sim/select';
 import { parseSave, STORAGE_KEYS } from '@app/persistence';
+import { SAVE_SCHEMA_VERSION } from '@sim/state.schema';
 import type { ViewContext, FpsSample, FpsState } from '@view/context';
 import { debugPanel } from './templates/debugPanel';
 import { setAlignmentGrid } from '../overlay';
@@ -287,7 +288,7 @@ function bindFixture(b: Binding): void {
   listen(load, () => {
     const result = parseSave(content, row('Fixture').querySelector('textarea')!.value);
     if ('discarded' in result) { showError('Fixture', `Invalid fixture: ${result.discarded}. No state was changed.`); return; }
-    const json = JSON.stringify({ schemaVersion: 1, savedAt: new Date().toISOString(), state: result.state });
+    const json = JSON.stringify({ schemaVersion: SAVE_SCHEMA_VERSION, savedAt: new Date().toISOString(), state: result.state });
     try {
       context.persistence.destroy(); // flush + detach first, so neither the debounce nor pagehide overwrites the fixture before the reload
       storage().setItem(STORAGE_KEYS.save, json);

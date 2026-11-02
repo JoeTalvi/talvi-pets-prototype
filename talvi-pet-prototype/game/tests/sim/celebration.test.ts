@@ -7,7 +7,7 @@ import { completeNowOffered, doorEnabled } from '../../src/sim/select';
 import type { GameState } from '../../src/sim/state';
 import { loadContent } from '../../src/content/load';
 import { files, manifest, patchFiles, validContent } from '../content/helpers';
-import { act, ack, deepFreeze, eventsOf, owing, run, tick } from './helpers';
+import { act, ack, deepFreeze, eventsOf, owing, run, tick, giveCopies } from './helpers';
 
 const types = (events: SimEvent[]) => events.map(event => event.type);
 const rejection = (action: Action, reason: string) => [{ type: 'action.rejected', action, reason }];
@@ -38,7 +38,7 @@ it('VERIFY-MEC-002-010 fast-forward payload 1 → 4 (fixture union is three ids:
 
 it('MEC-002 §2.4 startCelebration keeps the first occurrence of a reward repeated across phases', () => {
   const content = loadContent(manifest, patchFiles(files(), [
-    { file: 'projects.json', path: '/projects/1/phaseRewards/2', value: ['lamp-planter', 'bookshelf'] }]));
+    { file: 'projects.json', path: '/projects/1/phaseRewards/2', value: [{ typeId: 'lamp-planter', count: 1 }, { typeId: 'bookshelf', count: 1 }] }]));
   expect(run(content, owing(content, 1, 1260), [ack]).state.celebration!.unlockedTypeIds)
     .toEqual(['lamp-planter', 'bookshelf', 'perch-branch']);
 });
@@ -67,20 +67,23 @@ it('VERIFY-MEC-002-013 collect grants then acknowledges (fixture union: three id
   const content = validContent();
   const { state, results } = run(content, owing(content, 1, 1260), [ack, act('cutsceneFinished'), act('collectRewards')]);
   expect(results[2].events).toEqual([
-    { type: 'types.unlocked', typeIds: ['lamp-planter', 'bookshelf', 'perch-branch'], source: 'phase' },
+    { type: 'items.granted', typeId: 'lamp-planter', count: 1, source: 'phase' }, { type: 'items.granted', typeId: 'bookshelf', count: 1, source: 'phase' },
+    { type: 'items.granted', typeId: 'perch-branch', count: 1, source: 'phase' },
     { type: 'rewards.collected', projectId: 'pet-house', phases: [2, 3, 4], typeIds: ['lamp-planter', 'bookshelf', 'perch-branch'] },
     { type: 'celebration.stepped', step: 'reveal' }]);
   expect(state.projects['pet-house']).toMatchObject({ acknowledgedPhase: 4, complete: false });
-  expect(state.inventory.ownedTypeIds).toEqual(expect.arrayContaining(['lamp-planter', 'bookshelf', 'perch-branch']));
+  expect(state.inventory.counts).toMatchObject({ 'lamp-planter': 1, bookshelf: 1, 'perch-branch': 1 });
   expect(state.celebration!.step).toBe('reveal');
 });
 
-it('VERIFY-MEC-004-006 phase grant filters owned ids through reduce: bookshelf already owned', () => {
+it('VERIFY-MEC-004-006 (rewritten, DEC-043) phase grant through reduce: every item granted, an owned bookshelf gains a copy', () => {
   const content = validContent();
   const state = owing(content, 1, 1260);
-  state.inventory.ownedTypeIds.push('bookshelf');
+  giveCopies(state, ['bookshelf']);
   const { results } = run(content, state, [ack, act('cutsceneFinished'), act('collectRewards')]);
-  expect(results[2].events[0]).toEqual({ type: 'types.unlocked', typeIds: ['lamp-planter', 'perch-branch'], source: 'phase' });
+  expect(eventsOf(results[2].events, 'items.granted')).toEqual([
+    { type: 'items.granted', typeId: 'lamp-planter', count: 1, source: 'phase' }, { type: 'items.granted', typeId: 'bookshelf', count: 1, source: 'phase' }, { type: 'items.granted', typeId: 'perch-branch', count: 1, source: 'phase' }]);
+  expect(results[2].state.inventory.counts.bookshelf).toBe(2);
   expect(eventsOf(results[2].events, 'rewards.collected')[0].typeIds).toEqual(['lamp-planter', 'bookshelf', 'perch-branch']);
 });
 
@@ -92,7 +95,7 @@ it('VERIFY-MEC-002-014 skip chain: taken, credited to the goal, collected at toP
   const content = validContent();
   const { state, results } = skipChain(content);
   expect(types(results[2].events)).toEqual(['completeNow.taken', 'phase.reached', 'feed.stopped',
-    'types.unlocked', 'rewards.collected', 'celebration.stepped']);
+    'items.granted', 'items.granted', 'items.granted', 'rewards.collected', 'celebration.stepped']);
   expect(results[2].events[0]).toEqual({ type: 'completeNow.taken', projectId: 'pet-house', priceCents: 240 });
   expect(results[2].events[1]).toEqual({ type: 'phase.reached', projectId: 'pet-house', phase: 5, currentCents: 1500 });
   expect(results[2].state.projects['pet-house']).toMatchObject({ currentCents: 1500, acknowledgedPhase: 4, complete: false });

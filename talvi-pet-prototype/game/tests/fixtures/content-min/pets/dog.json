@@ -86,13 +86,21 @@
           "tag": "seat"
         }
       ],
-      "reward": {
-        "kind": "types",
-        "typeIds": [
-          "rug",
-          "cushion"
-        ]
-      },
+      "reward": [
+        {
+          "kind": "items",
+          "items": [
+            {
+              "typeId": "rug",
+              "count": 1
+            },
+            {
+              "typeId": "cushion",
+              "count": 1
+            }
+          ]
+        }
+      ],
       "rewardLabel": "Rug and Cushion"
     },
     {
@@ -113,10 +121,12 @@
           "tagB": "plant"
         }
       ],
-      "reward": {
-        "kind": "verb",
-        "verb": "sit-on"
-      },
+      "reward": [
+        {
+          "kind": "verb",
+          "verb": "sit-on"
+        }
+      ],
       "rewardLabel": "Sit on"
     },
     {
@@ -137,9 +147,11 @@
           "min": 24
         }
       ],
-      "reward": {
-        "kind": "vignette"
-      },
+      "reward": [
+        {
+          "kind": "vignette"
+        }
+      ],
       "rewardLabel": "Story"
     }
   ]

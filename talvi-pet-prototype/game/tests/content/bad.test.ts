@@ -23,9 +23,12 @@ const cases: Record<string, string[]> = {
     ], 'chk-009-05': [
         'CHK-009-05'
     ], 'chk-009-09': [
-        'CHK-009-09'
+        // WORK-033-1: removing the only early source of a tag also makes the want unsatisfiable (CHK-009-17).
+        'CHK-009-09', 'CHK-009-17'
     ], 'chk-009-10': [
-        'CHK-009-10'
+        'CHK-009-10', 'CHK-009-17'
+    ], 'chk-009-17': [
+        'CHK-009-17'
     ], 'goal-1001': [
         'CHK-002-01'
     ], 'house-missing': [

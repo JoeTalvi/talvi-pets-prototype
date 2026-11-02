@@ -1,5 +1,6 @@
 import type { SimEvent } from '@sim/events';
 import type { GameState } from '@sim/state';
+import type { SAVE_SCHEMA_VERSION } from '@sim/state.schema';
 
 /** TECH-011 / mec-010 §5 event log: JSONL ring mirrored to `tpp.log`, controller records, export. */
 export const STORAGE_KEYS = { save: 'tpp.save', log: 'tpp.log' } as const;
@@ -18,7 +19,7 @@ export type ControllerRecordType = typeof CONTROLLER_RECORD_TYPES[number];
 
 /** `session.started` payload, built by the caller (core §3). */
 export type SessionHeader = {
-  build: string; schemaVersion: 1; seed: number; cadence: number | null;
+  build: string; schemaVersion: typeof SAVE_SCHEMA_VERSION; seed: number; cadence: number | null;
   feedPresentation: 'events' | 'trickle'; testerLabel: string; userAgent: string;
   viewport: { w: number; h: number; dpr: number };
 };

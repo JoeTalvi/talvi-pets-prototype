@@ -1,8 +1,8 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "savedAt": "2026-01-01T00:00:00.000Z",
   "state": {
-    "schemaVersion": 1,
+    "schemaVersion": 2,
     "session": {
       "seed": 1234,
       "eventIntervalMs": 20000,
@@ -49,18 +49,18 @@
     "celebration": null,
     "arrival": null,
     "inventory": {
-      "ownedTypeIds": [
-        "dog-bed",
-        "lamp",
-        "painting",
-        "stool",
-        "vase",
-        "picture",
-        "fern",
-        "ball",
-        "lamp-planter",
-        "bookshelf"
-      ]
+      "counts": {
+        "dog-bed": 1,
+        "lamp": 1,
+        "painting": 1,
+        "stool": 1,
+        "vase": 1,
+        "picture": 1,
+        "fern": 1,
+        "ball": 1,
+        "lamp-planter": 1,
+        "bookshelf": 1
+      }
     },
     "rooms": {
       "dog-room": {
@@ -92,7 +92,9 @@
         },
         "rngState": 2654436715,
         "recentTargets": [],
-        "wantBubbleInMs": 40000
+        "wantBubbleInMs": 40000,
+        "heartCharms": [],
+        "strippedPending": []
       },
       "owl": {
         "hearts": 0,
@@ -115,7 +117,9 @@
         },
         "rngState": 1013905312,
         "recentTargets": [],
-        "wantBubbleInMs": 40000
+        "wantBubbleInMs": 40000,
+        "heartCharms": [],
+        "strippedPending": []
       }
     }
   }

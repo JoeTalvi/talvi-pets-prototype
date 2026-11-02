@@ -19,7 +19,7 @@ export function testClock(stepMs = 0) {
 }
 
 export function headerFor(state: GameState): SessionHeader {
-  return { build: 'tpp-test', schemaVersion: 1, seed: state.session.seed, cadence: state.session.eventIntervalMs,
+  return { build: 'tpp-test', schemaVersion: 2, seed: state.session.seed, cadence: state.session.eventIntervalMs,
     feedPresentation: state.session.feedPresentation, testerLabel: state.session.testerLabel,
     userAgent: 'vitest', viewport: { w: 1920, h: 885, dpr: 3 } };
 }

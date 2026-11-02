@@ -1,9 +1,9 @@
 import { ContentError, type Content } from '../../content/load';
-import type { Condition, Pet, Want } from '../../content/schema/pet';
+import { rewardItems, type Condition, type Pet, type Want } from '../../content/schema/pet';
 import type { ConditionView, RuleResult, SimEvent } from '../events';
 import type { GameState, PetId, RoomId, SlotId, TagId, WantId } from '../state';
 import { buildScript, enqueueScript } from './dialogue';
-import { grantTypes, ownsTag } from './inventory';
+import { grantItems, ownsTag } from './inventory';
 import type { PlacementChange } from './slots';
 import { starsOf } from './stars';
 
@@ -45,8 +45,8 @@ function projectsHolding(content: Content, state: GameState, tag: TagId): number
   for (const project of content.projects) {
     if (state.projects[project.id].complete) continue;
     const acknowledged = state.projects[project.id].acknowledgedPhase;
-    project.phaseRewards.forEach((ids, phase) => {
-      if (phase >= acknowledged && ids.some(id => tagsOf(content, id).includes(tag))) offsets.push(phase - acknowledged);
+    project.phaseRewards.forEach((items, phase) => {
+      if (phase >= acknowledged && items.some(item => tagsOf(content, item.typeId).includes(tag))) offsets.push(phase - acknowledged);
     });
   }
   return offsets;
@@ -55,7 +55,7 @@ function projectsHolding(content: Content, state: GameState, tag: TagId): number
 function inHeartBundle(content: Content, state: GameState, tag: TagId, exceptWantId: WantId | null): boolean {
   return Object.values(content.pets).some(pet => pet.wants.some(want =>
     want.id !== exceptWantId && !state.pets[pet.id].fulfilledWantIds.includes(want.id) &&
-    want.reward.kind === 'types' && want.reward.typeIds.some(id => tagsOf(content, id).includes(tag))));
+    rewardItems(want).some(item => tagsOf(content, item.typeId).includes(tag))));
 }
 
 /** MEC-009 R7, first match wins; `exceptWantId` is the want whose panel asks (internal). */
@@ -159,14 +159,34 @@ export function activateFirstWant(content: Content, state: GameState, petId: Pet
   return activate(content, state, petId);
 }
 
-function applyReward(content: Content, state: GameState, petId: PetId, want: Want): RuleResult {
-  const reward = want.reward;
-  if (reward.kind === 'types') return grantTypes(content, state, reward.typeIds, 'heart');
+function applyRewardEntry(content: Content, state: GameState, petId: PetId, reward: Want['reward'][number]): RuleResult {
+  if (reward.kind === 'items') return grantItems(content, state, reward.items, 'heart');
   if (reward.kind === 'vignette') return { state, events: [] };
   const pet = state.pets[petId];
   const verbs = pet.verbs.includes(reward.verb) ? pet.verbs : [...pet.verbs, reward.verb];
   return { state: { ...state, pets: { ...state.pets, [petId]: { ...pet, verbs } } },
     events: [{ type: 'verb.unlocked', petId, verb: reward.verb }] };
+}
+
+/** Fork default 9 (v1.5): every reward entry in list order (items → `items.granted`, verb → `verb.unlocked`). */
+function applyReward(content: Content, state: GameState, petId: PetId, want: Want): RuleResult {
+  return want.reward.reduce<RuleResult>((result, entry) =>
+    chain(result, applyRewardEntry(content, result.state, petId, entry)), { state, events: [] });
+}
+
+/** DEC-043 / OQ-26: the types placed in the home room whose tags meet any of the want's tag conditions
+ * (hidden included) are the pet's Heart charms; distinct, first-credit order. */
+function creditHeartCharms(content: Content, state: GameState, petId: PetId, want: Want): GameState {
+  const tags = want.conditions.flatMap(condition => condition.kind === 'tag' ? [condition.tag] : []);
+  const roomId = homeOf(content, petId);
+  const placements = state.rooms[roomId].placements;
+  const credited = [...state.pets[petId].heartCharms];
+  for (const slot of content.rooms[roomId].slots) {
+    const typeId = placements[slot.id];
+    if (typeId !== undefined && !credited.includes(typeId) && tagsOf(content, typeId).some(tag => tags.includes(tag)))
+      credited.push(typeId);
+  }
+  return { ...state, pets: { ...state.pets, [petId]: { ...state.pets[petId], heartCharms: credited } } };
 }
 
 /** MEC-009 R10 steps 1–6 under Q6(a): no step-7 cascade. */
@@ -176,8 +196,8 @@ export function fulfil(content: Content, state: GameState, petId: PetId, focusSl
   const { want } = active;
   const pet = state.pets[petId];
   const hearts = pet.hearts + 1;
-  const fulfilled: GameState = { ...state, pets: { ...state.pets,
-    [petId]: { ...pet, hearts, fulfilledWantIds: [...pet.fulfilledWantIds, want.id] } } };
+  const fulfilled: GameState = creditHeartCharms(content, { ...state, pets: { ...state.pets,
+    [petId]: { ...pet, hearts, fulfilledWantIds: [...pet.fulfilledWantIds, want.id] } } }, petId, want);
   let result: RuleResult = { state: fulfilled,
     events: [{ type: 'want.fulfilled', petId, wantId: want.id, hearts, reward: want.reward, focusSlotId }] };
   result = chain(result, applyReward(content, result.state, petId, want));

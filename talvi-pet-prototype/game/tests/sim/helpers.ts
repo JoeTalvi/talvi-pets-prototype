@@ -7,6 +7,9 @@ import { initialState, type GameState } from '../../src/sim/state';
 import { reduce } from '../../src/sim/reduce';
 import { loadContent } from '../../src/content/load';
 import { files, manifest, patchFiles, validContent } from '../content/helpers';
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import type { ContentFiles } from '../../src/content/load';
 import square from '../fixtures/room-square.json';
 
 /** FX-ROOM-SQUARE; orientation and the Dog intro are marked done so MEC-001 rows are not frozen
@@ -110,3 +113,25 @@ export const ack: Action = { type: 'acknowledgeProject', projectId: 'pet-house' 
 export function orientationDone(state: GameState): GameState {
   return { ...state, session: { ...state.session, orientationShown: true } };
 }
+
+/** DEC-043 test setup (convention 6 direct edit): `count` more copies in hand of each id; a new id's key is
+ * appended (first-grant order). */
+export function giveCopies(state: GameState, ids: readonly string[], count = 1): void {
+  for (const id of ids) state.inventory.counts[id] = (state.inventory.counts[id] ?? 0) + count;
+}
+
+/** Every content type in file order with `count` copies in hand (replaces the tier 1 "own everything" edit). */
+export const allCopies = (content: Content, count = 9): Record<string, number> =>
+  Object.fromEntries(content.charms.types.map(type => [type.id, count]));
+
+/** FX-REAL: every `src/content/**\/*.json`, read with node:fs, loaded without a manifest. */
+export function realContent() {
+  const root = 'src/content', data: ContentFiles = {};
+  for (const name of readdirSync(root).filter(file => file.endsWith('.json')))
+    data[name] = JSON.parse(readFileSync(join(root, name), 'utf8'));
+  for (const dir of ['rooms', 'pets'])
+    for (const name of readdirSync(join(root, dir)).filter(file => file.endsWith('.json')))
+      data[`${dir}/${name}`] = JSON.parse(readFileSync(join(root, dir, name), 'utf8'));
+  return loadContent(undefined, data);
+}
+

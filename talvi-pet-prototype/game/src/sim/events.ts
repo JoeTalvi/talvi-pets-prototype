@@ -1,4 +1,4 @@
-import type { Reward } from '../content/schema/pet';
+import type { RewardList } from '../content/schema/pet';
 import type { Action } from './actions';
 import type {
   CharmTypeId, DialogueScript, DoorId, GameState, PetBehaviour, PetId,
@@ -17,15 +17,16 @@ export type SimEvent =
   | { type: 'mode.changed'; mode: 'play' | 'design' }
   | { type: 'charm.placed'; roomId: RoomId; slotId: SlotId; typeId: CharmTypeId; replacedTypeId: CharmTypeId | null }
   | { type: 'charm.removed'; roomId: RoomId; slotId: SlotId; typeId: CharmTypeId; interruptedPetId: PetId | null }
+  | { type: 'charm.stripped'; roomId: RoomId; slotId: SlotId; typeId: CharmTypeId; petId: PetId }
   | { type: 'stars.changed'; roomId: RoomId; from: number; to: number; delta: number; max: number }
   | { type: 'stars.visibilityChanged'; visible: boolean }
   | { type: 'want.activated'; petId: PetId; wantId: WantId; index: number }
   | { type: 'want.progressed'; petId: PetId; wantId: WantId; conditions: ConditionView[] }
   | { type: 'want.hiddenRevealed'; petId: PetId; wantId: WantId; tag: TagId }
-  | { type: 'want.fulfilled'; petId: PetId; wantId: WantId; hearts: number; reward: Reward; focusSlotId: SlotId }
+  | { type: 'want.fulfilled'; petId: PetId; wantId: WantId; hearts: number; reward: RewardList; focusSlotId: SlotId }
   | { type: 'heart.earned'; petId: PetId; hearts: number }
   | { type: 'wants.exhausted'; petId: PetId }
-  | { type: 'types.unlocked'; typeIds: CharmTypeId[]; source: 'phase' | 'heart' | 'debug' }
+  | { type: 'items.granted'; typeId: CharmTypeId; count: number; source: 'phase' | 'heart' | 'debug' }
   | { type: 'verb.unlocked'; petId: PetId; verb: VerbId }
   | { type: 'roundup.fired'; projectId: ProjectId; merchantId: string; merchantName: string; amountCents: number; changeCents: number; currentCents: number }
   | { type: 'phase.reached'; projectId: ProjectId; phase: 1 | 2 | 3 | 4 | 5; currentCents: number }

@@ -10,7 +10,7 @@ import { assetsFrom, createText, type Panel, type Text } from '../overlay';
 
 export type WantPanel = Panel & { render(): void };
 
-const RENDER_ON = ['scene.changed', 'want.activated', 'want.progressed', 'want.hiddenRevealed', 'wants.exhausted', 'types.unlocked',
+const RENDER_ON = ['scene.changed', 'want.activated', 'want.progressed', 'want.hiddenRevealed', 'wants.exhausted', 'items.granted',
   'rewards.collected', 'phase.reached', 'mode.changed', 'heart.earned', 'charm.placed', 'charm.removed', 'dialogue.opened'] as const;
 
 const span = (cls: string, key: string, value: string) => `<span class="${cls}" data-string-key="${escapeHtml(key)}">${escapeHtml(value)}</span>`;
