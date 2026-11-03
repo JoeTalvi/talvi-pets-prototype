@@ -79,7 +79,8 @@ function adjacentMet(content: Content, state: GameState, ref: SpaceRef, tagA: Ta
 
 function viewOf(content: Content, state: GameState, petId: PetId, want: Want, condition: Condition): ConditionView {
   const roomId = homeOf(content, petId);
-  // DEC-046: `greeted` is met by greeting `withPetId`, which WORK-036 builds; until then it is never met (never hidden).
+  // DEC-046 / gate Q9(a): the evaluator never meets `greeted` (never hidden); a greeting with `withPetId` fulfils the want
+  // in its own dispatch through `fulfilByGreeting` (WORK-036-1), and nothing remembers an earlier greeting.
   if (condition.kind === 'greeted') return { kind: 'greeted', met: false, hidden: false, withPetId: condition.withPetId };
   if (condition.kind === 'adjacent') {
     const { tagA, tagB } = condition;
@@ -247,4 +248,22 @@ export function afterRoomChange(content: Content, state: GameState, roomId: Spac
   if (!conditions.every(view => view.met)) return result;
   return chain(result, fulfil(content, result.state, petId,
     focusSlotOf(content, result.state, roomId, active.want, change)));
+}
+
+/** The home space's first slot id (file order), or '' for a slotless home: the debug arm's focus rule (core.md line 405). */
+export function homeFirstSlotId(content: Content, petId: PetId): SlotId {
+  return spaceDef(content, homeOf(content, petId)).slots[0]?.id ?? '';
+}
+
+/** Gate Q9(a) (WORK-036-1): a greeting with `otherPetId` fulfils the pet's active want in the same dispatch when that want
+ * has `greeted { withPetId: otherPetId }` and every other condition is met (order fork 6); otherwise nothing happens. */
+export function fulfilByGreeting(content: Content, state: GameState, petId: PetId, otherPetId: PetId): RuleResult {
+  const active = state.pets[petId]?.introduced ? activeWant(content, state, petId) : null;
+  const greets = (condition: Condition) => condition.kind === 'greeted' && condition.withPetId === otherPetId;
+  if (active === null || !active.want.conditions.some(greets)) return { state, events: [] };
+  const views = evaluate(content, state, petId);
+  const conditions = views.map((view, i) => greets(active.want.conditions[i]) ? { ...view, met: true } : view);
+  if (!conditions.every(view => view.met)) return { state, events: [] };
+  const progressed: SimEvent = { type: 'want.progressed', petId, wantId: active.want.id, conditions };
+  return chain({ state, events: [progressed] }, fulfil(content, state, petId, homeFirstSlotId(content, petId)));
 }

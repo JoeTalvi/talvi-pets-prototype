@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import './setup';
 import Phaser from 'phaser';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { loadContent } from '../../src/content/load';
 import type { Content } from '../../src/content/types';
 import type { GameState } from '../../src/sim/state';
@@ -14,7 +14,12 @@ import { PREVIEW_DEPTH } from '../../src/view/preview/layer';
 import { files, manifest, patchFiles, validContent } from '../content/helpers';
 import { fixtureText } from '../app/helpers';
 import { owing } from '../sim/helpers';
-import { bootScene, contextFor, destroyScene } from './sceneHarness';
+import { addTexture, bootScene, contextFor, destroyScene, realManifest } from './sceneHarness';
+import { directorClock, phaserClock } from '../../src/view/celebration/CelebrationDirector';
+import { InteriorScene } from '../../src/view/scenes/InteriorScene';
+import { GREET_EMOJI } from '../../src/view/celebration/greetingBeat';
+import { GREET } from '../../src/view/celebration/timings';
+import type { GreetEmote } from '../../src/sim/events';
 import { linesOf } from './designHarness';
 
 afterEach(() => { destroyScene(); document.body.replaceChildren(); });
@@ -171,5 +176,76 @@ describe('VERIFY-MEC-002-028 street icon hidden states', () => {
     expect(linesOf(context, 'phase.reached')).toMatchObject([{ projectId: 'pet-house', phase: 1 }]);
     expect(scene.icons.get('pet-house')!.visible).toBe(true);
     expect(context.store.getState().celebration).toBeNull();
+  });
+});
+
+// --- WORK-036-2 (DEC-046, spec §10): the greeting beat on the street ---
+const real = loadContent();
+const SHEETS = ['dog', 'owl', 'owl-mate'].map(id => realManifest.entries.find(e => e.id === `pets/${id}-sheet`)!);
+type Syncable = { syncScene(ms: number): void };
+const runFor = (scene: StreetScene, ms: number) => { for (let t = 0; t < ms; t += 10) (scene as unknown as Syncable).syncScene(10); };
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+async function realStreet(state: GameState) {
+  const context = contextFor(real, state);
+  context.manifest = realManifest;
+  const scene = await bootScene(StreetScene, context, {}, ['world/site-garden-empty', 'world/site-garden-base']);
+  for (const sheet of SHEETS) addTexture(scene, sheet.id, sheet.px!.w, sheet.px!.h, sheet.frame);
+  scene.cameras.main.emit('camerafadeincomplete');
+  return { context, scene };
+}
+/** Dog and Owl at one Heart, the mate arrived, then every pet outside (WORK-035-2's allOut). */
+async function allOut() {
+  const start = initialState(real, 1);
+  start.pets.dog.hearts = 1; start.pets.owl.hearts = 1;
+  const first = await realStreet(start);
+  first.context.store.dispatch({ type: 'debugUnlockSpace', siteId: 'garden' });
+  first.context.store.dispatch({ type: 'debugFillSpace', siteId: 'garden' });
+  runFor(first.scene, first.scene.arrival!.plan.finishMs + 20);
+  const after = { ...first.context.store.getState(), dialogue: { current: null, queue: [] } };
+  destroyScene();
+  const booted = await realStreet(after);
+  booted.context.store.dispatch({ type: 'debugSetPetsOutside', mode: 'all' });
+  return booted;
+}
+
+describe('VERIFY-WORK-036-2-03 / -04 the greeting beat on the street pets', () => {
+  beforeEach(() => { directorClock.create = () => ({ now: () => 0, after: () => () => {} }); });
+  afterEach(() => { directorClock.create = phaserClock; });
+
+  it('036-2-03 greeting.played with both drawn → one beat on their bubbles (A at once, B after GREET.offsetMs); one pet not drawn → no throw; a second greeting of the same pet cancels the first; interiors have no greeting hook', async () => {
+    const { context, scene } = await allOut();
+    const pets = scene.streetPets.pets;
+    const shows = new Map<string, string[]>();
+    for (const [petId, { bubble }] of pets) {
+      const show = bubble.show.bind(bubble);
+      bubble.show = b => { shows.set(petId, [...(shows.get(petId) ?? []), b.glyph ?? '']); show(b); };
+    }
+    context.store.dispatch({ type: 'debugGreetNow' });
+    const event = linesOf(context, 'greeting.played').at(-1) as { petA: string; petB: string; emoteA: GreetEmote; emoteB: GreetEmote };
+    expect(event).toBeDefined();
+    expect(shows.get(event.petA)).toEqual([GREET_EMOJI[event.emoteA]]);
+    expect(shows.get(event.petB)).toBeUndefined();
+    await wait(GREET.offsetMs + 40);
+    expect(shows.get(event.petB)).toEqual([GREET_EMOJI[event.emoteB]]);
+    expect(pets.get(event.petA)!.bubble.current()).toEqual(expect.objectContaining({ class: 'greeting', text: GREET_EMOJI[event.emoteA] }));
+    shows.clear();
+    expect(() => scene.greetings.played({ type: 'greeting.played', petA: 'owl', petB: 'nobody', emoteA: 'friendly', emoteB: 'polite' })).not.toThrow();
+    scene.greetings.played({ type: 'greeting.played', petA: 'owl', petB: 'owl-mate', emoteA: 'friendly', emoteB: 'polite' });
+    await wait(GREET.offsetMs + 40);
+    expect(shows.get('owl')).toEqual(['🎵', '🎵']);
+    expect(shows.get('owl-mate')).toEqual(['🙂']);
+    expect('greetings' in new InteriorScene()).toBe(false);
+  });
+
+  it('036-2-04 meeting: the Owl at x 700 facing right and the mate at x 900 facing left → Owl flipX false, mate flipX true; both on the idle clip', async () => {
+    const { context, scene } = await allOut();
+    const state = context.store.getState();
+    const owl = scene.streetPets.pets.get('owl')!.sprite, mate = scene.streetPets.pets.get('owl-mate')!.sprite;
+    owl.sync({ ...state.pets.owl.behaviour, x: 700, facing: 'right' });
+    mate.sync({ ...state.pets['owl-mate'].behaviour, x: 900, facing: 'left' });
+    for (const petId of ['owl', 'owl-mate']) scene.streetPets.phaseChanged({ type: 'pet.phaseChanged', petId, from: 'walking', to: 'meeting', target: null, verb: null, reaction: null });
+    expect([owl.flipX, mate.flipX]).toEqual([false, true]);
+    expect([owl.anims.currentAnim?.key, owl.clipFor({ phase: 'meeting', verb: null }), mate.clipFor({ phase: 'meeting', verb: null })])
+      .toEqual(['pet-owl-idle', owl.clipFor({ phase: 'idle', verb: null }), mate.clipFor({ phase: 'idle', verb: null })]);
   });
 });

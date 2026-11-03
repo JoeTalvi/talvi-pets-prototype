@@ -14,6 +14,7 @@ export type TagId = string;
 export type VerbId = string;
 export type DoorId = string;
 export type SiteId = string;
+export type OutfitId = string;  // WORK-037-2: outfits.json id; "default" = the base avatar sheet
 
 export type GameState = {
   schemaVersion: 2;                // v1.5: tier 1 saves (version 1) are discarded on load, no migration (DEC-043)
@@ -25,10 +26,12 @@ export type GameState = {
     muted: boolean;               // DEC-034, default false
     testerLabel: string;          // free text, first log line; kept across `reset`
     orientationShown: boolean;    // the two opening lines (design §4, 0:00) shown once per save
+    petsOutside: 'roll' | 'all' | 'none'; // MEC-010 row 23: the presence override — 'roll' = the timed roll (tuning.presence*); default 'roll'
   };
   scene: { kind: 'street' } | { kind: 'interior'; roomId: RoomId };
   avatar: { x: number; y: number; facing: Facing; immunityMs: number;
-            facingCandidate: { facing: Facing; heldMs: number } | null }; // 60 ms facing debounce (mec-001 R2)
+            facingCandidate: { facing: Facing; heldMs: number } | null;   // 60 ms facing debounce (mec-001 R2)
+            outfitId: OutfitId };   // WORK-037-2 (MEC-001): the worn outfit; unlocked outfits are derived (unlockedOutfitIds)
   mode: 'play' | 'design';        // design in interiors, and on the street once a site is unlocked (MEC-001, WORK-034-2)
   dialogue: { current: DialogueScript | null; queue: DialogueScript[] }; // MEC-008; open ⇒ input frozen
   projects: Record<ProjectId, {
@@ -56,20 +59,24 @@ export type GameState = {
     revealedHiddenTags: Record<WantId, TagId[]>; // hidden "?" slots revealed (DEC-021)
     verbs: VerbId[];              // profile `atStart` verbs + Heart unlocks
     introduced: boolean;          // intro dialogue shown on first room entry (a site resident: at its arrival)
-    outside: boolean;             // DEC-045: true for a space-homed pet (always outside); Dog/Owl false until WORK-035
-    behaviour: PetBehaviour;      // mec-007 state machine; stepped only while the player is in the pet's room
+    outside: boolean;             // DEC-045: a space-homed pet is always outside; a house pet per the timed presence roll (streetPresence.ts)
+    behaviour: PetBehaviour;      // mec-007 state machine; stepped only while the pet shares the player's scene
     rngState: number;             // pet RNG stream; initial (seed ^ (0x9E3779B9 × (i + 1))) >>> 0, i = pet index in content order
     recentTargets: SlotId[];      // last tuning.recentTargetsKept slots used (mec-007)
     wantBubbleInMs: number;       // countdown to the next want bubble; initial tuning.wantBubbleEveryMs (mec-008)
     heartCharms: CharmTypeId[];   // distinct types credited at any fulfilment (tag-matching home placements), first-credit order
     strippedPending: CharmTypeId[]; // Heart charms removed from the home room whose reaction has not played; FIFO, distinct
   }>;
+  presence: { rollInMs: number; rolls: number }; // the timed indoor/outdoor roll: countdown to the next roll (initial tuning.presenceRollMs) and rolls so far (the pure draw's index)
+  greetings: Record<PairKey, { cooldownMs: number }>; // WORK-036-1 (DEC-046): per-pair cooldown, counted down every tick; initial {}
 };
+/** `"<a>|<b>"`, a before b in content pet order (WORK-036-1). */
+export type PairKey = string;
 export type Facing = 'left' | 'right' | 'up' | 'down';
 export type DialogueScript = { source: 'orientation' | 'intro' | 'wantAnnounce' | 'vignette' | 'phaseMessage' | 'completionMessage' | 'tutorial';
                         speaker: { petId: PetId } | { game: true }; lines: string[]; index: number;
                         wantId?: WantId; projectId?: ProjectId };   // lines are copied in at enqueue (mec-008)
-export type PetBehaviour = { phase: 'idle' | 'walking' | 'using' | 'reacting' | 'greeting';
+export type PetBehaviour = { phase: 'idle' | 'walking' | 'using' | 'reacting' | 'greeting' | 'meeting'; // meeting: DEC-046 (WORK-036-1)
                       x: number; y: number; facing: 'left' | 'right'; timerMs: number;
                       target: { slotId: SlotId } | { wanderPointId: string } | null;
                       verb: VerbId | null; reaction: Reaction | null };
@@ -107,9 +114,9 @@ export function initialState(content: Content, seed: number): GameState {
     schemaVersion: 2,
     session: { seed, eventIntervalMs: content.tuning.eventIntervalMs,
       feedPresentation: 'events', starsVisible: true, muted: false,
-      testerLabel: '', orientationShown: false },
+      testerLabel: '', orientationShown: false, petsOutside: 'roll' },
     scene: { kind: 'street' },
-    avatar: { ...content.street.playerSpawn, immunityMs: 0, facingCandidate: null },
+    avatar: { ...content.street.playerSpawn, immunityMs: 0, facingCandidate: null, outfitId: 'default' },
     mode: 'play', dialogue: { current: null, queue: [] },
     projects: Object.fromEntries(content.projects.map(project => [project.id, {
       currentCents: project.completeAtStart ? project.goalCents : 0,
@@ -122,5 +129,7 @@ export function initialState(content: Content, seed: number): GameState {
     rooms: Object.fromEntries(Object.keys(content.rooms).map(id => [id, { placements: {} }])),
     spaces: Object.fromEntries(sitesOf(content).map(site => [site.id, { unlocked: false, placements: {}, arrivalDone: false }])),
     pets: initialPets(content, seed),
+    presence: { rollInMs: content.tuning.presenceRollMs, rolls: 0 },
+    greetings: {},
   };
 }

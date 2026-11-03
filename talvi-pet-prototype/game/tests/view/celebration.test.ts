@@ -84,8 +84,9 @@ describe('presentation §7.2 planCelebration', () => {
     expect(planCelebration(cue(0, 1, 20)).totalMs).toBe(2920);
     expect(planCelebration(cue(0, 1, 21)).totalMs).toBe(3320);
     expect(planCelebration(cue(4, 5, 100)).totalMs).toBe(T.BAR_FADE_IN + T.PAN_IN + T.BAR_TO_MILESTONE + 4 * T.FINAL_STAGGER + T.POP
-      + T.COMPLETION_SWAP_AT + T.BLOOM + T.CONFETTI_HOLD);
-    expect(planCelebration(cue(4, 5, 100)).totalMs).toBe(4620);
+      + T.COMPLETION_SWAP_AT + T.COMPLETE.hitstopMs + T.BLOOM + T.CONFETTI_HOLD);
+    // VERIFY-WORK-038-3-03 (DEC-049 §3, §C COMPLETE.hitstopMs): the completing chain is the 71f575c 4620 + 120.
+    expect(planCelebration(cue(4, 5, 100)).totalMs).toBe(4740);
   });
 
   it('presentation §7.2 planCelebration sums — beat order: bar fade-in, pan, fill/pop per phase (only the last pop awaited), leftover, stage swaps (anticipation, dust +450, swap +620), completion, finish', () => {
@@ -100,7 +101,7 @@ describe('presentation §7.2 planCelebration', () => {
       ['finish', 6660, null]]);
     const done = planCelebration(cue(4, 5, 100));
     expect(done.beats.map(b => [b.beat, b.startMs])).toEqual([['barFadeIn', 0], ['pan', 200], ['fill', 800], ['popAll', 1300],
-      ['completionDust', 2400], ['completionSwap', 2570], ['confetti', 2870], ['finish', 4620]]);
+      ['completionDust', 2400], ['completionSwap', 2570], ['completionHitstop', 2570], ['confetti', 2990], ['confettiWave', 3420], ['finish', 4740]]);
     expect(planCelebration(cue(1, 5, 100)).beats.filter(b => b.beat === 'swap').map(b => b.phase)).toEqual([2, 3, 4]);
   });
 });
@@ -121,7 +122,9 @@ describe('mec-002 §3.3 CelebrationDirector', () => {
     expect(bar.chunks.map((_, i) => +chunkFill(bar.pct, i).toFixed(6))).toEqual([1, 1, 1, 1, 0.2]);
     for (const at of [3920, 5140, 6360]) { clock.advance(at - clock.t); textures.push(house.texture.key); }
     expect(textures).toEqual(['houses/fx-2', 'houses/fx-3', 'houses/fx-4', 'houses/fx-5']);
-    expect(play.mock.calls).toEqual([['phasePop'], ['phasePop'], ['phasePop']]);
+    // VERIFY-WORK-038-3-02 (DEC-049 §2): pops tick +0/+2/+4, a riser at each anticipation, phasePop on each swap +0/+2/+4.
+    expect(play.mock.calls).toEqual([['tick', { semitones: 0 }], ['tick', { semitones: 2 }], ['tick', { semitones: 4 }],
+      ['riser'], ['phasePop', { semitones: 0 }], ['riser'], ['phasePop', { semitones: 2 }], ['riser'], ['phasePop', { semitones: 4 }]]);
     clock.advance(6659 - clock.t);
     expect([step(scene), finished(scene), director.running]).toEqual(['cutscene', 0, true]);
     clock.advance(1);
@@ -232,7 +235,7 @@ describe('presentation §5.3 celebration pan', () => {
     await Promise.resolve();
     expect(pan.mock.calls).toEqual([]);
     expect([director.running, director.cue?.fromPhase, director.cue?.toPhase, director.timeline.map(t => t.beat)]).toEqual([true, 4, 5, ['barFadeIn']]);
-    clock.advance(4620);
+    clock.advance(4740);
     expect(finished(scene)).toBe(2);
   });
 });
@@ -242,30 +245,47 @@ describe('presentation §7.4 completion hooks', () => {
     const { scene, house, director, play } = await street(owing(fxContent(), 4, 1500));
     const flash = vi.spyOn(scene.cameras.main, 'flash');
     const explode = vi.spyOn(Phaser.GameObjects.Particles.ParticleEmitter.prototype, 'explode');
+    const camShake = vi.spyOn(scene.cameras.main, 'shake');
+    const pauseAll = vi.spyOn(scene.tweens, 'pauseAll');
     tap(scene);
     clock.advance(2400);
-    expect(play).toHaveBeenCalledTimes(5);
+    // Five pop ticks, then the riser on the completion dust (DEC-049 §3).
+    expect(play.mock.calls.map(c => c[0])).toEqual(['tick', 'tick', 'tick', 'tick', 'tick', 'riser']);
     expect(scene.children.list.filter(c => c instanceof DustPoof)).toHaveLength(1);
     clock.advance(170);
     expect(house.texture.key).toBe('houses/fx-6');
+    // VERIFY-WORK-038-3-03: the 120 ms hitstop at the swap; the bloom waits for it (+290).
+    expect(pauseAll).toHaveBeenCalledTimes(1);
+    expect(scene.tweens.getTweensOf(house)).toEqual([]);
+    clock.advance(120);
     expect(scene.tweens.getTweensOf(house).map(t => [td(t).key, endOf(t), td(t).duration, td(t).yoyo])).toEqual([['scaleX', 1.08, 150, true]]);
     clock.advance(299);
     expect(explode).not.toHaveBeenCalled();
+    const completes = () => play.mock.calls.filter(c => c[0] === 'complete');
+    expect(completes()).toEqual([]);
     clock.advance(1);
+    // VERIFY-WORK-038-3-03: sfx/complete on the hit frame (+590), with 140 confetti over 360° and the 250 ms / 0.006 shake.
+    expect(completes()).toEqual([['complete']]);
+    expect(camShake.mock.calls).toEqual([[T.COMPLETE.shakeMs, T.COMPLETE.shakeIntensity]]);
     const emitter = scene.children.list.find(c => c instanceof Phaser.GameObjects.Particles.ParticleEmitter) as Phaser.GameObjects.Particles.ParticleEmitter;
     const rect = scene.children.list.find(c => c instanceof Phaser.GameObjects.Rectangle && c !== scene.designTint.rect) as Phaser.GameObjects.Rectangle;
-    expect([emitter.depth, emitter.texture.key, explode.mock.calls[0][0]]).toEqual([CONFETTI_DEPTH, 'confetti', 60]);
+    expect([emitter.depth, emitter.texture.key, explode.mock.calls[0][0]]).toEqual([CONFETTI_DEPTH, 'confetti', T.COMPLETE.confetti1]);
+    clock.advance(T.COMPLETE.wave2At - 1);
+    expect(explode).toHaveBeenCalledTimes(1);
+    clock.advance(1);
+    expect(explode.mock.calls.map(c => c[0])).toEqual([T.COMPLETE.confetti1, T.COMPLETE.confetti2]);
     expect([scene.textures.get('confetti').source[0].width, scene.textures.get('confetti').source[0].height]).toEqual([8, 12]);
     expect([rect.depth, rect.scrollFactorX, rect.scrollFactorY, rect.alpha, rect.fillColor]).toEqual([FLASH_DEPTH, 0, 0, 0.75, 0xffffff]);
     expect(scene.tweens.getTweensOf(rect).map(t => [td(t).key, endOf(t), td(t).duration])).toEqual([['alpha', 0, 350]]);
-    clock.advance(1749);
+    clock.advance(T.CONFETTI_HOLD - T.COMPLETE.wave2At - 1);
     expect(finished(scene)).toBe(0);
     clock.advance(1);
     expect(finished(scene)).toBe(1);
     clock.advance(2250);
     expect(emitter.active).toBe(false);
     expect(flash).not.toHaveBeenCalled();
-    expect(director.timeline.map(t => t.beat)).toEqual(['barFadeIn', 'pan', 'fill', 'popAll', 'completionDust', 'completionSwap', 'confetti', 'finish']);
+    expect([completes().length, play.mock.calls.filter(c => c[0] === 'phasePop').length, play.mock.calls.filter(c => c[0] === 'tick').length]).toEqual([1, 0, 5]);
+    expect(director.timeline.map(t => t.beat)).toEqual(['barFadeIn', 'pan', 'fill', 'popAll', 'completionDust', 'completionSwap', 'completionHitstop', 'confetti', 'confettiWave', 'finish']);
   });
 });
 
@@ -352,5 +372,48 @@ describe('VERIFY-PRES-008 replay (popup half, WORK-020-3)', () => {
     expect([r.milestone.hidden, r.reveal.hidden, r.reveal.querySelectorAll('.tpp-clue').length]).toEqual([true, false, 3]);
     expect(r.house.texture.key).toBe(FX[r.context.store.getState().celebration!.toPhase]);
     expect(linesOf(r.context, 'action.rejected')).toEqual([]);
+  });
+});
+
+describe('VERIFY-WORK-038-3-02 / -10 / -11 phase rise and completion (DEC-049 §2, §3, ladder rules 1 and 5)', () => {
+  it('VERIFY-WORK-038-3-02 / -11: a 0 → 1 rise: at the swap the squash punch (260), 24 gold sparkles in an upward cone and phasePop; no flash, shake or hitstop; plan total unchanged', async () => {
+    const { scene, play } = await street(owing(fxContent(), 0, 300));
+    const explode = vi.spyOn(Phaser.GameObjects.Particles.ParticleEmitter.prototype, 'explode');
+    const camShake = vi.spyOn(scene.cameras.main, 'shake'), pauseAll = vi.spyOn(scene.tweens, 'pauseAll');
+    expect(planCelebration(cue(0, 1, 20)).totalMs).toBe(2920);
+    tap(scene);
+    const swapAt = T.BAR_FADE_IN + T.PAN_IN + T.BAR_TO_MILESTONE + T.POP + T.SWAP_AT;
+    clock.advance(swapAt - 1);
+    expect(play.mock.calls.map(c => c[0])).toEqual(['tick', 'riser']);
+    expect(explode).not.toHaveBeenCalled();
+    clock.advance(1);
+    expect(play.mock.calls.at(-1)).toEqual(['phasePop', { semitones: 0 }]);
+    expect(explode.mock.calls.map(c => c[0])).toEqual([T.PHASE.sparkles]);
+    const sparkles = scene.children.list.find(c => c instanceof Phaser.GameObjects.Particles.ParticleEmitter) as Phaser.GameObjects.Particles.ParticleEmitter;
+    expect(sparkles.depth).toBe(CONFETTI_DEPTH);
+    const punch = scene.tweens.getTweens().find(t => t.duration === T.PHASE.punchMs || (t.data?.[0]?.duration === T.PHASE.punchMs));
+    expect(punch).toBeDefined();
+    clock.advance(2000);
+    const rects = scene.children.list.filter(c => c instanceof Phaser.GameObjects.Rectangle && c !== scene.designTint.rect);
+    expect([rects.length, camShake.mock.calls.length, pauseAll.mock.calls.length]).toEqual([0, 0, 0]);
+    expect(play.mock.calls.filter(c => c[0] === 'complete')).toEqual([]);
+  });
+
+  it('VERIFY-WORK-038-3-10: under prefers-reduced-motion the completion drops the hitstop, flash and shake; the confetti, sounds and timings stay', async () => {
+    const mm = vi.fn(() => ({ matches: true }));
+    vi.stubGlobal('matchMedia', mm);
+    try {
+      const { scene, play } = await street(owing(fxContent(), 4, 1500));
+      const explode = vi.spyOn(Phaser.GameObjects.Particles.ParticleEmitter.prototype, 'explode');
+      const camShake = vi.spyOn(scene.cameras.main, 'shake'), pauseAll = vi.spyOn(scene.tweens, 'pauseAll');
+      tap(scene);
+      clock.advance(2400 + 590);
+      const rects = scene.children.list.filter(c => c instanceof Phaser.GameObjects.Rectangle && c !== scene.designTint.rect && (c as Phaser.GameObjects.Rectangle).alpha > 0);
+      expect([rects.length, camShake.mock.calls.length, pauseAll.mock.calls.length]).toEqual([0, 0, 0]);
+      expect(play.mock.calls.filter(c => c[0] === 'complete')).toEqual([['complete']]);
+      expect(explode.mock.calls.map(c => c[0])).toEqual([T.COMPLETE.confetti1]);
+      clock.advance(T.CONFETTI_HOLD);
+      expect(finished(scene)).toBe(1);
+    } finally { vi.unstubAllGlobals(); }
   });
 });

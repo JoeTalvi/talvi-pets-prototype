@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { touchDevice } from '../../src/app/input/device';
 import { keyboardVector } from '../../src/app/input/keyboard';
 import { moveVector } from '../../src/app/input/move';
 import { classifyPointer, recordPointer } from '../../src/app/input/pointerRouting';
@@ -38,5 +39,17 @@ describe('presentation §3.3 arbitration', () => {
     expect(v.x).toBeCloseTo(-0.7071, 4);
     expect(v.y).toBeCloseTo(0.7071, 4);
     expect(keyboardVector(new Set())).toEqual({ x: 0, y: 0 });
+  });
+});
+
+describe('touchDevice: the on-screen joystick only on a touch-first device', () => {
+  const media = (coarse: boolean) => ((query: string) => ({ matches: coarse && query === '(pointer: coarse)' })) as unknown as typeof matchMedia;
+  it('a coarse primary pointer is a touch device; a fine one is not, whatever the touch-point count', () => {
+    expect(touchDevice({ maxTouchPoints: 0 }, media(true))).toBe(true);
+    expect(touchDevice({ maxTouchPoints: 5 }, media(false))).toBe(false); // a touchscreen laptop with a mouse plays as a desktop
+  });
+  it('without matchMedia the touch-point count decides', () => {
+    expect(touchDevice({ maxTouchPoints: 1 }, undefined)).toBe(true);
+    expect(touchDevice({ maxTouchPoints: 0 }, undefined)).toBe(false);
   });
 });

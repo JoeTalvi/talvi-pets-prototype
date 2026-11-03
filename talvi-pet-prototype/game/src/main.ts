@@ -9,6 +9,7 @@ import { createPersistence, loadSave } from '@app/persistence';
 import { SAVE_SCHEMA_VERSION } from '@sim/state.schema';
 import { createPresentationBus } from '@app/presentationBus';
 import { createKeyboard } from '@app/input/keyboard';
+import { touchDevice } from '@app/input/device';
 import { installPointerRouting } from '@app/input/pointerRouting';
 import { createAudio } from '@app/audio';
 import { createGame } from '@view/game';
@@ -59,7 +60,7 @@ function createKernel(content: Content): { store: Store; log: Log; context: Omit
   persistence.attach(store);
   const bus = createPresentationBus(log.record);
   const keyboard = createKeyboard();
-  return { store, log, context: { content, store, log, persistence, audio: null, bus, keyboard, debugOpen: false, headerFor, storage } };
+  return { store, log, context: { content, store, log, persistence, audio: null, bus, keyboard, debugOpen: false, touch: touchDevice(), headerFor, storage } };
 }
 
 /** Step 8 on `ready`: overlay sync, pointer routing, curtain, audio (attached exactly once), then `store.start()`. */

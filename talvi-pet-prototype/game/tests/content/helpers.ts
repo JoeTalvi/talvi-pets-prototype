@@ -52,7 +52,7 @@ export function rawContent(f: ContentFiles): Content {
             projects: Content['projects'];
         }).projects, merchants: (f['merchants.json'] as {
             merchants: Content['merchants'];
-        }).merchants, dialogue: f['dialogue.json'], strings: f['strings.json'], tuning: f['tuning.json'], rooms: Object.fromEntries(Object.entries(f).filter(([k]) => k.startsWith('rooms/')).map(([k, v]) => [
+        }).merchants, dialogue: f['dialogue.json'], strings: f['strings.json'], tuning: f['tuning.json'], outfits: (f['outfits.json'] as { outfits?: Content['outfits'] } | undefined)?.outfits ?? [], rooms: Object.fromEntries(Object.entries(f).filter(([k]) => k.startsWith('rooms/')).map(([k, v]) => [
             k.slice(6, -5), v
         ])), pets: Object.fromEntries(Object.entries(f).filter(([k]) => k.startsWith('pets/')).map(([k, v]) => [
             k.slice(5, -5), v

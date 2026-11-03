@@ -13,3 +13,4 @@ export { errorScreen } from './errorScreen';
 export { debugPanel } from './debugPanel';
 export { roomEditor } from './roomEditor';
 export type { TemplateOptions } from './shared';
+export { closet } from './closet';

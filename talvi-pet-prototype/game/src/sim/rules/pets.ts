@@ -8,6 +8,7 @@ import { ladderFor, typeOf, usingSlotOf, verbEndedOf, verbFor, verbOfTag } from 
 import type { PlacementChange } from './slots';
 import { activeWant } from './wants';
 import { placementsOf, roomRef, scenePet, spaceDef, type SpaceDef, type SpaceRef } from '../space';
+import { streetPets } from './streetPresence';
 
 /** MEC-007 §3 selectors. */
 export function residentPet(content: Content, state: GameState): PetId | null {
@@ -56,12 +57,14 @@ function candidates(step: Step): { slotId: SlotId; weight: number }[] {
   });
 }
 
-/** §2.4 step 4 (fork #36 resolved 2026-10-26): one draw among the wander points other than the one the pet stands on,
- * so it never wanders to the same point twice in a row. */
+/** §2.4 step 4 (fork #36 resolved 2026-10-26): one draw among the wander points other than the one the pet stands on
+ * and the one a meeting interrupted (kept on the idle behaviour, WORK-036-1 A2), so it never wanders to the same point
+ * twice in a row. */
 function wanderTarget(step: Step): { target: PetBehaviour['target']; state: GameState } {
   const points = step.def.wanderPoints;
-  const { x, y } = step.state.pets[step.petId].behaviour;
-  const others = points.filter(point => point.x !== x || point.y !== y);
+  const { x, y, target } = step.state.pets[step.petId].behaviour;
+  const previous = target !== null && 'wanderPointId' in target ? target.wanderPointId : null;
+  const others = points.filter(point => (point.x !== x || point.y !== y) && point.id !== previous);
   const pick = petPick(step.state, step.petId, others.length > 0 ? others : points);
   return { target: { wanderPointId: pick.item.id }, state: pick.state };
 }
@@ -82,7 +85,9 @@ function strippedReaction(step: Step): RuleResult {
 function decide(step: Step): RuleResult {
   const { content, petId } = step;
   // The existing hold: no reaction bubble while a dialogue is open; it waits for a later decide.
-  if (step.state.pets[petId].strippedPending.length > 0 && step.state.dialogue.current === null) return strippedReaction(step);
+  // WORK-035-1: a house pet in its yard does not look for a stripped charm; it waits until it is home again.
+  if (step.ref.kind !== 'yard' && step.state.pets[petId].strippedPending.length > 0 && step.state.dialogue.current === null)
+    return strippedReaction(step);
   const behaviour = step.state.pets[petId].behaviour;
   const list = candidates(step);
   if (list.length === 0) {
@@ -149,6 +154,10 @@ function afterBubble(step: Step): RuleResult {
   const slotId = behaviour.target !== null && 'slotId' in behaviour.target ? behaviour.target.slotId : null;
   if (behaviour.verb !== null && slotId !== null && slotHolds(step, slotId))
     return startVerb(step, behaviour, slotId, behaviour.verb);
+  if (behaviour.phase === 'meeting') { // WORK-036-1 A2: idle keeps the interrupted wander target for the next pick
+    const idle = toIdle(step.content, step.state, step.petId);
+    return transition(step, idle.state, { ...idle.behaviour, target: behaviour.target });
+  }
   return toIdleFrom(step, behaviour);
 }
 
@@ -204,10 +213,19 @@ export function stepPet(content: Content, state: GameState, petId: PetId, dtMs: 
   return behaviour.phase === 'using' ? endVerb(step) : afterBubble(step);
 }
 
-/** Core §4 step 4: only the pet sharing the player's scene is stepped — the current interior's resident, or on the
- * street an arrived site's resident (DEC-045, WORK-034-2). */
+/** Core §4 step 4: only the pets sharing the player's scene are stepped — the current interior's resident, or on the
+ * street every street pet (arrived site residents and outside house pets, content order; DEC-045, WORK-035-1). */
 export function stepResidentPet(content: Content, state: GameState, action: TickAction,
   eventsSoFar: readonly SimEvent[]): RuleResult {
+  if (state.scene.kind === 'street') {
+    let current = state;
+    const events: SimEvent[] = [];
+    for (const { petId, ref } of streetPets(content, state)) {
+      const result = stepPet(content, current, petId, action.dtMs, eventsSoFar, ref);
+      current = result.state; events.push(...result.events);
+    }
+    return { state: current, events };
+  }
   const here = scenePet(content, state);
   return here === null ? { state, events: [] } : stepPet(content, state, here.petId, action.dtMs, eventsSoFar, here.ref);
 }

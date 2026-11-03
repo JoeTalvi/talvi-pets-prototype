@@ -7,6 +7,7 @@ import type { GameState } from '../../src/sim/state';
 import type { InteriorScene } from '../../src/view/scenes/InteriorScene';
 import { designSetup, linesOf, pointer } from './designHarness';
 import { destroyScene } from './sceneHarness';
+import { blockSpies, stubReducedMotion } from './motionHarness';
 
 afterEach(() => { destroyScene(); document.body.replaceChildren(); vi.restoreAllMocks(); });
 
@@ -210,4 +211,93 @@ describe('VERIFY-MEC-007-020 stripped reaction (view)', () => {
     expect(glyph(scene)).toBe(reacted?.line);
     expect(state().pets.dog.strippedPending).toEqual([]);
   });
+});
+
+describe('VERIFY-WORK-038-3-08 reaction beats, first use and B9 (DEC-049 §9, DEC-043)', () => {
+  const stripped = (s: GameState) => {
+    play(s); wantTwo(s);
+    s.pets.dog.hearts = 1; s.pets.dog.heartCharms = ['dog-bed']; s.pets.dog.strippedPending = ['dog-bed'];
+    s.pets.dog.behaviour = { ...s.pets.dog.behaviour, phase: 'idle', timerMs: 100, target: null, verb: null, reaction: null };
+  };
+  it('VERIFY-WORK-038-3-08 B9: a stripped 😢 shows for bubbleMs, then its line once without a tap (no bubble.tapped), then clears', async () => {
+    const { scene, context, state } = await designSetup({ edit: stripped });
+    for (let i = 0; i < 20 && state().pets.dog.behaviour.reaction !== 'stripped'; i++) tick(scene);
+    const reacted = linesOf(context, 'pet.reacted').at(-1)!;
+    expect(glyph(scene)).toBe('😢');
+    const { bubbleMs, bubbleTextMs } = context.content.tuning;
+    // The emoji is already up to one 100 ms frame old here.
+    scene.bubble!.update(bubbleMs - 200);
+    expect(glyph(scene)).toBe('😢');
+    scene.bubble!.update(200);
+    expect(scene.bubble!.current()).toEqual({ kind: 'text', class: 'stripped', text: reacted.line });
+    expect(linesOf(context, 'ui.bubbleTapped')).toHaveLength(0);
+    scene.bubble!.update(bubbleTextMs);
+    expect(scene.bubble!.current()).toBeNull();
+  });
+
+  it('VERIFY-WORK-038-3-08: love pops the bubble (0 → 1.15 → 1 over REACT.popMs), raises 3 ♥ and hops the pet; dislike shakes; like/greeting pop only; the view plays no reaction sound', async () => {
+    const { REACT } = await import('../../src/view/celebration/timings');
+    const { scene, context, state } = await designSetup({ edit: owning('bookshelf') });
+    const sound = vi.spyOn(context.audio!, 'play');
+    const bubble = scene.bubble!;
+    const counters = vi.spyOn(scene.tweens, 'addCounter');
+    context.store.dispatch({ type: 'placeCharm', slotId: 'large-1', typeId: 'dog-bed' });
+    for (let i = 0; i < 200 && state().pets.dog.behaviour.phase !== 'reacting'; i++) tick(scene);
+    expect(glyph(scene)).toBe('❤️');
+    expect(counters.mock.calls.map(c => (c[0] as { duration: number }).duration)).toEqual([REACT.popMs, REACT.hopMs]);
+    expect(scene.children.list.filter(c => c.getData?.('tppReactHeart'))).toHaveLength(3);
+    counters.mockClear();
+    bubble.show({ kind: 'emoji', class: 'dislike', glyph: '💢', beat: 'shake' });
+    expect(counters.mock.calls.map(c => (c[0] as { duration: number }).duration)).toEqual([REACT.shakeMs]);
+    counters.mockClear();
+    bubble.show({ kind: 'emoji', class: 'like', glyph: '🙂', beat: 'pop' });
+    expect(counters.mock.calls.map(c => (c[0] as { duration: number }).duration)).toEqual([REACT.popMs]);
+    expect(sound.mock.calls.filter(c => c[0] === 'reaction')).toEqual([]);
+  });
+
+  it('VERIFY-WORK-038-3-08: the first pet.verbStarted per (pet, charm type) sparkles 6 ✨ at the charm and ticks +12 st (once: the tick list has exactly one entry)', async () => {
+    const { scene, context, state } = await designSetup({ edit: s => { play(s); wantTwo(s); s.rooms['dog-room'].placements['large-1'] = 'dog-bed'; } });
+    const sound = vi.spyOn(context.audio!, 'play');
+    for (let i = 0; i < 400 && linesOf(context, 'pet.verbStarted').length === 0; i++) tick(scene);
+    expect(linesOf(context, 'pet.verbStarted').length).toBeGreaterThan(0);
+    expect(sound.mock.calls.filter(c => c[0] === 'tick')).toEqual([['tick', { semitones: 12 }]]);
+    expect(scene.children.list.filter(c => c.getData?.('tppFirstUse'))).toHaveLength(6);
+    void state();
+  });
+});
+
+describe('VERIFY-WORK-038-3-10 / -11 §9 reactions and first use: reduced motion and tier exclusivity', () => {
+  const id = (reduce: boolean) => `VERIFY-WORK-038-3-1${reduce ? 0 : 1}: reduce ${reduce}`;
+  for (const reduce of [false, true]) {
+    it(`${id(reduce)} — love keeps its ❤️ pop, 3 ♥ and hop; no screenFlash, shake or hitstop`, async () => {
+      stubReducedMotion(reduce);
+      const blocks = blockSpies();
+      try {
+        // The Dog's first want is already met, so this placement is a plain love reaction (no Heart, whose hitstop is the signature's).
+        const { scene, context, state } = await designSetup({ edit: s => { owning('bookshelf')(s); wantTwo(s); } });
+        const { REACT } = await import('../../src/view/celebration/timings');
+        const counters = vi.spyOn(scene.tweens, 'addCounter');
+        context.store.dispatch({ type: 'placeCharm', slotId: 'large-1', typeId: 'dog-bed' });
+        for (let i = 0; i < 200 && state().pets.dog.behaviour.phase !== 'reacting'; i++) tick(scene);
+        expect(linesOf(context, 'heart.earned')).toHaveLength(0);
+        expect(counters.mock.calls.map(c => (c[0] as { duration: number }).duration)).toEqual([REACT.popMs, REACT.hopMs]);
+        expect([glyph(scene), scene.children.list.filter(c => c.getData?.('tppReactHeart')).length]).toEqual(['❤️', 3]);
+        tick(scene, 30);
+        expect(blocks.calls()).toEqual([0, 0, 0]);
+      } finally { vi.unstubAllGlobals(); }
+    });
+
+    it(`${id(reduce)} — the first use keeps its 6 ✨ and the +12 st tick; no screenFlash, shake or hitstop`, async () => {
+      stubReducedMotion(reduce);
+      const blocks = blockSpies();
+      try {
+        const { scene, context } = await designSetup({ edit: s => { play(s); wantTwo(s); s.rooms['dog-room'].placements['large-1'] = 'dog-bed'; } });
+        const sound = vi.spyOn(context.audio!, 'play');
+        for (let i = 0; i < 400 && linesOf(context, 'pet.verbStarted').length === 0; i++) tick(scene);
+        expect(sound.mock.calls.filter(c => c[0] === 'tick')).toEqual([['tick', { semitones: 12 }]]);
+        expect(scene.children.list.filter(c => c.getData?.('tppFirstUse'))).toHaveLength(6);
+        expect(blocks.calls()).toEqual([0, 0, 0]);
+      } finally { vi.unstubAllGlobals(); }
+    });
+  }
 });

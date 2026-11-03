@@ -1,5 +1,7 @@
 # Talvi Pets prototype — game
 
+**Play it in the browser:** https://joetalvi.github.io/talvi-pets-prototype/ (built from `main` by `.github/workflows/pages.yml`; desktop plays with WASD / arrows, a phone shows the on-screen joystick).
+
 Phaser 4.2.1 / Vite scaffold, content schema and checks, asset registry and ledger tools. The interior is still the WORK-001 spike scene; the simulation kernel, design mode and most panels are not built yet.
 
 ## Environment

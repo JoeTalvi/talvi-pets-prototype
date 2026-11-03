@@ -131,7 +131,8 @@ export function feedArgs(argv: string[]): Cli {
 
 async function main(argv: string[]): Promise<void> {
   const cli = feedArgs(argv);
-  const text = cli.help ? USAGE : runFeedPreview(loadContent(undefined, await readContentFiles(cli.content)), cli).lines.join('\n');
+  const content = cli.help ? null : loadContent(undefined, await readContentFiles(cli.content));
+  const text = content === null ? USAGE : runFeedPreview(content, cli).lines.join('\n');
   if (cli.out) writeFileSync(cli.out, text + '\n');
   else process.stdout.write(text + '\n');
 }

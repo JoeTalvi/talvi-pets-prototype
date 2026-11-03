@@ -1,8 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { expect, it } from 'vitest';
-import { parseSaveValue } from '../../src/sim/state.schema';
+import { parseSaveValue, SAVE_SCHEMA_VERSION } from '../../src/sim/state.schema';
 import { reduce } from '../../src/sim/reduce';
 import type { GameState } from '../../src/sim/state';
+import { loadContent } from '../../src/content/load';
 import { validContent } from '../content/helpers';
 import { deepFreeze, giveCopies } from './helpers';
 
@@ -59,3 +60,35 @@ it('CONTRACT-PERSIST v1.4 parseSaveValue an obsolete projects[pet-house].guess (
   expect(Object.keys(loaded.state.projects['pet-house'])).not.toContain('guess');
   expect(JSON.stringify(loaded.state)).not.toContain('guess');
 });
+
+it('VERIFY-WORK-036-1-09 greetings and the meeting phase round-trip; a v2 save without greetings loads {}; a bad pair key → unknownContentId; version 2', () => {
+  const save = saveV1();
+  const owl = save.state.pets.owl;
+  const state: GameState = { ...save.state, greetings: { 'dog|owl': { cooldownMs: 1234 } },
+    pets: { ...save.state.pets, owl: { ...owl, behaviour: { ...owl.behaviour, phase: 'meeting', target: null, verb: null, reaction: null } } } };
+  expect(parseSaveValue(content, { ...save, state })).toEqual({ state });
+  const old = saveV1() as { schemaVersion: number; savedAt: string; state: Record<string, unknown> };
+  delete old.state.greetings;
+  expect((parseSaveValue(content, old) as { state: GameState }).state.greetings).toEqual({});
+  for (const key of ['dog|cat', 'cat|dog', 'dog|dog', 'dog', 'dog|owl|dog'])
+    expect(parseSaveValue(content, { ...save, state: { ...save.state, greetings: { [key]: { cooldownMs: 0 } } } }), key)
+      .toEqual({ discarded: 'unknownContentId' });
+  expect(parseSaveValue(content, { ...save, state: { ...save.state, greetings: { 'dog|owl': { cooldownMs: -1 } } } }))
+    .toEqual({ discarded: 'parse' });
+  expect(SAVE_SCHEMA_VERSION).toBe(2);
+});
+
+it('WORK-036-1 A3: a reversed known pair key loads normalised to content order; a key with an unknown id still discards', () => {
+  const real = loadContent(); // content pet order dog, owl-mate, owl
+  const save = JSON.parse(readFileSync('tests/view/capture/mate-arrived.real.json', 'utf8')) as { state: GameState };
+  const load = (greetings: GameState['greetings']) => parseSaveValue(real, { ...save, state: { ...save.state, greetings } });
+  expect((load({ 'owl|owl-mate': { cooldownMs: 1234 } }) as { state: GameState }).state.greetings)
+    .toEqual({ 'owl-mate|owl': { cooldownMs: 1234 } });
+  expect((load({ 'owl-mate|owl': { cooldownMs: 1234 } }) as { state: GameState }).state.greetings)
+    .toEqual({ 'owl-mate|owl': { cooldownMs: 1234 } });
+  expect((load({ 'owl|dog': { cooldownMs: 5 }, 'dog|owl': { cooldownMs: 9 } }) as { state: GameState }).state.greetings)
+    .toEqual({ 'dog|owl': { cooldownMs: 9 } });
+  for (const key of ['owl|cat', 'cat|owl', 'owl|owl'])
+    expect(load({ [key]: { cooldownMs: 0 } }), key).toEqual({ discarded: 'unknownContentId' });
+});
+

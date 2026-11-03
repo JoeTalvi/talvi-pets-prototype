@@ -29,6 +29,7 @@ export type ViewContext = {
   findings: Finding[];
   lenient: boolean;
   debugOpen: boolean;           // WORK-014-3's debug panel sets it; frozen input while open
+  touch?: boolean;              // a touch-first device (`touchDevice()` at startup): the on-screen joystick shows only then
   selectedSlotId?: string | null; // the chooser/sheet sets it while open; the Interior draws that outline `selected`
   alignmentGrid?: boolean;      // debug row 18 / `?grid=1`: the active scene draws the crosshairs (view-only state)
   roomEditorRequested?: boolean; // debug row 15: WORK-015 attaches the room editor to this flag

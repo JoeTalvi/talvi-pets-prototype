@@ -99,7 +99,8 @@ export function afterPlacement(content: Content, before: GameState, current: Gam
   if (change.space.kind !== 'room') return { state: current, events: [] };
   const roomId = change.space.roomId;
   const petId = content.rooms[roomId]?.residentPetId;
-  if (change.kind !== 'placed' || !petId || !current.pets[petId]) return { state: current, events: [] };
+  // An outside resident is on the street, not in the room: no reaction until the presence roll brings it home.
+  if (change.kind !== 'placed' || !petId || !current.pets[petId] || current.pets[petId].outside) return { state: current, events: [] };
   const fulfilled = eventsSoFar.find(event => event.type === 'want.fulfilled' && event.petId === petId);
   const slotId = fulfilled?.type === 'want.fulfilled' ? fulfilled.focusSlotId : change.slotId;
   const typeId = current.rooms[roomId].placements[slotId];

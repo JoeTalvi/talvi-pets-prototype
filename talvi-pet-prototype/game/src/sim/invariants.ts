@@ -116,12 +116,21 @@ const dialogueShape: Check = (_content, state) => {
     : `invariant 9: dialogue.current.index ${current.index} outside 0..${current.lines.length - 1}`;
 };
 
-/** Invariant 10 (mec-007 §1): `using` targets a filled slot with a verb; each pet stands inside its room's walkArea. */
+/** Invariant 10 (mec-007 §1, as amended by WORK-035-1): `using` targets a filled slot with a verb; each room resident stands
+ * inside its room's walkArea while inside, and inside the street walkArea while outside (DEC-045). (Invariant 11, "in an
+ * interior its resident is inside", was retired on 2026-11-03: the timed presence roll brings the resident home within
+ * `presenceRollMs` of the player's entry, so an outside resident in its own room is a legal, transient state.) */
 const petBehaviour: Check = (content, state) => {
   for (const room of Object.values(content.rooms)) {
     const behaviour = state.pets[room.residentPetId]?.behaviour;
     if (!behaviour) continue;
     const where = `pets.${room.residentPetId}.behaviour`;
+    if (state.pets[room.residentPetId].outside) {
+      if (behaviour.phase === 'using') return `invariant 10: ${where} using while outside`;
+      if (!pointInPolygon(behaviour, content.street.walkArea))
+        return `invariant 10: ${where} (${behaviour.x}, ${behaviour.y}) outside the street walkArea while outside`;
+      continue;
+    }
     if (behaviour.phase === 'using') {
       const slotId = behaviour.target !== null && 'slotId' in behaviour.target ? behaviour.target.slotId : null;
       if (slotId === null || state.rooms[room.id]?.placements[slotId] === undefined || behaviour.verb === null)

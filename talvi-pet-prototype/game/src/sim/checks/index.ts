@@ -10,11 +10,12 @@ import { check006 } from './chk-006';
 import { check007 } from './chk-007';
 import { check008 } from './chk-008';
 import { check009 } from './chk-009';
+import { check010 } from './chk-010-outfits';
 import { compareFindings, type CheckOptions } from './types';
 export type { Finding, CheckOptions } from './types';
 export const registeredIds = [
     'CHK-CORE-01', 'CHK-CORE-02', 'CHK-CORE-03', ...[
-        16, 6, 4, 9, 10, 3, 8, 9, 21
+        16, 6, 4, 9, 10, 3, 17, 9, 21, 6 // CHK-007-09..13 street (WORK-035-1), -14..17 greetings (WORK-036-1); CHK-010: outfits (WORK-037-2)
     ].flatMap((count, i) => Array.from({
         length: count
     }, (_, n) => `CHK-${String(i + 1).padStart(3, '0')}-${String(n + 1).padStart(2, '0')}`))
@@ -31,7 +32,7 @@ export function validateOptions(c: Content, opts: CheckOptions): void {
 export function runContentChecks(c: Content, m?: AssetManifest, opts: CheckOptions = {}) {
     validateOptions(c, opts);
     const all = [
-        ...coreChecks.flatMap(check => check.run(c, m)), ...check001(c, m), ...check002(c), ...check003(c), ...check004(c), ...check005(c), ...check006(c), ...check007(c), ...check008(c), ...check009(c)
+        ...coreChecks.flatMap(check => check.run(c, m)), ...check001(c, m), ...check002(c), ...check003(c), ...check004(c), ...check005(c), ...check006(c), ...check007(c), ...check008(c), ...check009(c), ...check010(c, m)
     ];
     const pet = opts.pet ?? (opts.room ? c.rooms[opts.room].residentPetId : undefined);
     const room = opts.room ?? (opts.pet ? Object.values(c.rooms).find(r => r.residentPetId === opts.pet)?.id : undefined);

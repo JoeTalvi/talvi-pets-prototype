@@ -140,7 +140,8 @@ it('VERIFY-T2-SITE-008 room placements do not count for the mate', () => {
   expect(wantConditions(content, state, 'owl-mate').filter(view => view.kind === 'tag').map(view => view.met)).toEqual([false, true]);
 });
 
-it('VERIFY-T2-SITE-009 the mate alternates between its two wander points on the street; deterministic; Dog and Owl not outside', () => {
+// WORK-035-1 re-pin: the meeting point is the mate's third target (gate Q1(a)), so it no longer strictly alternates.
+it('VERIFY-T2-SITE-009 the mate wanders among its two wander points and street-meet, never the same twice in a row; deterministic; Dog and Owl not outside', () => {
   const walk = (seed: number) => {
     let state = { ...saved('mate-arrived'), pets: { ...saved('mate-arrived').pets } };
     state.pets['owl-mate'] = { ...state.pets['owl-mate'], rngState: seed };
@@ -157,7 +158,10 @@ it('VERIFY-T2-SITE-009 the mate alternates between its two wander points on the 
   };
   const targets = walk(1);
   expect(targets.length).toBeGreaterThanOrEqual(2);
-  targets.forEach((target, i) => expect(target).toBe(i % 2 === 0 ? 'garden-w2' : 'garden-w1'));
+  targets.forEach((target, i) => {
+    expect(['garden-w1', 'garden-w2', 'street-meet']).toContain(target);
+    if (i > 0) expect(target).not.toBe(targets[i - 1]);
+  });
   expect(walk(1)).toEqual(targets);
   const before = saved('site-unlocked');
   expect(reduce(content, before, tick()).state.pets['owl-mate'].behaviour).toEqual(before.pets['owl-mate'].behaviour);

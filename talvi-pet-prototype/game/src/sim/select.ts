@@ -5,10 +5,12 @@ import type { GameState } from './state';
 export { chooserTypes, copiesOf, ownsTag } from './rules/inventory';
 export { starsOf, starsOfSpace } from './rules/stars';
 export { scenePet, playerSpace, homeSpaceOf } from './space';
+export { streetPets } from './rules/streetPresence';
 export { slotOf, placementAt } from './rules/slots';
 export { residentPet, petUsingSlot } from './rules/pets';
 export { revealProjectId, revealView, revealPopupView } from './rules/reveal';
 export { activeWant, wantConditions, tagAvailability, missingWantTags } from './rules/wants';
+export { unlockedOutfitIds } from './rules/outfits'; // WORK-037-2
 export {
   boundaryCents, phaseOf, owedPhases, activeProjectId, hudProjectId, completeNowPriceCents,
   completeNowOffered, ackFloorCents, attentionVisible, displayedPhase,

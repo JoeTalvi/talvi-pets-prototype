@@ -27,7 +27,7 @@ export function contextFor(content: Content, state: GameState, storage: Storage 
   const persistence = createPersistence({ storage, log, debounceMs: 60_000 });
   const audio = createAudio({ play: () => {}, setMute: () => {}, locked: () => false }, { available: new Set(), record: log.record });
   return { content, manifest: minManifest, store, log, persistence, audio, bus: createPresentationBus(log.record),
-    keyboard: createKeyboard(), findings: [], lenient: false, debugOpen: false };
+    keyboard: createKeyboard(), findings: [], lenient: false, debugOpen: false, touch: true }; // the phone layout the scene tests were written against
 }
 
 /** Adds a blank canvas texture (image or sprite sheet) the way anims.test.ts does. */

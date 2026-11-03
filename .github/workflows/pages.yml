@@ -1,0 +1,48 @@
+# Builds talvi-pet-prototype/game with Vite and publishes dist/ to GitHub Pages, so the prototype plays in the browser at
+# https://<owner>.github.io/<repo>/ . Runs on every push to main that touches the game, and by hand from the Actions tab
+# (workflow_dispatch) for any branch that carries this file. Vite's `base: './'` keeps every asset URL relative to the page.
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths: ['talvi-pet-prototype/game/**', '.github/workflows/pages.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: talvi-pet-prototype/game
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.17.1
+          cache: npm
+          cache-dependency-path: talvi-pet-prototype/game/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: talvi-pet-prototype/game/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

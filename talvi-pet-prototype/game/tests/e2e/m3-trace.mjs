@@ -19,7 +19,7 @@ const SEED = join(evidenceRoot, 'session-opening.real.json');
 if (!existsSync(SEED)) throw new Error(`seed save missing: ${SEED} (npm run fixture -- --scenario session-opening --out <EV>/session-opening.real.json)`);
 const SEED_TEXT = readFileSync(SEED, 'utf8');
 const QUERY = '';
-const SFX = ['sfx/place', 'sfx/heart', 'sfx/complete', 'sfx/reaction', 'sfx/phase-pop'];
+const SFX = ['sfx/place', 'sfx/heart', 'sfx/complete', 'sfx/reaction', 'sfx/phase-pop', 'sfx/tick', 'sfx/riser', 'sfx/reveal'];
 const FROZEN_WAIT_MS = Number(process.env.TPP_FROZEN_WAIT_MS ?? 120000);
 const beats = [], marks = {}, traceStart = Date.now();
 const mark = name => { marks[name] = Date.now(); return marks[name]; };
@@ -104,9 +104,9 @@ async function seedBoot() {
   const tap = first(all, 'input.tap'), locked = all.filter(l => l.type === 'audio.locked');
   const pres = { sfx: Object.fromEntries(audio.exists), loader: audio.loader, soundLockedBeforeTap: audio.lockedBeforeTap, soundLockedAfterTap: lockedAfter,
     audioLockedLines: locked.map(strip), firstInputTap: strip(tap) };
-  beat('seed: five SFX cached (sfx/place, heart, complete, reaction, phase-pop), Boot totalFailed 0; audio.locked ≤ 1 and before the first input.tap; sound.locked false after it (VERIFY-PRES-011 ENV-MAC-CH)',
+  beat('seed: eight SFX cached (sfx/place, heart, complete, reaction, phase-pop, tick, riser, reveal), Boot totalFailed 0; audio.locked ≤ 1 and before the first input.tap; sound.locked false after it (VERIFY-PRES-011 ENV-MAC-CH)',
     audio.exists.every(([, v]) => v) && audio.loader?.totalFailed === 0 && locked.length <= 1 && (!locked.length || (tap && locked[0].t <= tap.t)) && tap && lockedAfter === false,
-    'cache.audio.exists ×5 true; loaderTotals.totalFailed 0; audio.locked ≤ 1, t ≤ first input.tap; game.sound.locked false', pres, { line: tap });
+    'cache.audio.exists ×8 true; loaderTotals.totalFailed 0; audio.locked ≤ 1, t ≤ first input.tap; game.sound.locked false', pres, { line: tap });
   row('pres-011', { verify: 'VERIFY-PRES-011', ...pres });
 }
 

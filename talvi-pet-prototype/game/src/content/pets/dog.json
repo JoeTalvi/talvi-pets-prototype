@@ -243,5 +243,6 @@
       ],
       "rewardLabel": "A little story"
     }
-  ]
+  ],
+  "compatibility": {"owl": 0.6, "owl-mate": 0.5}
 }

@@ -10,7 +10,8 @@
       "starsVisible": true,
       "muted": false,
       "testerLabel": "",
-      "orientationShown": true
+      "orientationShown": true,
+      "petsOutside": "roll"
     },
     "scene": {
       "kind": "interior",
@@ -21,7 +22,8 @@
       "y": 220,
       "facing": "down",
       "immunityMs": 500,
-      "facingCandidate": null
+      "facingCandidate": null,
+      "outfitId": "default"
     },
     "mode": "play",
     "dialogue": {
@@ -124,6 +126,11 @@
         "heartCharms": [],
         "strippedPending": []
       }
-    }
+    },
+    "presence": {
+      "rollInMs": 7100,
+      "rolls": 0
+    },
+    "greetings": {}
   }
 }

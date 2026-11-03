@@ -3137,15 +3137,25 @@
       },
       "status": "ai-placeholder",
       "origin": "authored",
-      "source": "recolour of pets/owl-sheet (a969075:public/assets/pets/owl-sheet.png, SHA-256 0534ee0169b4e6b92b8e78c7d0bcc06e46c60693dc8d21f55d2e2d224852d47b) by tools/assets/recolour.ts",
-      "generator": "tools/assets/recolour.ts + tools/assets/owl-mate-v1.config.json SHA-256 e12d0aefaa424d0837722236b943d6e7d8825060983c029d71855fb4381137c4",
-      "postProcess": "WORK-034-1 / TASK-214: npx tsx tools/assets/recolour.ts --config tools/assets/owl-mate-v1.config.json (config SHA-256 e12d0aefaa424d0837722236b943d6e7d8825060983c029d71855fb4381137c4; recipe tools/assets/recolour.ts at lane commit 2d4e0f3). Pure HSV palette shift of a969075:public/assets/pets/owl-sheet.png (SHA-256 0534ee0169b4e6b92b8e78c7d0bcc06e46c60693dc8d21f55d2e2d224852d47b): band hue 8..45 deg (feather 8), sat >= 0.38 (feather 0.06), value 0.36..0.82 (feather 0.05) moved to hue 212, sat x0.5, value x1.0; keep corner sat >= 0.6 and value <= 0.40 (irises); cream, contour, eyes and every alpha byte unchanged, no pixel moved (alpha IoU 1.0, determinism proven by two runs). 8-bit RGBA PNG, per-row min-residual filter, zlib 9.",
+      "source": "recolour of pets/owl-sheet (a969075:public/assets/pets/owl-sheet.png, SHA-256 0534ee0169b4e6b92b8e78c7d0bcc06e46c60693dc8d21f55d2e2d224852d47b) by tools/assets/recolour.ts + tools/assets/owl-mate-v2.config.json",
+      "generator": "tools/assets/recolour.ts + tools/assets/owl-mate-v2.config.json SHA-256 50fc007400dc3ad604ee1a6f026e2f35f86eb4b45aa6f5f9d375973312d73c3a",
+      "postProcess": "WORK-037-1 / TASK-237 (m4 fold-in B13): npx tsx tools/assets/recolour.ts --config tools/assets/owl-mate-v2.config.json (config SHA-256 50fc007400dc3ad604ee1a6f026e2f35f86eb4b45aa6f5f9d375973312d73c3a; recipe tools/assets/recolour.ts unchanged). As owl-mate-v1 but value ceiling 0.82 -> 0.76 (feather 0.05 -> 0.03) so the light peach feet keep the Owl's colour; alpha IoU 1.0, run1 = run2 (evidence/WORK-037-1/b13-proof.json).",
       "batch": "tier2-m4",
-      "hash": "2b2e693eefeb8732b8678e2c8ec6eb850102116f35f1276e1b5c4e8e8f8354ac",
+      "hash": "653a1770e5360973703c33f865fe46ae4097292aa7457f5724e8d1ddb2848b2b",
       "recordedAt": "2026-11-02",
-      "recordedBy": "WORK-034-1 / TASK-214",
-      "history": [],
-      "note": "WORK-034-1 MILESTONE-009 batch tier2-m4 under DEC-040/DEC-044/DEC-048; recolour of pets/owl-sheet: slate blue-grey plumage, cream face kept, frames identical; origin authored (not derived) because VERIFY-ASSET-007 makes a derived row inherit the parent's accepted status, which this lane may not record; creative verdict at the MILESTONE-009 play session; not status accepted"
+      "recordedBy": "WORK-037-1 / TASK-237",
+      "history": [
+        {
+          "hash": "2b2e693eefeb8732b8678e2c8ec6eb850102116f35f1276e1b5c4e8e8f8354ac",
+          "status": "ai-placeholder",
+          "origin": "authored",
+          "source": "recolour of pets/owl-sheet (a969075:public/assets/pets/owl-sheet.png, SHA-256 0534ee0169b4e6b92b8e78c7d0bcc06e46c60693dc8d21f55d2e2d224852d47b) by tools/assets/recolour.ts",
+          "recordedAt": "2026-11-02",
+          "recordedBy": "WORK-034-1 / TASK-214",
+          "note": "WORK-034-1 MILESTONE-009 batch tier2-m4 under DEC-040/DEC-044/DEC-048; recolour of pets/owl-sheet: slate blue-grey plumage, cream face kept, frames identical; origin authored (not derived) because VERIFY-ASSET-007 makes a derived row inherit the parent's accepted status, which this lane may not record; creative verdict at the MILESTONE-009 play session; not status accepted"
+        }
+      ],
+      "note": "B13 m4 fold-in: original foot colour kept (WORK-037-1 / TASK-237; recolour config v2, value ceiling 0.82 -> 0.76); portrait untouched; not status accepted"
     },
     {
       "id": "pets/owl-mate-portrait",
@@ -3220,6 +3230,279 @@
       "recordedBy": "WORK-034-1 / TASK-218",
       "history": [],
       "note": "WORK-034-1 MILESTONE-009 batch tier2-m4 under DEC-040/DEC-044/DEC-048; site state base: cleared plot (two mulch beds, stepping-stone path, low stone edge), shown once unlocked; charms sit on it; canvas 640x320, base-centre pivot (origin 0.5, 1), world anchor {x: 380, y: 955}, ground decal above the ground tiles and below everything else; creative verdict at the MILESTONE-009 play session; not status accepted"
+    },
+    {
+      "id": "sfx/tick",
+      "type": "audio",
+      "urls": [
+        "sfx/tick.m4a",
+        "sfx/tick.ogg"
+      ],
+      "durationMs": 93,
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "tools/assets/sfx-placeholders.mjs (SHA-256 2f1e3e2fcdf458095e073190371a40bd1a15ea79c38113ae1ee48df3f0cb337a) + tools/assets/sfx-placeholders-v2.config.json (SHA-256 a3801e57f08f5257a8673319221affef3717047c66927bcb4b8a25e2411981da), entry tick: deterministic sine/envelope tone (one soft tuned marimba-like note (C6 with a quiet 4th harmonic), pitch-stepped 0/+4/+7/+12 by detune); OGG helper tools/assets/sfx-ogg-sndfile.py (SHA-256 18cca28917bd875b2c629a3e782f7f40c2e6001fe6de6d289eb5db2747b4fa38)",
+      "generator": "node waveform (tools/assets/sfx-placeholders.mjs), afconvert AAC 96k, libsndfile Vorbis (tools/assets/sfx-ogg-sndfile.py)",
+      "postProcess": "44100 Hz mono PCM 36 ms, peak -8.0 dBFS, no leading silence (4 ms attack from sample 0, 10 ms fade-out); afconvert AAC 96k (-c 1); OGG route B libsndfile Vorbis default quality via tools/assets/sfx-ogg-sndfile.py (route A ffmpeg vorbis rejects mono); WAV SHA-256 eb9cc3044ece7ef898cc6c80c32ff853bd18b2dd5f466a3e8b9a643fb08c9b0e; measured: m4a 92.9 ms / 4536 B / -8.06 dB, ogg 36.0 ms / 3924 B / -8.36 dB; limit 100 ms (DEC-049 delegation)",
+      "batch": "tier2-m5",
+      "hash": "ed96fc7b0985a5aa6fcddbc347fdcf9ee768729143c256077445c66a3efe49e7",
+      "recordedAt": "2026-11-02",
+      "recordedBy": "WORK-038-1 / TASK-238",
+      "history": [],
+      "note": "WORK-038-1 DEC-049 tier2-m5 batch under gate Q20(a) (scripted tones, zero spend, no audio-generation service); replaceable by id with no code change (ASSET-018); creative verdict at the play session; not status accepted"
+    },
+    {
+      "id": "sfx/riser",
+      "type": "audio",
+      "urls": [
+        "sfx/riser.m4a",
+        "sfx/riser.ogg"
+      ],
+      "durationMs": 441,
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "tools/assets/sfx-placeholders.mjs (SHA-256 2f1e3e2fcdf458095e073190371a40bd1a15ea79c38113ae1ee48df3f0cb337a) + tools/assets/sfx-placeholders-v2.config.json (SHA-256 a3801e57f08f5257a8673319221affef3717047c66927bcb4b8a25e2411981da), entry riser: deterministic sine/envelope tone (soft upward shimmer: C5 -> C6 glide swelling in, a fifth above for shimmer); OGG helper tools/assets/sfx-ogg-sndfile.py (SHA-256 18cca28917bd875b2c629a3e782f7f40c2e6001fe6de6d289eb5db2747b4fa38)",
+      "generator": "node waveform (tools/assets/sfx-placeholders.mjs), afconvert AAC 96k, libsndfile Vorbis (tools/assets/sfx-ogg-sndfile.py)",
+      "postProcess": "44100 Hz mono PCM 390 ms, peak -7.0 dBFS, no leading silence (4 ms attack from sample 0, 10 ms fade-out); afconvert AAC 96k (-c 1); OGG route B libsndfile Vorbis default quality via tools/assets/sfx-ogg-sndfile.py (route A ffmpeg vorbis rejects mono); WAV SHA-256 31f5b7e582e1f056d3817deee8e61b314b7ba0821f46cf3aabcd50d0d88f9632; measured: m4a 441.2 ms / 5968 B / -7.07 dB, ogg 390.0 ms / 5074 B / -7.06 dB; limit 500 ms (DEC-049 delegation)",
+      "batch": "tier2-m5",
+      "hash": "9a03754cc2d68b202118650e5c7bc07c1868f8a3b5a4d97e1254c76bc6cfdc38",
+      "recordedAt": "2026-11-02",
+      "recordedBy": "WORK-038-1 / TASK-238",
+      "history": [],
+      "note": "WORK-038-1 DEC-049 tier2-m5 batch under gate Q20(a) (scripted tones, zero spend, no audio-generation service); replaceable by id with no code change (ASSET-018); creative verdict at the play session; not status accepted"
+    },
+    {
+      "id": "sfx/reveal",
+      "type": "audio",
+      "urls": [
+        "sfx/reveal.m4a",
+        "sfx/reveal.ogg"
+      ],
+      "durationMs": 348,
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "tools/assets/sfx-placeholders.mjs (SHA-256 2f1e3e2fcdf458095e073190371a40bd1a15ea79c38113ae1ee48df3f0cb337a) + tools/assets/sfx-placeholders-v2.config.json (SHA-256 a3801e57f08f5257a8673319221affef3717047c66927bcb4b8a25e2411981da), entry reveal: deterministic sine/envelope tone (sparkle chime: G6 C7 E7 in quick succession, bell-like); OGG helper tools/assets/sfx-ogg-sndfile.py (SHA-256 18cca28917bd875b2c629a3e782f7f40c2e6001fe6de6d289eb5db2747b4fa38)",
+      "generator": "node waveform (tools/assets/sfx-placeholders.mjs), afconvert AAC 96k, libsndfile Vorbis (tools/assets/sfx-ogg-sndfile.py)",
+      "postProcess": "44100 Hz mono PCM 300 ms, peak -5.0 dBFS, no leading silence (4 ms attack from sample 0, 10 ms fade-out); afconvert AAC 96k (-c 1); OGG route B libsndfile Vorbis default quality via tools/assets/sfx-ogg-sndfile.py (route A ffmpeg vorbis rejects mono); WAV SHA-256 58f99cd5a70840d1abfc4439ca4ccc4d70e6022702e2145eb088adca76654262; measured: m4a 348.3 ms / 5694 B / -5.01 dB, ogg 300.0 ms / 5099 B / -5.20 dB; limit 400 ms (DEC-049 delegation)",
+      "batch": "tier2-m5",
+      "hash": "23ba7a50e12098423c00e0397796f8cdb2c5a41b060e14bead955ada6e08f25c",
+      "recordedAt": "2026-11-02",
+      "recordedBy": "WORK-038-1 / TASK-238",
+      "history": [],
+      "note": "WORK-038-1 DEC-049 tier2-m5 batch under gate Q20(a) (scripted tones, zero spend, no audio-generation service); replaceable by id with no code change (ASSET-018); creative verdict at the play session; not status accepted"
+    },
+    {
+      "id": "player/avatar-garden-sheet",
+      "type": "spritesheet",
+      "url": "player/avatar-garden-sheet.png",
+      "px": {
+        "w": 1152,
+        "h": 1536
+      },
+      "frame": {
+        "w": 192,
+        "h": 256
+      },
+      "clips": {
+        "idle-down": {
+          "start": 0,
+          "end": 3,
+          "frameRate": 6,
+          "repeat": -1,
+          "frameDurationsMs": [
+            2600,
+            80,
+            120,
+            80
+          ]
+        },
+        "idle-up": {
+          "start": 6,
+          "end": 9,
+          "frameRate": 6,
+          "repeat": -1,
+          "frameDurationsMs": [
+            2600,
+            80,
+            120,
+            80
+          ]
+        },
+        "idle-side": {
+          "start": 12,
+          "end": 15,
+          "frameRate": 6,
+          "repeat": -1,
+          "frameDurationsMs": [
+            2600,
+            80,
+            120,
+            80
+          ]
+        },
+        "walk-down": {
+          "start": 18,
+          "end": 23,
+          "frameRate": 10,
+          "repeat": -1
+        },
+        "walk-up": {
+          "start": 24,
+          "end": 29,
+          "frameRate": 10,
+          "repeat": -1
+        },
+        "walk-side": {
+          "start": 30,
+          "end": 35,
+          "frameRate": 10,
+          "repeat": -1
+        }
+      },
+      "status": "ai-placeholder",
+      "origin": "asset-bot",
+      "source": "row 0 idle-down: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/player/1793677992909-zspe2f/candidate_001.png (seed 9610; copy phase-4-build/runs/RUN-005/evidence/WORK-037-1/candidates/garden/idle-down-1.png, SHA-256 d8bd53d7accacd0c7dbcc8e9b3bc515768d29dca877b30dab91e275e70afe434); row 1 idle-up: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/player/1793678118837-6i4s3g/candidate_002.png (seed 9620; copy phase-4-build/runs/RUN-005/evidence/WORK-037-1/candidates/garden/idle-up-2.png, SHA-256 48702631c9aa9c866de1916890a94491f6d8d0c7ad961c8f0dab0d07ceac86bc); row 2 idle-side: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/player/1793678143548-ly7xbj/candidate_001.png (seed 9630; copy phase-4-build/runs/RUN-005/evidence/WORK-037-1/candidates/garden/idle-side-1.png, SHA-256 558e8e526f1af9c875dadf1a78c2bb708ef1a02082de8308fc9b3b989a309de8); row 3 walk-down: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/player/1793678165640-d7syvu/candidate_002.png (seed 9640; copy phase-4-build/runs/RUN-005/evidence/WORK-037-1/candidates/garden/walk-down-2.png, SHA-256 f4b5d0165d99e962ab6214772bcf09f38fae160e6a3a9269f04fa3c3350c020d); row 4 walk-up: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/player/1793678186672-8fwaev/candidate_002.png (seed 9650; copy phase-4-build/runs/RUN-005/evidence/WORK-037-1/candidates/garden/walk-up-2.png, SHA-256 e6d808b743646ecdac5da3c88185d358a5488f0c55df1e4f112ce8904d43ccac); row 5 walk-side: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/player/1793678211260-c0sr9w/candidate_002.png (seed 9660; copy phase-4-build/runs/RUN-005/evidence/WORK-037-1/candidates/garden/walk-side-2.png, SHA-256 7b4985a3bd469312b2eab54986ccc6693bf6dd9eeb2cfc36961db25413b10464); cells 4, 5, 10, 11, 16, 17 transparent",
+      "generator": "asset-bot/generate_image:nano-banana + tools/assets/use-poses.ts with tools/assets/avatar-garden-v1.config.json SHA-256 580dc2f748aec897cd9d30b62dd0d80fe2d1c5e7c346b041df84f60cdfbcb3bf",
+      "seed": 9610,
+      "prompt": "[row 0 idle-down: Asset-Bot run 1793677992909-zspe2f, seed 9610] Game sprite animation strip: exactly FOUR full-body poses of the SAME approved character in ONE horizontal row, four equal-width cells. Small friendly person with short muted dark-brown hair, mustard-ochre plain work shirt with rolled-up sleeves under dusty slate-blue bib dungarees with two shoulder straps, and simple brown shoes. Entire body visible, compact proportions, gentle minimal face. No hat, no props, no accessories, no costume pieces, no detached parts, no floating objects. All four in FRONT VIEW facing the viewer, standing at rest with relaxed arms, the same stance. A quiet looping IDLE: pose1 eyes open at rest; pose2 identical with a tiny chest rise; pose3 identical with both eyes softly closed in a blink; pose4 identical to pose1. No leg travel, no head turn, no different expressions. Feet on one shared baseline, identical size and proportions in every cell, equal cell widths, whole figure visible in every cell with generous white padding and clear white gutters between the cells. Plain white background. No shadow, no floor, no numbers, labels, cell borders, gridlines or text. || [row 1 idle-up: Asset-Bot run 1793678118837-6i4s3g, seed 9620] Game sprite animation strip: exactly FOUR full-body poses of the SAME approved character in ONE horizontal row, four equal-width cells. Small friendly person with short muted dark-brown hair, mustard-ochre plain work shirt with rolled-up sleeves under dusty slate-blue bib dungarees with two shoulder straps, and simple brown shoes. Entire body visible, compact proportions, gentle minimal face. No hat, no props, no accessories, no costume pieces, no detached parts, no floating objects. All four in BACK VIEW, facing directly away from the viewer: we see the back of the head of short dark-brown hair, the back of the slate-blue dungarees with crossed shoulder straps over the mustard-ochre shirt and the heels of the brown shoes; NO face visible. Standing at rest with relaxed arms, the same stance. A quiet looping IDLE: pose1 at rest; pose2 identical with a tiny shoulder rise; pose3 at rest; pose4 at rest. No leg travel, no head turn. Feet on one shared baseline, identical size and proportions in every cell, equal cell widths, whole figure visible in every cell with generous white padding and clear white gutters between the cells. Plain white background. No shadow, no floor, no numbers, labels, cell borders, gridlines or text. || [row 2 idle-side: Asset-Bot run 1793678143548-ly7xbj, seed 9630] Game sprite animation strip: exactly FOUR full-body poses of the SAME approved character in ONE horizontal row, four equal-width cells. Small friendly person with short muted dark-brown hair, mustard-ochre plain work shirt with rolled-up sleeves under dusty slate-blue bib dungarees with two shoulder straps, and simple brown shoes. Entire body visible, compact proportions, gentle minimal face. No hat, no props, no accessories, no costume pieces, no detached parts, no floating objects. All four facing RIGHT in three-quarter view, exactly like the reference, standing at rest with relaxed arms, the same stance. A quiet looping IDLE: pose1 eyes open at rest; pose2 identical with a tiny chest rise; pose3 identical with both eyes softly closed in a blink; pose4 identical to pose1. No leg travel, no head turn, no different expressions. Feet on one shared baseline, identical size and proportions in every cell, equal cell widths, whole figure visible in every cell with generous white padding and clear white gutters between the cells. Plain white background. No shadow, no floor, no numbers, labels, cell borders, gridlines or text. || [row 3 walk-down: Asset-Bot run 1793678165640-d7syvu, seed 9640] Game sprite animation strip: exactly SIX full-body poses of the SAME approved character in ONE horizontal row, six equal-width cells. Small friendly person with short muted dark-brown hair, mustard-ochre plain work shirt with rolled-up sleeves under dusty slate-blue bib dungarees with two shoulder straps, and simple brown shoes. Entire body visible, compact proportions, gentle minimal face. No hat, no props, no accessories, no costume pieces, no detached parts, no floating objects. All six in FRONT VIEW facing the viewer, walking in place toward the viewer: a six-frame walk cycle - pose1 left foot forward contact, pose2 down, pose3 passing with legs together, pose4 right foot forward contact, pose5 down, pose6 passing. Arms swing opposite the legs. No travel across the cell, same body size in every pose. Feet on one shared baseline, identical size and proportions in every cell, equal cell widths, whole figure visible in every cell with generous white padding and clear white gutters between the cells. Plain white background. No shadow, no floor, no numbers, labels, cell borders, gridlines or text. || [row 4 walk-up: Asset-Bot run 1793678186672-8fwaev, seed 9650] Game sprite animation strip: exactly SIX full-body poses of the SAME approved character in ONE horizontal row, six equal-width cells. Small friendly person with short muted dark-brown hair, mustard-ochre plain work shirt with rolled-up sleeves under dusty slate-blue bib dungarees with two shoulder straps, and simple brown shoes. Entire body visible, compact proportions, gentle minimal face. No hat, no props, no accessories, no costume pieces, no detached parts, no floating objects. All six in BACK VIEW, facing directly away from the viewer, walking in place away from the viewer: we see the back of the head of short dark-brown hair, the back of the slate-blue dungarees with crossed shoulder straps over the mustard-ochre shirt and brown shoe heels; NO face visible. A six-frame walk cycle - pose1 left foot forward contact, pose2 down, pose3 passing with legs together, pose4 right foot forward contact, pose5 down, pose6 passing. Arms swing opposite the legs. No travel across the cell, same body size in every pose. Feet on one shared baseline, identical size and proportions in every cell, equal cell widths, whole figure visible in every cell with generous white padding and clear white gutters between the cells. Plain white background. No shadow, no floor, no numbers, labels, cell borders, gridlines or text. || [row 5 walk-side: Asset-Bot run 1793678211260-c0sr9w, seed 9660] Game sprite animation strip: exactly SIX full-body poses of the SAME approved character in ONE horizontal row, six equal-width cells. Small friendly person with short muted dark-brown hair, mustard-ochre plain work shirt with rolled-up sleeves under dusty slate-blue bib dungarees with two shoulder straps, and simple brown shoes. Entire body visible, compact proportions, gentle minimal face. No hat, no props, no accessories, no costume pieces, no detached parts, no floating objects. All six facing RIGHT in side view, walking to the right in place: the classic side walk cycle - pose1 contact with left leg forward, pose2 recoil, pose3 passing, pose4 high point, pose5 contact with right leg forward, pose6 recoil. Arms swing opposite the legs. No travel across the cell, same body size in every pose. Feet on one shared baseline, identical size and proportions in every cell, equal cell widths, whole figure visible in every cell with generous white padding and clear white gutters between the cells. Plain white background. No shadow, no floor, no numbers, labels, cell borders, gridlines or text.",
+      "refs": [
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-003/evidence/WORK-026-1/candidates/idle-down-1.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/concepts/v1/avatar-retry.png",
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/production/pet_house_lv3.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-003/evidence/WORK-026-1/candidates/idle-up-2.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-005/evidence/WORK-037-1/candidates/garden/idle-down-1.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-003/evidence/WORK-026-1/candidates/idle-side-1.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-003/evidence/WORK-026-1/candidates/walk-down-3.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-003/evidence/WORK-026-1/candidates/walk-up-3.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-003/evidence/WORK-026-1/candidates/walk-side-2.png"
+      ],
+      "postProcess": "WORK-037-1 / TASK-237 (DEC-047, gate Q15): npx tsx tools/assets/use-poses.ts --config tools/assets/avatar-garden-v1.config.json (config SHA-256 580dc2f748aec897cd9d30b62dd0d80fe2d1c5e7c346b041df84f60cdfbcb3bf; recipe tools/assets/use-poses.ts unchanged at 71f575c, SHA-256 07f7b0fb4a8982ec3ba1f13088618e104bdfca4e918c82bd4d1bfebbdc38e360). Key 240/18/dilation 0/holeMinArea 40, scale = 63.0 / head feature per row (head idle-down/idle-up/idle-side/walk-down/walk-up/walk-side), idle-down standing measured in evidence/WORK-037-1/measurements.json; cells 4, 5, 10, 11, 16, 17 transparent; per-cell baseline and centre equal to player/avatar-sheet (sheet-cells.json).",
+      "batch": "tier2-m5",
+      "hash": "160252d893c257089a3ad6a5577e88b360c1efbbff54b264fe52d3783081ffab",
+      "recordedAt": "2026-11-02",
+      "recordedBy": "WORK-037-1 / TASK-237",
+      "history": [],
+      "note": "WORK-037-1 MILESTONE-011 batch tier2-m5 under DEC-040/DEC-047/DEC-048; outfit garden; creative verdict at the MILESTONE-011 play session; not status accepted"
+    },
+    {
+      "id": "player/avatar-cosy-sheet",
+      "type": "spritesheet",
+      "url": "player/avatar-cosy-sheet.png",
+      "px": {
+        "w": 1152,
+        "h": 1536
+      },
+      "frame": {
+        "w": 192,
+        "h": 256
+      },
+      "clips": {
+        "idle-down": {
+          "start": 0,
+          "end": 3,
+          "frameRate": 6,
+          "repeat": -1,
+          "frameDurationsMs": [
+            2600,
+            80,
+            120,
+            80
+          ]
+        },
+        "idle-up": {
+          "start": 6,
+          "end": 9,
+          "frameRate": 6,
+          "repeat": -1,
+          "frameDurationsMs": [
+            2600,
+            80,
+            120,
+            80
+          ]
+        },
+        "idle-side": {
+          "start": 12,
+          "end": 15,
+          "frameRate": 6,
+          "repeat": -1,
+          "frameDurationsMs": [
+            2600,
+            80,
+            120,
+            80
+          ]
+        },
+        "walk-down": {
+          "start": 18,
+          "end": 23,
+          "frameRate": 10,
+          "repeat": -1
+        },
+        "walk-up": {
+          "start": 24,
+          "end": 29,
+          "frameRate": 10,
+          "repeat": -1
+        },
+        "walk-side": {
+          "start": 30,
+          "end": 35,
+          "frameRate": 10,
+          "repeat": -1
+        }
+      },
+      "status": "ai-placeholder",
+      "origin": "asset-bot",
+      "source": "row 0 idle-down: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/player/1793678012671-lj1leo/candidate_001.png (seed 10610; copy phase-4-build/runs/RUN-005/evidence/WORK-037-1/candidates/cosy/idle-down-1.png, SHA-256 165b28e64419ffadf0cba97adb7b859c6067f735d30a39b5d836755191243783); row 1 idle-up: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/player/1793678235284-3py4hh/candidate_001.png (seed 10620; copy phase-4-build/runs/RUN-005/evidence/WORK-037-1/candidates/cosy/idle-up-1.png, SHA-256 98a287711c155f81327a29ee0135ee42bb48117e6e01d90ae8e2f1c92649bc57); row 2 idle-side: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/player/1793678255653-nszvoc/candidate_001.png (seed 10630; copy phase-4-build/runs/RUN-005/evidence/WORK-037-1/candidates/cosy/idle-side-1.png, SHA-256 c3f2d63bfaaa55fb625b50e6537e72c4c47ef36fab943f2d1abf60560c262ccf); row 3 walk-down: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/player/1793678275724-xcjp5b/candidate_001.png (seed 10640; copy phase-4-build/runs/RUN-005/evidence/WORK-037-1/candidates/cosy/walk-down-1.png, SHA-256 0b1b7dadb3b893fdfff444ae5109b806ab242a734d45a8371bd868f3b919ff2b); row 4 walk-up: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/player/1793678300605-a2jl56/candidate_001.png (seed 10650; copy phase-4-build/runs/RUN-005/evidence/WORK-037-1/candidates/cosy/walk-up-1.png, SHA-256 c853967494fbb08442839aa0ddbddc30aa7b46587372470e27209e6af56b9843); row 5 walk-side: /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/player/1793678322530-qpif34/candidate_002.png (seed 10660; copy phase-4-build/runs/RUN-005/evidence/WORK-037-1/candidates/cosy/walk-side-2.png, SHA-256 bb34554a1009b0189e4bbc3c4d7662b0356eb308b120960dd7e231ea5daf41a9); cells 4, 5, 10, 11, 16, 17 transparent",
+      "generator": "asset-bot/generate_image:nano-banana + tools/assets/use-poses.ts with tools/assets/avatar-cosy-v1.config.json SHA-256 8cda907710f631b6bbfa0f8ed1b3890fd632d8c348073756534ba4310ec442a4",
+      "seed": 10610,
+      "prompt": "[row 0 idle-down: Asset-Bot run 1793678012671-lj1leo, seed 10610] Game sprite animation strip: exactly FOUR full-body poses of the SAME approved character in ONE horizontal row, four equal-width cells. Small friendly person with short muted dark-brown hair, muted brick-red chunky knit jumper with a cream ribbed collar and cream ribbed cuffs, warm grey-brown corduroy trousers and simple brown shoes. Entire body visible, compact proportions, gentle minimal face. No hat, no props, no accessories, no costume pieces, no detached parts, no floating objects. All four in FRONT VIEW facing the viewer, standing at rest with relaxed arms, the same stance. A quiet looping IDLE: pose1 eyes open at rest; pose2 identical with a tiny chest rise; pose3 identical with both eyes softly closed in a blink; pose4 identical to pose1. No leg travel, no head turn, no different expressions. Feet on one shared baseline, identical size and proportions in every cell, equal cell widths, whole figure visible in every cell with generous white padding and clear white gutters between the cells. Plain white background. No shadow, no floor, no numbers, labels, cell borders, gridlines or text. || [row 1 idle-up: Asset-Bot run 1793678235284-3py4hh, seed 10620] Game sprite animation strip: exactly FOUR full-body poses of the SAME approved character in ONE horizontal row, four equal-width cells. Small friendly person with short muted dark-brown hair, muted brick-red chunky knit jumper with a cream ribbed collar and cream ribbed cuffs, warm grey-brown corduroy trousers and simple brown shoes. Entire body visible, compact proportions, gentle minimal face. No hat, no props, no accessories, no costume pieces, no detached parts, no floating objects. All four in BACK VIEW, facing directly away from the viewer: we see the back of the head of short dark-brown hair, the back of the brick-red knit jumper, the grey-brown corduroy trousers and the heels of the brown shoes; NO face visible. Standing at rest with relaxed arms, the same stance. A quiet looping IDLE: pose1 at rest; pose2 identical with a tiny shoulder rise; pose3 at rest; pose4 at rest. No leg travel, no head turn. Feet on one shared baseline, identical size and proportions in every cell, equal cell widths, whole figure visible in every cell with generous white padding and clear white gutters between the cells. Plain white background. No shadow, no floor, no numbers, labels, cell borders, gridlines or text. || [row 2 idle-side: Asset-Bot run 1793678255653-nszvoc, seed 10630] Game sprite animation strip: exactly FOUR full-body poses of the SAME approved character in ONE horizontal row, four equal-width cells. Small friendly person with short muted dark-brown hair, muted brick-red chunky knit jumper with a cream ribbed collar and cream ribbed cuffs, warm grey-brown corduroy trousers and simple brown shoes. Entire body visible, compact proportions, gentle minimal face. No hat, no props, no accessories, no costume pieces, no detached parts, no floating objects. All four facing RIGHT in three-quarter view, exactly like the reference, standing at rest with relaxed arms, the same stance. A quiet looping IDLE: pose1 eyes open at rest; pose2 identical with a tiny chest rise; pose3 identical with both eyes softly closed in a blink; pose4 identical to pose1. No leg travel, no head turn, no different expressions. Feet on one shared baseline, identical size and proportions in every cell, equal cell widths, whole figure visible in every cell with generous white padding and clear white gutters between the cells. Plain white background. No shadow, no floor, no numbers, labels, cell borders, gridlines or text. || [row 3 walk-down: Asset-Bot run 1793678275724-xcjp5b, seed 10640] Game sprite animation strip: exactly SIX full-body poses of the SAME approved character in ONE horizontal row, six equal-width cells. Small friendly person with short muted dark-brown hair, muted brick-red chunky knit jumper with a cream ribbed collar and cream ribbed cuffs, warm grey-brown corduroy trousers and simple brown shoes. Entire body visible, compact proportions, gentle minimal face. No hat, no props, no accessories, no costume pieces, no detached parts, no floating objects. All six in FRONT VIEW facing the viewer, walking in place toward the viewer: a six-frame walk cycle - pose1 left foot forward contact, pose2 down, pose3 passing with legs together, pose4 right foot forward contact, pose5 down, pose6 passing. Arms swing opposite the legs. No travel across the cell, same body size in every pose. Feet on one shared baseline, identical size and proportions in every cell, equal cell widths, whole figure visible in every cell with generous white padding and clear white gutters between the cells. Plain white background. No shadow, no floor, no numbers, labels, cell borders, gridlines or text. || [row 4 walk-up: Asset-Bot run 1793678300605-a2jl56, seed 10650] Game sprite animation strip: exactly SIX full-body poses of the SAME approved character in ONE horizontal row, six equal-width cells. Small friendly person with short muted dark-brown hair, muted brick-red chunky knit jumper with a cream ribbed collar and cream ribbed cuffs, warm grey-brown corduroy trousers and simple brown shoes. Entire body visible, compact proportions, gentle minimal face. No hat, no props, no accessories, no costume pieces, no detached parts, no floating objects. All six in BACK VIEW, facing directly away from the viewer, walking in place away from the viewer: we see the back of the head of short dark-brown hair, the back of the brick-red knit jumper, grey-brown corduroy trousers and brown shoe heels; NO face visible. A six-frame walk cycle - pose1 left foot forward contact, pose2 down, pose3 passing with legs together, pose4 right foot forward contact, pose5 down, pose6 passing. Arms swing opposite the legs. No travel across the cell, same body size in every pose. Feet on one shared baseline, identical size and proportions in every cell, equal cell widths, whole figure visible in every cell with generous white padding and clear white gutters between the cells. Plain white background. No shadow, no floor, no numbers, labels, cell borders, gridlines or text. || [row 5 walk-side: Asset-Bot run 1793678322530-qpif34, seed 10660] Game sprite animation strip: exactly SIX full-body poses of the SAME approved character in ONE horizontal row, six equal-width cells. Small friendly person with short muted dark-brown hair, muted brick-red chunky knit jumper with a cream ribbed collar and cream ribbed cuffs, warm grey-brown corduroy trousers and simple brown shoes. Entire body visible, compact proportions, gentle minimal face. No hat, no props, no accessories, no costume pieces, no detached parts, no floating objects. All six facing RIGHT in side view, walking to the right in place: the classic side walk cycle - pose1 contact with left leg forward, pose2 recoil, pose3 passing, pose4 high point, pose5 contact with right leg forward, pose6 recoil. Arms swing opposite the legs. No travel across the cell, same body size in every pose. Feet on one shared baseline, identical size and proportions in every cell, equal cell widths, whole figure visible in every cell with generous white padding and clear white gutters between the cells. Plain white background. No shadow, no floor, no numbers, labels, cell borders, gridlines or text.",
+      "refs": [
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-003/evidence/WORK-026-1/candidates/idle-down-1.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-3-preproduction/concepts/v1/avatar-retry.png",
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/production/pet_house_lv3.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-003/evidence/WORK-026-1/candidates/idle-up-2.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-005/evidence/WORK-037-1/candidates/cosy/idle-down-1.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-003/evidence/WORK-026-1/candidates/idle-side-1.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-003/evidence/WORK-026-1/candidates/walk-down-3.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-003/evidence/WORK-026-1/candidates/walk-up-3.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-003/evidence/WORK-026-1/candidates/walk-side-2.png"
+      ],
+      "postProcess": "WORK-037-1 / TASK-237 (DEC-047, gate Q15): npx tsx tools/assets/use-poses.ts --config tools/assets/avatar-cosy-v1.config.json (config SHA-256 8cda907710f631b6bbfa0f8ed1b3890fd632d8c348073756534ba4310ec442a4; recipe tools/assets/use-poses.ts unchanged at 71f575c, SHA-256 07f7b0fb4a8982ec3ba1f13088618e104bdfca4e918c82bd4d1bfebbdc38e360). Key 240/18/dilation 0/holeMinArea 40, scale = 63.0 / head feature per row (head idle-down/idle-up/idle-side/walk-down/walk-up/walk-side), idle-down standing measured in evidence/WORK-037-1/measurements.json; cells 4, 5, 10, 11, 16, 17 transparent; per-cell baseline and centre equal to player/avatar-sheet (sheet-cells.json).",
+      "batch": "tier2-m5",
+      "hash": "0fbeee5736b99da35d797c43706edcd4e2752706afa64605b9e8f1c9f65cd156",
+      "recordedAt": "2026-11-02",
+      "recordedBy": "WORK-037-1 / TASK-237",
+      "history": [],
+      "note": "WORK-037-1 MILESTONE-011 batch tier2-m5 under DEC-040/DEC-047/DEC-048; outfit cosy; creative verdict at the MILESTONE-011 play session; not status accepted"
+    },
+    {
+      "id": "ui/icon-closet",
+      "type": "image",
+      "url": "ui/icon-closet.png",
+      "px": {
+        "w": 96,
+        "h": 96
+      },
+      "status": "ai-placeholder",
+      "origin": "asset-bot",
+      "source": "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/ui/1793678574454-zk7nq8/candidate_001.png (seed 9700; copy phase-4-build/runs/RUN-005/evidence/WORK-037-1/candidates/icon/icon-closet-1.png, SHA-256 1a57edd37427109905a18ab76a9e43be9f823eced7b25f10cfc44b1d3ff58d79)",
+      "generator": "asset-bot/generate_image:nano-banana + evidence/WORK-037-1/recipes/icon-cutout.mts",
+      "seed": 9700,
+      "prompt": "[Asset-Bot run 1793678574454-zk7nq8, seed 9700] One single small UI icon glyph, centred: a simple clothes hanger with a small cosy jumper hanging on it, seen straight on. Bold, thick, even dark-brown outline and flat warm fills (cream hanger hook, muted brick-red jumper), exactly like the cushion and seat icon references. Chunky simple shapes that read at 64 pixels. One object only, generous empty margin all around. Plain white background. No lettering, no text, no shadow, no floor, no border, no frame.",
+      "refs": [
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts.worktrees/talvi-pets-prototype-RUN-005/WORK-037-1/talvi-pet-prototype/game/public/assets/ui/tag-soft.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts.worktrees/talvi-pets-prototype-RUN-005/WORK-037-1/talvi-pet-prototype/game/public/assets/ui/tag-seat.png",
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/production/pet_house_lv3.png"
+      ],
+      "postProcess": "WORK-037-1 / TASK-237: sips JPEG->PNG, then npx tsx phase-4-build/runs/RUN-005/evidence/WORK-037-1/recipes/icon-cutout.mts (white key 228/22 from the border plus enclosed white holes >= 40 px, 3 px soft alpha band, crop to the opaque box, area-average scale to 80 px tall, centred on 96x96 RGBA with 8 px margin)",
+      "batch": "tier2-m5",
+      "hash": "e850a16d04a0f15bc34689e0b40f3e748e3cd30af3fc8bf1e200254779c853a0",
+      "recordedAt": "2026-11-02",
+      "recordedBy": "WORK-037-1 / TASK-237",
+      "history": [],
+      "note": "WORK-037-1 MILESTONE-011 batch tier2-m5 under DEC-040/DEC-047/DEC-048; closet icon; creative verdict at the MILESTONE-011 play session; not status accepted"
     }
   ]
 }

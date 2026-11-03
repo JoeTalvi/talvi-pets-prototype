@@ -1,0 +1,16 @@
+[
+  {
+    "file": "tuning.json",
+    "path": "/greetEmoteWeights",
+    "value": [
+      {
+        "minCompatibility": 0.5,
+        "weights": {
+          "friendly": 2,
+          "polite": 5,
+          "surprised": 3
+        }
+      }
+    ]
+  }
+]

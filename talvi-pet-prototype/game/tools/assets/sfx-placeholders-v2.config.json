@@ -1,0 +1,49 @@
+{
+  "$comment": "WORK-038-1 (RUN-005) synthesized SFX placeholders for DEC-049 (ASSET-018 5 -> 8): tick, riser, reveal. Same tool and rules as v1 (tools/assets/sfx-placeholders.mjs; pure sine partials, exponential envelopes, no noise, samples or speech; C major like the v1 set). A negative decay is a swell (the riser). Lengths sit >= 60 ms under the delegation limits to absorb AAC priming/padding. The v1 config stays as-is so the five v1 rows keep their SHA provenance.",
+  "version": 2,
+  "seed": 0,
+  "sampleRate": 44100,
+  "attackMs": 4,
+  "fadeOutMs": 10,
+  "entries": [
+    {
+      "id": "sfx/tick",
+      "name": "tick",
+      "limitMs": 100,
+      "lengthMs": 36,
+      "peakDbfs": -8.0,
+      "class": "one soft tuned marimba-like note (C6 with a quiet 4th harmonic), pitch-stepped 0/+4/+7/+12 by detune",
+      "segments": [
+        { "startMs": 0, "partials": [{ "freq": 1046.5, "amp": 1.0, "decay": 45 }, { "freq": 4186.0, "amp": 0.12, "decay": 110 }] }
+      ]
+    },
+    {
+      "id": "sfx/riser",
+      "name": "riser",
+      "limitMs": 500,
+      "lengthMs": 390,
+      "peakDbfs": -7.0,
+      "class": "soft upward shimmer: C5 -> C6 glide swelling in, a fifth above for shimmer",
+      "segments": [
+        { "startMs": 0, "partials": [
+          { "freq": 523.25, "glideTo": 1046.5, "glideMs": 390, "amp": 0.6, "decay": -4.5 },
+          { "freq": 783.99, "glideTo": 1567.98, "glideMs": 390, "amp": 0.25, "decay": -4.5 },
+          { "freq": 2093.0, "glideTo": 4186.0, "glideMs": 390, "amp": 0.05, "decay": -4.5 }
+        ] }
+      ]
+    },
+    {
+      "id": "sfx/reveal",
+      "name": "reveal",
+      "limitMs": 400,
+      "lengthMs": 300,
+      "peakDbfs": -5.0,
+      "class": "sparkle chime: G6 C7 E7 in quick succession, bell-like",
+      "segments": [
+        { "startMs": 0, "partials": [{ "freq": 1567.98, "amp": 0.8, "decay": 11 }, { "freq": 3135.96, "amp": 0.12, "decay": 20 }] },
+        { "startMs": 45, "partials": [{ "freq": 2093.0, "amp": 0.8, "decay": 11 }, { "freq": 4186.0, "amp": 0.12, "decay": 20 }] },
+        { "startMs": 90, "partials": [{ "freq": 2637.02, "amp": 0.9, "decay": 10 }, { "freq": 5274.04, "amp": 0.12, "decay": 18 }] }
+      ]
+    }
+  ]
+}

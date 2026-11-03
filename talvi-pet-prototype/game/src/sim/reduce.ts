@@ -22,6 +22,9 @@ import { activateFirstWant, afterRoomChange as wantsAfterRoomChange } from './ru
 import type { GameState } from './state';
 import { debugFillSpace, debugFulfilActiveWant, debugUnlockSpace } from './rules/debugSpace';
 import { maybeStartSiteArrival } from './rules/sites';
+import { chooseOutfit, debugSetOutfit } from './rules/outfits';
+import { debugSetPetsOutside, stepPresence } from './rules/streetPresence';
+import { debugGreetNow, stepGreetings } from './rules/greetings';
 
 type Payload = Record<string, unknown>;
 const isString = (value: unknown) => typeof value === 'string';
@@ -46,6 +49,8 @@ const payloadValid: Record<Action['type'], (action: Payload) => boolean> = {
   cutsceneFinished: none, collectRewards: none, skipWait: none, closeReveal: none,
   arrivalFinished: none, advanceDialogue: none, debugSimulatePurchase: none, debugUnlockAllTypes: none,
   tapPet: action => isString(action.petId),
+  chooseOutfit: action => isString(action.outfitId),
+  debugSetOutfit: action => isString(action.outfitId),
   debugSetEventInterval: action => action.ms === null || isInteger(action.ms),
   debugSetFeedPresentation: action => action.mode === 'events' || action.mode === 'trickle',
   debugSetSeed: action => isInteger(action.seed),
@@ -62,18 +67,23 @@ const payloadValid: Record<Action['type'], (action: Payload) => boolean> = {
   debugSetMuted: action => isBoolean(action.on),
   debugSetTesterLabel: action => isString(action.text) && action.text.trim().length <= 40,
   reset: action => action.seed === undefined || isInteger(action.seed),
+  debugSetPetsOutside: action => action.mode === 'roll' || action.mode === 'all' || action.mode === 'none',
+  debugGreetNow: none,
 };
 
-/** Convention 2: core §4 tick order: avatar, doors (+ the street-arrival hook), feed, pets (4),
- * scripts then bubbles (5); never reorder. */
+/** Convention 2: core §4 tick order: avatar, doors (+ the street-arrival hook), feed, pets (4), greetings (4b,
+ * WORK-036-1 fork 1), scripts then bubbles (5); never reorder. */
 type TickStep = (content: Content, state: GameState, action: TickAction,
   eventsSoFar: readonly SimEvent[]) => RuleResult;
 const tickSteps: TickStep[] = [
   (content, state, action) => ({ state: stepAvatar(content, state, action), events: [] }),
   (content, state) => enterStreet(content, stepDoors(content, state)),
   // Play-session 2026-10-26 ("Wait for tap"): stepping onto the street no longer starts an owed celebration.
+  // 2026-11-03: the timed indoor/outdoor roll runs on the scene the doors left the player in, before the pets are stepped.
+  (content, state, action) => stepPresence(content, state, action),
   (content, state, action) => stepFeed(content, state, action),
   stepResidentPet,
+  (content, state, action) => stepGreetings(content, state, action),
   (content, state, _action, eventsSoFar) => stepScripts(content, state, eventsSoFar, activateFirstWant),
   stepBubbles,
 ];
@@ -130,7 +140,10 @@ const handlers: Handlers = {
   debugSetFeedPresentation: debugSetting, debugSetStarsVisible: debugSetting, debugSetMuted: debugSetting,
   debugSetTesterLabel: debugSetting,
   debugUnlockSpace, debugFulfilActiveWant,
+  chooseOutfit, debugSetOutfit, // WORK-037-2
   debugFillSpace: (content, state, action) => debugFillSpace(content, state, action, runPlacement),
+  debugSetPetsOutside,
+  debugGreetNow,
 };
 
 /** CONTRACT-ACTIONS v1.5: apply fully, or reject with `result.state === state`. Every action is handled. */

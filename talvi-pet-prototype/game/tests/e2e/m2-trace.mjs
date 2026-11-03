@@ -245,8 +245,8 @@ async function completionChain() {
   const hold = sil && next ? Math.round(next.t - sil.t) : null, resolve = next && done ? Math.round(done.t - next.t) : null;
   const shown = fromCollect.filter(m => !m.hidden && m.t <= (done?.t ?? 0));
   report.revealBeat = { marks: fromCollect, holdMs: hold, resolveMs: resolve, continueAlwaysEnabled: shown.every(m => !m.continueDisabled), mysteryFrameShown: fromCollect.some(m => !m.hidden && m.state === 'mystery') };
-  beat('12:00 project.completed → reveal beat: card 5 → silhouette held 1500 ± 100 → resolve 800 ± 100 → "Owl has moved in!"; Continue enabled throughout (VERIFY-MEC-003-011)',
-    first(all, 'project.completed') && hold !== null && Math.abs(hold - 1500) <= 100 && resolve !== null && Math.abs(resolve - 800) <= 100 && done?.title === 'Owl has moved in!' && done.ids[0] === 'pets/owl-portrait' && done.visibleCards.includes('Phase 5') && report.revealBeat.continueAlwaysEnabled,
+  beat('12:00 project.completed → reveal beat: card 5 → silhouette held 1500 ± 100 → resolve 400 ± 100 (WORK-038-3: tuning.revealResolveMs 800 → 400, DEC-049 §C REVEAL.resolveMs) → "Owl has moved in!"; Continue enabled throughout (VERIFY-MEC-003-011)',
+    first(all, 'project.completed') && hold !== null && Math.abs(hold - 1500) <= 100 && resolve !== null && Math.abs(resolve - 400) <= 100 && done?.title === 'Owl has moved in!' && done.ids[0] === 'pets/owl-portrait' && done.visibleCards.includes('Phase 5') && report.revealBeat.continueAlwaysEnabled,
     'project.completed; silhouette → resolve timings; final title and portrait; Phase 5 card; Continue never disabled', { holdMs: hold, resolveMs: resolve, final: done, mysteryFrameShown: report.revealBeat.mysteryFrameShown, projectCompleted: strip(first(all, 'project.completed')) }, { line: first(all, 'project.completed') });
 }
 

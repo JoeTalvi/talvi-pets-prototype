@@ -1,10 +1,56 @@
 {
   "seed": 1234,
   "steps": [
-    { "action": { "type": "tick", "dtMs": 0, "move": { "x": 0, "y": 0 } } },
-    { "action": { "type": "advanceDialogue" }, "repeat": "drain" },
-    { "action": { "type": "tick", "dtMs": 100, "move": { "x": 0, "y": 0 } }, "repeat": 8 },
-    { "set": { "path": "/inventory/counts", "value": { "dog-bed": 1, "lamp": 1, "ball": 1, "food-bowl": 1 } } },
-    { "set": { "path": "/avatar", "value": { "x": 385, "y": 810, "facing": "up", "immunityMs": 0, "facingCandidate": null } } }
+    {
+      "action": {
+        "type": "tick",
+        "dtMs": 0,
+        "move": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "action": {
+        "type": "advanceDialogue"
+      },
+      "repeat": "drain"
+    },
+    {
+      "action": {
+        "type": "tick",
+        "dtMs": 100,
+        "move": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "repeat": 8
+    },
+    {
+      "set": {
+        "path": "/inventory/counts",
+        "value": {
+          "dog-bed": 1,
+          "lamp": 1,
+          "ball": 1,
+          "food-bowl": 1
+        }
+      }
+    },
+    {
+      "set": {
+        "path": "/avatar",
+        "value": {
+          "x": 385,
+          "y": 810,
+          "facing": "up",
+          "immunityMs": 0,
+          "facingCandidate": null,
+          "outfitId": "default"
+        }
+      }
+    }
   ]
 }

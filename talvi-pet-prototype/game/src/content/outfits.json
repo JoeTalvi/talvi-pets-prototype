@@ -1,0 +1,7 @@
+{
+  "outfits": [
+    { "id": "default", "nameKey": "tpp.outfit.default", "sheet": "player/avatar-sheet" },
+    { "id": "cosy", "nameKey": "tpp.outfit.cosy", "sheet": "player/avatar-cosy-sheet" },
+    { "id": "garden", "nameKey": "tpp.outfit.garden", "sheet": "player/avatar-garden-sheet" }
+  ]
+}

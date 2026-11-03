@@ -8,6 +8,7 @@ import { loadContent } from '../../src/content/load';
 import { mountOverlay } from '../../src/ui/overlay';
 import { StreetScene } from '../../src/view/scenes/StreetScene';
 import { directorClock, phaserClock } from '../../src/view/celebration/CelebrationDirector';
+import { HEART } from '../../src/view/celebration/timings';
 import { files, patchFiles } from '../content/helpers';
 import { owing } from '../sim/helpers';
 
@@ -97,7 +98,8 @@ describe('VERIFY-MEC-008-015 deferral after fulfilment', () => {
       if (!box(s).hidden) shownAt = t + 100;
     }
     expect(reactingAt).toBeGreaterThan(0);
-    expect(shownAt - reactingAt).toBe(s.context.content.tuning.fulfilmentUseHoldMs);
+    // WORK-038-2 (gate Q2(c)): the box also waits for the Heart moment's end, §C HEART.totalMs(2) 3370 for this want's two cards.
+    expect(shownAt).toBe(Math.max(reactingAt + s.context.content.tuning.fulfilmentUseHoldMs, Math.ceil(HEART.totalMs(2) / 100) * 100));
     expect(shownAt).toBeLessThanOrEqual(7000);
     expect([textOf(s, '.tpp-dialogue-line'), s.panels.dialogue.isDeferred()]).toEqual([s.state().dialogue.current!.lines[0], false]);
   });

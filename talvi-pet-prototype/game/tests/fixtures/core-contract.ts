@@ -13,8 +13,8 @@ export const actionNames = [
   'cutsceneFinished', 'collectRewards', 'skipWait', 'closeReveal', 'arrivalFinished',
   'advanceDialogue', 'tapPet', 'debugSimulatePurchase', 'debugSetEventInterval',
   'debugSetFeedPresentation', 'debugSetSeed', 'debugSetCurrent', 'debugJumpPhase',
-  'debugCompleteProject', 'debugUnlockAllTypes', 'debugGrantCopies', 'debugUnlockSpace', 'debugFillSpace', 'debugFulfilActiveWant', 'debugSetStarsVisible', 'debugSetMuted',
-  'debugSetTesterLabel', 'reset',
+  'debugCompleteProject', 'debugUnlockAllTypes', 'debugGrantCopies', 'debugUnlockSpace', 'debugFillSpace', 'debugFulfilActiveWant', 'debugSetPetsOutside', 'debugGreetNow', 'debugSetStarsVisible', 'debugSetMuted',
+  'debugSetTesterLabel', 'reset', 'chooseOutfit', 'debugSetOutfit',
 ] as const;
 export const eventNames = [
   'scene.changed', 'mode.changed', 'charm.placed', 'charm.removed', 'charm.stripped', 'stars.changed',
@@ -22,9 +22,9 @@ export const eventNames = [
   'want.fulfilled', 'heart.earned', 'wants.exhausted', 'items.granted', 'verb.unlocked',
   'roundup.fired', 'phase.reached', 'feed.stopped', 'celebration.started', 'celebration.stepped',
   'completeNow.shown', 'completeNow.taken', 'rewards.collected', 'project.completed',
-  'celebration.ended', 'arrival.started', 'arrival.finished', 'space.stars.changed', 'space.unlocked', 'space.arrivalStarted', 'pet.arrived', 'pet.reacted', 'pet.phaseChanged',
+  'celebration.ended', 'arrival.started', 'arrival.finished', 'space.stars.changed', 'space.unlocked', 'space.arrivalStarted', 'pet.arrived', 'pet.outside', 'greeting.played', 'pet.reacted', 'pet.phaseChanged',
   'pet.verbStarted', 'pet.verbEnded', 'pet.wantBubble', 'pet.tapped', 'dialogue.opened',
-  'dialogue.advanced', 'dialogue.closed', 'audio.muteChanged',
+  'dialogue.advanced', 'dialogue.closed', 'audio.muteChanged', 'outfit.unlocked', 'outfit.changed',
   'debug.applied', 'state.reset', 'action.rejected',
 ] as const;
 export const selectorNames = [
@@ -32,6 +32,6 @@ export const selectorNames = [
   'owedPhases', 'activeProjectId', 'hudProjectId', 'completeNowPriceCents', 'completeNowOffered',
   'ackFloorCents', 'attentionVisible', 'displayedPhase', 'typeUnlockPhase',
   'revealProjectId', 'revealView', 'revealPopupView', 'chooserTypes', 'copiesOf', 'ownsTag',
-  'slotOf', 'placementAt', 'starsOf', 'activeWant', 'wantConditions', 'tagAvailability', 'missingWantTags',
-  'starsOfSpace', 'scenePet', 'playerSpace', 'homeSpaceOf',
+  'slotOf', 'placementAt', 'starsOf', 'activeWant', 'wantConditions', 'tagAvailability', 'missingWantTags', 'unlockedOutfitIds',
+  'starsOfSpace', 'scenePet', 'playerSpace', 'homeSpaceOf', 'streetPets',
 ] as const;
