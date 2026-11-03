@@ -9,5 +9,6 @@
   "tpp.bubble.wantHidden": "Fixture",
   "tpp.bubble.chatter": "Fixture",
   "tpp.dialogue.continue": "Fixture",
-  "tpp.dialogue.gameName": "Fixture"
+  "tpp.dialogue.gameName": "Fixture",
+  "tpp.outfit.default": "Everyday"
 }

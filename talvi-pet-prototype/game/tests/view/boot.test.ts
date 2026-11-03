@@ -122,12 +122,15 @@ describe('VERIFY-PRES-013 error screen', () => {
 it('VERIFY-ASSET-005 the six avatar clip keys exist after the BootScene.create registration loop over the real manifest, with ASSET-016 frame ranges and manifest rates', async () => {
   const scene = await createGame();
   const { realManifest, addTexture } = await import('./sceneHarness');
-  const { registerClips } = await import('@view/anims');
-  for (const entry of realManifest.entries) if (entry.type === 'spritesheet') { addTexture(scene, entry.id, entry.px!.w, entry.px!.h, entry.frame); registerClips(scene, entry); }
+  const { registerClips, avatarSheetsOf } = await import('@view/anims');
+  const { readFileSync } = await import('node:fs');
+  const sheets = avatarSheetsOf(JSON.parse(readFileSync('src/content/outfits.json', 'utf8')).outfits);
+  for (const entry of realManifest.entries) if (entry.type === 'spritesheet') { addTexture(scene, entry.id, entry.px!.w, entry.px!.h, entry.frame); registerClips(scene, entry, sheets); }
   const ranges = { 'idle-down': [0, 3], 'idle-up': [6, 9], 'idle-side': [12, 15], 'walk-down': [18, 23], 'walk-up': [24, 29], 'walk-side': [30, 35] };
-  for (const [clip, [start, end]] of Object.entries(ranges)) {
-    const anim = scene.anims.get(`avatar-${clip}`)!;
-    expect(scene.anims.exists(`avatar-${clip}`)).toBe(true);
+  // WORK-037-3 (Q11): the same six clips per outfit, keyed avatar-<outfitId>-<clip>
+  for (const outfit of ['default', 'cosy', 'garden']) for (const [clip, [start, end]] of Object.entries(ranges)) {
+    const anim = scene.anims.get(`avatar-${outfit}-${clip}`)!;
+    expect(scene.anims.exists(`avatar-${outfit}-${clip}`)).toBe(true);
     expect(anim.frames.map(f => f.frame.name)).toEqual(Array.from({ length: end - start + 1 }, (_, i) => start + i));
     expect(anim.frameRate).toBe(clip.startsWith('walk') ? 10 : 6);
   }

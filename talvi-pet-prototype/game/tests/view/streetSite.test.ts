@@ -147,3 +147,63 @@ describe('VERIFY-T2-SITE-104 the mate on the street after a reload (DEC-045)', (
     expect(reloaded.types.at(-1)).toBe('tapPet');
   });
 });
+
+describe('VERIFY-WORK-038-3-06 garden beacon and space card (DEC-049 §7)', () => {
+  it('VERIFY-WORK-038-3-06: the space toast takes the card styling with a punch and reveal, and fires tpp:spaceToastShown {siteId}', async () => {
+    const { vi } = await import('vitest');
+    const { mountOverlay } = await import('../../src/ui/overlay');
+    const context = contextFor(content, initialState(content, 1));
+    context.manifest = realManifest;
+    const host = document.createElement('div'); document.body.append(host);
+    mountOverlay(host, context);
+    const play = vi.spyOn(context.audio!, 'play');
+    const events: unknown[] = [];
+    const onShown = (e: Event) => events.push((e as CustomEvent).detail);
+    window.addEventListener('tpp:spaceToastShown', onShown);
+    try {
+      context.store.dispatch({ type: 'debugUnlockSpace', siteId: 'garden' });
+      const toast = host.querySelector<HTMLElement>('.tpp-toast')!;
+      expect([toast.hidden, toast.dataset.kind, toast.classList.contains('tpp-toast-card')]).toEqual([false, 'space', true]);
+      expect(play.mock.calls).toEqual([['reveal']]);
+      expect(events).toEqual([{ siteId: 'garden' }]);
+    } finally { window.removeEventListener('tpp:spaceToastShown', onShown); }
+  });
+
+});
+
+describe('VERIFY-WORK-038-3-06 garden beacon on the street (DEC-049 §7)', () => {
+  const shown = (siteId = 'garden') => window.dispatchEvent(new CustomEvent('tpp:spaceToastShown', { detail: { siteId } }));
+  it('VERIFY-WORK-038-3-06: on the active street the site pulses 1.06 (GARDEN.pulseMs yoyo × 3), 16 confetti burst and a "New" bubble stays; no flash or shake', async () => {
+    const { vi } = await import('vitest');
+    const Phaser = (await import('phaser')).default;
+    const { GARDEN } = await import('../../src/view/celebration/timings');
+    const state = initialState(content, 1);
+    state.spaces.garden.unlocked = true;
+    const { scene } = await street(state);
+    scene.cameras.main.emit('camerafadeincomplete');
+    const explode = vi.spyOn(Phaser.GameObjects.Particles.ParticleEmitter.prototype, 'explode');
+    const camShake = vi.spyOn(scene.cameras.main, 'shake');
+    shown();
+    const pulse = scene.tweens.getTweensOf(scene.siteArt.get('garden')!)[0];
+    const d = pulse.data[0] as unknown as { duration: number; repeat: number; yoyo: boolean };
+    expect([d.duration * 2, d.repeat, d.yoyo]).toEqual([GARDEN.pulseMs, 2, true]);
+    expect(explode.mock.calls.map(c => c[0])).toEqual([GARDEN.confetti]);
+    expect(scene.beaconBubble?.current()).toEqual({ kind: 'text', class: 'chatter', text: 'New' });
+    expect(camShake).not.toHaveBeenCalled();
+    explode.mockRestore();
+  });
+
+  it('VERIFY-WORK-038-3-06 fork (b): shown while no street is running, the beacon plays on the next Street create, once', async () => {
+    const state = initialState(content, 1);
+    state.spaces.garden.unlocked = true;
+    const first = await street(state);
+    destroyScene();
+    shown();
+    const { scene } = await street(state);
+    expect(scene.beaconBubble?.current()?.text).toBe('New');
+    destroyScene();
+    const again = await street(state);
+    expect(again.scene.beaconBubble).toBeUndefined();
+    void first;
+  });
+});

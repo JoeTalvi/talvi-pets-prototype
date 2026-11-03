@@ -420,7 +420,7 @@ describe('mec-010 §3 row 19 Grant copies (TEST-002 arm)', () => {
   it('VERIFY-MEC-010-017 (new) — row 19 "Grant copies" follows rows 1–18 (labels and order unchanged); select in catalogue order by name, count 1..9 default 1; Grant dispatches debugGrantCopies', async () => {
     const s = await setup(); open(s);
     const labels = [...panelOf(s.root).querySelectorAll('.tpp-debug-row > label')].map(l => l.textContent);
-    expect(labels).toEqual([...ROWS_1_18, 'Grant copies', 'Unlock garden', 'Fill garden', 'Fulfil active want']); // WORK-034-2 appends 20–22
+    expect(labels).toEqual([...ROWS_1_18, 'Grant copies', 'Unlock garden', 'Fill garden', 'Fulfil active want', 'Pets outside', 'Greet now', 'Outfits']); // WORK-034-2 appends 20–22; WORK-035-1 row 23; WORK-036-1 row 24; WORK-037-2 row 25
     const select = rowOf(s.root, 'Grant copies').querySelector('select')!;
     expect([...select.options].map(o => [o.value, o.textContent])).toEqual(content.charms.types.map(t => [t.id, t.name]));
     const count = rowOf(s.root, 'Grant copies').querySelector<HTMLInputElement>('input')!;
@@ -452,5 +452,51 @@ describe('mec-010 §3 row 19 Grant copies (TEST-002 arm)', () => {
     row.querySelector('input')!.value = '12';
     click(buttons(s.root, 'Grant copies')[0]);
     expect(errorIn(s.root, 'Grant copies')).toMatch(/^Rejected: /);
+  });
+});
+
+describe('mec-010 §3 row 23 Pets outside (WORK-035-1)', () => {
+  it('VERIFY-WORK-035-1-07 panel half — row 23 "Pets outside" after row 22: Roll / All out / All in dispatch debugSetPetsOutside and reflect session.petsOutside', async () => {
+    const s = await setup(); open(s);
+    const labels = [...panelOf(s.root).querySelectorAll('.tpp-debug-row > label')].map(l => l.textContent);
+    expect(labels.indexOf('Pets outside')).toBe(labels.indexOf('Fulfil active want') + 1);
+    const segment = () => buttons(s.root, 'Pets outside');
+    expect(segment().map(b => b.textContent)).toEqual(['Roll', 'All out', 'All in']);
+    expect(segment().map(b => b.getAttribute('aria-pressed'))).toEqual(['true', 'false', 'false']);
+    const dispatch = vi.spyOn(s.context.store, 'dispatch');
+    click(segment()[1]); click(segment()[2]); click(segment()[0]); click(segment()[1]);
+    expect(dispatch.mock.calls.map(c => c[0])).toEqual(['all', 'none', 'roll', 'all'].map(mode => ({ type: 'debugSetPetsOutside', mode })));
+    expect(s.context.store.getState().session.petsOutside).toBe('all');
+    expect(segment().map(b => b.getAttribute('aria-pressed'))).toEqual(['false', 'true', 'false']);
+    expect(linesOf(s.context, 'debug.applied').at(-1)).toMatchObject({ action: { type: 'debugSetPetsOutside', mode: 'all' } });
+  });
+});
+
+describe('mec-010 §3 row 24 Greet now (WORK-036-1)', () => {
+  it('VERIFY-WORK-036-1-10 panel half — row 24 "Greet now" after row 23: its one button dispatches debugGreetNow', async () => {
+    const s = await setup(); open(s);
+    const labels = [...panelOf(s.root).querySelectorAll('.tpp-debug-row > label')].map(l => l.textContent);
+    expect(labels.indexOf('Greet now')).toBe(labels.indexOf('Pets outside') + 1);
+    expect(buttons(s.root, 'Greet now').map(b => b.textContent)).toEqual(['Greet']);
+    const dispatch = vi.spyOn(s.context.store, 'dispatch');
+    click(buttons(s.root, 'Greet now')[0]);
+    expect(dispatch.mock.calls.map(c => c[0])).toEqual([{ type: 'debugGreetNow' }]);
+  });
+});
+
+describe('mec-010 §3 row 25 Outfits (WORK-037-2)', () => {
+  it('WORK-037-2 row 25 "Outfits" — found by label; options are content.outfits in order; Wear dispatches debugSetOutfit and the state changes; an unknown id is rejected under the row', async () => {
+    const s = await setup(); open(s);
+    const select = rowOf(s.root, 'Outfits').querySelector('select')!;
+    expect([...select.options].map(o => [o.value, o.textContent])).toEqual(content.outfits.map(o => [o.id, content.strings[o.nameKey]]));
+    const dispatch = vi.spyOn(s.context.store, 'dispatch');
+    select.value = 'default';
+    click(buttons(s.root, 'Outfits')[0]);
+    expect(dispatch.mock.calls.map(c => c[0])).toEqual([{ type: 'debugSetOutfit', outfitId: 'default' }]);
+    expect(s.context.store.getState().avatar.outfitId).toBe('default');
+    select.insertAdjacentHTML('beforeend', '<option value="tuxedo">Tuxedo</option>'); select.value = 'tuxedo';
+    click(buttons(s.root, 'Outfits')[0]);
+    expect(errorIn(s.root, 'Outfits')).toMatch(/^Rejected: /);
+    expect(s.context.store.getState().avatar.outfitId).toBe('default');
   });
 });

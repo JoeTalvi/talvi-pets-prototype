@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import type { AssetEntry } from '@content/schema/assets';
-import { registerClips, type SheetEntry } from '../anims';
+import { avatarSheetsOf, registerClips, type SheetEntry } from '../anims';
 import { contextOf } from '../context';
 import { startSceneFor } from '../startup';
 
@@ -34,9 +34,11 @@ export class BootScene extends Phaser.Scene {
     for (const entry of manifest.entries) queue(this.load, entry);
   }
   create(): void {
-    const { manifest, store } = contextOf(this);
+    const { manifest, store, content } = contextOf(this);
     ensureMissingTexture(this);
-    for (const entry of manifest.entries) if (entry.type === 'spritesheet' && this.textures.exists(entry.id)) registerClips(this, entry as SheetEntry);
+    // WORK-037-3 (Q11): every outfit sheet that loaded registers `avatar-<outfitId>-<clip>`; a missing one registers none.
+    const avatarSheets = avatarSheetsOf(content.outfits);
+    for (const entry of manifest.entries) if (entry.type === 'spritesheet' && this.textures.exists(entry.id)) registerClips(this, entry as SheetEntry, avatarSheets);
     const start = startSceneFor(store.getState());
     this.scene.start(start.key, start.data);
   }

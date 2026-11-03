@@ -5,6 +5,7 @@ import { siteRef, sitesOf } from '../space';
 import { buildScript, enqueueScript } from './dialogue';
 import { starsOfSpace } from './stars';
 import { activateFirstWant } from './wants';
+import { arrivalOutfitEvents } from './outfits';
 
 const chain = (result: RuleResult, next: RuleResult): RuleResult =>
   ({ state: next.state, events: [...result.events, ...next.events] });
@@ -35,7 +36,7 @@ export function finishSiteArrival(content: Content, state: GameState): RuleResul
     pets: { ...state.pets, [petId]: { ...pet, introduced: true, outside: true,
       behaviour: { phase: 'idle', x, y, facing, timerMs: content.tuning.idleMs.min, target: null, verb: null, reaction: null } } } };
   let result: RuleResult = { state: arrived,
-    events: [{ type: 'arrival.finished', petId }, { type: 'pet.arrived', petId, siteId }] };
+    events: [{ type: 'arrival.finished', petId }, { type: 'pet.arrived', petId, siteId }, ...arrivalOutfitEvents(content, siteId)] }; // WORK-037-2
   result = chain(result, enqueueScript(result.state, buildScript(content, 'intro', { petId })));
   return chain(result, activateFirstWant(content, result.state, petId));
 }

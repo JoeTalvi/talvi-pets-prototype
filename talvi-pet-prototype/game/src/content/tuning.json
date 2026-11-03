@@ -25,9 +25,9 @@
   "recentTargetPenalty": 0.3,
   "recentTargetsKept": 2,
   "hiddenSlotFromWant": 3,
-  "revealCardStaggerMs": 250,
+  "revealCardStaggerMs": 400,
   "revealSilhouetteHoldMs": 1500,
-  "revealResolveMs": 800,
+  "revealResolveMs": 400,
   "joystick": {
     "x": 220,
     "bottomOffset": 300,
@@ -37,5 +37,13 @@
   },
   "dtClampMs": 100,
   "saveDebounceMs": 250,
-  "logRingLines": 5000
+  "logRingLines": 5000,
+  "greetRadiusRu": 1.5,
+  "greetCooldownMs": 60000,
+  "greetMeetingMs": 2000,
+  "greetEmoteWeights": [
+    { "minCompatibility": 0.8, "weights": { "friendly": 6, "polite": 3, "surprised": 1 } },
+    { "minCompatibility": 0.55, "weights": { "friendly": 4, "polite": 4, "surprised": 2 } },
+    { "minCompatibility": 0, "weights": { "friendly": 2, "polite": 5, "surprised": 3 } }
+  ]
 }

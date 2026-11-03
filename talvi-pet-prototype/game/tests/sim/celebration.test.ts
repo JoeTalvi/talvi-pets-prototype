@@ -156,7 +156,7 @@ it('VERIFY-MEC-002-017 (amended 2026-10-26, "Wait for tap"): arriving on the str
   const state = owing(content, 0, 700);
   state.scene = { kind: 'interior', roomId: 'dog-room' };
   state.pets.dog.introduced = true;
-  state.avatar = { x: 500, y: 160, facing: 'up', immunityMs: 0, facingCandidate: null };
+  state.avatar = { x: 500, y: 160, facing: 'up', immunityMs: 0, facingCandidate: null, outfitId: 'default' };
   const { state: after, results } = run(content, state, [tick(0, 0, 16)]);
   expect(types(results[0].events)).toContain('scene.changed');
   expect(types(results[0].events)).not.toContain('celebration.started');

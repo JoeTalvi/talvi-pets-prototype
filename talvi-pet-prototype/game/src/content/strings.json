@@ -42,6 +42,7 @@
   "tpp.want.availability.heart": "unlocked by a Heart",
   "tpp.want.availability.never": "not available yet",
   "tpp.want.adjacent": "{a} + {b} beside each other",
+  "tpp.want.greeted": "Say hello to {pet}",
   "tpp.want.hidden": "?",
   "tpp.want.starsFloor": "room ≥ {min} ★",
   "tpp.want.rewardPrefix": "Reward:",
@@ -67,5 +68,12 @@
   "tpp.hud.progress": "{current} / {goal}",
   "tpp.popup.rewards": "Rewards",
   "tpp.reveal.phase": "Phase {phase}",
-  "tpp.toast.space": "A garden plot is open on the street"
+  "tpp.toast.space": "A garden plot is open on the street",
+  "tpp.reward.verb": "{pet} can now {verb}",
+  "tpp.reward.new": "New",
+  "tpp.reward.outfit": "New outfit: {outfit}",
+  "tpp.hud.closet": "Closet",
+  "tpp.outfit.default": "Everyday",
+  "tpp.outfit.cosy": "Cosy set",
+  "tpp.outfit.garden": "Garden set"
 }

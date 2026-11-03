@@ -19,7 +19,7 @@ export function squareFixture(seed = 1) {
   content.rooms['dog-room'] = RoomSchema.parse(square);
   const state = initialState(content, seed);
   state.scene = { kind: 'interior', roomId: 'dog-room' };
-  state.avatar = { x: 500, y: 400, facing: 'down', immunityMs: 0, facingCandidate: null };
+  state.avatar = { x: 500, y: 400, facing: 'down', immunityMs: 0, facingCandidate: null, outfitId: 'default' };
   state.session.orientationShown = true;
   state.pets.dog.introduced = true;
   return { content, state };

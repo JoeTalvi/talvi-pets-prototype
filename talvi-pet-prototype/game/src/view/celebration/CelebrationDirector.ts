@@ -4,10 +4,11 @@ import type { GameState } from '@sim/state';
 import type { ViewContext } from '../context';
 import type { HouseSprite } from '../objects/HouseSprite';
 import { DustPoof } from './DustPoof';
-import { burstConfetti, screenFlash } from './Confetti';
+import { burstConfetti, screenFlash, shake } from './Confetti';
+import { hitstop, type Hitstop } from './hitstop';
 import { WorldProgressBar } from './WorldProgressBar';
 import {
-  ANTICIPATION, BLOOM, CONFETTI_LIFETIME, DUST_CLIP, DUST_LIFETIME, FINAL_STAGGER, PAN_BACK, PAN_IN, ZOOM_BACK,
+  ANTICIPATION, BLOOM, COMPLETE, CONFETTI_LIFETIME, DUST_CLIP, DUST_LIFETIME, FINAL_STAGGER, PAN_BACK, PAN_IN, PHASE, ZOOM_BACK,
   ZOOM_IN_FACTOR, planCelebration, type Beat, type BeatName, type CelebrationCue, type CelebrationPlan,
 } from './timings';
 
@@ -26,6 +27,15 @@ type Celebration = NonNullable<GameState['celebration']>;
 
 const keyOf = (c: Pick<Celebration, 'projectId' | 'fromPhase' | 'toPhase'>): string => `${c.projectId}:${c.fromPhase}:${c.toPhase}`;
 const SHIVER_LEGS = 14; // 7 yoyo cycles over ANTICIPATION ("x '+=6' yoyo repeat 6")
+/** DEC-049 spec §2 beat text (order fork (d)): the swap's squash punch scaleY 1 → 0.92 → 1.08 → 1 (scaleX inverse) over `PHASE.punchMs`. */
+export const PUNCH_SQUASH = { low: 0.92, high: 1.08 } as const;
+/** Spec §2: the gold sparkle tint and the upward cone (Phaser angles, 270 = up) from the roof strip (top quarter of the house). */
+export const SPARKLE_TINT = 0xd9a441;
+export const SPARKLE_CONE = { min: 240, max: 300 } as const;
+/** Spec §2/§3: each phase crossed / each stage raises the pop tick and `phasePop` by 2 semitones. */
+export const STEP_SEMITONES = 2;
+/** Spec §3: the completion hit's confetti covers the full circle. */
+export const FULL_CIRCLE = { min: 0, max: 360 } as const;
 
 /** Mec-002 §3.3 `CelebrationCue` from `state.celebration` and the project's cents at that moment. */
 export function cueFrom(content: Content, state: GameState): CelebrationCue {
@@ -51,6 +61,7 @@ export class CelebrationDirector {
   private timers: (() => void)[] = [];
   private effects: Phaser.GameObjects.GameObject[] = [];
   private panBackPending = false;
+  private freeze: Hitstop | null = null;
   constructor(private readonly scene: DirectorScene, private readonly clock: DirectorClock = phaserClock(scene)) {}
 
   private get house(): HouseSprite {
@@ -106,13 +117,16 @@ export class CelebrationDirector {
       barFadeIn: () => this.showBar(this.cue!.pct0, this.cue!.fromPhase).fadeIn(),
       pan: () => { const c = this.target(); this.camera.pan(c.x, c.y, PAN_IN, 'Quad.easeOut'); },
       fill: b => this.fill(b), leftover: b => this.fill(b),
-      pop: b => { this.bar?.pop(b.chunk!); this.popSound(); },
-      popAll: () => { this.bar?.popAll(); for (let i = 0; i < 5; i++) if (i === 0) this.popSound(); else this.after(i * FINAL_STAGGER, () => this.popSound()); },
-      anticipation: () => this.anticipate(),
-      dust: () => this.dust(), completionDust: () => this.dust(),
-      swap: b => { this.house.setPhase(b.phase!); this.camera.zoomTo(this.panZoom, ZOOM_BACK); },
+      pop: b => { this.bar?.pop(b.chunk!); this.popTick(STEP_SEMITONES * (b.phase! - this.cue!.fromPhase - 1)); },
+      popAll: () => { this.bar?.popAll(); for (let i = 0; i < 5; i++) if (i === 0) this.popTick(0); else this.after(i * FINAL_STAGGER, () => this.popTick(STEP_SEMITONES * i)); },
+      anticipation: () => { this.anticipate(); this.scene.context.audio?.play('riser'); },
+      dust: () => this.dust(),
+      completionDust: () => { this.dust(); this.scene.context.audio?.play('riser'); },
+      swap: b => this.swap(b.phase!),
       completionSwap: b => this.completionSwap(b.phase!),
+      completionHitstop: b => { this.freeze?.cancel(); this.freeze = hitstop(this.scene, b.durationMs); },
       confetti: () => this.confetti(),
+      confettiWave: () => this.confettiWave(),
       finish: () => this.finish(),
     };
     actions[beat.beat](beat);
@@ -127,7 +141,34 @@ export class CelebrationDirector {
     this.bar = new WorldProgressBar(this.scene, this.house.house.attentionAnchor, pct, completedChunks);
     return this.bar;
   }
-  private popSound(): void { this.scene.context.audio?.play('phasePop'); }
+  /** DEC-049 §2: a chunk pop plays `tick` (was `phasePop`), +2 st per phase crossed. */
+  private popTick(semitones: number): void { this.scene.context.audio?.play('tick', { semitones }); }
+
+  /** DEC-049 §2 at `SWAP_AT`: the stage texture, the squash punch, 24 gold sparkles from the roof and `phasePop` (+2 st per stage). */
+  private swap(phase: number): void {
+    const house = this.house;
+    house.setPhase(phase);
+    this.camera.zoomTo(this.panZoom, ZOOM_BACK);
+    this.punch(house);
+    const b = house.getBounds();
+    const roof = new Phaser.Geom.Rectangle(b.x + b.width * 0.25, b.y, b.width * 0.5, b.height * 0.25);
+    const sparkles = burstConfetti(this.scene, roof, { count: PHASE.sparkles, angle: SPARKLE_CONE, tints: [SPARKLE_TINT] });
+    this.effects.push(sparkles);
+    this.after(CONFETTI_LIFETIME, () => sparkles.destroy());
+    this.scene.context.audio?.play('phasePop', { semitones: STEP_SEMITONES * (phase - this.cue!.fromPhase - 1) });
+  }
+
+  /** Squash 1 → 0.92 → 1.08 → 1 on scaleY (scaleX the inverse) over `PHASE.punchMs`, the last leg Back.easeOut. */
+  private punch(house: HouseSprite): void {
+    const back = Phaser.Math.Easing.Back.Out;
+    this.scene.tweens.addCounter({ from: 0, to: 1, duration: PHASE.punchMs, onUpdate: t => {
+      const v = t.getValue() ?? 1;
+      const y = v < 0.3 ? 1 + (PUNCH_SQUASH.low - 1) * (v / 0.3)
+        : v < 0.6 ? PUNCH_SQUASH.low + (PUNCH_SQUASH.high - PUNCH_SQUASH.low) * ((v - 0.3) / 0.3)
+          : PUNCH_SQUASH.high + (1 - PUNCH_SQUASH.high) * back((v - 0.6) / 0.4);
+      if (house.active) house.setScale(2 - y, y);
+    }, onComplete: () => { if (house.active) house.setScale(1); } });
+  }
 
   /** Beats 3 and 4: an `addCounter` drives the chunk fills; the exact target is set at the beat's end. */
   private fill(beat: Beat): void {
@@ -155,18 +196,29 @@ export class CelebrationDirector {
     this.after(DUST_LIFETIME, () => poof.destroy());
   }
 
-  /** §7.4 completion: lv6 at +170 and the bloom scale 1 → 1.08 → 1 over 300. */
+  /** §7.4 completion: lv6 at +170; DEC-049 §3: the bloom scale 1 → 1.08 → 1 over 300 starts after the 120 ms hitstop (+290). */
   private completionSwap(phase: number): void {
     const house = this.house;
     house.setPhase(phase);
-    this.scene.tweens.add({ targets: house, scale: 1.08, duration: BLOOM / 2, yoyo: true, onComplete: () => house.setScale(1) });
+    this.after(COMPLETE.hitstopMs, () => {
+      if (house.active) this.scene.tweens.add({ targets: house, scale: 1.08, duration: BLOOM / 2, yoyo: true, onComplete: () => house.setScale(1) });
+    });
   }
 
-  /** §7.4: confetti and flash on the same frame; the emitter is destroyed after 4000 ms. */
+  /** DEC-049 §3 the hit (+590): 140 confetti over 360°, the 0.75 flash, the 250 ms shake and `complete` on this frame. */
   private confetti(): void {
-    const emitter = burstConfetti(this.scene, this.house.getBounds());
+    const emitter = burstConfetti(this.scene, this.house.getBounds(), { count: COMPLETE.confetti1, angle: FULL_CIRCLE });
     const flash = screenFlash(this.scene);
+    shake(this.scene, COMPLETE.shakeMs, COMPLETE.shakeIntensity);
+    this.scene.context.audio?.play('complete');
     this.effects.push(emitter, flash);
+    this.after(CONFETTI_LIFETIME, () => emitter.destroy());
+  }
+
+  /** DEC-049 §3: the second wave (`COMPLETE.confetti2` 60, the default upward band) `COMPLETE.wave2At` after the hit. */
+  private confettiWave(): void {
+    const emitter = burstConfetti(this.scene, this.house.getBounds(), { count: COMPLETE.confetti2 });
+    this.effects.push(emitter);
     this.after(CONFETTI_LIFETIME, () => emitter.destroy());
   }
 
@@ -203,6 +255,8 @@ export class CelebrationDirector {
 
   private clear(): void {
     for (const off of this.timers.splice(0)) off();
+    this.freeze?.cancel();
+    this.freeze = null;
     for (const effect of this.effects.splice(0)) effect.destroy();
     this.bar?.destroy();
     this.bar = null;

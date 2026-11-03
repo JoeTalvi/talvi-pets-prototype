@@ -36,7 +36,8 @@
           "y": 960,
           "facing": "up",
           "immunityMs": 0,
-          "facingCandidate": null
+          "facingCandidate": null,
+          "outfitId": "default"
         }
       }
     },

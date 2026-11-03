@@ -115,7 +115,7 @@ async function facing() {
     out.push({ dir, key, ...read, idleAfter: idle, still });
   }
   await close(w, 'facing-1080');
-  writeJson(join(EV, 'avatar-facing.json'), { work: 'WORK-025-2', sha, rows: out, ok: out.every(r => r.anim === `avatar-walk-${r.dir === 'left' || r.dir === 'right' ? 'side' : r.dir}` && r.flipX === (r.dir === 'left') && r.idleAfter?.startsWith('avatar-idle-')) });
+  writeJson(join(EV, 'avatar-facing.json'), { work: 'WORK-025-2', sha, rows: out, ok: out.every(r => r.anim === `avatar-default-walk-${r.dir === 'left' || r.dir === 'right' ? 'side' : r.dir}` && r.flipX === (r.dir === 'left') && r.idleAfter?.startsWith('avatar-default-idle-')) });
   console.log(JSON.stringify(out.map(r => [r.dir, r.anim, r.flipX, r.idleAfter])));
 }
 

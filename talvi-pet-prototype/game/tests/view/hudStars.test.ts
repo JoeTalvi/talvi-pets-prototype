@@ -3,7 +3,8 @@ import './setup';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { destroyScene } from './sceneHarness';
 import { click, designSetup, linesOf } from './designHarness';
-import { HUD_TIMING } from '../../src/ui/panels/hudInterior';
+import { HEART_ARRIVED_PULSE, HEART_HOLD_FALLBACK_MS, HUD_TIMING } from '../../src/ui/panels/hudInterior';
+import { HEART_ARRIVED, HEART_MOMENT_END } from '../../src/view/celebration/heartMoment';
 import type { GameState } from '../../src/sim/state';
 
 afterEach(() => { vi.useRealTimers(); destroyScene(); document.body.replaceChildren(); vi.restoreAllMocks(); });
@@ -62,14 +63,38 @@ describe('presentation §8.2 hudInterior stars (MEC-006 R5–R7)', () => {
 });
 
 describe('presentation §8.2 hudInterior hearts (MEC-009 R3)', () => {
-  it('presentation §8.2 hudInterior hearts — "♥ 0" → "♥ 1" on heart.earned with one pulse; later removals leave the count', async () => {
+  it('VERIFY-WORK-038-1-09 hudInterior hearts — heart.earned holds "♥ 0" (n − 1) with no pulse; tpp:heartArrived shows "♥ 1" with one 1.5× pulse; later removals leave the count', async () => {
     const { root, context } = await designSetup();
     const hearts = q(root, '.tpp-hearts');
+    const scales: string[] = [];
+    hearts.animate = ((frames: Keyframe[]) => { scales.push(String(frames[1].transform)); return {} as Animation; }) as typeof hearts.animate;
     expect(hearts.textContent).toBe('♥ 0');
     context.store.dispatch({ type: 'placeCharm', slotId: 'large-1', typeId: 'dog-bed' });
-    expect([hearts.textContent, hearts.dataset.pulses]).toEqual(['♥ 1', '1']);
+    expect([hearts.textContent, hearts.dataset.pulses]).toEqual(['♥ 0', undefined]);
+    window.dispatchEvent(new Event(HEART_ARRIVED));
+    expect([hearts.textContent, hearts.dataset.pulses, scales]).toEqual(['♥ 1', '1', [`scale(${HEART_ARRIVED_PULSE})`]]);
+    expect(HEART_ARRIVED_PULSE).toBe(1.5);
     context.store.dispatch({ type: 'removeCharm', slotId: 'large-1' });
     expect([hearts.textContent, hearts.dataset.pulses]).toEqual(['♥ 1', '1']);
+  });
+
+  it('VERIFY-WORK-038-1-09 hudInterior hearts fallback — the moment end (or cancel) without an arrival shows n with no pulse', async () => {
+    const { root, context } = await designSetup();
+    const hearts = q(root, '.tpp-hearts');
+    context.store.dispatch({ type: 'placeCharm', slotId: 'large-1', typeId: 'dog-bed' });
+    expect(hearts.textContent).toBe('♥ 0');
+    window.dispatchEvent(new Event(HEART_MOMENT_END));
+    expect([hearts.textContent, hearts.dataset.pulses]).toEqual(['♥ 1', undefined]);
+  });
+
+  it('VERIFY-WORK-038-1-09 hudInterior hearts fallback timer — with no moment event at all the held count is released after HEART_HOLD_FALLBACK_MS', async () => {
+    const { root, context } = await designSetup();
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    const hearts = q(root, '.tpp-hearts');
+    context.store.dispatch({ type: 'placeCharm', slotId: 'large-1', typeId: 'dog-bed' });
+    // The overlay moment ends itself at its own total (well inside the fallback); either way the count is n afterwards.
+    vi.advanceTimersByTime(HEART_HOLD_FALLBACK_MS);
+    expect(hearts.textContent).toBe('♥ 1');
   });
 });
 

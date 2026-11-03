@@ -1,0 +1,11 @@
+[
+  {
+    "file": "outfits.json",
+    "path": "/outfits/1",
+    "value": {
+      "id": "cosy",
+      "nameKey": "tpp.outfit.default",
+      "sheet": "player/avatar-sheet"
+    }
+  }
+]

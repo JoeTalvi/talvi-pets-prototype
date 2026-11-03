@@ -1,0 +1,8 @@
+{
+  "version": 2,
+  "$comment": "WORK-037-1 / TASK-237 (m4 fold-in B13, DEC-044): the Owl's mate sheet re-run from owl-mate-v1 with the value ceiling lowered 0.82 -> 0.76 (feather 0.05 -> 0.03) so the light peach feet (h ~25, s 0.35-0.45, v 0.75-0.85) keep the Owl's original colour while the cocoa plumage band (s >= 0.55, v <= 0.75) still moves to slate blue-grey. Sheet only; pets/owl-mate-portrait keeps owl-mate-v1. Source is the committed bytes at Git a969075, verified by SHA-256. Run: npx tsx tools/assets/recolour.ts --config tools/assets/owl-mate-v2.config.json --out <staging-dir>",
+  "items": [
+    { "id": "pets/owl-mate-sheet", "git": "a969075", "path": "public/assets/pets/owl-sheet.png", "sha256": "0534ee0169b4e6b92b8e78c7d0bcc06e46c60693dc8d21f55d2e2d224852d47b",
+      "mapping": { "hue": [8, 45], "hueFeather": 8, "satMin": 0.38, "satFeather": 0.06, "value": [0.36, 0.76], "valueFeather": 0.03, "targetHue": 212, "satScale": 0.5, "valueScale": 1.0, "keep": { "satMin": 0.6, "valueMax": 0.4, "feather": 0.03 } } }
+  ]
+}

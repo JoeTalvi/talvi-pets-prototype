@@ -1,0 +1,34 @@
+[
+  {
+    "file": "street.json",
+    "path": "/houses/0/wanderPoints",
+    "value": [
+      {
+        "id": "starter-w1",
+        "x": 650,
+        "y": 948
+      },
+      {
+        "id": "starter-w2",
+        "x": 1010,
+        "y": 935
+      }
+    ]
+  },
+  {
+    "file": "street.json",
+    "path": "/houses/1/wanderPoints",
+    "value": [
+      {
+        "id": "pet-w1",
+        "x": 1650,
+        "y": 948
+      },
+      {
+        "id": "pet-w2",
+        "x": 1700,
+        "y": 948
+      }
+    ]
+  }
+]

@@ -5,7 +5,9 @@ import { ItemSchema } from './charms';
 export const ProjectSchema = z.object({
     id: Id, name: z.string(), causeName: z.string(), goalCents: z.number(), completeAtStart: z.boolean(), interiorRoomId: Id, residentPetId: Id, phaseRewards: z.array(z.array(ItemSchema)), clueCards: z.array(z.object({
         icon: AssetId, line: z.string(), hintTag: Id.optional()
-    })), descriptorImage: AssetId.optional(), silhouetteImage: AssetId.optional(), phaseMessages: z.array(z.array(z.string())).optional(), completionMessage: z.array(z.string()).optional()
+    })), descriptorImage: AssetId.optional(), silhouetteImage: AssetId.optional(), phaseMessages: z.array(z.array(z.string())).optional(), completionMessage: z.array(z.string()).optional(),
+    // WORK-037-2 (Q13(a)): the outfit this project's completion grants (DEC-047); absent = none
+    completionOutfitId: Id.optional()
 });
 export const ProjectsSchema = z.object({
     projects: z.array(ProjectSchema)

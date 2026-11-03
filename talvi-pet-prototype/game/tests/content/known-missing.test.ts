@@ -30,7 +30,7 @@ describe('check-content continues past unresolved assets (F-04)', () => {
         expect(status).toBe(1);
         const messages: string[] = report.zodIssues.map((i: { message: string }) => i.message);
         expect([...new Set(messages)].sort()).toEqual(['Asset "charms/ball" must resolve as image', 'Asset "charms/fern" must resolve as image']);
-        expect(report.counts).toMatchObject({ errors: messages.length, checks: 89 });
+        expect(report.counts).toMatchObject({ errors: messages.length, checks: 104 }); // int-MILESTONE-011 union: 89 + 5 (WORK-035-1) + 4 (WORK-036-1) + 6 (WORK-037-2)
         expect(report.findings.some((f: Finding) => f.ids[0] === 'CHK-CORE-03' && f.level === 'error')).toBe(false);
     });
     it('downgrades only listed IDs; an unlisted missing ID still fails', () => {
@@ -67,14 +67,14 @@ describe('check-assets VERIFY-ASSET-001 honours the same list', () => {
         expect(run(retired, new Map([['charms/fern', 'WORK-018']]))).toEqual(['error']);
     });
 });
-it('the shipped list parses: every row is a WORK-022 id absent from the manifest and referenced by src/content', () => {
+it('the shipped list parses: every row is a WORK-022 or WORK-037 (outfit sheets, WORK-037-2) id absent from the manifest and referenced by src/content', () => {
     const known = readKnownMissing('tools/known-missing-assets.json');
     const rows = JSON.parse(readFileSync('tools/known-missing-assets.json', 'utf8')).assets as { id: string }[];
     expect(known.size).toBe(rows.length);
     const shipped = new Set((JSON.parse(readFileSync('public/assets/manifest.json', 'utf8')).entries as { id: string }[]).map(e => e.id));
     const contentText = readdirSync('src/content', { recursive: true, encoding: 'utf8' }).filter(f => f.endsWith('.json')).map(f => readFileSync(join('src/content', f), 'utf8')).join('\n');
     for (const [id, batch] of known) {
-        expect(batch).toMatch(/^WORK-022/);
+        expect(batch).toMatch(/^WORK-0(22|37)$/);
         expect(shipped.has(id), id).toBe(false);
         expect(contentText.includes(`"${id}"`), id).toBe(true);
     }

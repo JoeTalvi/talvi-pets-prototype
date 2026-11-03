@@ -6,7 +6,7 @@ it('accepts synthetic minimum content with every error-level check and retains w
     const findings = runContentChecks(validContent(), manifest);
     expect(findings.filter(f => f.level === 'error')).toEqual([]);
     expect(findings.some(f => f.level === 'warning')).toBe(true);
-    expect(new Set(registeredIds).size).toBe(89); // WORK-032-1: CHK-001-11..14; WORK-033-1: CHK-009-17; WORK-034-2: CHK-001-15/16, CHK-005-09/10, CHK-009-18..21
+    expect(new Set(registeredIds).size).toBe(104); // int-MILESTONE-011 union: WORK-035-1 CHK-007-09..13, WORK-036-1 CHK-007-14..17, WORK-037-2 CHK-010-01..06 (outfits); WORK-032-1: CHK-001-11..14; WORK-033-1: CHK-009-17; WORK-034-2: CHK-001-15/16, CHK-005-09/10, CHK-009-18..21
 });
 for (const id of registeredIds)
     it(`${id} has an executable triggering JSON patch`, () => {

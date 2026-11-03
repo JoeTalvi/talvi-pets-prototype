@@ -152,5 +152,6 @@
       ],
       "rewardLabel": "A little story"
     }
-  ]
+  ],
+  "compatibility": {"dog": 0.5, "owl": 0.9}
 }

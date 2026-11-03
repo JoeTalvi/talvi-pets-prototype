@@ -277,3 +277,88 @@ describe('VERIFY-MEC-003-011 completion beat (view)', () => {
     expect(stage(p)).toEqual({ state: 'complete', ids: ['pets/owl-portrait'], title: 'Owl has moved in!' });
   });
 });
+
+const plays = (p: Popups) => vi.spyOn(p.context.audio!, 'play');
+
+describe('VERIFY-WORK-038-3-05 / -02 popup tiles and Collect (DEC-049 §2, §6)', () => {
+  it('VERIFY-WORK-038-3-05: the milestone tiles flip in CARD.staggerMs apart with reveal +2 st each; "New" only on a type never granted before', async () => {
+    const { CARD } = await import('../../src/view/celebration/timings');
+    const state = owing(content, 1, 1260);
+    const p0 = popups(state);
+    const play = plays(p0);
+    const animate = vi.fn();
+    Object.defineProperty(HTMLElement.prototype, 'animate', { value: animate, configurable: true });
+    try {
+      const counts = p0.state().inventory.counts;
+      ack(p0);
+      const ids = p0.state().celebration!.unlockedTypeIds;
+      expect(ids.length).toBeGreaterThanOrEqual(2);
+      // One type already held (0 copies left still counts as held before), the others never granted.
+      counts[ids[0]] = 0;
+      for (const id of ids.slice(1)) delete counts[id];
+      p0.dispatch({ type: 'cutsceneFinished' });
+      expect(p0.tiles().map(t => t.querySelector('.tpp-reward-card-new') !== null)).toEqual(ids.map((_, i) => i > 0));
+      const flips = animate.mock.calls.filter(c => String((c[0] as Keyframe[])[0].transform).includes('rotateY(90deg)'));
+      expect(flips.map(c => (c[1] as KeyframeAnimationOptions).delay)).toEqual(ids.map((_, i) => i * CARD.staggerMs));
+      expect(flips.every(c => (c[1] as KeyframeAnimationOptions).duration === CARD.flipMs)).toBe(true);
+      expect(play.mock.calls.filter(c => c[0] === 'reveal')).toEqual([['reveal', { semitones: 0 }]]);
+      vi.advanceTimersByTime((ids.length - 1) * CARD.staggerMs);
+      expect(play.mock.calls.filter(c => c[0] === 'reveal').map(c => (c[1] as { semitones: number }).semitones)).toEqual(ids.map((_, i) => 2 * i));
+    } finally { delete (HTMLElement.prototype as { animate?: unknown }).animate; }
+  });
+
+  it('VERIFY-WORK-038-3-02: Collect flashes the tiles 120 ms apart, each rising 40 px, with the tick arpeggio; collectMs uses the 120 stagger', async () => {
+    const { PHASE } = await import('../../src/view/celebration/timings');
+    const p = atMilestone();
+    const play = plays(p);
+    const n = p.tiles().length;
+    expect(collectMs(n)).toBe(300 + PHASE.collectStaggerMs * (n - 1) + 500 + 200);
+    click(p.milestone.querySelector('.tpp-collect'));
+    vi.advanceTimersByTime(0);
+    expect(p.tiles().filter(t => t.classList.contains('tpp-flash'))).toHaveLength(1);
+    vi.advanceTimersByTime(PHASE.collectStaggerMs);
+    expect(p.tiles().filter(t => t.classList.contains('tpp-flash'))).toHaveLength(2);
+    vi.advanceTimersByTime(PHASE.collectStaggerMs * n);
+    expect(play.mock.calls.filter(c => c[0] === 'tick').map(c => (c[1] as { semitones: number }).semitones)).toEqual([0, 4, 7, 12, 12, 12, 12].slice(0, n));
+  });
+
+});
+
+describe('VERIFY-WORK-038-3-02 / -03 / -10 the reveal popup (DEC-049 §2, §3)', () => {
+  it('VERIFY-WORK-038-3-02: the reveal popup clue cards play reveal +0/+2/+4 as each enters revealCardStaggerMs apart', () => {
+    const p = atMilestone();
+    const play = plays(p);
+    click(p.milestone.querySelector('.tpp-collect'));
+    vi.advanceTimersByTime(collectMs(p.tiles().length) - 1);
+    play.mockClear();
+    vi.advanceTimersByTime(1);
+    expect(play.mock.calls.filter(c => c[0] === 'reveal')).toEqual([['reveal', { semitones: 0 }]]);
+    vi.advanceTimersByTime(2 * content.tuning.revealCardStaggerMs);
+    expect(play.mock.calls.filter(c => c[0] === 'reveal').map(c => (c[1] as { semitones: number }).semitones)).toEqual([0, 2, 4]);
+  });
+
+  it('VERIFY-WORK-038-3-03 / -10: the completing reveal: riser 450 before the resolve, then the tile flash (dropped under reduced motion), 24 glyphs and reveal + heart at the resolve', () => {
+    for (const reduce of [false, true]) {
+      vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: reduce })));
+      try {
+        const p = atMilestone(4, 1500, owlContent);
+        const play = plays(p);
+        openReveal(p);
+        let waited = 0;
+        while (stage(p).state !== 'silhouette' && waited < 50) { vi.advanceTimersByTime(1); waited++; }
+        expect(stage(p).state).toBe('silhouette');
+        const hold = owlContent.tuning.revealSilhouetteHoldMs;
+        vi.advanceTimersByTime(hold - 450 - 1);
+        expect(play.mock.calls.filter(c => c[0] === 'riser')).toEqual([]);
+        vi.advanceTimersByTime(1);
+        expect(play.mock.calls.filter(c => c[0] === 'riser')).toEqual([['riser']]);
+        vi.advanceTimersByTime(449);
+        expect(play.mock.calls.filter(c => c[0] === 'heart')).toEqual([]);
+        vi.advanceTimersByTime(1);
+        expect(play.mock.calls.slice(-2).map(c => c[0])).toEqual(['reveal', 'heart']);
+        expect(p.reveal.querySelectorAll('.tpp-tile-flash')).toHaveLength(reduce ? 0 : 1);
+        expect(p.host.querySelectorAll('.tpp-glyph-burst .tpp-glyph')).toHaveLength(24);
+      } finally { vi.unstubAllGlobals(); document.body.replaceChildren(); }
+    }
+  });
+});

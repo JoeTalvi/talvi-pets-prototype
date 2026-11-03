@@ -70,7 +70,8 @@
           "y": 960,
           "facing": "up",
           "immunityMs": 0,
-          "facingCandidate": null
+          "facingCandidate": null,
+          "outfitId": "default"
         }
       }
     },
@@ -144,7 +145,8 @@
           "y": 616,
           "facing": "up",
           "immunityMs": 0,
-          "facingCandidate": null
+          "facingCandidate": null,
+          "outfitId": "default"
         }
       }
     }

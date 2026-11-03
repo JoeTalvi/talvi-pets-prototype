@@ -1,10 +1,18 @@
-import type Phaser from 'phaser';
+import Phaser from 'phaser';
 import type { PetId, ProjectId, SiteId } from '@sim/state';
 import { siteOf } from '@sim/space';
 import { registerClips, type SheetEntry } from '../anims';
 import { Bubble, REACTION_EMOJI, textFrom } from '../objects/Bubble';
 import { PetSprite } from '../objects/PetSprite';
 import type { ViewContext } from '../context';
+import { DustPoof } from './DustPoof';
+import { burstConfetti } from './Confetti';
+import { glyphBurst } from './glyphBurst';
+import { ARRIVE, DUST_CLIP, DUST_LIFETIME } from './timings';
+
+/** DEC-049 §3/§8 beat text (order fork (d)): the door hop height, the dust scales, the door confetti / ♥ counts, the reaction pitch. */
+export const ARRIVE_BEATS = { hopPx: 24, startDustScale: 0.4, stepDustScale: 0.25, doorConfetti: 20, doorTints: [0xb5523f, 0xd9a441],
+  mateHearts: 16, heartSpreadPx: 90, heartFlightMs: 700, doorSemitones: 4 } as const;
 
 export type Arrival = { projectId: ProjectId; petId: PetId };
 /** WORK-034-3: a site arrival (`state.siteArrival`): the site's `arrivalPath`, the 🎵 at its end, no door fade. */
@@ -53,11 +61,14 @@ export class ArrivalWalk {
   private facing: Facing;
   private readonly lengths: number[];
   private readonly speedPxPerMs: number;
+  private readonly effects: Phaser.GameObjects.GameObject[] = [];
+  private readonly scene: Phaser.Scene;
   /** A site arrival has no door: the walk ends on the 🎵 and hands over to the street's pet sprite at the last point. */
   readonly fades: boolean;
   /** `houseDepth` null: the walker draws at its base y (a site arrival). */
   constructor(scene: Phaser.Scene, private readonly context: ViewContext, readonly arrival: Arrival | SiteArrival, houseDepth: number | null) {
     const { content, manifest, store } = context;
+    this.scene = scene;
     this.path = arrivalPathOf(content, arrival);
     this.fades = !isSiteArrival(arrival);
     this.lengths = this.path.slice(1).map((p, i) => Math.hypot(p.x - this.path[i].x, p.y - this.path[i].y));
@@ -75,6 +86,23 @@ export class ArrivalWalk {
     this.sprite.setDepthOverride(houseDepth === null ? null : houseDepth + 1);
     this.bubble = new Bubble(scene, arrival.petId, 0, textFrom(content.strings), { bubbleMs, bubbleTextMs }, () => {});
     this.timeline.push({ beat: 'walk', atMs: 0 });
+    this.startBeat();
+  }
+  /** DEC-049 §3/§8 at 0: a small dust poof at the feet; a site arrival (the mate) also shows a 🎵 at the path start and plays `reaction`. */
+  private startBeat(): void {
+    this.poof(ARRIVE_BEATS.startDustScale);
+    if (this.fades) return;
+    this.bubble.follow(this.sprite.bubbleAnchor());
+    this.bubble.show({ kind: 'emoji', class: 'greeting', glyph: REACTION_EMOJI.greeting });
+    this.context.audio?.play('reaction');
+  }
+  /** A dust poof `scale` × the walker's size at its feet, faded and destroyed on the DustPoof schedule. */
+  private poof(scale: number): void {
+    const w = Math.max(1, this.sprite.displayWidth) * scale, h = Math.max(1, this.sprite.displayHeight) * scale;
+    const poof = new DustPoof(this.scene, new Phaser.Geom.Rectangle(this.sprite.x - w / 2, this.sprite.y - h, w, h), this.sprite.depth + 1);
+    this.effects.push(poof);
+    this.scene.time.delayedCall(DUST_CLIP, () => { if (poof.active) poof.fade(); });
+    this.scene.time.delayedCall(DUST_LIFETIME, () => poof.destroy());
   }
   /** Advances the walk by `dtMs` (the caller has clamped it). */
   update(dtMs: number): void {
@@ -83,6 +111,10 @@ export class ArrivalWalk {
     this.elapsedMs += dtMs;
     const { doorMs, fadeMs, finishMs } = this.plan;
     if (before < doorMs) this.walkTo(Math.min(this.elapsedMs, doorMs));
+    // DEC-049 §8: the mate kicks a tiny puff every `ARRIVE.stepDustMs` while walking.
+    if (!this.fades) for (let k = Math.floor(before / ARRIVE.stepDustMs) + 1; k * ARRIVE.stepDustMs <= Math.min(this.elapsedMs, doorMs); k++)
+      if (k * ARRIVE.stepDustMs < doorMs) this.poof(ARRIVE_BEATS.stepDustScale);
+    if (before < doorMs) { this.bubble.follow(this.sprite.bubbleAnchor()); this.bubble.update(Math.min(this.elapsedMs, doorMs) - before); }
     if (before < doorMs && this.elapsedMs >= doorMs) this.reachDoor();
     if (this.elapsedMs > doorMs) this.bubble.update(this.elapsedMs - Math.max(before, doorMs));
     if (this.fades && this.elapsedMs >= fadeMs) {
@@ -116,6 +148,30 @@ export class ArrivalWalk {
     this.bubble.follow(this.sprite.bubbleAnchor());
     this.bubble.show({ kind: 'emoji', class: 'greeting', glyph: REACTION_EMOJI.greeting });
     this.timeline.push({ beat: 'door', atMs: this.elapsedMs }, { beat: 'greeting', atMs: this.elapsedMs });
+    this.doorBeat(door);
   }
-  private finish(): void { this.finished = true; this.bubble.destroy(); this.sprite.destroy(); }
+  /** DEC-049 §3/§8 at the door / path end: a 24 px hop (`ARRIVE.hopMs` there and back), 20 red-and-gold confetti (the Owl) or 16 ♥
+   * (the mate, DOM glyphs over the overlay), and `reaction` +4 st. No flash, shake or hitstop (not a signature). */
+  private doorBeat(door: Point): void {
+    const sprite = this.sprite;
+    this.scene.tweens.add({ targets: sprite, y: door.y - ARRIVE_BEATS.hopPx, duration: ARRIVE.hopMs / 2, yoyo: true, ease: 'Quad.easeOut',
+      onComplete: () => { if (sprite.active) sprite.setY(door.y); } });
+    this.context.audio?.play('reaction', { semitones: ARRIVE_BEATS.doorSemitones });
+    if (this.fades) {
+      const h = Math.max(1, sprite.displayHeight);
+      const confetti = burstConfetti(this.scene, new Phaser.Geom.Rectangle(door.x - h / 2, door.y - h, h, h),
+        { count: ARRIVE_BEATS.doorConfetti, tints: ARRIVE_BEATS.doorTints });
+      this.effects.push(confetti);
+      return;
+    }
+    const root = typeof document !== 'undefined' ? document.getElementById('panels') : null;
+    if (!root) return;
+    const cam = this.scene.cameras.main;
+    glyphBurst(root, { glyph: '♥', px: 36, count: ARRIVE_BEATS.mateHearts, color: 'var(--red)', spreadPx: ARRIVE_BEATS.heartSpreadPx, staggerMs: 0,
+      flightMs: ARRIVE_BEATS.heartFlightMs, from: { x: door.x - cam.scrollX, y: door.y - sprite.displayHeight / 2 - cam.scrollY } });
+  }
+  private finish(): void {
+    this.finished = true; this.bubble.destroy(); this.sprite.destroy();
+    for (const effect of this.effects.splice(0)) effect.destroy();
+  }
 }

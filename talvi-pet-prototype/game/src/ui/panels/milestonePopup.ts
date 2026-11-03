@@ -4,11 +4,21 @@ import type { ViewContext } from '@view/context';
 import { milestonePopup } from './templates/milestonePopup';
 import { escapeHtml, image } from './templates/shared';
 import { dollars } from './hudStreet';
+import { outfitAssets, outfitCardFace } from './closet';
+import { createRewardCard } from '@view/celebration/rewardCard';
 import { assetsFrom, createText, type Panel, type Text } from '../overlay';
+import { CARD, PHASE } from '@view/celebration/timings';
+import { createTickSeq } from '@view/celebration/tickSeq';
 
 /** Presentation §8.2 fade in/out and the §12 no-destination collect fallback (order fork 2). */
 export const POPUP_FADE_MS = 200;
-export const COLLECT = { flashMs: 300, staggerMs: 50, holdMs: 500, fadeMs: 200 } as const;
+/** DEC-049 §2: the Collect stagger is `PHASE.collectStaggerMs` 120 (was 50); each tile then rises `COLLECT.risePx` and fades. */
+export const COLLECT = { flashMs: 300, staggerMs: PHASE.collectStaggerMs, holdMs: 500, fadeMs: 200, risePx: 40 } as const;
+/** DEC-049 §6: each tile's `reveal` steps up this many semitones per tile (as the §2 clue cards). */
+export const TILE_REVEAL_SEMITONES = 2;
+/** The 3D flip a reward tile enters with (the `rewardCard` block's keyframes, reused so WORK-037-3's outfit tile matches). */
+export const TILE_FLIP_FRAMES: Keyframe[] = [{ transform: 'perspective(800px) rotateY(90deg) scale(1.1)', opacity: 1 },
+  { transform: 'perspective(800px) rotateY(0deg) scale(1)', opacity: 1 }];
 /** Mec-002 §2.6 live price: the Skip label re-renders on these (and the buttons re-enable). */
 const RENDER_ON = ['roundup.fired', 'phase.reached', 'feed.stopped', 'completeNow.shown', 'debug.applied'] as const;
 
@@ -46,7 +56,7 @@ const fade = (el: HTMLElement, from: number, to: number, ms: number) => {
 };
 
 /** Mec-002 §3.3 `MilestonePopupView`: strings by `completes`, one tile per `unlockedTypeIds` id in order (order fork 6 placeholder). */
-function renderContent(p: Parts, context: ViewContext, text: Text, celebration: NonNullable<GameState['celebration']>): void {
+function renderContent(p: Parts, context: ViewContext, text: Text, state: GameState, celebration: NonNullable<GameState['celebration']>): void {
   const config = celebration.completes ? 'complete' : 'progress';
   for (const [el, part] of [[p.heading, 'title'], [p.congrats, 'congrats']] as const) {
     const key = `buildprojects.cutscene.popup.${config}.${part}`;
@@ -57,10 +67,48 @@ function renderContent(p: Parts, context: ViewContext, text: Text, celebration: 
     const type = context.content.charms.types.find(t => t.id === id);
     if (!type) throw new Error(`Milestone popup: unknown charm type "${id}"`);
     return `<button type="button" class="ns-tile tpp-reward-tile" data-action="preview" data-item-index="${i}" data-type-id="${escapeHtml(id)}" `
-      + `data-string-key="content.charm.name" aria-label="${escapeHtml(type.name)}">${image({ assets }, type.sprite)}</button>`;
+      + `data-string-key="content.charm.name" aria-label="${escapeHtml(type.name)}">${image({ assets }, type.sprite)}${newRibbon(text, state, id)}</button>`;
   }).join('');
   if (celebration.completes) p.skip.remove();
   else if (!p.skip.isConnected) p.section.insertBefore(p.skip, p.skipAnchor);
+}
+
+/** DEC-049 §6 "New": the type was never granted before this milestone (no inventory key yet; copies are granted at Collect). */
+function newRibbon(text: Text, state: GameState, typeId: string): string {
+  if (typeId in state.inventory.counts) return '';
+  return `<span class="tpp-reward-card-new" data-string-key="tpp.reward.new">${escapeHtml(text('tpp.reward.new'))}</span>`;
+}
+
+/** DEC-049 §6: the tiles flip in `CARD.staggerMs` apart over `CARD.flipMs`, each with `reveal` (+2 st per tile) as it starts. */
+function flipInTiles(p: Parts, context: ViewContext, schedule: (ms: number, fn: () => void) => void): void {
+  [...p.grid.querySelectorAll<HTMLElement>('.tpp-reward-tile')].forEach((tile, i) => {
+    tile.animate?.(TILE_FLIP_FRAMES, { duration: CARD.flipMs, delay: i * CARD.staggerMs, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)', fill: 'backwards' });
+    const play = () => context.audio?.play('reveal', { semitones: TILE_REVEAL_SEMITONES * i });
+    if (i === 0) play(); else schedule(i * CARD.staggerMs, play);
+  });
+}
+
+/** Outfit tile size: the charm tile's 126 px, so the grid keeps its rhythm. */
+export const OUTFIT_TILE_PX = 126;
+
+/**
+ * WORK-037-3 (gate Q13(a); spec §6 / §10 "Outfit unlocked"): a completing project with `completionOutfitId` gets an outfit tile
+ * after the charm tiles, derived from content (no `celebration` change), "New" always (the set was not held). Integration
+ * (review WORK-037-3-1 A4): the tile is a `.tpp-reward-tile`, so `flipInTiles` flips it in its `CARD.staggerMs` slot with that
+ * slot's `reveal`; the card face is shown at once and rides the tile's flip.
+ */
+function addOutfitTile(p: Parts, context: ViewContext, text: Text, celebration: NonNullable<GameState['celebration']>): void {
+  const outfitId = celebration.completes ? context.content.projects.find(pr => pr.id === celebration.projectId)?.completionOutfitId : undefined;
+  if (!outfitId) return;
+  const tile = document.createElement('div');
+  tile.className = 'tpp-reward-tile tpp-outfit-tile'; tile.dataset.outfitId = outfitId;
+  p.grid.append(tile);
+  const face = outfitCardFace(context, text, outfitId);
+  // The 126 px tile shows the art and the ribbon only (as the charm tiles show no name); the name is the tile's label.
+  tile.setAttribute('role', 'img'); tile.setAttribute('aria-label', face.name);
+  const card = createRewardCard(tile, { content: context.content, assets: outfitAssets(context.manifest), text }, face,
+    { at: { x: OUTFIT_TILE_PX / 2, y: OUTFIT_TILE_PX / 2 }, px: OUTFIT_TILE_PX });
+  card.el.style.opacity = '1';
 }
 
 /** Mec-002 §2.6: Skip shown iff `completeNowOffered`, labelled with the live price; buttons re-enable on a state change. */
@@ -100,15 +148,19 @@ function clickHandler(p: Parts, context: ViewContext): (event: Event) => void {
 
 const removePreview = (p: Parts) => p.section.querySelectorAll('.tpp-preview-backdrop, .tpp-reward-preview').forEach(el => el.remove());
 
-/** Presentation §8.2 collecting: icons flash 300 ms staggered 50 ms, hold 500 ms, the popup fades 200 ms, then hides. */
-function playCollect(p: Parts, schedule: (ms: number, fn: () => void) => void, hide: () => void): void {
+/** Presentation §8.2 collecting (DEC-049 §2): icons flash 300 ms staggered 120 ms, each rising 40 px and fading with a `tick` of
+ * the rising arpeggio, hold 500 ms, the popup fades 200 ms, then hides. */
+function playCollect(p: Parts, context: ViewContext, schedule: (ms: number, fn: () => void) => void, hide: () => void): void {
   p.section.dataset.state = 'collecting';
   p.skipButton.disabled = true; p.collect.disabled = true;
   const tiles = [...p.grid.querySelectorAll<HTMLElement>('.tpp-reward-tile')];
+  const ticks = createTickSeq(() => context.audio);
   tiles.forEach((tile, i) => schedule(i * COLLECT.staggerMs, () => {
     tile.classList.add('tpp-flash');
-    if (typeof tile.animate === 'function')
-      tile.animate([{ filter: 'brightness(1)' }, { filter: 'brightness(1.8)' }, { filter: 'brightness(1)' }], COLLECT.flashMs);
+    ticks.tick();
+    tile.animate?.([{ filter: 'brightness(1)', transform: 'translateY(0)', opacity: 1 },
+      { filter: 'brightness(1.8)', transform: `translateY(-${COLLECT.risePx / 2}px)`, opacity: 1, offset: 0.4 },
+      { filter: 'brightness(1)', transform: `translateY(-${COLLECT.risePx}px)`, opacity: 0 }], { duration: COLLECT.flashMs, fill: 'forwards' });
   }));
   const fadeAt = collectMs(tiles.length) - COLLECT.fadeMs;
   schedule(fadeAt, () => fade(p.section, 1, 0, COLLECT.fadeMs));
@@ -135,11 +187,13 @@ export function createMilestonePopup(root: HTMLElement, context: ViewContext): M
   };
   const open = (state: GameState) => {
     if (state.celebration?.step !== 'milestone' || !p.section.hidden) return;
-    renderContent(p, context, text, state.celebration);
+    renderContent(p, context, text, state, state.celebration);
+    addOutfitTile(p, context, text, state.celebration);   // before flipInTiles: the outfit tile joins the CARD.staggerMs sequence
     p.skipButton.disabled = false; p.collect.disabled = false;
     renderSkip(p, context, text, state);
     p.section.hidden = false;
     fade(p.section, 0, 1, POPUP_FADE_MS);
+    flipInTiles(p, context, schedule);
   };
   const refresh = (state: GameState) => {
     if (p.section.hidden || p.section.dataset.state === 'collecting') return;
@@ -151,7 +205,7 @@ export function createMilestonePopup(root: HTMLElement, context: ViewContext): M
   const offs = [
     store.subscribe('celebration.stepped', (event, after) => { if (event.step === 'milestone') open(after); }),
     store.subscribe('celebration.started', (event, after) => { if (event.replay) open(after); }),
-    store.subscribe('rewards.collected', () => { if (!p.section.hidden) playCollect(p, schedule, () => hide(true)); }),
+    store.subscribe('rewards.collected', () => { if (!p.section.hidden) playCollect(p, context, schedule, () => hide(true)); }),
     store.subscribe('celebration.ended', () => hide(false)),
     store.subscribe('state.reset', () => hide(false)),
     ...RENDER_ON.map(type => store.subscribe(type, (_event, after) => refresh(after))),

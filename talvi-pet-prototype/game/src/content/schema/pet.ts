@@ -45,7 +45,10 @@ export const PetSchema = z.object({
         greeting: z.array(z.string()), chatter: z.array(z.string()), dislike: z.array(z.string()), intro: z.array(z.string()), wantAnnounce: z.record(z.string(), z.string()), vignettes: z.record(z.string(), z.array(z.string())),
         // DEC-043 / OQ-26 (WORK-033-2): the stripped-charm reaction's line, 1–3 entries
         stripped: z.array(z.string().min(1).max(140)).min(1).max(3)
-    }), wants: z.array(WantSchema)
+    }), wants: z.array(WantSchema),
+    // DEC-046 / gate Q10(a) (WORK-036-1): greeting compatibility per other pet, 0..1; optional so minimal content parses,
+    // completeness and symmetry are CHK-007-14..16
+    compatibility: z.record(Id, z.number().min(0).max(1)).optional()
 });
 export type Pet = z.infer<typeof PetSchema>;
 export type Want = z.infer<typeof WantSchema>;

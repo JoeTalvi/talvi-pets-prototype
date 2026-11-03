@@ -18,7 +18,7 @@ const DialogueScriptSchema = z.object({
 });
 
 const PetBehaviourSchema = z.object({
-  phase: z.enum(['idle', 'walking', 'using', 'reacting', 'greeting']),
+  phase: z.enum(['idle', 'walking', 'using', 'reacting', 'greeting', 'meeting']), // meeting: WORK-036-1 (DEC-046)
   x: z.number(), y: z.number(), facing: z.enum(['left', 'right']), timerMs: z.number(),
   target: z.union([z.object({ slotId: z.string() }), z.object({ wanderPointId: z.string() }), z.null()]),
   verb: z.string().nullable(), reaction: ReactionSchema.nullable(),
@@ -42,10 +42,13 @@ export const GameStateSchema = z.object({
   session: z.object({
     seed: z.number(), eventIntervalMs: z.number().nullable(), feedPresentation: z.enum(['events', 'trickle']),
     starsVisible: z.boolean(), muted: z.boolean(), testerLabel: z.string(), orientationShown: z.boolean(),
+    petsOutside: z.enum(['roll', 'all', 'none']).default('roll'), // WORK-035-1: additive, schemaVersion stays 2
   }),
   scene: z.union([z.object({ kind: z.literal('street') }), z.object({ kind: z.literal('interior'), roomId: z.string() })]),
   avatar: z.object({ x: z.number(), y: z.number(), facing: FacingSchema, immunityMs: z.number(),
-    facingCandidate: z.object({ facing: FacingSchema, heldMs: z.number() }).nullable() }),
+    facingCandidate: z.object({ facing: FacingSchema, heldMs: z.number() }).nullable(),
+    // WORK-037-2 (Q16(a)): additive with a default, so a v2 save from before outfits loads wearing "default"
+    outfitId: z.string().default('default') }),
   mode: z.enum(['play', 'design']),
   dialogue: z.object({ current: DialogueScriptSchema.nullable(), queue: z.array(DialogueScriptSchema) }),
   projects: z.record(z.string(), z.object({
@@ -59,6 +62,8 @@ export const GameStateSchema = z.object({
   rooms: z.record(z.string(), z.object({ placements: z.record(z.string(), z.string()) })),
   spaces: z.record(z.string(), z.object({ unlocked: z.boolean(), placements: z.record(z.string(), z.string()), arrivalDone: z.boolean() })),
   pets: z.record(z.string(), PetSchema),
+  streetVisits: z.number().int().min(0).default(0), // WORK-035-1: additive, schemaVersion stays 2
+  greetings: z.record(z.string(), z.object({ cooldownMs: z.number().min(0) })).default({}), // WORK-036-1: additive, version 2
 });
 
 /** The save wrapper version; every other version (all tier 1 saves are 1) is discarded, no migration. */
@@ -80,6 +85,8 @@ function unknownContentId(content: Content, state: GameState): boolean {
   if (state.celebration && (!state.projects[state.celebration.projectId] || state.celebration.unlockedTypeIds.some(id => !types.has(id)))) return true;
   if (state.arrival && (!state.projects[state.arrival.projectId] || !state.pets[state.arrival.petId])) return true;
   if (!sameKeys(state.spaces, sitesOf(content).map(site => site.id))) return true;
+  // WORK-037-2: an outfit id no longer in content discards (a known but locked id is tolerated; only debug makes one)
+  if (state.avatar.outfitId !== 'default' && !(content.outfits ?? []).some(outfit => outfit.id === state.avatar.outfitId)) return true;
   if (state.siteArrival && (!state.spaces[state.siteArrival.siteId] || !state.pets[state.siteArrival.petId])) return true;
   for (const site of sitesOf(content)) {
     const slots = new Set(site.slots.map(slot => slot.id));
@@ -89,7 +96,15 @@ function unknownContentId(content: Content, state: GameState): boolean {
     const slots = new Set(content.rooms[roomId].slots.map(slot => slot.id));
     if (Object.entries(room.placements).some(([slotId, typeId]) => !slots.has(slotId) || !types.has(typeId))) return true;
   }
+  if (Object.keys(state.greetings).some(key => !knownPairKey(content, key))) return true;
   return Object.entries(state.pets).some(([petId, pet]) => unknownPetId(content, petId, pet, verbs, types));
+}
+
+/** WORK-036-1: a greetings key names two distinct known pets in content order. */
+function knownPairKey(content: Content, key: string): boolean {
+  const order = Object.keys(content.pets);
+  const [a, b, ...rest] = key.split('|');
+  return rest.length === 0 && b !== undefined && order.includes(a) && order.indexOf(a) < order.indexOf(b);
 }
 
 function unknownPetId(content: Content, petId: string, pet: GameState['pets'][string], verbs: Set<string>,
