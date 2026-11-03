@@ -76,6 +76,8 @@ export class StreetScene extends WorldScene {
     this.bubble = undefined;
   }
   /** Presentation §4: "if `state.celebration` → `CelebrationDirector.replay(state.celebration)`" after the shared frame is built. */
+  /** WORK-038-1 Heart scene seam: the site charm sprite at a slot. */
+  override charmAt(slotId: string): CharmSprite | undefined { return this.charms.get(slotId); }
   create(): void {
     super.create();
     const state = this.context.store.getState();

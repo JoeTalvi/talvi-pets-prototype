@@ -106,7 +106,7 @@ export function createDialogue(root: HTMLElement, context: ViewContext): Dialogu
   const hide = () => { parts.section.hidden = true; parts.section.dataset.state = 'closed'; };
   // WORK-032-2 fix 6b: while the Heart moment plays, a box that would show waits for the moment's end (the vignette comes after it).
   let pendingShow = false;
-  const moment = createHeartMoment(root, () => { if (pendingShow) { pendingShow = false; show(); } });
+  const moment = createHeartMoment(root, () => { if (pendingShow) { pendingShow = false; show(); } }, () => context.audio);
   const gatedShow = () => { if (moment.active()) pendingShow = true; else show(); };
   const deferral = createDeferral(context, gatedShow);
   let arm: Arm | null = null;
@@ -132,11 +132,11 @@ export function createDialogue(root: HTMLElement, context: ViewContext): Dialogu
   };
 }
 
-/** WORK-032-2 fix 6b: `heart.earned` in an interior starts the moment; it ends on its own timer or is cancelled here. */
+/** WORK-032-2 fix 6b: `heart.earned` starts the moment (WORK-038-1 fork (a): interior and street); it ends on its own timer or is cancelled here. */
 function subscribeHeartMoment(context: ViewContext, moment: HeartMoment, h: { cancel(showHeld: boolean): void }): (() => void)[] {
   const { store } = context;
   return [
-    store.subscribe('heart.earned', (_event, after) => { if (after.scene.kind === 'interior') moment.start(); }),
+    store.subscribe('heart.earned', () => moment.start()),
     store.subscribe('scene.changed', () => h.cancel(true)),
     store.subscribe('state.reset', () => h.cancel(false)),
     store.subscribe('dialogue.closed', (_event, after) => { if (after.dialogue.current === null && moment.active()) h.cancel(false); }),

@@ -1,7 +1,13 @@
+import type { Audio } from '@app/audio';
 import { HEART_MOMENT } from './timings';
 
-/** Dispatched on `window` whenever a moment ends or is cancelled; the Interior scene removes its half on it. */
+/** Dispatched on `window` whenever a moment ends or is cancelled; the scene half (`heartScene.ts`) removes itself on it. */
 export const HEART_MOMENT_END = 'tpp:heartMomentEnd';
+/**
+ * DEC-049 Hearts-counter seam: dispatched on `window` when the moment's heart reaches the counter; the HUD then shows the new
+ * count. WORK-038-1 interim: dispatched at the moment's finish and cancel (WORK-038-2 moves it to the fly's arrival).
+ */
+export const HEART_ARRIVED = 'tpp:heartArrived';
 
 export type HeartMoment = {
   /** True from `start` until the moment ends (timeout or skip) or is cancelled. */
@@ -38,10 +44,10 @@ function mountLayer(onPointer: (e: Event) => void): HTMLElement {
 /**
  * WORK-032-2 fix 6b (DEC-048): the full-screen Heart moment in the HTML overlay — a dim and a big heart pop for
  * `HEART_MOMENT.totalMs`, then `onEnd` (the dialogue releases its held vignette box). Skippable by tap, click or key from
- * `skipAfterMs`; every input during the moment is consumed. View-only: no sim action, state or event. The chime is audio.ts's
- * existing `heart.earned` play; the confetti and the pet's big `react` are drawn by the Interior scene (see `HEART_MOMENT_END`).
+ * `skipAfterMs`; every input during the moment is consumed. View-only: no sim action, state or event. The chime is played here
+ * at the start (view-timed, DEC-049); the confetti and the pet's big `react` are drawn by the scene half (`heartScene.ts`).
  */
-export function createHeartMoment(root: HTMLElement, onEnd: () => void): HeartMoment {
+export function createHeartMoment(root: HTMLElement, onEnd: () => void, audio: () => Pick<Audio, 'play'> | null = () => null): HeartMoment {
   let layer: HTMLElement | null = null;
   let skippable = false;
   const timers: ReturnType<typeof setTimeout>[] = [];
@@ -50,7 +56,7 @@ export function createHeartMoment(root: HTMLElement, onEnd: () => void): HeartMo
     window.removeEventListener('keydown', onKey, true);
     const had = layer !== null;
     layer?.remove(); layer = null; skippable = false;
-    if (had) window.dispatchEvent(new Event(HEART_MOMENT_END));
+    if (had) { window.dispatchEvent(new Event(HEART_ARRIVED)); window.dispatchEvent(new Event(HEART_MOMENT_END)); }
   };
   const finish = () => { if (!layer) return; cleanup(); onEnd(); };
   const onPointer = (e: Event) => {
@@ -69,6 +75,7 @@ export function createHeartMoment(root: HTMLElement, onEnd: () => void): HeartMo
       cleanup();
       layer = mountLayer(onPointer);
       root.append(layer);
+      audio()?.play('heart');   // DEC-049 view-timed; WORK-038-1 interim frame: the pop (WORK-038-2 moves it to the hit)
       window.addEventListener('keydown', onKey, true);
       timers.push(setTimeout(() => { skippable = true; }, HEART_MOMENT.skipAfterMs));
       timers.push(setTimeout(() => layer?.animate?.([{ opacity: 1 }, { opacity: 0 }], { duration: HEART_MOMENT.fadeOutMs, fill: 'forwards' }),

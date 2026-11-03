@@ -6,11 +6,14 @@ import type { GameState } from '@sim/state';
 import type { EventOf } from '@app/store';
 import { AvatarSprite } from '../objects/AvatarSprite';
 import { Joystick } from '../objects/Joystick';
+import type { CharmSprite } from '../objects/CharmSprite';
 import { contextOf, type ViewContext } from '../context';
 import { startSceneFor } from '../startup';
 import { drawAlignment } from '../alignmentGrid';
 import { previewLayers, type Preview } from '../preview';
 import { DesignTint } from '../objects/DesignTint';
+import { startHeartScene, type HeartScene } from '../celebration/heartScene';
+import { HEART_MOMENT_END } from '../celebration/heartMoment';
 import { Bubble, chatterBubble, reactionBubble, textFrom, verbBubble, wantBubble } from '../objects/Bubble';
 
 export const FADE_MS = 250;
@@ -28,6 +31,12 @@ export abstract class WorldScene extends Phaser.Scene {
   /** Which TOOL-002 stage-1 layers this scene offers (Interior: four; Street: geometry). */
   protected abstract readonly previewKind: 'interior' | 'street';
   protected unsubscribes: (() => void)[] = [];
+  /** WORK-038-1 Heart scene seam (fork (a)): every scene half started here, for teardown; the newest is last. */
+  private hearts: HeartScene[] = [];
+  /** WORK-032-2 fix 6b: the Heart moment's big `react` pet (the newest scene half's), null outside the moment. */
+  get heartPet(): Phaser.GameObjects.Sprite | null { return this.hearts.at(-1)?.pet ?? null; }
+  /** WORK-038-1 Heart scene seam: the scene's charm sprite at a slot (Interior and Street override). */
+  charmAt(slotId: string): CharmSprite | undefined { void slotId; return undefined; }
   abstract drawWorld(): void;
   /** Interior adds its own subscriptions and per-frame syncs. */
   protected subscribeScene(): void {}
@@ -119,6 +128,22 @@ export abstract class WorldScene extends Phaser.Scene {
       this.cameras.main.fadeOut(FADE_MS);
     });
     this.on('state.reset', () => { this.transitioning = true; this.scene.start('Street', {}); });
+    this.subscribeHeartScene();
+  }
+
+  /** WORK-038-1 fork (a): `heart.earned` starts the Heart moment's scene half in the Interior and the Street; the overlay's end removes it. */
+  private subscribeHeartScene(): void {
+    this.hearts = [];
+    let focusSlotId: string | null = null;
+    this.on('want.fulfilled', event => { focusSlotId = event.focusSlotId; });
+    this.on('heart.earned', event => {
+      this.hearts.at(-1)?.end();
+      this.hearts.push(startHeartScene(this, { petId: event.petId, focusSlotId, charmAt: slotId => this.charmAt(slotId) }));
+      focusSlotId = null;
+    });
+    const onMomentEnd = () => this.hearts.at(-1)?.end();
+    window.addEventListener(HEART_MOMENT_END, onMomentEnd);
+    this.unsubscribes.push(() => { window.removeEventListener(HEART_MOMENT_END, onMomentEnd); for (const h of this.hearts.splice(0)) h.destroy(); });
   }
 
   private teardown(): void {

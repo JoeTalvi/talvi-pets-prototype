@@ -251,7 +251,11 @@ describe('presentation §7.4 completion hooks', () => {
     expect(scene.tweens.getTweensOf(house).map(t => [td(t).key, endOf(t), td(t).duration, td(t).yoyo])).toEqual([['scaleX', 1.08, 150, true]]);
     clock.advance(299);
     expect(explode).not.toHaveBeenCalled();
+    const completes = () => play.mock.calls.filter(c => c[0] === 'complete');
+    expect(completes()).toEqual([]);
     clock.advance(1);
+    // VERIFY-WORK-038-1-10: sfx/complete is view-timed on the confetti + flash beat (interim frame), exactly once.
+    expect(completes()).toEqual([['complete']]);
     const emitter = scene.children.list.find(c => c instanceof Phaser.GameObjects.Particles.ParticleEmitter) as Phaser.GameObjects.Particles.ParticleEmitter;
     const rect = scene.children.list.find(c => c instanceof Phaser.GameObjects.Rectangle && c !== scene.designTint.rect) as Phaser.GameObjects.Rectangle;
     expect([emitter.depth, emitter.texture.key, explode.mock.calls[0][0]]).toEqual([CONFETTI_DEPTH, 'confetti', 60]);
@@ -265,6 +269,7 @@ describe('presentation §7.4 completion hooks', () => {
     clock.advance(2250);
     expect(emitter.active).toBe(false);
     expect(flash).not.toHaveBeenCalled();
+    expect([completes().length, play.mock.calls.filter(c => c[0] === 'phasePop').length]).toEqual([1, 5]);
     expect(director.timeline.map(t => t.beat)).toEqual(['barFadeIn', 'pan', 'fill', 'popAll', 'completionDust', 'completionSwap', 'confetti', 'finish']);
   });
 });

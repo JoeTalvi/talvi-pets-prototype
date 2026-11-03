@@ -1,10 +1,11 @@
-import type { GameState } from '@sim/state';
+import type { GameState, Reaction } from '@sim/state';
 import type { Log } from './log';
 import type { Store } from './store';
 
 /** TECH-015 / presentation §9: the view implements `player` over `game.sound`, so this module has no Phaser import. */
 export type AudioPlayer = {
-  play(id: string, opts: { volume: number }): void;
+  /** `detune` in cents (Phaser `SoundConfig.detune`); 0 plays the sound at its recorded pitch. */
+  play(id: string, opts: { volume: number; detune: number }): void;
   setMute(muted: boolean): void;
   locked(): boolean;
 };
@@ -21,11 +22,24 @@ export const SOUNDS = {
   complete: { id: 'sfx/complete', volume: 0.9 },
   reaction: { id: 'sfx/reaction', volume: 0.5 },
   phasePop: { id: 'sfx/phase-pop', volume: 0.7 },
+  tick: { id: 'sfx/tick', volume: 0.5 },          // DEC-049 §C "SFX volumes (new)"
+  riser: { id: 'sfx/riser', volume: 0.6 },
+  reveal: { id: 'sfx/reveal', volume: 0.7 },
 } as const;
 export type SoundId = keyof typeof SOUNDS;
 
+/** `semitones` pitch-steps a one-shot (detune = 100 × semitones); `volume` overrides the SOUNDS volume. */
+export type PlayOptions = { semitones?: number; volume?: number };
+
+/** DEC-049 spec §9 sound column: love +3 st, like 0, dislike −4 st at 0.35; other reactions keep the plain one-shot. */
+export const REACTION_PITCH: Partial<Record<Reaction, PlayOptions>> = {
+  love: { semitones: 3 },
+  like: { semitones: 0 },
+  dislike: { semitones: -4, volume: 0.35 },
+};
+
 export type Audio = {
-  play(sound: SoundId): void;
+  play(sound: SoundId, opts?: PlayOptions): void;
   attach(store: Pick<Store, 'subscribe'>): void;
   start(state: GameState): void;
   detach(): void;
@@ -47,14 +61,16 @@ export function createAudio(player: AudioPlayer, options: AudioOptions): Audio {
     try { fn(); } catch (error) { failed = true; options.record('app.error', errorPayload(error)); }
   };
 
-  const play = (sound: SoundId) => {
-    const { id, volume } = SOUNDS[sound];
+  const play = (sound: SoundId, opts: PlayOptions = {}) => {
+    const { id } = SOUNDS[sound];
+    const volume = opts.volume ?? SOUNDS[sound].volume;
+    const detune = 100 * (opts.semitones ?? 0);
     if (!options.available.has(id)) return;   // user-managed sound not yet in the manifest: silent, no record
     if (player.locked()) {
       if (!lockedRecorded) { lockedRecorded = true; options.record('audio.locked', {}); }
       return;
     }
-    guarded(() => player.play(id, { volume }));
+    guarded(() => player.play(id, { volume, detune }));
   };
 
   return {
@@ -62,9 +78,8 @@ export function createAudio(player: AudioPlayer, options: AudioOptions): Audio {
     attach(store) {
       unsubscribes.push(
         store.subscribe('charm.placed', () => play('place')),
-        store.subscribe('heart.earned', () => play('heart')),
-        store.subscribe('project.completed', () => play('complete')),
-        store.subscribe('pet.reacted', () => play('reaction')),
+        // `heart` and `complete` are view-timed (DEC-049): the Heart moment and the completion beat call play().
+        store.subscribe('pet.reacted', event => play('reaction', REACTION_PITCH[event.reaction])),
         store.subscribe('audio.muteChanged', event => guarded(() => player.setMute(event.muted))),
       );
     },

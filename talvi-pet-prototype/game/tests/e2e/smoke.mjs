@@ -44,7 +44,7 @@ async function bootStep(browser) {
   await waitScene(page, 'Street');
   const boot0 = await page.evaluate(() => ({ loader: window.__tpp.game.scene.getScene('Boot').loaderTotals, scene: window.__tpp.store.getState().scene }));
   const all = await lines(page), dom = await domRead(page);
-  step('boot: BootScene complete, totalFailed 0, 102 files (lenient; WORK-034-1 measured 95 + 2 owl-mate rows + 2 site-garden rows; WORK-037-1 measured 102 with two outfit sheets + closet icon)', boot0.loader.totalFailed === 0 && boot0.loader.totalComplete === 102, 'loaderTotals {totalComplete 102, totalFailed 0}', boot0.loader);
+  step('boot: BootScene complete, totalFailed 0, 105 files (lenient; WORK-034-1 measured 99; WORK-038-1 + 3 sfx rows tick/riser/reveal; WORK-037-1 + two outfit sheets + closet icon; union in WORK-037-3)', boot0.loader.totalFailed === 0 && boot0.loader.totalComplete === 105, 'loaderTotals {totalComplete 105, totalFailed 0}', boot0.loader);
   step('boot: session.started ×1, scene street', count(all, 'session.started') === 1 && boot0.scene.kind === 'street', 'session.started ×1; scene.kind street', { sessionStarted: count(all, 'session.started'), scene: boot0.scene });
   step('boot: orientation box visible (text-only game box)', dom.dialogue.visible && (await getState(page)).dialogue.current?.source === 'orientation', 'dialogue panel visible with the orientation script', { dom: dom.dialogue, source: (await getState(page)).dialogue.current?.source });
   const taps = await tapBoxUntilClosed(page);

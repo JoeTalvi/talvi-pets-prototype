@@ -166,6 +166,7 @@ export class CelebrationDirector {
   private confetti(): void {
     const emitter = burstConfetti(this.scene, this.house.getBounds());
     const flash = screenFlash(this.scene);
+    this.scene.context.audio?.play('complete');   // DEC-049 view-timed; WORK-038-1 interim frame: the confetti + flash beat
     this.effects.push(emitter, flash);
     this.after(CONFETTI_LIFETIME, () => emitter.destroy());
   }
