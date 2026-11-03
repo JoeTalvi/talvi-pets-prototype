@@ -242,6 +242,7 @@ function bindDispatchRows(b: Binding): void {
   go('Pets outside', 0, () => ({ type: 'debugSetPetsOutside', mode: 'roll' }));
   go('Pets outside', 1, () => ({ type: 'debugSetPetsOutside', mode: 'all' }));
   go('Pets outside', 2, () => ({ type: 'debugSetPetsOutside', mode: 'none' }));
+  go('Greet now', 0, () => ({ type: 'debugGreetNow' })); // row 24 (WORK-036-1, gate Q17)
   // Row 25 "Outfits" (WORK-037-2, gate Q17): wear any known outfit regardless of its lock; found by label, not index.
   go('Outfits', 0, () => ({ type: 'debugSetOutfit', outfitId: row('Outfits').querySelector('select')!.value }));
   go('Feed presentation', 0, () => ({ type: 'debugSetFeedPresentation', mode: 'events' }));

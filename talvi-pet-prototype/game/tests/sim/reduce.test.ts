@@ -57,7 +57,7 @@ it('CONTRACT-ACTIONS v1.5 reduce handles all 30 actions: a minimal dispatch of e
     tick: tick(), setDesignMode: { type: 'setDesignMode', on: false },
     debugUnlockSpace: { type: 'debugUnlockSpace', siteId: 'garden' }, debugFillSpace: { type: 'debugFillSpace', siteId: 'garden' },
     debugFulfilActiveWant: { type: 'debugFulfilActiveWant', petId: 'dog' },
-    debugSetPetsOutside: { type: 'debugSetPetsOutside', mode: 'all' },
+    debugSetPetsOutside: { type: 'debugSetPetsOutside', mode: 'all' }, debugGreetNow: { type: 'debugGreetNow' },
     placeCharm: { type: 'placeCharm', slotId: 'floor-1', typeId: 'lamp' }, removeCharm: { type: 'removeCharm', slotId: 'floor-1' },
     acknowledgeProject: { type: 'acknowledgeProject', projectId: 'pet-house' }, cutsceneFinished: { type: 'cutsceneFinished' },
     collectRewards: { type: 'collectRewards' }, skipWait: { type: 'skipWait' }, closeReveal: { type: 'closeReveal' },

@@ -78,7 +78,7 @@ const tagName = (content: Content, tag: string | undefined) => content.tags.find
 function conditionText(content: Content, view: ConditionView, max: number): string {
   const box = view.met ? '✓' : '☐';
   if (view.kind === 'adjacent') return `${box} ${tagName(content, view.tagA)} + ${tagName(content, view.tagB)} ${text(content, 'tpp.want.adjacent')}`;
-  if (view.kind === 'greeted') return `${box} greeted ${view.withPetId} (WORK-036)`;
+  if (view.kind === 'greeted') return `${box} greeted ${view.withPetId}`;
   if (view.kind === 'stars') return `${box} ${text(content, 'tpp.want.starsFloor').replace('{min}', String(view.min))} (${view.current} / ${max})`;
   if (view.hidden) return `${box} ${text(content, 'tpp.want.hidden')}`;
   const note = view.availability === 'owned' ? '(owned)' : `— ${text(content, `tpp.want.availability.${view.availability}`)}`;

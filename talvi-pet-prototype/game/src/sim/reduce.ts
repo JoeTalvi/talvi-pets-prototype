@@ -24,6 +24,7 @@ import { debugFillSpace, debugFulfilActiveWant, debugUnlockSpace } from './rules
 import { maybeStartSiteArrival } from './rules/sites';
 import { chooseOutfit, debugSetOutfit } from './rules/outfits';
 import { afterSceneChange, debugSetPetsOutside } from './rules/streetPresence';
+import { debugGreetNow, stepGreetings } from './rules/greetings';
 
 type Payload = Record<string, unknown>;
 const isString = (value: unknown) => typeof value === 'string';
@@ -67,10 +68,11 @@ const payloadValid: Record<Action['type'], (action: Payload) => boolean> = {
   debugSetTesterLabel: action => isString(action.text) && action.text.trim().length <= 40,
   reset: action => action.seed === undefined || isInteger(action.seed),
   debugSetPetsOutside: action => action.mode === 'roll' || action.mode === 'all' || action.mode === 'none',
+  debugGreetNow: none,
 };
 
-/** Convention 2: core §4 tick order: avatar, doors (+ the street-arrival hook), feed, pets (4),
- * scripts then bubbles (5); never reorder. */
+/** Convention 2: core §4 tick order: avatar, doors (+ the street-arrival hook), feed, pets (4), greetings (4b,
+ * WORK-036-1 fork 1), scripts then bubbles (5); never reorder. */
 type TickStep = (content: Content, state: GameState, action: TickAction,
   eventsSoFar: readonly SimEvent[]) => RuleResult;
 const tickSteps: TickStep[] = [
@@ -79,6 +81,7 @@ const tickSteps: TickStep[] = [
   // Play-session 2026-10-26 ("Wait for tap"): stepping onto the street no longer starts an owed celebration.
   (content, state, action) => stepFeed(content, state, action),
   stepResidentPet,
+  (content, state, action) => stepGreetings(content, state, action),
   (content, state, _action, eventsSoFar) => stepScripts(content, state, eventsSoFar, activateFirstWant),
   stepBubbles,
 ];
@@ -138,6 +141,7 @@ const handlers: Handlers = {
   chooseOutfit, debugSetOutfit, // WORK-037-2
   debugFillSpace: (content, state, action) => debugFillSpace(content, state, action, runPlacement),
   debugSetPetsOutside,
+  debugGreetNow,
 };
 
 /** CONTRACT-ACTIONS v1.5: apply fully, or reject with `result.state === state`. Every action is handled. */

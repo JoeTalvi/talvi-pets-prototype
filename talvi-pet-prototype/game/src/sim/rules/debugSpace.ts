@@ -7,7 +7,7 @@ import { grantItems } from './inventory';
 import { placeAt, type SlotsResult } from './slots';
 import { maybeStartSiteArrival } from './sites';
 import { starsOfSpace } from './stars';
-import { activeWant, fulfil, unlockSpace } from './wants';
+import { activeWant, fulfil, homeFirstSlotId, unlockSpace } from './wants';
 
 type ActionOf<T extends Action['type']> = Extract<Action, { type: T }>;
 /** The reducer's placement chain (core §6.1), injected so this module does not import reduce.ts. */
@@ -59,8 +59,5 @@ export function debugFillSpace(content: Content, state: GameState, action: Actio
 export function debugFulfilActiveWant(content: Content, state: GameState, action: ActionOf<'debugFulfilActiveWant'>): RuleResult {
   if (!content.pets[action.petId]) return reject(state, action, 'unknownPet');
   if (activeWant(content, state, action.petId) === null) return reject(state, action, 'noActiveWant');
-  const home = content.pets[action.petId].home;
-  const slots = home?.kind === 'space' ? siteOf(content, home.siteId).slots
-    : Object.values(content.rooms).find(room => room.residentPetId === action.petId)?.slots ?? [];
-  return applied(action, fulfil(content, state, action.petId, slots[0]?.id ?? ''));
+  return applied(action, fulfil(content, state, action.petId, homeFirstSlotId(content, action.petId)));
 }

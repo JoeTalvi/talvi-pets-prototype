@@ -420,7 +420,7 @@ describe('mec-010 §3 row 19 Grant copies (TEST-002 arm)', () => {
   it('VERIFY-MEC-010-017 (new) — row 19 "Grant copies" follows rows 1–18 (labels and order unchanged); select in catalogue order by name, count 1..9 default 1; Grant dispatches debugGrantCopies', async () => {
     const s = await setup(); open(s);
     const labels = [...panelOf(s.root).querySelectorAll('.tpp-debug-row > label')].map(l => l.textContent);
-    expect(labels).toEqual([...ROWS_1_18, 'Grant copies', 'Unlock garden', 'Fill garden', 'Fulfil active want', 'Pets outside', 'Outfits']); // WORK-034-2 appends 20–22; WORK-035-1 row 23; WORK-037-2 row 25
+    expect(labels).toEqual([...ROWS_1_18, 'Grant copies', 'Unlock garden', 'Fill garden', 'Fulfil active want', 'Pets outside', 'Greet now', 'Outfits']); // WORK-034-2 appends 20–22; WORK-035-1 row 23; WORK-036-1 row 24; WORK-037-2 row 25
     const select = rowOf(s.root, 'Grant copies').querySelector('select')!;
     expect([...select.options].map(o => [o.value, o.textContent])).toEqual(content.charms.types.map(t => [t.id, t.name]));
     const count = rowOf(s.root, 'Grant copies').querySelector<HTMLInputElement>('input')!;
@@ -469,6 +469,18 @@ describe('mec-010 §3 row 23 Pets outside (WORK-035-1)', () => {
     expect(s.context.store.getState().session.petsOutside).toBe('all');
     expect(segment().map(b => b.getAttribute('aria-pressed'))).toEqual(['false', 'true', 'false']);
     expect(linesOf(s.context, 'debug.applied').at(-1)).toMatchObject({ action: { type: 'debugSetPetsOutside', mode: 'all' } });
+  });
+});
+
+describe('mec-010 §3 row 24 Greet now (WORK-036-1)', () => {
+  it('VERIFY-WORK-036-1-10 panel half — row 24 "Greet now" after row 23: its one button dispatches debugGreetNow', async () => {
+    const s = await setup(); open(s);
+    const labels = [...panelOf(s.root).querySelectorAll('.tpp-debug-row > label')].map(l => l.textContent);
+    expect(labels.indexOf('Greet now')).toBe(labels.indexOf('Pets outside') + 1);
+    expect(buttons(s.root, 'Greet now').map(b => b.textContent)).toEqual(['Greet']);
+    const dispatch = vi.spyOn(s.context.store, 'dispatch');
+    click(buttons(s.root, 'Greet now')[0]);
+    expect(dispatch.mock.calls.map(c => c[0])).toEqual([{ type: 'debugGreetNow' }]);
   });
 });
 

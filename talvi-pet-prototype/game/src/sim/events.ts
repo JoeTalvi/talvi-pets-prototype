@@ -61,6 +61,9 @@ export type SimEvent =
   | { type: 'debug.applied'; action: Action; adjusted?: { field: string; requested: number; applied: number } }
   | { type: 'state.reset' }
   | { type: 'action.rejected'; action: Action; reason: string }
-  | { type: 'pet.outside'; petId: PetId; outside: boolean }; // WORK-035-1 (DEC-045): emitted only on a change
+  | { type: 'pet.outside'; petId: PetId; outside: boolean } // WORK-035-1 (DEC-045): emitted only on a change
+  | { type: 'greeting.played'; petA: PetId; petB: PetId; emoteA: GreetEmote; emoteB: GreetEmote }; // WORK-036-1 (DEC-046)
+/** WORK-036-1: the paired emote drawn per pet; the view maps friendly 🎵, polite 🙂, surprised 😮 (WORK-036-2). */
+export type GreetEmote = 'friendly' | 'polite' | 'surprised';
 
 export type RuleResult = { state: GameState; events: SimEvent[] };

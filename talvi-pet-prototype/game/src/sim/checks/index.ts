@@ -15,7 +15,7 @@ import { compareFindings, type CheckOptions } from './types';
 export type { Finding, CheckOptions } from './types';
 export const registeredIds = [
     'CHK-CORE-01', 'CHK-CORE-02', 'CHK-CORE-03', ...[
-        16, 6, 4, 9, 10, 3, 13, 9, 21, 6 // CHK-007-09..13 street (WORK-035-1); CHK-010: outfits (WORK-037-2)
+        16, 6, 4, 9, 10, 3, 17, 9, 21, 6 // CHK-007-09..13 street (WORK-035-1), -14..17 greetings (WORK-036-1); CHK-010: outfits (WORK-037-2)
     ].flatMap((count, i) => Array.from({
         length: count
     }, (_, n) => `CHK-${String(i + 1).padStart(3, '0')}-${String(n + 1).padStart(2, '0')}`))

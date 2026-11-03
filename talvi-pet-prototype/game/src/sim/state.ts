@@ -68,12 +68,15 @@ export type GameState = {
     strippedPending: CharmTypeId[]; // Heart charms removed from the home room whose reaction has not played; FIFO, distinct
   }>;
   streetVisits: number;           // WORK-035-1 (gate Q7(a)): street arrivals so far, +1 before each per-visit roll; initial 0
+  greetings: Record<PairKey, { cooldownMs: number }>; // WORK-036-1 (DEC-046): per-pair cooldown, counted down every tick; initial {}
 };
+/** `"<a>|<b>"`, a before b in content pet order (WORK-036-1). */
+export type PairKey = string;
 export type Facing = 'left' | 'right' | 'up' | 'down';
 export type DialogueScript = { source: 'orientation' | 'intro' | 'wantAnnounce' | 'vignette' | 'phaseMessage' | 'completionMessage' | 'tutorial';
                         speaker: { petId: PetId } | { game: true }; lines: string[]; index: number;
                         wantId?: WantId; projectId?: ProjectId };   // lines are copied in at enqueue (mec-008)
-export type PetBehaviour = { phase: 'idle' | 'walking' | 'using' | 'reacting' | 'greeting';
+export type PetBehaviour = { phase: 'idle' | 'walking' | 'using' | 'reacting' | 'greeting' | 'meeting'; // meeting: DEC-046 (WORK-036-1)
                       x: number; y: number; facing: 'left' | 'right'; timerMs: number;
                       target: { slotId: SlotId } | { wanderPointId: string } | null;
                       verb: VerbId | null; reaction: Reaction | null };
@@ -127,5 +130,6 @@ export function initialState(content: Content, seed: number): GameState {
     spaces: Object.fromEntries(sitesOf(content).map(site => [site.id, { unlocked: false, placements: {}, arrivalDone: false }])),
     pets: initialPets(content, seed),
     streetVisits: 0,
+    greetings: {},
   };
 }
