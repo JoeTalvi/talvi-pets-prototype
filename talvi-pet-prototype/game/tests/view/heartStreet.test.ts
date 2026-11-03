@@ -1,0 +1,67 @@
+// @vitest-environment jsdom
+import './setup';
+import Phaser from 'phaser';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { Audio } from '../../src/app/audio';
+import { loadContent } from '../../src/content/load';
+import { initialState } from '../../src/sim/state';
+import { mountOverlay } from '../../src/ui/overlay';
+import { directorClock, phaserClock } from '../../src/view/celebration/CelebrationDirector';
+import { CONFETTI_DEPTH } from '../../src/view/celebration/Confetti';
+import { HEART_ARRIVED, heartPlan } from '../../src/view/celebration/heartMoment';
+import { HEART, HEART_PET_DEPTH } from '../../src/view/celebration/timings';
+import { StreetScene } from '../../src/view/scenes/StreetScene';
+import { addTexture, bootScene, contextFor, destroyScene, realManifest } from './sceneHarness';
+import { linesOf } from './designHarness';
+
+beforeEach(() => { directorClock.create = () => ({ now: () => 0, after: () => () => {} }); });
+afterEach(() => { vi.useRealTimers(); destroyScene(); document.body.replaceChildren(); directorClock.create = phaserClock; });
+
+describe('VERIFY-WORK-038-2-07 the street variant (the mate)', () => {
+  it('VERIFY-WORK-038-2-07: the mate\'s first Heart — ×2 mate and confetti at the hit; the ♥ fades in place (no tick); first-Heart rule; cards send to the site toggle', async () => {
+    const content = loadContent();
+    const context = contextFor(content, initialState(content, 1));
+    context.manifest = realManifest;
+    const host = document.createElement('div'); document.body.append(host);
+    const panels = mountOverlay(host, context)!;
+    const root = host.querySelector<HTMLElement>('#panels')!;
+    const scene = await bootScene(StreetScene, context, {}, ['world/site-garden-empty', 'world/site-garden-base']);
+    const mate = realManifest.entries.find(e => e.id === 'pets/owl-mate-sheet')!;
+    addTexture(scene, mate.id, mate.px!.w, mate.px!.h, mate.frame);
+    scene.cameras.main.emit('camerafadeincomplete');
+    context.store.dispatch({ type: 'debugUnlockSpace', siteId: 'garden' });
+    context.store.dispatch({ type: 'debugFillSpace', siteId: 'garden' });
+    const sync = scene as unknown as { syncScene(ms: number): void };
+    for (let t = 0; t < 20000 && context.store.getState().siteArrival !== null; t += 10) sync.syncScene(10);
+    expect(scene.pet?.petId).toBe('owl-mate');
+    for (let i = 0; i < 20 && context.store.getState().dialogue.current; i++) context.store.dispatch({ type: 'advanceDialogue' });
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'performance'] });
+    const t0 = performance.now(), now = () => Math.round(performance.now() - t0);
+    const played: [string, number, number][] = [], arrived: number[] = [];
+    context.audio = { play: (id: string, o?: { semitones?: number }) => { played.push([id, o?.semitones ?? 0, now()]); } } as unknown as Audio;
+    const onArrived = () => arrived.push(now());
+    window.addEventListener(HEART_ARRIVED, onArrived);
+    const step = (to: number) => vi.advanceTimersByTime(to - now());
+    const layer = () => root.querySelector<HTMLElement>('.tpp-heart-moment');
+    context.store.dispatch({ type: 'debugFulfilActiveWant', petId: 'owl-mate' });
+    expect(linesOf(context, 'heart.earned').at(-1)).toEqual(expect.objectContaining({ petId: 'owl-mate', hearts: 1 }));
+    const reward = (linesOf(context, 'want.fulfilled').at(-1) as { reward: { kind: string }[] }).reward;
+    const n = reward.filter(r => r.kind !== 'vignette').length;
+    const plan = heartPlan(n, true);
+    step(HEART.hitAt);
+    const big = scene.heartPet!;
+    expect([big.anims.currentAnim?.key, big.depth, big.scale]).toEqual(['pet-owl-mate-react', HEART_PET_DEPTH, HEART.petScale]);
+    expect(scene.children.list.some(c => c instanceof Phaser.GameObjects.Particles.ParticleEmitter && c.depth === CONFETTI_DEPTH)).toBe(true);
+    step(700); layer()!.click();
+    expect(layer()!.dataset.beat).not.toBe('result');
+    step(plan.flyEnd);
+    expect(arrived).toEqual([plan.flyEnd]);
+    expect(played.filter(p => p[0] === 'tick')).toEqual([]);
+    expect(layer()!.querySelector<HTMLElement>('.tpp-heart-moment-heart')!.style.opacity).toBe('0');
+    step(plan.endAt);
+    expect(layer()).toBeNull();
+    expect(scene.heartPet).toBeNull();
+    window.removeEventListener(HEART_ARRIVED, onArrived);
+    panels.dialogue.destroy();
+  });
+});
