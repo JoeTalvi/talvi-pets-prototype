@@ -25,7 +25,7 @@ const tapHouse = page => page.evaluate(() => {
   return { x: r.left + (b.centerX - cam.scrollX) * k, y: r.top + (b.centerY + b.height * 0.15 - cam.scrollY) * k };
 }).then(p => page.mouse.click(p.x, p.y, { delay: 40 }));
 const timeline = page => page.evaluate(() => { const d = window.__tpp.game.scene.getScene('Street').director; return d?.plan ? d.plan.beats.map(b => [b.beat, b.startMs, b.durationMs]) : null; });
-const popupOpen = sel => sel; const openFn = sel => { const m = document.querySelector(sel); return !!m && !m.hidden; };
+const openFn = sel => { const m = document.querySelector(sel); return !!m && !m.hidden; };
 
 async function phaseRise(browser) {
   const w = await boot(browser, { save: fx('street-ack1-owed3') }); const { page } = w;
