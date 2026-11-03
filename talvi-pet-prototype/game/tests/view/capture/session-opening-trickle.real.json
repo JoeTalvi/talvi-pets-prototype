@@ -156,6 +156,7 @@
         "strippedPending": []
       }
     },
-    "streetVisits": 0
+    "streetVisits": 0,
+    "greetings": {}
   }
 }
