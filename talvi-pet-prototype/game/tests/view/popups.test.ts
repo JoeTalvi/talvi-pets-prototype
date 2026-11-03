@@ -354,7 +354,6 @@ describe('VERIFY-WORK-038-3-05 / -02 / -03 popup tiles, Collect and the reveal (
         expect(play.mock.calls.slice(-2).map(c => c[0])).toEqual(['reveal', 'heart']);
         expect(p.reveal.querySelectorAll('.tpp-tile-flash')).toHaveLength(reduce ? 0 : 1);
         expect(p.host.querySelectorAll('.tpp-glyph-burst .tpp-glyph')).toHaveLength(24);
-        p.panels.destroy?.();
       } finally { vi.unstubAllGlobals(); document.body.replaceChildren(); }
     }
   });
