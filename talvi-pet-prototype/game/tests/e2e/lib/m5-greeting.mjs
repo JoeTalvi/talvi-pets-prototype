@@ -66,7 +66,9 @@ async function fulfilMate(page, drain) {
 export async function greetingBeats({ page, beat, still, mark, rowButton, drain }) {
   await closeDebug(page);
   mkdirSync(rowsDir, { recursive: true }); mkdirSync(capturesDir, { recursive: true });
-  // g1: the mate's want 3 `greet-the-owl` active.
+  // g1: the mate's want 3 `greet-the-owl` active. Row 23 "All in" first so only the mate is on the street: a natural Owl–mate
+  // greeting during the setup drains would fulfil greet-the-owl before g2's scripted one (g2 sets All in → All out itself).
+  await rowButton('Pets outside', 2); await page.waitForTimeout(800);
   for (let i = 0; i < 3 && (await getState(page)).pets['owl-mate'].fulfilledWantIds.length < 2; i++) await fulfilMate(page, drain);
   const g1 = await getState(page);
   const activeId = await page.evaluate(() => { const { content, store } = window.__tpp, s = store.getState(), mate = s.pets['owl-mate'];
