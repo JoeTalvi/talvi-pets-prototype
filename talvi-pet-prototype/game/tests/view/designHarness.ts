@@ -37,7 +37,8 @@ export const REAL_STRINGS: Patch[] = Object.entries({
 }).map(([key, value]) => ({ file: 'strings.json', path: `/${key}`, value }));
 
 export type DesignSetup = { context: ViewContext; scene: InteriorScene; root: HTMLElement; panels: Panels; state: () => GameState };
-export type SetupOptions = { mode?: 'play' | 'design'; patches?: Patch[]; edit?: (state: GameState) => void; images?: string[]; omitAssets?: string[] };
+export type SetupOptions = { mode?: 'play' | 'design'; patches?: Patch[]; edit?: (state: GameState) => void; images?: string[]; omitAssets?: string[];
+  touch?: boolean }; // false boots the desktop layout (no on-screen joystick)
 
 /** FX-CONTENT-MIN Dog room (intro done) with the overlay panels mounted and the Interior booted in the harness. */
 export async function designSetup(options: SetupOptions = {}): Promise<DesignSetup> {
@@ -46,6 +47,7 @@ export async function designSetup(options: SetupOptions = {}): Promise<DesignSet
   state.mode = options.mode ?? 'design';
   options.edit?.(state);
   const context = contextFor(content, state);
+  if (options.touch !== undefined) context.touch = options.touch;
   const omit = new Set(options.omitAssets ?? []);
   context.manifest = { ...context.manifest, entries: context.manifest.entries.filter(e => !omit.has(e.id)) };
   const host = document.createElement('div'); document.body.append(host);

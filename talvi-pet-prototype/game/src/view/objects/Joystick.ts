@@ -4,16 +4,18 @@ import type { ViewContext } from '../context';
 
 const DEPTH = 9500;
 
-/** Presentation §3.2: Phaser pointers feed WORK-004-2's adapter; the knob shows centre + vector × range. */
+/** Presentation §3.2: Phaser pointers feed WORK-004-2's adapter; the knob shows centre + vector × range.
+ * Shown only on a touch-first device (`context.touch`); on a desktop it stays hidden and captures no pointer. */
 export class Joystick {
   readonly adapter: JoystickAdapter;
   private base: Phaser.GameObjects.Image;
   private knob: Phaser.GameObjects.Image;
   private tuning: ViewContext['content']['tuning']['joystick'];
   private range: number;
-  constructor(private scene: Phaser.Scene, context: Pick<ViewContext, 'content' | 'log'>) {
+  private readonly enabled: boolean;
+  constructor(private scene: Phaser.Scene, context: Pick<ViewContext, 'content' | 'log' | 'touch'>) {
     const tuning = context.content.tuning.joystick;
-    this.tuning = tuning; this.range = tuning.range;
+    this.tuning = tuning; this.range = tuning.range; this.enabled = context.touch === true;
     this.adapter = createJoystickAdapter({
       centre: () => this.centre(), range: tuning.range, captureHalf: tuning.baseDiameter / 2,
       record: context.log.record, now: () => performance.now(),
@@ -23,6 +25,7 @@ export class Joystick {
     this.knob = scene.add.image(0, 0, key('ui/Joystick_Handle')).setDisplaySize(tuning.knobDiameter, tuning.knobDiameter).setAlpha(0.85).setScrollFactor(0).setDepth(DEPTH + 1);
     scene.input.on('pointerdown', this.down); scene.input.on('pointermove', this.move); scene.input.on('pointerup', this.up);
     scene.input.on('gameout', this.release); scene.game.events.on('hidden', this.release);
+    this.base.setVisible(this.enabled); this.knob.setVisible(this.enabled);
     this.layout();
   }
   /** Safe-area left inset (CSS px) converted to logical px. */
@@ -43,11 +46,12 @@ export class Joystick {
   release = () => { this.adapter.release(); this.layout(); };
   get active(): boolean { return this.adapter.active; }
   get vector(): { x: number; y: number } { return this.adapter.vector; }
-  /** Hidden while input is frozen; hiding releases a held stick. */
+  /** Hidden while input is frozen, and always on a non-touch device; hiding releases a held stick. */
   setVisible(visible: boolean): void {
-    if (!visible && this.adapter.active) this.release();
-    if (this.base.visible !== visible) { this.base.setVisible(visible); this.knob.setVisible(visible); }
-    if (visible) this.layout();
+    const shown = visible && this.enabled;
+    if (!shown && this.adapter.active) this.release();
+    if (this.base.visible !== shown) { this.base.setVisible(shown); this.knob.setVisible(shown); }
+    if (shown) this.layout();
   }
   destroy(): void {
     this.adapter.release();
