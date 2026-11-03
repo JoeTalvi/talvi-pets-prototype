@@ -49,6 +49,7 @@ export abstract class WorldScene extends Phaser.Scene {
     this.designTint = new DesignTint(this);
     this.syncDesignTint(this.context.store.getState());
     this.avatar = new AvatarSprite(this, this.context.store.getState().avatar.x, this.context.store.getState().avatar.y);
+    this.avatar.sync(this.context.store.getState().avatar); // WORK-037-3: the worn outfit from the first frame (fade-in skips update's sync)
     this.joystick = new Joystick(this, this.context);
     this.subscribeCommon();
     this.subscribeScene();
