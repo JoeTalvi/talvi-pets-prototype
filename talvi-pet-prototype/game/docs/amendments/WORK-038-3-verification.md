@@ -9,7 +9,7 @@
 
 ## Superseded rows
 
-- **VERIFY-WORK-032-2-06** and **VERIFY-WORK-032-2-07** (the 8 × 48 px Stars burst on every gain, ≤ 900 ms): superseded by VERIFY-WORK-038-3-04 (Stars by value, Vitest) and VERIFY-WORK-038-3-12 (the live loop). `tests/ui/starsBurst.test.ts` was rewritten; the `STARS_BURST` constant stays exported (unused) because `tests/view/timings.test.ts` pins the legacy exports.
+- **VERIFY-WORK-032-2-06** and **VERIFY-WORK-032-2-07** (the 8 × 48 px Stars burst on every gain, ≤ 900 ms): superseded by VERIFY-WORK-038-3-04 (Stars by value, Vitest) and VERIFY-WORK-038-3-12 (the live loop). `tests/ui/starsBurst.test.ts` was rewritten; the unused `STARS_BURST` constant and its `tests/view/timings.test.ts` pin were retired in the post-run pass (review WORK-038-3 A4).
 
 ## New rows
 
