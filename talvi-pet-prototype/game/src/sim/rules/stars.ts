@@ -34,7 +34,7 @@ export function afterRoomChange(content: Content, before: GameState, after: Game
   const ref = typeof space === 'string' ? roomRef(space) : space;
   const from = starsOfSpace(content, before, ref).points;
   const { points: to, max } = starsOfSpace(content, after, ref);
-  if (to === from) return [];
+  if (to === from || ref.kind === 'yard') return []; // a yard has no Stars (WORK-035-1)
   return ref.kind === 'room' ? [{ type: 'stars.changed', roomId: ref.roomId, from, to, delta: to - from, max }]
     : [{ type: 'space.stars.changed', siteId: ref.siteId, from, to, delta: to - from, max }];
 }

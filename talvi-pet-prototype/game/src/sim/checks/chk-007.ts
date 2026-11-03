@@ -1,6 +1,7 @@
 import type { Content } from '../../content/types';
 import { pointInPolygon, segmentInPolygon } from '../geometry';
 import { finding, type Finding } from './types';
+import { checkStreetPresence } from './chk-007-street';
 export function check007(c: Content): Finding[] {
     const out: Finding[] = [];
     const add = (n: string, f: string, p: string, msg: string, level: 'error' | 'warning' = 'error') => out.push(finding(`CHK-007-${n}`, level, f, p, msg));
@@ -11,6 +12,7 @@ export function check007(c: Content): Finding[] {
         tags.add(tag);
     }));
     out.push(...checkProfiles(c));
+    out.push(...checkStreetPresence(c)); // WORK-035-1: CHK-007-09..13
     for (const r of Object.values(c.rooms)) {
         const f = `rooms/${r.id}.json`;
         if (r.wanderPoints.length < 2)

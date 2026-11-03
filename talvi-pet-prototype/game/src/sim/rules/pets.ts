@@ -8,6 +8,7 @@ import { ladderFor, typeOf, usingSlotOf, verbEndedOf, verbFor, verbOfTag } from 
 import type { PlacementChange } from './slots';
 import { activeWant } from './wants';
 import { placementsOf, roomRef, scenePet, spaceDef, type SpaceDef, type SpaceRef } from '../space';
+import { streetPets } from './streetPresence';
 
 /** MEC-007 §3 selectors. */
 export function residentPet(content: Content, state: GameState): PetId | null {
@@ -82,7 +83,9 @@ function strippedReaction(step: Step): RuleResult {
 function decide(step: Step): RuleResult {
   const { content, petId } = step;
   // The existing hold: no reaction bubble while a dialogue is open; it waits for a later decide.
-  if (step.state.pets[petId].strippedPending.length > 0 && step.state.dialogue.current === null) return strippedReaction(step);
+  // WORK-035-1: a house pet in its yard does not look for a stripped charm; it waits until it is home again.
+  if (step.ref.kind !== 'yard' && step.state.pets[petId].strippedPending.length > 0 && step.state.dialogue.current === null)
+    return strippedReaction(step);
   const behaviour = step.state.pets[petId].behaviour;
   const list = candidates(step);
   if (list.length === 0) {
@@ -204,10 +207,19 @@ export function stepPet(content: Content, state: GameState, petId: PetId, dtMs: 
   return behaviour.phase === 'using' ? endVerb(step) : afterBubble(step);
 }
 
-/** Core §4 step 4: only the pet sharing the player's scene is stepped — the current interior's resident, or on the
- * street an arrived site's resident (DEC-045, WORK-034-2). */
+/** Core §4 step 4: only the pets sharing the player's scene are stepped — the current interior's resident, or on the
+ * street every street pet (arrived site residents and outside house pets, content order; DEC-045, WORK-035-1). */
 export function stepResidentPet(content: Content, state: GameState, action: TickAction,
   eventsSoFar: readonly SimEvent[]): RuleResult {
+  if (state.scene.kind === 'street') {
+    let current = state;
+    const events: SimEvent[] = [];
+    for (const { petId, ref } of streetPets(content, state)) {
+      const result = stepPet(content, current, petId, action.dtMs, eventsSoFar, ref);
+      current = result.state; events.push(...result.events);
+    }
+    return { state: current, events };
+  }
   const here = scenePet(content, state);
   return here === null ? { state, events: [] } : stepPet(content, state, here.petId, action.dtMs, eventsSoFar, here.ref);
 }

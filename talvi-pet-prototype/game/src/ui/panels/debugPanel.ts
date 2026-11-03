@@ -173,6 +173,8 @@ function renderRows(context: ViewContext, row: (name: string) => HTMLElement, vi
   press(playtest, state.session.eventIntervalMs === content.tuning.eventIntervalMs); press(frozen, state.session.eventIntervalMs === null);
   const [events, trickle] = buttonsOf(row('Feed presentation'));
   press(events, state.session.feedPresentation === 'events'); press(trickle, state.session.feedPresentation === 'trickle');
+  const outside = buttonsOf(row('Pets outside')); // row 23 (WORK-035-1) reflects session.petsOutside
+  (['roll', 'all', 'none'] as const).forEach((mode, i) => press(outside[i], state.session.petsOutside === mode));
 }
 
 type Extras = { noProject: HTMLElement; caption: HTMLElement; sample: HTMLButtonElement; renderReset(confirm: boolean): void };
@@ -236,6 +238,10 @@ function bindDispatchRows(b: Binding): void {
   go('Unlock garden', 0, () => { const id = siteId(); return id ? { type: 'debugUnlockSpace', siteId: id } : null; });
   go('Fill garden', 0, () => { const id = siteId(); return id ? { type: 'debugFillSpace', siteId: id } : null; });
   go('Fulfil active want', 0, () => ({ type: 'debugFulfilActiveWant', petId: row('Fulfil active want').querySelector('select')!.value }));
+  // Row 23 (WORK-035-1, gate Q17): the street presence override; segment order Roll / All out / All in.
+  go('Pets outside', 0, () => ({ type: 'debugSetPetsOutside', mode: 'roll' }));
+  go('Pets outside', 1, () => ({ type: 'debugSetPetsOutside', mode: 'all' }));
+  go('Pets outside', 2, () => ({ type: 'debugSetPetsOutside', mode: 'none' }));
   // Row 25 "Outfits" (WORK-037-2, gate Q17): wear any known outfit regardless of its lock; found by label, not index.
   go('Outfits', 0, () => ({ type: 'debugSetOutfit', outfitId: row('Outfits').querySelector('select')!.value }));
   go('Feed presentation', 0, () => ({ type: 'debugSetFeedPresentation', mode: 'events' }));

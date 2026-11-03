@@ -42,6 +42,7 @@ export const GameStateSchema = z.object({
   session: z.object({
     seed: z.number(), eventIntervalMs: z.number().nullable(), feedPresentation: z.enum(['events', 'trickle']),
     starsVisible: z.boolean(), muted: z.boolean(), testerLabel: z.string(), orientationShown: z.boolean(),
+    petsOutside: z.enum(['roll', 'all', 'none']).default('roll'), // WORK-035-1: additive, schemaVersion stays 2
   }),
   scene: z.union([z.object({ kind: z.literal('street') }), z.object({ kind: z.literal('interior'), roomId: z.string() })]),
   avatar: z.object({ x: z.number(), y: z.number(), facing: FacingSchema, immunityMs: z.number(),
@@ -61,6 +62,7 @@ export const GameStateSchema = z.object({
   rooms: z.record(z.string(), z.object({ placements: z.record(z.string(), z.string()) })),
   spaces: z.record(z.string(), z.object({ unlocked: z.boolean(), placements: z.record(z.string(), z.string()), arrivalDone: z.boolean() })),
   pets: z.record(z.string(), PetSchema),
+  streetVisits: z.number().int().min(0).default(0), // WORK-035-1: additive, schemaVersion stays 2
 });
 
 /** The save wrapper version; every other version (all tier 1 saves are 1) is discarded, no migration. */

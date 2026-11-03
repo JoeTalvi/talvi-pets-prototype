@@ -31,7 +31,8 @@ export type Action =
   | { type: 'debugSetMuted'; on: boolean }
   | { type: 'debugSetTesterLabel'; text: string }
   | { type: 'debugSetOutfit'; outfitId: OutfitId }         // WORK-037-2: debug row 25 "Outfits"
-  | { type: 'reset'; seed?: number };
+  | { type: 'reset'; seed?: number }
+  | { type: 'debugSetPetsOutside'; mode: 'roll' | 'all' | 'none' }; // WORK-035-1: MEC-010 row 23 "Pets outside" 
 
 export type TickAction = Extract<Action, { type: 'tick' }>;
 export type SceneAction = Extract<Action, { type: 'tick' | 'setDesignMode' }>;

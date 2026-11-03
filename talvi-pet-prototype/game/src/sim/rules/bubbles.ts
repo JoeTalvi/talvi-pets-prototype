@@ -4,6 +4,7 @@ import type { RuleResult, SimEvent } from '../events';
 import type { GameState, PetId, TagId } from '../state';
 import { petPick } from './petBehaviour';
 import { scenePet } from '../space';
+import { streetPets } from './streetPresence';
 import { missingWantTags, wantConditions } from './wants';
 
 function withTimer(state: GameState, petId: PetId, wantBubbleInMs: number): GameState {
@@ -57,7 +58,10 @@ export function afterWantActivated(content: Content, before: GameState, current:
 /** MEC-008 §2.3 `tapPet`: preconditions in core §2 order; never changes `behaviour`. */
 export function tapPet(content: Content, state: GameState, action: Extract<Action, { type: 'tapPet' }>): RuleResult {
   const reject = (reason: string): RuleResult => ({ state, events: [{ type: 'action.rejected', action, reason }] });
-  if (scenePet(content, state)?.petId !== action.petId) return reject('petNotHere');
+  // WORK-035-1 (fork (c)): on the street any street pet answers a tap (the want bubble countdown stays scenePet's).
+  const here = state.scene.kind === 'street' ? streetPets(content, state).some(pet => pet.petId === action.petId)
+    : scenePet(content, state)?.petId === action.petId;
+  if (!here) return reject('petNotHere');
   if (state.dialogue.current !== null) return reject('dialogueOpen');
   if (state.celebration !== null) return reject('celebrationActive');
   const petId = action.petId;

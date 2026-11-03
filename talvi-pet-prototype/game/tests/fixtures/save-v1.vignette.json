@@ -10,7 +10,8 @@
       "starsVisible": true,
       "muted": false,
       "testerLabel": "",
-      "orientationShown": true
+      "orientationShown": true,
+      "petsOutside": "roll"
     },
     "scene": {
       "kind": "interior",
@@ -157,6 +158,7 @@
         "heartCharms": [],
         "strippedPending": []
       }
-    }
+    },
+    "streetVisits": 0
   }
 }

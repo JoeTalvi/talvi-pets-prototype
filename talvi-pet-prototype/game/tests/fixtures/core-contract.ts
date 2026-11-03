@@ -13,7 +13,7 @@ export const actionNames = [
   'cutsceneFinished', 'collectRewards', 'skipWait', 'closeReveal', 'arrivalFinished',
   'advanceDialogue', 'tapPet', 'debugSimulatePurchase', 'debugSetEventInterval',
   'debugSetFeedPresentation', 'debugSetSeed', 'debugSetCurrent', 'debugJumpPhase',
-  'debugCompleteProject', 'debugUnlockAllTypes', 'debugGrantCopies', 'debugUnlockSpace', 'debugFillSpace', 'debugFulfilActiveWant', 'debugSetStarsVisible', 'debugSetMuted',
+  'debugCompleteProject', 'debugUnlockAllTypes', 'debugGrantCopies', 'debugUnlockSpace', 'debugFillSpace', 'debugFulfilActiveWant', 'debugSetPetsOutside', 'debugSetStarsVisible', 'debugSetMuted',
   'debugSetTesterLabel', 'reset', 'chooseOutfit', 'debugSetOutfit',
 ] as const;
 export const eventNames = [
@@ -22,7 +22,7 @@ export const eventNames = [
   'want.fulfilled', 'heart.earned', 'wants.exhausted', 'items.granted', 'verb.unlocked',
   'roundup.fired', 'phase.reached', 'feed.stopped', 'celebration.started', 'celebration.stepped',
   'completeNow.shown', 'completeNow.taken', 'rewards.collected', 'project.completed',
-  'celebration.ended', 'arrival.started', 'arrival.finished', 'space.stars.changed', 'space.unlocked', 'space.arrivalStarted', 'pet.arrived', 'pet.reacted', 'pet.phaseChanged',
+  'celebration.ended', 'arrival.started', 'arrival.finished', 'space.stars.changed', 'space.unlocked', 'space.arrivalStarted', 'pet.arrived', 'pet.outside', 'pet.reacted', 'pet.phaseChanged',
   'pet.verbStarted', 'pet.verbEnded', 'pet.wantBubble', 'pet.tapped', 'dialogue.opened',
   'dialogue.advanced', 'dialogue.closed', 'audio.muteChanged', 'outfit.unlocked', 'outfit.changed',
   'debug.applied', 'state.reset', 'action.rejected',
@@ -33,5 +33,5 @@ export const selectorNames = [
   'ackFloorCents', 'attentionVisible', 'displayedPhase', 'typeUnlockPhase',
   'revealProjectId', 'revealView', 'revealPopupView', 'chooserTypes', 'copiesOf', 'ownsTag',
   'slotOf', 'placementAt', 'starsOf', 'activeWant', 'wantConditions', 'tagAvailability', 'missingWantTags', 'unlockedOutfitIds',
-  'starsOfSpace', 'scenePet', 'playerSpace', 'homeSpaceOf',
+  'starsOfSpace', 'scenePet', 'playerSpace', 'homeSpaceOf', 'streetPets',
 ] as const;

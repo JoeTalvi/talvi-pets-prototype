@@ -22,6 +22,11 @@
     "y": 910,
     "facing": "down"
   },
+  "meetingPoint": {
+    "id": "street-meet",
+    "x": 780,
+    "y": 950
+  },
   "houses": [
     {
       "projectId": "starter-house",
@@ -74,10 +79,22 @@
       ],
       "blockers": [
         {
-          "x": 629,
+          "x": 400,
           "y": 780,
-          "w": 329,
+          "w": 558,
           "h": 100
+        }
+      ],
+      "wanderPoints": [
+        {
+          "id": "starter-w1",
+          "x": 650,
+          "y": 948
+        },
+        {
+          "id": "starter-w2",
+          "x": 1010,
+          "y": 935
         }
       ]
     },
@@ -132,10 +149,22 @@
       ],
       "blockers": [
         {
-          "x": 1445,
+          "x": 1200,
           "y": 780,
-          "w": 314,
+          "w": 559,
           "h": 160
+        }
+      ],
+      "wanderPoints": [
+        {
+          "id": "pet-w1",
+          "x": 1300,
+          "y": 948
+        },
+        {
+          "id": "pet-w2",
+          "x": 1700,
+          "y": 948
         }
       ]
     }
@@ -3865,8 +3894,12 @@
       "residentPetId": "owl-mate",
       "arrivalPath": [
         {
-          "x": 90,
-          "y": 940
+          "x": 960,
+          "y": 945
+        },
+        {
+          "x": 330,
+          "y": 945
         },
         {
           "x": 160,
