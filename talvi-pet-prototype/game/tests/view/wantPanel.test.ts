@@ -2,7 +2,10 @@
 import './setup';
 import { readFileSync } from 'node:fs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { destroyScene } from './sceneHarness';
+import { contextFor, destroyScene } from './sceneHarness';
+import { loadContent } from '../../src/content/load';
+import { parseSaveValue } from '../../src/sim/state.schema';
+import { createWantPanel } from '../../src/ui/panels/wantPanel';
 import { click, designSetup, linesOf } from './designHarness';
 import type { GameState } from '../../src/sim/state';
 import { HEART_ARRIVED } from '../../src/view/celebration/heartMoment';
@@ -104,5 +107,29 @@ describe('VERIFY-MEC-009-026 "n charms" reward labels (DEC-043)', () => {
       expect(want.rewardLabel.length).toBeLessThanOrEqual(40);
     }
     expect(real('owl').wants[1].rewardLabel).toBe('Garden + Potted Tree, Night Light');
+  });
+});
+
+// --- WORK-036-2 (DEC-046): the `greeted` pill ---
+describe('VERIFY-WORK-036-2-06 the greeted pill (MEC-009 panel states; fork 4)', () => {
+  it('036-2-06 the mate\'s active want 3: "☐ Say hello to <Owl>"; fulfilled: "✓ Say hello to <Owl>" and no adjacency pill', () => {
+    const real = loadContent();
+    const loaded = parseSaveValue(real, JSON.parse(readFileSync('tests/view/capture/mate-arrived.real.json', 'utf8'))) as { state: GameState };
+    const state = structuredClone(loaded.state);
+    const mate = state.pets['owl-mate'];
+    mate.fulfilledWantIds = real.pets['owl-mate'].wants.slice(0, 2).map(w => w.id); mate.hearts = 2;
+    state.mode = 'design'; state.dialogue = { current: null, queue: [] };
+    const context = contextFor(real, state);
+    const root = document.createElement('div'); document.body.append(root);
+    createWantPanel(root, context);
+    const owl = real.pets.owl.name;
+    const read = () => [...root.querySelectorAll<HTMLElement>('.tpp-wantPanel .tpp-tag')].map(p => [p.textContent!.trim(), p.classList.contains('done')]);
+    expect(real.strings['tpp.want.greeted']).toBe('Say hello to {pet}');
+    expect(read()).toEqual([[`☐ Say hello to ${owl}`, false]]);
+    context.store.dispatch({ type: 'debugFulfilActiveWant', petId: 'owl-mate' });
+    expect(linesOf(context, 'want.fulfilled').at(-1)).toEqual(expect.objectContaining({ petId: 'owl-mate', wantId: 'greet-the-owl' }));
+    expect(context.store.getState().dialogue.current).not.toBeNull();
+    expect(read()).toEqual([[`✓ Say hello to ${owl}`, true]]);
+    expect(root.querySelector('.tpp-wantPanel')!.textContent).not.toContain('beside each other');
   });
 });
