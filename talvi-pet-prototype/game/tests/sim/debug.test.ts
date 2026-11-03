@@ -2,7 +2,10 @@ import { expect, it } from 'vitest';
 import type { Action } from '../../src/sim/actions';
 import { reduce } from '../../src/sim/reduce';
 import { chooserTypes } from '../../src/sim/select';
-import { initialState } from '../../src/sim/state';
+import { initialState, type GameState } from '../../src/sim/state';
+import { loadContent } from '../../src/content/load';
+import { readFileSync } from 'node:fs';
+import { parseSaveValue } from '../../src/sim/state.schema';
 import { validContent } from '../content/helpers';
 import { advance, deepFreeze, eventsOf, orientationDone, owing, realContent, run } from './helpers';
 
@@ -145,4 +148,22 @@ it('VERIFY-MEC-010-008 reset {seed:42} after progress equals initialState(conten
   expected.session.testerLabel = 'T9';
   expect(state).toEqual(expected);
   expect(run(content, progressed, [{ type: 'reset' }]).state.session.seed).toBe(1);
+});
+
+it('VERIFY-WORK-036-1-10 debugGreetNow greets the closest street pair at any distance and with a running cooldown; notOnStreet; noPair', () => {
+  const content = loadContent();
+  const loaded = parseSaveValue(content, JSON.parse(readFileSync('tests/view/capture/mate-arrived.real.json', 'utf8')));
+  const mate = (loaded as { state: GameState }).state;
+  const pets = { ...mate.pets, owl: { ...mate.pets.owl, introduced: true, hearts: 1, fulfilledWantIds: [content.pets.owl.wants[0].id] } };
+  let state = reduce(content, { ...mate, pets }, { type: 'debugSetPetsOutside', mode: 'all' }).state;
+  state = { ...state, greetings: { 'owl-mate|owl': { cooldownMs: 50000 } } };
+  const greet: Action = { type: 'debugGreetNow' };
+  const result = reduce(content, state, greet);
+  expect(result.events[0]).toEqual({ type: 'debug.applied', action: greet });
+  expect(result.events.find(event => event.type === 'greeting.played')).toMatchObject({ petA: 'owl-mate', petB: 'owl' });
+  expect(result.state.greetings['owl-mate|owl'].cooldownMs).toBe(content.tuning.greetCooldownMs);
+  expect([result.state.pets['owl-mate'].behaviour.phase, result.state.pets.owl.behaviour.phase]).toEqual(['meeting', 'meeting']);
+  const inside: GameState = { ...state, scene: { kind: 'interior', roomId: Object.keys(content.rooms)[0] } };
+  expect(reduce(content, deepFreeze(inside), greet)).toEqual({ state: inside, events: [{ type: 'action.rejected', action: greet, reason: 'notOnStreet' }] });
+  expect(reduce(content, deepFreeze(mate), greet)).toEqual({ state: mate, events: [{ type: 'action.rejected', action: greet, reason: 'noPair' }] });
 });
