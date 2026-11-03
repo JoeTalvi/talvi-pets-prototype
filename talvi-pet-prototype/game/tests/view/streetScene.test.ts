@@ -180,36 +180,37 @@ describe('VERIFY-MEC-002-028 street icon hidden states', () => {
 });
 
 // --- WORK-036-2 (DEC-046, spec §10): the greeting beat on the street ---
+const real = loadContent();
+const SHEETS = ['dog', 'owl', 'owl-mate'].map(id => realManifest.entries.find(e => e.id === `pets/${id}-sheet`)!);
+type Syncable = { syncScene(ms: number): void };
+const runFor = (scene: StreetScene, ms: number) => { for (let t = 0; t < ms; t += 10) (scene as unknown as Syncable).syncScene(10); };
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+async function realStreet(state: GameState) {
+  const context = contextFor(real, state);
+  context.manifest = realManifest;
+  const scene = await bootScene(StreetScene, context, {}, ['world/site-garden-empty', 'world/site-garden-base']);
+  for (const sheet of SHEETS) addTexture(scene, sheet.id, sheet.px!.w, sheet.px!.h, sheet.frame);
+  scene.cameras.main.emit('camerafadeincomplete');
+  return { context, scene };
+}
+/** Dog and Owl at one Heart, the mate arrived, then every pet outside (WORK-035-2's allOut). */
+async function allOut() {
+  const start = initialState(real, 1);
+  start.pets.dog.hearts = 1; start.pets.owl.hearts = 1;
+  const first = await realStreet(start);
+  first.context.store.dispatch({ type: 'debugUnlockSpace', siteId: 'garden' });
+  first.context.store.dispatch({ type: 'debugFillSpace', siteId: 'garden' });
+  runFor(first.scene, first.scene.arrival!.plan.finishMs + 20);
+  const after = { ...first.context.store.getState(), dialogue: { current: null, queue: [] } };
+  destroyScene();
+  const booted = await realStreet(after);
+  booted.context.store.dispatch({ type: 'debugSetPetsOutside', mode: 'all' });
+  return booted;
+}
+
 describe('VERIFY-WORK-036-2-03 / -04 the greeting beat on the street pets', () => {
-  const real = loadContent();
-  const SHEETS = ['dog', 'owl', 'owl-mate'].map(id => realManifest.entries.find(e => e.id === `pets/${id}-sheet`)!);
-  type Syncable = { syncScene(ms: number): void };
-  const runFor = (scene: StreetScene, ms: number) => { for (let t = 0; t < ms; t += 10) (scene as unknown as Syncable).syncScene(10); };
-  const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
   beforeEach(() => { directorClock.create = () => ({ now: () => 0, after: () => () => {} }); });
   afterEach(() => { directorClock.create = phaserClock; });
-  async function realStreet(state: GameState) {
-    const context = contextFor(real, state);
-    context.manifest = realManifest;
-    const scene = await bootScene(StreetScene, context, {}, ['world/site-garden-empty', 'world/site-garden-base']);
-    for (const sheet of SHEETS) addTexture(scene, sheet.id, sheet.px!.w, sheet.px!.h, sheet.frame);
-    scene.cameras.main.emit('camerafadeincomplete');
-    return { context, scene };
-  }
-  /** Dog and Owl at one Heart, the mate arrived, then every pet outside (WORK-035-2's allOut). */
-  async function allOut() {
-    const start = initialState(real, 1);
-    start.pets.dog.hearts = 1; start.pets.owl.hearts = 1;
-    const first = await realStreet(start);
-    first.context.store.dispatch({ type: 'debugUnlockSpace', siteId: 'garden' });
-    first.context.store.dispatch({ type: 'debugFillSpace', siteId: 'garden' });
-    runFor(first.scene, first.scene.arrival!.plan.finishMs + 20);
-    const after = { ...first.context.store.getState(), dialogue: { current: null, queue: [] } };
-    destroyScene();
-    const booted = await realStreet(after);
-    booted.context.store.dispatch({ type: 'debugSetPetsOutside', mode: 'all' });
-    return booted;
-  }
 
   it('036-2-03 greeting.played with both drawn → one beat on their bubbles (A at once, B after GREET.offsetMs); one pet not drawn → no throw; a second greeting of the same pet cancels the first; interiors have no greeting hook', async () => {
     const { context, scene } = await allOut();
