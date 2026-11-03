@@ -1,0 +1,14 @@
+# Amendment: presentation.md — the street draws every street pet (WORK-035-2; DEC-045)
+
+- Date: 2026-11-03. Lane WORK-035-2, RUN-005, task TASK-257. As built at 0f35bdf (base 855c2e5, the gated WORK-035-1 head).
+
+| Section | Was (855c2e5) | Now |
+|---|---|---|
+| §4 Street scene, pets | One sprite: the arrived site resident (`StreetScene.pet` / `.bubble`, built by `ensurePet()` from `scenePet`) | One `PetSprite` + `Bubble` per id in `streetPets(content, state)` (content order), held by `StreetPetLayer` (`src/view/scenes/streetPets.ts`) as `StreetScene.streetPets.pets: Map<PetId, { sprite, bubble }>`. A site resident is drawn only once `state.siteArrival === null` (unchanged hand-over from the arrival walk). |
+| §4 Street scene, re-sync | `pet.arrived`, `space.unlocked`, `debug.applied` | The set is rebuilt from state on scene start (`create` → `refreshSites`), `space.unlocked`, `debug.applied`, `pet.arrived` and `pet.outside`; `state.reset` restarts the scene. A pet leaving the set has its sprite and bubble destroyed in the same dispatch; a pet joining appears at its `behaviour` position. No fade and no dust either way (§C untouched; never drawn in two places). |
+| §6 Depth | The one street pet at `depthAtBase(y)` | Every street pet syncs to its `behaviour` each frame (`PetSprite.sync`): depth = base y, so pets order among themselves and against houses by base y (e.g. the Owl at y 948 draws in front of the Pet House at depth 940). Clips and the bubble's pending text follow `pet.phaseChanged` for the matching `petId` only. |
+| Street tap order (WORK-034-3 amendment) | outline → the mate's bubble → the mate → house → world | outline → the **frontmost** bubble containing the point (highest depth; bubble depth = 8000 + the pet's `content.pets` index) → the **frontmost** street pet containing the point (highest depth = largest base y; a tie goes to the later pet in `streetPets` order) → house → world. Log targets unchanged in form: `bubble:<petId>`, `pet:<petId>` name the hit pet. A pet tap dispatches `tapPet { petId }` for any street pet (WORK-035-1 fork (c)). |
+| Bubble routing seam | `WorldScene.petBubble(): Bubble \| undefined` | `WorldScene.petBubble(petId?: string)`; the shared subscriptions (`pet.reacted`, `pet.verbStarted/Ended`, `pet.wantBubble`, `pet.tapped`) call `this.petBubble(petId)`. `StreetScene.petBubble(petId)` returns that pet's bubble; `InteriorScene`'s zero-argument override is unchanged. |
+| Compatibility | `StreetScene.pet` / `.bubble` fields | Read-only getters returning the arrived site resident's sprite / bubble (or `undefined`), for `m3-trace.mjs` `siteView()` and the existing view tests. |
+
+- Two pets can stand on the same point (`street-meet`, WORK-035-1 fork (g)); equal depth then draws them in creation order. No offset or avoidance is added here.
