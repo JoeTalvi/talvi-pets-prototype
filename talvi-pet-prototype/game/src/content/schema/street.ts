@@ -8,7 +8,9 @@ export const BlockerSchema = z.object({
 });
 export const HouseSchema = PointSchema.extend({
     projectId: Id, stageSprites: z.array(AssetId).length(6), door: DoorSchema, attentionAnchor: PointSchema, arrivalPath: z.array(PointSchema),
-    blockers: z.array(BlockerSchema).default([])
+    blockers: z.array(BlockerSchema).default([]),
+    // WORK-035-1 (DEC-045): the house pet's two street wander points; optional for fixtures, CHK-007-09 requires them
+    wanderPoints: z.array(PointSchema.extend({ id: Id })).length(2).optional()
 });
 /** WORK-034-2 (DEC-044): one pre-placed outdoor site; small/large slots only, two wander points, a space-homed resident. */
 export const SiteSchema = z.object({
@@ -25,7 +27,10 @@ export const StreetSchema = z.object({
     })), props: z.array(PointSchema.extend({
         sprite: AssetId
     })),
-    sites: z.array(SiteSchema).default([])
+    sites: z.array(SiteSchema).default([]),
+    // WORK-035-1 (gate Q1(a)): the one shared meeting point every street pet also wanders to (CHK-007-10)
+    meetingPoint: PointSchema.extend({ id: Id }).optional()
 });
 export type Site = z.infer<typeof SiteSchema>;
+export type House = z.infer<typeof HouseSchema>;
 export type Street = z.infer<typeof StreetSchema>;
