@@ -7,6 +7,7 @@ import type { GameState } from '../../src/sim/state';
 import { initialState } from '../../src/sim/state';
 import { streetPets } from '../../src/sim/select';
 import { StreetScene, type ScenePointer } from '../../src/view/scenes/StreetScene';
+import { StreetPetLayer } from '../../src/view/scenes/streetPets';
 import { directorClock, phaserClock } from '../../src/view/celebration/CelebrationDirector';
 import { addTexture, bootScene, contextFor, destroyScene, realManifest } from './sceneHarness';
 import { linesOf } from './designHarness';
@@ -85,6 +86,17 @@ describe('VERIFY-WORK-035-2-01 one sprite per street pet, kept equal to streetPe
     const behaviour = again.context.store.getState().pets.owl.behaviour;
     expect([owl.x, owl.y]).toEqual([behaviour.x, behaviour.y]);
     expect(['dog', 'owl', 'owl-mate'].map(id => sprites(again.scene, id))).toEqual([1, 1, 1]);
+  });
+
+  it('WORK-035-2 A3: the layer has no clear(); each scene start builds a fresh layer and Phaser\'s shutdown destroys the old sprites', async () => {
+    expect(Object.getOwnPropertyNames(StreetPetLayer.prototype)).not.toContain('clear');
+    const { context, scene } = await allOut();
+    const old = scene.streetPets, sprite = old.pets.get('dog')!.sprite;
+    scene.scene.restart();
+    await new Promise(resolve => setTimeout(resolve, 50));
+    expect(sprite.active).toBe(false);
+    expect(scene.streetPets).not.toBe(old);
+    expect(drawn(scene)).toEqual(streetPets(content, context.store.getState()).map(p => p.petId));
   });
 
   it('before the mate\'s arrival no mate sprite (mid-walk); state.reset rebuilds the set', async () => {

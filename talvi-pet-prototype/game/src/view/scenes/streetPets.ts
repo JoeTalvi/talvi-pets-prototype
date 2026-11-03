@@ -89,9 +89,4 @@ export class StreetPetLayer {
     if (event.to === 'reacting' || event.to === 'greeting') pet.bubble.releasePending();
     else if (event.to !== 'walking') pet.bubble.dropPending();
   }
-
-  clear(): void {
-    for (const { sprite, bubble } of this.pets.values()) { sprite.destroy(); bubble.destroy(); }
-    this.pets.clear();
-  }
 }
