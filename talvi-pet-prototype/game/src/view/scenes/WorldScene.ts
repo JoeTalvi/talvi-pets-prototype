@@ -100,14 +100,20 @@ export abstract class WorldScene extends Phaser.Scene {
   syncDesignTint(state: Pick<GameState, 'mode'>): void { this.designTint.setOn(state.mode === 'design'); }
 
   /** The scene's pet bubble, if it shows a pet (Interior: the resident; Street: the arrived site resident, WORK-034-3). */
-  protected petBubble(): Bubble | undefined { return undefined; }
-  /** The scene's pet sprite: Interior and Street both expose a public `pet` field (read structurally; InteriorScene is not this lane's). */
-  private scenePetSprite(): PetSprite | undefined { return (this as { pet?: PetSprite }).pet; }
+  protected petBubble(petId?: string): Bubble | undefined { void petId; return undefined; }
+  /**
+   * The sprite of pet `petId` in this scene, for the love hop. Default: the scene's public `pet` field (read structurally;
+   * InteriorScene). StreetScene overrides it to look the pet up by id in its street-pet layer (integration, review WORK-035-2-1 A8).
+   */
+  protected petSprite(petId: string): PetSprite | undefined {
+    const pet = (this as { pet?: PetSprite }).pet;
+    return pet?.petId === petId ? pet : undefined;
+  }
 
   /** DEC-049 §9 love: the pet hops `LOVE_HOP_PX` over `REACT.hopMs` (by its origin, so the per-frame position sync keeps it). */
   private hopPet(petId: string): void {
-    const pet = this.scenePetSprite();
-    if (!pet || pet.petId !== petId || !pet.active) return;
+    const pet = this.petSprite(petId);
+    if (!pet || !pet.active) return;
     const ox = pet.originX, oy = pet.originY, lift = LOVE_HOP_PX / Math.max(1, pet.displayHeight);
     this.tweens.addCounter({ from: 0, to: 1, duration: REACT.hopMs, onUpdate: t => {
       if (pet.active) pet.setOrigin(ox, oy + lift * Math.sin((t.getValue() ?? 0) * Math.PI));
@@ -141,7 +147,7 @@ export abstract class WorldScene extends Phaser.Scene {
   protected subscribePetBubbles(): void {
     const { content } = this.context;
     const text = textFrom(content.strings);
-    const mine = (petId: string) => { const bubble = this.petBubble(); return bubble && bubble.petId === petId ? bubble : undefined; };
+    const mine = (petId: string) => { const bubble = this.petBubble(petId); return bubble && bubble.petId === petId ? bubble : undefined; };
     const name = (petId: string) => content.pets[petId]?.name ?? petId;
     this.on('pet.reacted', event => {
       const bubble = mine(event.petId);
