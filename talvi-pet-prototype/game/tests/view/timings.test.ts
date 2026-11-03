@@ -8,7 +8,7 @@ const rows: [string, unknown, unknown][] = [
     ['ROUNDUP.flightMs', [T.ROUNDUP.flightMs, T.ROUNDUP_BIGGER.flightMs], [450, 450]],
     ['ROUNDUP.glowMs', [T.ROUNDUP.glowMs, T.ROUNDUP_BIGGER.glowMs], [300, 300]],
     ['PHASE.punchMs', [T.PHASE.punchMs, T.PHASE_BIGGER.punchMs], [260, 260]],
-    ['PHASE.sparkles', [T.PHASE.sparkles, T.PHASE.confetti, T.PHASE_BIGGER.sparkles, T.PHASE_BIGGER.confetti], [24, 0, 24, 60]],
+    ['PHASE.sparkles', [T.PHASE.sparkles, T.PHASE.confetti, T.PHASE_BIGGER.sparkles, T.PHASE_BIGGER.confetti], [24, null, 24, 60]],
     ['PHASE.cameraPunch', [T.PHASE.cameraPunch, T.PHASE_BIGGER.cameraPunch], [null, { zoom: 1.04, inMs: 120, backMs: 200 }]],
     ['PHASE.collectStaggerMs', [T.PHASE.collectStaggerMs, T.PHASE_BIGGER.collectStaggerMs], [120, 120]],
     ['CARD.flipMs', [T.CARD.flipMs, T.CARD_BIGGER.flipMs], [320, 320]],
