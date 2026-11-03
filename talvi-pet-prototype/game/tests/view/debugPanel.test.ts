@@ -420,7 +420,7 @@ describe('mec-010 §3 row 19 Grant copies (TEST-002 arm)', () => {
   it('VERIFY-MEC-010-017 (new) — row 19 "Grant copies" follows rows 1–18 (labels and order unchanged); select in catalogue order by name, count 1..9 default 1; Grant dispatches debugGrantCopies', async () => {
     const s = await setup(); open(s);
     const labels = [...panelOf(s.root).querySelectorAll('.tpp-debug-row > label')].map(l => l.textContent);
-    expect(labels).toEqual([...ROWS_1_18, 'Grant copies', 'Unlock garden', 'Fill garden', 'Fulfil active want']); // WORK-034-2 appends 20–22
+    expect(labels).toEqual([...ROWS_1_18, 'Grant copies', 'Unlock garden', 'Fill garden', 'Fulfil active want', 'Pets outside']); // WORK-034-2 appends 20–22; WORK-035-1 row 23
     const select = rowOf(s.root, 'Grant copies').querySelector('select')!;
     expect([...select.options].map(o => [o.value, o.textContent])).toEqual(content.charms.types.map(t => [t.id, t.name]));
     const count = rowOf(s.root, 'Grant copies').querySelector<HTMLInputElement>('input')!;
@@ -444,6 +444,21 @@ describe('mec-010 §3 row 19 Grant copies (TEST-002 arm)', () => {
     select.value = select.options[0].value;
     click(buttons(s.root, 'Fulfil active want')[0]);
     expect(dispatch.mock.calls.map(c => c[0])).toEqual([{ type: 'debugFulfilActiveWant', petId: select.options[0].value }]);
+  });
+
+  it('VERIFY-WORK-035-1-07 panel half — row 23 "Pets outside" after row 22: Roll / All out / All in dispatch debugSetPetsOutside and reflect session.petsOutside', async () => {
+    const s = await setup(); open(s);
+    const labels = [...panelOf(s.root).querySelectorAll('.tpp-debug-row > label')].map(l => l.textContent);
+    expect(labels.indexOf('Pets outside')).toBe(labels.indexOf('Fulfil active want') + 1);
+    const segment = () => buttons(s.root, 'Pets outside');
+    expect(segment().map(b => b.textContent)).toEqual(['Roll', 'All out', 'All in']);
+    expect(segment().map(b => b.getAttribute('aria-pressed'))).toEqual(['true', 'false', 'false']);
+    const dispatch = vi.spyOn(s.context.store, 'dispatch');
+    click(segment()[1]); click(segment()[2]); click(segment()[0]); click(segment()[1]);
+    expect(dispatch.mock.calls.map(c => c[0])).toEqual(['all', 'none', 'roll', 'all'].map(mode => ({ type: 'debugSetPetsOutside', mode })));
+    expect(s.context.store.getState().session.petsOutside).toBe('all');
+    expect(segment().map(b => b.getAttribute('aria-pressed'))).toEqual(['false', 'true', 'false']);
+    expect(linesOf(s.context, 'debug.applied').at(-1)).toMatchObject({ action: { type: 'debugSetPetsOutside', mode: 'all' } });
   });
 
   it('VERIFY-MEC-010-017 (new) — a count outside 1..9 is rejected by the sim and shown under the row', async () => {
