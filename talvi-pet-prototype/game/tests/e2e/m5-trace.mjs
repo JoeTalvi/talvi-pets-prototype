@@ -6,13 +6,14 @@
 // Beats: 1 boot → 2 roll (out of the Dog room) → 3 "All out" (three sprites, depth, taps) → 4 meeting point → 5 never in two places →
 // 6 "All in" / "Roll" → 7 reload; then the 1920×823 window (still + wander loop). WORK-037-3 / WORK-036-2 extend the marked section at the end.
 // Exports for later lanes: beat, still, mark, streetView, rowButton, SEED (see the bottom of the file).
-import { existsSync, readFileSync, writeFileSync, rmSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import { GAME_DIR, base, evidenceRoot, sha, launch, boot, waitScene, lines, getState, steer, shot, encode,
   startStreamRecording, domRead, errorsSummary, writeJson, setDebug, WORK, MILESTONE } from './lib/harness.mjs';
 import { greetingBeats, greetingLoops } from './lib/m5-greeting.mjs';
 
+mkdirSync(evidenceRoot, { recursive: true }); // review WORK-036-2-1 A3: a cold evidence folder must not ENOENT
 const loopsDir = join(evidenceRoot, '..', 'loops'), stillsDir = join(evidenceRoot, '..', 'stills');
 export const SEED = join(evidenceRoot, 'm5-seed.real.json');
 const SEED_STEPS = join(evidenceRoot, 'm5-seed.steps.json');
@@ -255,8 +256,13 @@ beat('zero console and page errors in the trace window', clean, 'none', report.e
 report.captured_at = new Date().toISOString();
 report.elapsedMs = Date.now() - traceStart;
 report.marks = Object.fromEntries(Object.entries(marks).map(([k, v]) => [k, new Date(v).toISOString()]));
+await browser.close();
+// int-MILESTONE-011 union (6): the WORK-037-3 outfit beats (tests/e2e/m5-outfit.mjs) run after the greeting beats, in their own
+// session seeded from ack-phase-4 (the outfits need an incomplete Pet House), so one m5 run covers roll, override, meeting point,
+// greeting and outfits. One browser at a time: this trace's browser is closed first. Report: <TPP_EVIDENCE>/m5/trace-report.json.
+const outfitRun = spawnSync(process.execPath, [join(GAME_DIR, 'tests/e2e/m5-outfit.mjs')], { cwd: GAME_DIR, env: process.env, stdio: 'inherit' });
+beat('WORK-037-3 outfit beats (m5-outfit.mjs) pass', outfitRun.status === 0, 'exit 0', { status: outfitRun.status, report: join(evidenceRoot, 'm5', 'trace-report.json') });
 report.ok = beats.every(b => b.ok);
 writeJson(join(evidenceRoot, 'trace-report.json'), report);
-await browser.close();
 console.log(JSON.stringify({ ok: report.ok, elapsedMs: report.elapsedMs, failed: beats.filter(b => !b.ok).map(b => b.beat), loops: report.loops.map(l => [l.name, !!l.outputs]) }, null, 1));
 process.exit(report.ok ? 0 : 1);
