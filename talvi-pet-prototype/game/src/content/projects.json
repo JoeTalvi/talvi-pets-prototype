@@ -23,6 +23,7 @@
       "causeName": "Pet Shelters",
       "goalCents": 1500,
       "completeAtStart": false,
+      "completionOutfitId": "cosy",
       "interiorRoomId": "owl-room",
       "residentPetId": "owl",
       "phaseRewards": [

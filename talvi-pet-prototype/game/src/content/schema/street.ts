@@ -17,7 +17,9 @@ export const SiteSchema = z.object({
     slots: z.array(SlotSchema.refine(slot => slot.sizeClass !== 'wall', 'site slots are small or large (DEC-044)')),
     wanderPoints: z.array(PointSchema.extend({ id: Id })).length(2),
     petSpawn: AnchorSchema, residentPetId: Id, arrivalPath: z.array(PointSchema).min(1),
-    arrivalAtStars: z.number().int().positive()
+    arrivalAtStars: z.number().int().positive(),
+    // WORK-037-2 (DEC-047): the outfit the resident's arrival grants; absent = none
+    arrivalOutfitId: Id.optional()
 });
 export const StreetSchema = z.object({
     walkArea: z.array(PointSchema), playerSpawn: SpawnSchema, houses: z.array(HouseSchema), groundTiles: z.array(PointSchema.extend({

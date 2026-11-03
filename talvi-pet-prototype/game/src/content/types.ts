@@ -9,6 +9,7 @@ import type { Merchant } from './schema/merchant';
 import type { Dialogue } from './schema/dialogue';
 import type { Strings } from './schema/strings';
 import type { Tuning } from './schema/tuning';
+import type { Outfit } from './schema/outfits';
 export type Content = {
     tags: Tags['tags'];
     charms: Charms;
@@ -21,6 +22,7 @@ export type Content = {
     dialogue: Dialogue;
     strings: Strings;
     tuning: Tuning;
+    outfits: Outfit[]; // WORK-037-2: content order; [] when outfits.json is absent (pre-tier-2 fixtures)
 };
 export type ContentFiles = Record<string, unknown>;
 export type ContentIssue = {

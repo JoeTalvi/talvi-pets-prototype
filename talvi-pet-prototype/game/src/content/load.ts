@@ -10,6 +10,7 @@ import { MerchantsSchema } from './schema/merchant';
 import { DialogueSchema } from './schema/dialogue';
 import { StringsSchema } from './schema/strings';
 import { TuningSchema } from './schema/tuning';
+import { OutfitsSchema } from './schema/outfits';
 import type { AssetManifest } from './schema/assets';
 import { resolveContent } from './resolve';
 import { pointer, type Content, type ContentFiles, type ContentIssue } from './types';
@@ -39,6 +40,8 @@ export function loadContent(manifest?: AssetManifest, files: ContentFiles = Obje
         return result.data;
     }
     const tags = parse('tags.json', TagsSchema), charms = parse('charms.json', CharmsSchema), verbs = parse('verbs.json', VerbsSchema), street = parse('street.json', StreetSchema), projects = parse('projects.json', ProjectsSchema), merchants = parse('merchants.json', MerchantsSchema), dialogue = parse('dialogue.json', DialogueSchema), strings = parse('strings.json', StringsSchema), tuning = parse('tuning.json', TuningSchema);
+    // WORK-037-2: optional file (like street `sites`), so pre-tier-2 content bundles load with no outfits
+    const outfits = files['outfits.json'] === undefined ? { outfits: [] } : parse('outfits.json', OutfitsSchema);
     const roomFiles = Object.keys(files).filter(f => /^rooms\/[^/]+\.json$/.test(f)).sort(), petFiles = Object.keys(files).filter(f => /^pets\/[^/]+\.json$/.test(f)).sort();
     if (!roomFiles.length)
         issues.push({
@@ -56,7 +59,7 @@ export function loadContent(manifest?: AssetManifest, files: ContentFiles = Obje
     if (issues.length)
         throw new ContentError(issues);
     const content: Content = {
-        tags: tags.tags, charms, verbs: verbs.verbs, rooms, street, pets, projects: projects.projects, merchants: merchants.merchants, dialogue, strings, tuning
+        tags: tags.tags, charms, verbs: verbs.verbs, rooms, street, pets, projects: projects.projects, merchants: merchants.merchants, dialogue, strings, tuning, outfits: outfits.outfits
     };
     const resolved = resolveContent(content, manifest);
     if (resolved.length)
