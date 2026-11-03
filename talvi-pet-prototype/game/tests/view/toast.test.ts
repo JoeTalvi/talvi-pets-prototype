@@ -6,6 +6,7 @@ import { createText } from '../../src/ui/overlay';
 import realStrings from '../../src/content/strings.json';
 import { designSetup, linesOf } from './designHarness';
 import { destroyScene } from './sceneHarness';
+import { ROUNDUP_COINS } from '../../src/ui/panels/toast';
 
 afterEach(() => { vi.useRealTimers(); destroyScene(); document.body.replaceChildren(); vi.restoreAllMocks(); });
 
@@ -97,5 +98,31 @@ describe('presentation §8 mount order (WORK-019-3, WORK-020-1, WORK-020-3, WORK
     expect([...s.root.querySelectorAll<HTMLElement>('[data-panel]')].map(c => c.dataset.panel))
       .toEqual(['hudInterior', 'hudStreet', 'toast', 'wantPanel', 'dialogue', 'chooser', 'replaceRemove', 'milestonePopup', 'revealPopup', 'revealPanel', 'debugPanel', 'roomEditor']);
     expect([typeof s.panels.dialogue.isDeferred, typeof s.panels.toast.queued]).toEqual(['function', 'function']);
+  });
+});
+
+describe('VERIFY-WORK-038-3-01 fix round 1 (review F2, A1): coins only toward a visible street bar, only for a toast shown at its event', () => {
+  const coinEvents = () => { const seen: unknown[] = []; window.addEventListener(ROUNDUP_COINS, e => seen.push((e as CustomEvent).detail)); return seen; };
+
+  it('VERIFY-WORK-038-3-01: inside a room the round-up toast shows with no coins, no ROUNDUP_COINS and no landing tick', async () => {
+    const s = await setup();
+    expect(s.state().scene.kind).toBe('interior');
+    const seen = coinEvents();
+    const play = vi.spyOn(s.context.audio!, 'play');
+    fireRoundups(s, 1);
+    expect(toast(s).hidden).toBe(false);
+    vi.advanceTimersByTime(1000);
+    expect([seen, s.root.querySelectorAll('.tpp-roundup-coins').length, play.mock.calls.filter(c => c[0] === 'tick')]).toEqual([[], 0, []]);
+  });
+
+  it('VERIFY-WORK-038-3-01: a held round-up that shows after the dialogue closes launches no coins (no stale landing)', async () => {
+    const s = await setup(st => { st.session.orientationShown = false; });
+    s.context.store.dispatch({ type: 'tick', dtMs: 0, move: { x: 0, y: 0 } });
+    const seen = coinEvents();
+    s.context.store.dispatch({ type: 'debugSimulatePurchase' });
+    for (let i = 0; i < 10 && s.state().dialogue.current !== null; i++) s.context.store.dispatch({ type: 'advanceDialogue' });
+    expect(toast(s).hidden).toBe(false);
+    vi.advanceTimersByTime(1000);
+    expect([seen, s.root.querySelectorAll('.tpp-roundup-coins').length]).toEqual([[], 0]);
   });
 });

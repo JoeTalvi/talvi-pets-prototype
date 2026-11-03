@@ -91,12 +91,15 @@ export function createToast(root: HTMLElement, context: ViewContext): Toast {
   const { launch: launchCoins, stop: stopCoins } = coinLauncher(root, delta);
   const later = (ms: number, fn: () => void) => { timer = setTimeout(() => { timer = null; fn(); }, ms); };
   const hide = () => { section.hidden = true; section.dataset.state = 'hidden'; };
-  const pump = () => {
+  /** `fresh` is the round-up pushed in this dispatch: only it may launch coins (a queued or held toast shows after its event). */
+  const pump = (fresh: Item | null = null) => {
     if (timer !== null || queue.length === 0 || blocked(store.getState())) return;
     const item = queue.shift()!;
     fillItem({ section, line, delta }, item, text);
-    // DEC-049 §7: the space toast takes the reward-card styling (gold border, garden glyph via CSS) with a punch and `reveal`.
-    if (item.kind === 'space') spaceCard(section, context, item.siteId); else launchCoins(item.changeCents);
+    // DEC-049 §7: the space toast takes the reward-card styling (gold ring, garden glyph via CSS) with a punch and `reveal`.
+    if (item.kind === 'space') spaceCard(section, context, item.siteId);
+    // DEC-049 §1: coins need a visible street bar to land on; in a room (or a late toast) the bar nudges at the event instead.
+    else if (item === fresh && store.getState().scene.kind === 'street') launchCoins(item.changeCents);
     section.hidden = false; section.dataset.state = 'visible';
     animate(section, [{ opacity: 0, transform: 'translateY(-24px)' }, { opacity: 1, transform: 'translateY(0)' }], IN_MS);
     later(IN_MS + content.tuning.toastMs, () => {
@@ -109,9 +112,10 @@ export function createToast(root: HTMLElement, context: ViewContext): Toast {
       // mec-010 row 10b: the trickle arm shows no toasts, so its events are dropped, never held.
       if (after.session.feedPresentation === 'trickle') return;
       const causeName = content.projects.find(p => p.id === event.projectId)?.causeName ?? '';
-      queue.push({ kind: 'roundup', merchantName: event.merchantName, amountCents: event.amountCents, changeCents: event.changeCents, causeName });
+      const item: Item = { kind: 'roundup', merchantName: event.merchantName, amountCents: event.amountCents, changeCents: event.changeCents, causeName };
+      queue.push(item);
       if (blocked(after)) queue.splice(0, Math.max(0, queue.length - HELD_MAX));
-      pump();
+      pump(item);
     }),
     // The Owl's want story is open when the garden unlocks: the announcement waits in the queue and shows after it (Q7(a)).
     store.subscribe('space.unlocked', event => { queue.push({ kind: 'space', siteId: event.siteId }); pump(); }),
