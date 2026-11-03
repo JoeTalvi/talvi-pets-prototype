@@ -42,6 +42,7 @@
   "tpp.want.availability.heart": "unlocked by a Heart",
   "tpp.want.availability.never": "not available yet",
   "tpp.want.adjacent": "{a} + {b} beside each other",
+  "tpp.want.greeted": "Say hello to {pet}",
   "tpp.want.hidden": "?",
   "tpp.want.starsFloor": "room ≥ {min} ★",
   "tpp.want.rewardPrefix": "Reward:",

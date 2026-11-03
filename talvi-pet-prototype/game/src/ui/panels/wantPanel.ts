@@ -21,6 +21,8 @@ const pill = (label: string, met: boolean, extra = '') =>
 function pillOf(content: Content, text: Text, view: ConditionView): string {
   // Fork #12 resolved 2026-10-26: the adjacency pill names its two tags, as the TOOL-003 CLI does.
   const tagName = (id: string | undefined) => content.tags.find(t => t.id === id)?.name ?? id ?? '';
+  // WORK-036-2 (DEC-046): the greeted condition names the other pet.
+  if (view.kind === 'greeted') return pill(text('tpp.want.greeted', { pet: content.pets[view.withPetId ?? '']?.name ?? view.withPetId ?? '' }), view.met);
   if (view.kind === 'adjacent') return pill(text('tpp.want.adjacent', { a: tagName(view.tagA), b: tagName(view.tagB) }), view.met);
   // Q8(a): the Stars floor is shown with its numbers even while the Stars bar is hidden.
   if (view.kind === 'stars') return `<span class="tpp-tag wide${view.met ? ' done' : ''}">${escapeHtml(text('tpp.want.starsFloor', { min: view.min ?? 0, current: view.current ?? 0 }))}</span>`;
@@ -49,7 +51,9 @@ function fulfilledMarkup(content: Content, text: Text, state: GameState, petId: 
   const revealed = state.pets[petId]?.revealedHiddenTags[want.id] ?? [];
   const pills = want.conditions.map(c => pillOf(content, text, c.kind === 'tag'
     ? { kind: 'tag', met: true, hidden: c.hidden === true && !revealed.includes(c.tag), tag: c.tag }
-    : c.kind === 'stars' ? { kind: 'stars', met: true, hidden: false, min: c.min } : { kind: 'adjacent', met: true, hidden: false })).join('');
+    : c.kind === 'stars' ? { kind: 'stars', met: true, hidden: false, min: c.min }
+    : c.kind === 'greeted' ? { kind: 'greeted', met: true, hidden: false, withPetId: c.withPetId }
+    : { kind: 'adjacent', met: true, hidden: false })).join('');
   return wantMarkup(content, text, want, { pills, note: span('tpp-want-note', 'tpp.want.fulfilledFlash', text('tpp.want.fulfilledFlash')) });
 }
 
