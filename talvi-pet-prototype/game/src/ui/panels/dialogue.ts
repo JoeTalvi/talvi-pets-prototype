@@ -1,7 +1,9 @@
 import type { Content } from '@content/types';
 import type { DialogueScript, GameState } from '@sim/state';
+import type { RewardList } from '@content/schema/pet';
 import { residentPet } from '@sim/select';
-import { createHeartMoment, type HeartMoment } from '@view/celebration/heartMoment';
+import { createHeartMoment, type HeartMoment, type HeartMomentData } from '@view/celebration/heartMoment';
+import type { RewardCardSpec } from '@view/celebration/rewardCard';
 import type { ViewContext } from '@view/context';
 import { dialogue } from './templates/dialogue';
 import { image } from './templates/shared';
@@ -106,7 +108,8 @@ export function createDialogue(root: HTMLElement, context: ViewContext): Dialogu
   const hide = () => { parts.section.hidden = true; parts.section.dataset.state = 'closed'; };
   // WORK-032-2 fix 6b: while the Heart moment plays, a box that would show waits for the moment's end (the vignette comes after it).
   let pendingShow = false;
-  const moment = createHeartMoment(root, () => { if (pendingShow) { pendingShow = false; show(); } }, () => context.audio);
+  const moment = createHeartMoment(root, () => { if (pendingShow) { pendingShow = false; show(); } }, () => context.audio,
+    () => ({ content, assets, text }));
   const gatedShow = () => { if (moment.active()) pendingShow = true; else show(); };
   const deferral = createDeferral(context, gatedShow);
   let arm: Arm | null = null;
@@ -135,12 +138,35 @@ export function createDialogue(root: HTMLElement, context: ViewContext): Dialogu
 /** WORK-032-2 fix 6b: `heart.earned` starts the moment (WORK-038-1 fork (a): interior and street); it ends on its own timer or is cancelled here. */
 function subscribeHeartMoment(context: ViewContext, moment: HeartMoment, h: { cancel(showHeld: boolean): void }): (() => void)[] {
   const { store } = context;
+  // Spec §5 data capture: the fulfilment's reward and the copies held before each `source: 'heart'` grant, from the same dispatch.
+  let reward: RewardList = [];
+  const heldBefore = new Map<string, number>();
   return [
-    store.subscribe('heart.earned', () => moment.start()),
+    store.subscribe('want.fulfilled', event => { reward = event.reward; heldBefore.clear(); }),
+    store.subscribe('items.granted', (event, after) => {
+      if (event.source === 'heart') heldBefore.set(event.typeId, (after.inventory.counts[event.typeId] ?? 0) - event.count);
+    }),
+    store.subscribe('heart.earned', (event, after) => {
+      moment.start(heartMomentData(event.petId, event.hearts, reward, heldBefore, after));
+      reward = []; heldBefore.clear();
+    }),
     store.subscribe('scene.changed', () => h.cancel(true)),
     store.subscribe('state.reset', () => h.cancel(false)),
     store.subscribe('dialogue.closed', (_event, after) => { if (after.dialogue.current === null && moment.active()) h.cancel(false); }),
   ];
+}
+
+/** Spec §5/§6: one card per charm type of an `items` entry, the verb, the space (a `vignette` entry has none), at most 3. */
+export function heartMomentData(petId: string, hearts: number, reward: RewardList,
+  heldBefore: ReadonlyMap<string, number>, after: GameState): HeartMomentData {
+  const cards: RewardCardSpec[] = reward.flatMap((entry): RewardCardSpec[] => {
+    if (entry.kind === 'items') return entry.items.map(item => ({ kind: 'items', typeId: item.typeId,
+      heldBefore: heldBefore.get(item.typeId) ?? Math.max(0, (after.inventory.counts[item.typeId] ?? 0) - item.count) }));
+    if (entry.kind === 'verb') return [{ kind: 'verb', petId, verbId: entry.verb }];
+    if (entry.kind === 'space') return [{ kind: 'space', siteId: entry.siteId }];
+    return [];
+  });
+  return { petId, hearts, cards: cards.slice(0, 3) };
 }
 
 type Hooks = { show(): void; hide(): void; deferral: ReturnType<typeof createDeferral>; setArm(a: Arm): void; takeArm(): Arm | null; parts: Parts };
