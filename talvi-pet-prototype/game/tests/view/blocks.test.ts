@@ -84,3 +84,42 @@ describe('VERIFY-WORK-038-1-06 shared blocks (cont.)', () => {
     expect(camShake).toHaveBeenCalledWith(200, 0.004);
   });
 });
+
+describe('VERIFY-WORK-038-1-06 post-run (review A5): hitstop is re-entrant', () => {
+  it('two overlapping hitstops pause once and resume once, when the last freeze ends (the first one ending does not resume)', async () => {
+    const s = await designSetup();
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    const calls: string[] = [];
+    vi.spyOn(s.scene.tweens, 'pauseAll').mockImplementation(() => { calls.push('tweens.pause'); return s.scene.tweens; });
+    vi.spyOn(s.scene.tweens, 'resumeAll').mockImplementation(() => { calls.push('tweens.resume'); return s.scene.tweens; });
+    vi.spyOn(s.scene.anims, 'pauseAll').mockImplementation(() => { calls.push('anims.pause'); return s.scene.anims; });
+    vi.spyOn(s.scene.anims, 'resumeAll').mockImplementation(() => { calls.push('anims.resume'); return s.scene.anims; });
+    hitstop(s.scene, 90);
+    vi.advanceTimersByTime(50);
+    const second = hitstop(s.scene, 120);
+    expect(calls).toEqual(['tweens.pause', 'anims.pause']);
+    vi.advanceTimersByTime(40);
+    expect(calls).toEqual(['tweens.pause', 'anims.pause']);
+    vi.advanceTimersByTime(79);
+    expect(calls).toHaveLength(2);
+    vi.advanceTimersByTime(1);
+    expect(calls).toEqual(['tweens.pause', 'anims.pause', 'tweens.resume', 'anims.resume']);
+    second.cancel();
+    expect(calls).toHaveLength(4);
+  });
+
+  it('cancelling one of two overlapping hitstops keeps the freeze; cancelling the other resumes; a fresh hitstop after that pauses again', async () => {
+    const s = await designSetup();
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    const pause = vi.spyOn(s.scene.tweens, 'pauseAll');
+    const resume = vi.spyOn(s.scene.tweens, 'resumeAll');
+    const a = hitstop(s.scene, 90), b = hitstop(s.scene, 120);
+    a.cancel(); a.cancel();
+    expect([pause.mock.calls.length, resume.mock.calls.length]).toEqual([1, 0]);
+    b.cancel();
+    expect(resume.mock.calls.length).toBe(1);
+    hitstop(s.scene, 90);
+    vi.advanceTimersByTime(90);
+    expect([pause.mock.calls.length, resume.mock.calls.length]).toEqual([2, 2]);
+  });
+});
