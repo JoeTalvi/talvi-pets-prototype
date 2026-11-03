@@ -24,8 +24,6 @@ export const LOVE_HOP_PX = 10;
 export const FIRST_USE = { glyphs: 6, semitones: 12, spreadPx: 50, ms: 600 } as const;
 /** DEC-049 §9 first use per (pet, charm type) this session: view-local, one set per ViewContext (a reload starts a new one; no state). */
 const firstUses = new WeakMap<ViewContext, Set<string>>();
-/** A Heart scene half stays listed only while it may still be fading; older ones are destroyed (review advisory A4). */
-const HEART_SCENES_KEPT = 2;
 
 export const FADE_MS = 250;
 
@@ -42,10 +40,10 @@ export abstract class WorldScene extends Phaser.Scene {
   /** Which TOOL-002 stage-1 layers this scene offers (Interior: four; Street: geometry). */
   protected abstract readonly previewKind: 'interior' | 'street';
   protected unsubscribes: (() => void)[] = [];
-  /** WORK-038-1 Heart scene seam (fork (a)): every scene half started here, for teardown; the newest is last. */
-  private hearts: HeartScene[] = [];
-  /** WORK-032-2 fix 6b: the Heart moment's big `react` pet (the newest scene half's), null outside the moment. */
-  get heartPet(): Phaser.GameObjects.Sprite | null { return this.hearts.at(-1)?.pet ?? null; }
+  /** WORK-038-1 Heart scene seam (fork (a)): the running scene half; dropped when it ends (review WORK-038-1 A4). */
+  private heart: HeartScene | null = null;
+  /** WORK-032-2 fix 6b: the Heart moment's big `react` pet (the running scene half's), null outside the moment. */
+  get heartPet(): Phaser.GameObjects.Sprite | null { return this.heart?.pet ?? null; }
   /** WORK-038-1 Heart scene seam: the scene's charm sprite at a slot (Interior and Street override). */
   charmAt(slotId: string): CharmSprite | undefined { void slotId; return undefined; }
   abstract drawWorld(): void;
@@ -192,15 +190,14 @@ export abstract class WorldScene extends Phaser.Scene {
    * Review WORK-038-2 A4: a Heart whose overlay moment is queued behind another starts its scene half on that moment's begin event.
    */
   private subscribeHeartScene(): void {
-    this.hearts = [];
+    this.heart = null;
     let focusSlotId: string | null = null;
     /** The overlay moment playing now (from its begin event to its end), and the queued Hearts' scene halves by `petId:hearts`. */
     let playing: string | null = null;
     const queued = new Map<string, HeartSceneOptions>();
     const start = (opts: HeartSceneOptions) => {
-      this.hearts.at(-1)?.end();
-      this.hearts.push(startHeartScene(this, opts));
-      while (this.hearts.length > HEART_SCENES_KEPT) this.hearts.shift()!.destroy();
+      this.heart?.end();
+      this.heart = startHeartScene(this, opts);
     };
     this.on('want.fulfilled', event => { focusSlotId = event.focusSlotId; });
     this.on('heart.earned', event => {
@@ -214,12 +211,12 @@ export abstract class WorldScene extends Phaser.Scene {
       const opts = queued.get(playing);
       if (opts) { queued.delete(playing); start(opts); }
     };
-    const onMomentEnd = () => { playing = null; this.hearts.at(-1)?.end(); };
+    const onMomentEnd = () => { playing = null; this.heart?.end(); this.heart = null; };
     window.addEventListener(HEART_MOMENT_BEGIN, onMomentBegin);
     window.addEventListener(HEART_MOMENT_END, onMomentEnd);
     this.unsubscribes.push(() => {
       window.removeEventListener(HEART_MOMENT_BEGIN, onMomentBegin); window.removeEventListener(HEART_MOMENT_END, onMomentEnd);
-      for (const h of this.hearts.splice(0)) h.destroy();
+      this.heart?.destroy(); this.heart = null;
     });
   }
 

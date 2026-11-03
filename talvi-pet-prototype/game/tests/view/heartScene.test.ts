@@ -96,3 +96,18 @@ describe('VERIFY-WORK-038-2-08 post-run (review A4): a queued Heart\'s scene hal
     } finally { window.removeEventListener(HEART_MOMENT_BEGIN, onBegin); window.removeEventListener(HEART_MOMENT_END, onEnd); }
   });
 });
+
+describe('VERIFY-WORK-038-1-09 post-run (review A4): ended scene halves are dropped', () => {
+  it('the overlay end drops the scene half: the scene keeps no handle and a stray hit after the end mounts no big pet', async () => {
+    const s = await designSetup();
+    const held = () => (s.scene as unknown as { heart: unknown }).heart;
+    s.context.store.dispatch({ type: 'placeCharm', slotId: 'large-1', typeId: 'dog-bed' });
+    hit();
+    expect([s.scene.heartPet !== null, held() != null]).toEqual([true, true]);
+    window.dispatchEvent(new Event(HEART_MOMENT_END));
+    expect([s.scene.heartPet, held()]).toEqual([null, null]);
+    hit();
+    expect(s.scene.heartPet).toBeNull();
+    expect(s.scene.children.list.filter(c => c instanceof Phaser.GameObjects.Sprite && c.depth === HEART_PET_DEPTH)).toHaveLength(0);
+  });
+});
