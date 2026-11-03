@@ -117,7 +117,9 @@ const dialogueShape: Check = (_content, state) => {
 };
 
 /** Invariant 10 (mec-007 §1, as amended by WORK-035-1): `using` targets a filled slot with a verb; each room resident stands
- * inside its room's walkArea while inside, and inside the street walkArea while outside (DEC-045). */
+ * inside its room's walkArea while inside, and inside the street walkArea while outside (DEC-045). (Invariant 11, "in an
+ * interior its resident is inside", was retired on 2026-11-03: the timed presence roll brings the resident home within
+ * `presenceRollMs` of the player's entry, so an outside resident in its own room is a legal, transient state.) */
 const petBehaviour: Check = (content, state) => {
   for (const room of Object.values(content.rooms)) {
     const behaviour = state.pets[room.residentPetId]?.behaviour;
@@ -139,15 +141,8 @@ const petBehaviour: Check = (content, state) => {
   return null;
 };
 
-/** Invariant 11 (WORK-035-1, never in two places): in an interior its resident is inside. */
-const residentInside: Check = (content, state) => {
-  if (state.scene.kind !== 'interior') return null;
-  const petId = content.rooms[state.scene.roomId]?.residentPetId;
-  return petId && state.pets[petId]?.outside ? `invariant 11: pets.${petId}.outside in its own room` : null;
-};
-
 const checks: readonly Check[] = [projectBounds, wantPrefix, placementsOwned, starsSum, sceneModes, completion,
-  jsonPlain, dialogueShape, petBehaviour, residentInside];
+  jsonPlain, dialogueShape, petBehaviour];
 
 /** Core §8 invariants 1–6, 9, 10 and the JSON half of 7: one message per violated invariant, `[]` when valid.
  * Invariant 8 and the replay half of 7 are harness properties (tests/sim/invariants.test.ts). */

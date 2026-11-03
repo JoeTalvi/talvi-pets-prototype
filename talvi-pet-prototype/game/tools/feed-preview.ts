@@ -6,8 +6,6 @@ import type { SimEvent } from '../src/sim/events';
 import { reduce } from '../src/sim/reduce';
 import { phaseOf } from '../src/sim/select';
 import { initialState } from '../src/sim/state';
-import { rollOutside } from '../src/sim/rules/streetPresence';
-import { housePets } from '../src/sim/space';
 import { readContentFiles } from './content/io';
 
 /** TOOL-004 (tools.md §3): the first N round-ups of a seed, through `reduce` + `debugSimulatePurchase` only. */
@@ -98,22 +96,7 @@ export function runFeedPreview(content: Content, options: FeedOptions): { lines:
   return { lines: textLines(content, options, rows, summary) };
 }
 
-/** WORK-035-1 (TOOL-004 preview of the roll): per street visit 1..visits, each house pet's `rollOutside` (Hearts ≥ 1, mode
- * 'roll', not the house just left). */
-export function streetRollRows(content: Content, seed: number, visits: number): { visit: number; outside: Record<string, boolean> }[] {
-  const petIds = housePets(content).map(entry => entry.petId);
-  return Array.from({ length: visits }, (_, i) => ({ visit: i + 1,
-    outside: Object.fromEntries(petIds.map(petId => [petId, rollOutside(seed, petId, i + 1)])) }));
-}
-
-export function streetRollLines(content: Content, seed: number, visits: number): string[] {
-  const rows = streetRollRows(content, seed, visits);
-  const petIds = Object.keys(rows[0]?.outside ?? {});
-  return [`street roll · seed ${seed} · ${visits} visits`, ['visit', ...petIds].map(cell => cell.padStart(6)).join(''),
-    ...rows.map(row => [String(row.visit), ...petIds.map(petId => (row.outside[petId] ? 'out' : 'in'))].map(cell => cell.padStart(6)).join(''))];
-}
-
-const USAGE = 'preview:feed --seed <n> [--count 40] [--interval 20000] [--seeds 1,2,3] [--format text|csv|json] [--content dir] [--out file] [--street-roll <visits>]\n' +
+const USAGE = 'preview:feed --seed <n> [--count 40] [--interval 20000] [--seeds 1,2,3] [--format text|csv|json] [--content dir] [--out file]\n' +
   'json: { seed, interval, rows: FeedRow[], summary } (with --seeds: FeedSummary[])';
 
 const integer = (flag: string, value: string) => {
@@ -122,7 +105,7 @@ const integer = (flag: string, value: string) => {
   return n;
 };
 
-type Cli = FeedOptions & { content: string; out?: string; help: boolean; streetRoll?: number };
+type Cli = FeedOptions & { content: string; out?: string; help: boolean };
 
 export function feedArgs(argv: string[]): Cli {
   const cli: Cli = { seed: 0, count: 40, interval: 20000, format: 'text', content: 'src/content', help: false };
@@ -130,11 +113,10 @@ export function feedArgs(argv: string[]): Cli {
   for (let i = 0; i < argv.length; i++) {
     const flag = argv[i], value = argv[i + 1];
     if (flag === '--help') { cli.help = true; continue; }
-    if (!['--seed', '--count', '--interval', '--seeds', '--format', '--content', '--out', '--street-roll'].includes(flag) || value === undefined || value.startsWith('--'))
+    if (!['--seed', '--count', '--interval', '--seeds', '--format', '--content', '--out'].includes(flag) || value === undefined || value.startsWith('--'))
       throw new Error(`Unknown flag or missing value: ${flag}`);
     i++;
     if (flag === '--seed') { cli.seed = integer(flag, value); seeded = true; }
-    else if (flag === '--street-roll') cli.streetRoll = integer(flag, value);
     else if (flag === '--count' || flag === '--interval') cli[flag.slice(2) as 'count' | 'interval'] = integer(flag, value);
     else if (flag === '--seeds') cli.seeds = value.split(',').map(part => integer(flag, part));
     else if (flag === '--format') {
@@ -144,15 +126,13 @@ export function feedArgs(argv: string[]): Cli {
   }
   if (!cli.help && !seeded && !cli.seeds) throw new Error('--seed <n> or --seeds <list> is required');
   if (cli.count < 1 || cli.interval < 0) throw new Error('--count must be ≥ 1 and --interval ≥ 0');
-  if (cli.streetRoll !== undefined && cli.streetRoll < 1) throw new Error('--street-roll must be ≥ 1');
   return cli;
 }
 
 async function main(argv: string[]): Promise<void> {
   const cli = feedArgs(argv);
   const content = cli.help ? null : loadContent(undefined, await readContentFiles(cli.content));
-  const text = content === null ? USAGE : (cli.streetRoll !== undefined ? streetRollLines(content, cli.seed, cli.streetRoll)
-    : runFeedPreview(content, cli).lines).join('\n');
+  const text = content === null ? USAGE : runFeedPreview(content, cli).lines.join('\n');
   if (cli.out) writeFileSync(cli.out, text + '\n');
   else process.stdout.write(text + '\n');
 }

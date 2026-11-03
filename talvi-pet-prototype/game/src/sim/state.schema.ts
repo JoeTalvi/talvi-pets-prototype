@@ -42,7 +42,7 @@ export const GameStateSchema = z.object({
   session: z.object({
     seed: z.number(), eventIntervalMs: z.number().nullable(), feedPresentation: z.enum(['events', 'trickle']),
     starsVisible: z.boolean(), muted: z.boolean(), testerLabel: z.string(), orientationShown: z.boolean(),
-    petsOutside: z.enum(['roll', 'all', 'none']).default('roll'), // WORK-035-1: additive, schemaVersion stays 2
+    petsOutside: z.enum(['roll', 'all', 'none']).default('roll'), // MEC-010 row 23: additive, schemaVersion stays 2
   }),
   scene: z.union([z.object({ kind: z.literal('street') }), z.object({ kind: z.literal('interior'), roomId: z.string() })]),
   avatar: z.object({ x: z.number(), y: z.number(), facing: FacingSchema, immunityMs: z.number(),
@@ -62,7 +62,8 @@ export const GameStateSchema = z.object({
   rooms: z.record(z.string(), z.object({ placements: z.record(z.string(), z.string()) })),
   spaces: z.record(z.string(), z.object({ unlocked: z.boolean(), placements: z.record(z.string(), z.string()), arrivalDone: z.boolean() })),
   pets: z.record(z.string(), PetSchema),
-  streetVisits: z.number().int().min(0).default(0), // WORK-035-1: additive, schemaVersion stays 2
+  // The timed presence roll (replaces WORK-035-1 `streetVisits`): additive, schemaVersion stays 2; an older save rolls on its first tick.
+  presence: z.object({ rollInMs: z.number(), rolls: z.number().int().min(0) }).default({ rollInMs: 0, rolls: 0 }),
   greetings: z.record(z.string(), z.object({ cooldownMs: z.number().min(0) })).default({}), // WORK-036-1: additive, version 2
 });
 

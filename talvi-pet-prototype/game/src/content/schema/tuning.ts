@@ -40,6 +40,13 @@ export const TuningSchema = z.object({
     verbHoldMs: Range, idleMs: Range, joystick: z.object({
         x: z.number(), bottomOffset: z.number(), baseDiameter: z.number(), knobDiameter: z.number(), range: z.number()
     }),
+    // Indoor / outdoor presence (2026-11-03, replaces the WORK-035-1 per-visit roll): every `presenceRollMs` each house pet
+    // with >= 1 Heart rolls once — inside with the player on the street it comes out with `presenceOutP`; outside it goes
+    // back into its own house with `presenceInP`; with the player in its room it is brought in at that roll (so within
+    // `presenceRollMs`) and stays in. Defaults so older tuning files parse.
+    presenceRollMs: z.number().positive().default(8000),
+    presenceOutP: z.number().min(0).max(1).default(0.35),
+    presenceInP: z.number().min(0).max(1).default(0.15),
     // DEC-046 / gate Q10(a) (WORK-036-1): the pet-to-pet greeting; defaults so older tuning files parse
     greetRadiusRu: z.number().positive().default(1.5),
     greetCooldownMs: z.number().nonnegative().default(60000),

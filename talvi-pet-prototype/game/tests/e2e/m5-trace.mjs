@@ -3,6 +3,7 @@
 // Seed: <EV>/m5-seed.real.json, generated here (make-fixture) from tests/view/capture/mate-arrived.steps.json + one Dog Heart
 // (debugFulfilActiveWant dog): Dog 1 Heart, Owl 2, the mate arrived, standing on the street. Strict boot, 1920×1080, real inputs (keyboard,
 // canvas taps, debug row 23 "Pets outside" by label); window.__tpp only to read. One continuous CDP screencast cut into loops by marks.
+// 2026-11-03: beats 2, 5, 6 and 7 re-pinned to the timed presence roll (streetPresence.ts; no per-visit roll, no streetVisits); not re-run yet.
 // Beats: 1 boot → 2 roll (out of the Dog room) → 3 "All out" (three sprites, depth, taps) → 4 meeting point → 5 never in two places →
 // 6 "All in" / "Roll" → 7 reload; then the 1920×823 window (still + wander loop). WORK-037-3 / WORK-036-2 extend the marked section at the end.
 // Exports for later lanes: beat, still, mark, streetView, rowButton, SEED (see the bottom of the file).
@@ -41,15 +42,14 @@ export async function still(dir, point, note, p = page, extra = {}) {
 /** The drawn street pets and the sim's view of them, in one read. */
 export const streetView = (p = page) => p.evaluate(async () => {
   const { game, store, content } = window.__tpp, state = store.getState();
-  const { streetPets, rollOutside } = await import('/src/sim/rules/streetPresence.ts');
+  const { streetPets } = await import('/src/sim/rules/streetPresence.ts');
   const street = game.scene.isActive('Street') ? game.scene.getScene('Street') : null;
   const sprites = street ? Object.fromEntries([...street.streetPets.pets].map(([id, { sprite, bubble }]) => [id,
     { x: sprite.x, y: sprite.y, depth: sprite.depth, by: state.pets[id].behaviour.y, phase: state.pets[id].behaviour.phase,
       target: state.pets[id].behaviour.target, bubble: bubble.current() ? { y: bubble.y, text: bubble.current().text } : null }])) : null;
-  const rolls = Object.fromEntries(['dog', 'owl'].map(id => [id, rollOutside(state.session.seed, id, state.streetVisits)]));
   return { scene: state.scene, drawn: street ? [...street.streetPets.pets.keys()] : null, selected: streetPets(content, state).map(e => e.petId),
     outside: Object.fromEntries(Object.entries(state.pets).map(([id, pet]) => [id, pet.outside])), hearts: Object.fromEntries(Object.entries(state.pets).map(([id, pet]) => [id, pet.hearts])),
-    streetVisits: state.streetVisits, petsOutside: state.session.petsOutside, seed: state.session.seed, rolls, sprites,
+    presence: state.presence, petsOutside: state.session.petsOutside, seed: state.session.seed, sprites,
     interiorPet: game.scene.isActive('Interior') ? game.scene.getScene('Interior').pet?.petId ?? null : null };
 });
 const eqSet = (a, b) => JSON.stringify([...a].sort()) === JSON.stringify([...b].sort());
@@ -95,9 +95,15 @@ async function beatRoll() {
   const before = await streetView();
   await walkOut();
   const v = await streetView();
-  beat('2 roll: walk out of the Dog room → streetVisits +1; Dog inside (just-left); Owl = rollOutside(seed, owl, visits); drawn = streetPets',
-    v.streetVisits === before.streetVisits + 1 && v.outside.dog === false && v.outside.owl === v.rolls.owl && eqSet(v.drawn, v.selected) && v.drawn.includes('owl-mate'),
-    'visits +1; dog false; owl = roll; drawn = selected', { before: { streetVisits: before.streetVisits, scene: before.scene }, view: v });
+  // 2026-11-03 presence rule: nothing flips at the door; every presenceRollMs the inside pets roll to come out (presenceOutP).
+  const rollMs = await page.evaluate(() => window.__tpp.content.tuning.presenceRollMs);
+  const from = await nowT();
+  const cameOut = await page.waitForFunction(t => window.__tpp.log.lines().some(l => l.type === 'pet.outside' && l.outside === true && l.t >= t), from,
+    { timeout: rollMs * 8 }).then(() => true, () => false);
+  const after = await streetView();
+  beat('2 roll: walk out of the Dog room → no flip in that dispatch (drawn = streetPets); within 8 rolls a house pet comes out (pet.outside {true}); drawn = streetPets',
+    eqSet(v.drawn, v.selected) && v.drawn.includes('owl-mate') && cameOut && eqSet(after.drawn, after.selected),
+    'no flip at the door; a come-out within 8 rolls; drawn = selected', { before: { presence: before.presence, scene: before.scene }, view: v, after });
 }
 /** WORK-036-2 attempt 2 (FORK, re-pinned to the as-built sim + view): with seed 1234 the Dog and the mate meet (WORK-036-1
  * 'meeting') the instant All out applies, and the mate's meeting spot sits under the joystick's capture square, which claims
@@ -162,16 +168,21 @@ async function beatNeverTwice() {
   const out = await streetView();
   const from = await nowT();
   await enterDogRoom();
+  // 2026-11-03 presence rule: the Dog is brought home at the next roll, within presenceRollMs of the entry.
+  const rollMs = await page.evaluate(() => window.__tpp.content.tuning.presenceRollMs);
+  await page.waitForFunction(() => window.__tpp.store.getState().pets.dog.outside === false, undefined, { timeout: rollMs + 2000 }).catch(() => {});
+  await page.waitForTimeout(600);
   const inside = await streetView();
-  await still(stillsDir, 'dog-inside-after-entry-1080', 'the Dog was outside (All out); after entering the Dog room it is inside');
+  const petVisible = await page.evaluate(() => window.__tpp.game.scene.getScene('Interior').pet?.visible ?? null);
+  await still(stillsDir, 'dog-inside-after-entry-1080', 'the Dog was outside (All out); within one roll of entering the Dog room it is inside');
   const flips = (await outsideLines(from)).filter(l => l.petId === 'dog');
   await rowButton('Pets outside', OUTSIDE.roll);
   await walkOut();
   const back = await streetView();
-  beat('5 never in two places: Dog drawn outside → enter the Dog room → interior shows the Dog, dog.outside false, pet.outside {dog,false} once; row 23 Roll inside → walk out → the Dog not drawn, outside stays false',
-    out.drawn.includes('dog') && inside.interiorPet === 'dog' && inside.outside.dog === false && flips.length === 1 && flips[0].outside === false
-    && back.petsOutside === 'roll' && !back.drawn.includes('dog') && back.outside.dog === false && eqSet(back.drawn, back.selected),
-    'dog drawn → interior dog, one flip → street without dog', { out: out.drawn, inside: { interiorPet: inside.interiorPet, outside: inside.outside }, flips, back });
+  beat('5 never in two places: Dog drawn outside → enter the Dog room → within presenceRollMs dog.outside false, pet.outside {dog,false} once, the interior shows the Dog; row 23 Roll → walk out → drawn = streetPets',
+    out.drawn.includes('dog') && inside.interiorPet === 'dog' && petVisible === true && inside.outside.dog === false && flips.length === 1 && flips[0].outside === false
+    && back.petsOutside === 'roll' && eqSet(back.drawn, back.selected),
+    'dog drawn → interior dog within one roll, one flip → street drawn = selected', { out: out.drawn, inside: { interiorPet: inside.interiorPet, petVisible, outside: inside.outside }, flips, back });
 }
 async function beatAllIn() {
   mark('toggleStart');
@@ -182,20 +193,17 @@ async function beatAllIn() {
   await rowButton('Pets outside', OUTSIDE.roll); await page.waitForTimeout(2200);
   const roll = await streetView();
   mark('toggleEnd');
-  await enterDogRoom(); await walkOut();
-  const next = await streetView();
-  beat('6 override "All in" → only the mate drawn; "Roll" keeps the set until the next arrival, which rolls again (Owl = rollOutside, Dog just left)',
-    eqSet(all.drawn, ['dog', 'owl', 'owl-mate']) && eqSet(none.drawn, ['owl-mate']) && eqSet(roll.drawn, ['owl-mate']) && roll.petsOutside === 'roll'
-    && next.streetVisits === roll.streetVisits + 1 && next.outside.dog === false && next.outside.owl === next.rolls.owl && eqSet(next.drawn, next.selected),
-    'all 3 → none 1 → roll 1 → next arrival rolled', { all: all.drawn, none: none.drawn, roll: roll.drawn, next });
+  beat('6 override "All in" → only the mate drawn; "Roll" keeps the set until the next timed roll',
+    eqSet(all.drawn, ['dog', 'owl', 'owl-mate']) && eqSet(none.drawn, ['owl-mate']) && eqSet(roll.drawn, roll.selected) && roll.petsOutside === 'roll',
+    'all 3 → none 1 → roll = selected', { all: all.drawn, none: none.drawn, roll: roll.drawn });
 }
 async function beatReload() {
   await rowButton('Pets outside', OUTSIDE.all); await page.waitForTimeout(1500);
   const before = await streetView();
   await page.reload(); await waitScene(page, 'Street', 1500);
   const after = await streetView();
-  beat('7 reload: streetVisits, session.petsOutside and each outside survive; the drawn set matches',
-    after.streetVisits === before.streetVisits && after.petsOutside === before.petsOutside && eqSet(Object.entries(after.outside), Object.entries(before.outside))
+  beat('7 reload: presence.rolls, session.petsOutside and each outside survive; the drawn set matches',
+    after.presence.rolls >= before.presence.rolls && after.petsOutside === before.petsOutside && eqSet(Object.entries(after.outside), Object.entries(before.outside))
     && eqSet(after.drawn, before.drawn) && eqSet(after.drawn, after.selected), 'unchanged across reload', { before, after });
 }
 async function window823() {

@@ -101,11 +101,12 @@ export function playerSpace(content: Content, state: GameState, slotId?: SlotId)
   return site ? siteRef(site.id) : null;
 }
 
-/** The pet the player shares a scene with: the interior's resident, or on the street the resident of an arrived site. */
+/** The pet the player shares a scene with: the interior's resident while it is inside (an outside resident is on the street,
+ * not in the room, until the presence roll brings it in), or on the street the resident of an arrived site. */
 export function scenePet(content: Content, state: GameState): { petId: PetId; ref: SpaceRef } | null {
   if (state.scene.kind === 'interior') {
     const petId = content.rooms[state.scene.roomId]?.residentPetId;
-    return petId ? { petId, ref: roomRef(state.scene.roomId) } : null;
+    return petId && !state.pets[petId]?.outside ? { petId, ref: roomRef(state.scene.roomId) } : null;
   }
   const site = sitesOf(content).find(candidate => state.spaces[candidate.id]?.arrivalDone);
   return site ? { petId: site.residentPetId, ref: siteRef(site.id) } : null;

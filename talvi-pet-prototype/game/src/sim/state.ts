@@ -26,7 +26,7 @@ export type GameState = {
     muted: boolean;               // DEC-034, default false
     testerLabel: string;          // free text, first log line; kept across `reset`
     orientationShown: boolean;    // the two opening lines (design §4, 0:00) shown once per save
-    petsOutside: 'roll' | 'all' | 'none'; // WORK-035-1 (MEC-010 row 23): the street presence override; default 'roll'
+    petsOutside: 'roll' | 'all' | 'none'; // MEC-010 row 23: the presence override — 'roll' = the timed roll (tuning.presence*); default 'roll'
   };
   scene: { kind: 'street' } | { kind: 'interior'; roomId: RoomId };
   avatar: { x: number; y: number; facing: Facing; immunityMs: number;
@@ -59,15 +59,15 @@ export type GameState = {
     revealedHiddenTags: Record<WantId, TagId[]>; // hidden "?" slots revealed (DEC-021)
     verbs: VerbId[];              // profile `atStart` verbs + Heart unlocks
     introduced: boolean;          // intro dialogue shown on first room entry (a site resident: at its arrival)
-    outside: boolean;             // DEC-045: a space-homed pet is always outside; a room pet per the street roll (WORK-035-1)
-    behaviour: PetBehaviour;      // mec-007 state machine; stepped only while the player is in the pet's room
+    outside: boolean;             // DEC-045: a space-homed pet is always outside; a house pet per the timed presence roll (streetPresence.ts)
+    behaviour: PetBehaviour;      // mec-007 state machine; stepped only while the pet shares the player's scene
     rngState: number;             // pet RNG stream; initial (seed ^ (0x9E3779B9 × (i + 1))) >>> 0, i = pet index in content order
     recentTargets: SlotId[];      // last tuning.recentTargetsKept slots used (mec-007)
     wantBubbleInMs: number;       // countdown to the next want bubble; initial tuning.wantBubbleEveryMs (mec-008)
     heartCharms: CharmTypeId[];   // distinct types credited at any fulfilment (tag-matching home placements), first-credit order
     strippedPending: CharmTypeId[]; // Heart charms removed from the home room whose reaction has not played; FIFO, distinct
   }>;
-  streetVisits: number;           // WORK-035-1 (gate Q7(a)): street arrivals so far, +1 before each per-visit roll; initial 0
+  presence: { rollInMs: number; rolls: number }; // the timed indoor/outdoor roll: countdown to the next roll (initial tuning.presenceRollMs) and rolls so far (the pure draw's index)
   greetings: Record<PairKey, { cooldownMs: number }>; // WORK-036-1 (DEC-046): per-pair cooldown, counted down every tick; initial {}
 };
 /** `"<a>|<b>"`, a before b in content pet order (WORK-036-1). */
@@ -129,7 +129,7 @@ export function initialState(content: Content, seed: number): GameState {
     rooms: Object.fromEntries(Object.keys(content.rooms).map(id => [id, { placements: {} }])),
     spaces: Object.fromEntries(sitesOf(content).map(site => [site.id, { unlocked: false, placements: {}, arrivalDone: false }])),
     pets: initialPets(content, seed),
-    streetVisits: 0,
+    presence: { rollInMs: content.tuning.presenceRollMs, rolls: 0 },
     greetings: {},
   };
 }

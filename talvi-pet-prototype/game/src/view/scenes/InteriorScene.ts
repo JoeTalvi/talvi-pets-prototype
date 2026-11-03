@@ -75,7 +75,7 @@ export class InteriorScene extends WorldScene {
     const up = { x: p.worldX, y: p.worldY, t: p.upTime };
     const outline = outlineAt(this.outlines, up.x, up.y);
     const onBubble = !outline && this.bubble?.contains(up.x, up.y) === true;
-    const onPet = !outline && !onBubble && this.pet?.hitContains(up.x, up.y) === true;
+    const onPet = !outline && !onBubble && this.pet?.visible === true && this.pet.hitContains(up.x, up.y);
     const petId = this.pet?.petId ?? '';
     const target = outline ? `slot:${outline.slotId}` : onBubble ? `bubble:${petId}` : onPet ? `pet:${petId}` : 'world';
     const result = recordPointer(this.context.log.record, target, down, up);
@@ -99,6 +99,7 @@ export class InteriorScene extends WorldScene {
     if (!pet) return;
     const entry = manifest.entries.find(e => e.id === content.pets[petId]?.sheet);
     this.pet = new PetSprite(this, petId, content.verbs, entry, pet.behaviour);
+    this.pet.setVisible(!pet.outside); // an outside resident is on the street until the presence roll brings it home
     this.applyDepthRule(pet.behaviour);
     const { bubbleMs, bubbleTextMs } = content.tuning;
     this.bubble = new Bubble(this, petId, 0, textFrom(content.strings), { bubbleMs, bubbleTextMs },
@@ -167,6 +168,14 @@ export class InteriorScene extends WorldScene {
       this.syncOutlines();
     });
     this.subscribeCharms();
+    // The presence roll: the resident appears at the room's street door when it comes home (its greeting follows), and is
+    // hidden while it is out on the street.
+    this.on('pet.outside', event => {
+      if (!this.pet || event.petId !== this.pet.petId) return;
+      this.pet.setVisible(!event.outside);
+      this.pet.sync(this.context.store.getState().pets[this.pet.petId].behaviour);
+      this.bubble?.follow(this.pet.bubbleAnchor());
+    });
     this.on('pet.phaseChanged', event => {
       if (!this.pet || event.petId !== this.pet.petId) return;
       this.pet.setClip(this.pet.clipFor({ phase: event.to, verb: event.verb, reaction: event.reaction }));

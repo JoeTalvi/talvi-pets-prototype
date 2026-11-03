@@ -134,7 +134,10 @@
         "strippedPending": []
       }
     },
-    "streetVisits": 0,
+    "presence": {
+      "rollInMs": 8000,
+      "rolls": 0
+    },
     "greetings": {}
   }
 }

@@ -118,13 +118,13 @@ describe('VERIFY-WORK-035-2-01 one sprite per street pet, kept equal to streetPe
 });
 
 describe('VERIFY-WORK-035-2-02 depth by base y; clips per pet', () => {
-  it('after sync each sprite\'s depth = its behaviour.y; the Owl at y 948 draws in front of the Pet House (depth 940); pet.phaseChanged {owl, walking} changes only the Owl\'s clip', async () => {
+  it('after sync each sprite\'s depth = its behaviour.y; the Owl at its house door (y 1000) draws in front of the Pet House (depth 940); pet.phaseChanged {owl, walking} changes only the Owl\'s clip', async () => {
     const { context, scene } = await allOut();
     run(scene, 20);
     const state = context.store.getState();
     for (const [petId, { sprite }] of scene.streetPets.pets) expect(sprite.depth).toBe(state.pets[petId].behaviour.y);
     const owl = scene.streetPets.pets.get('owl')!.sprite;
-    expect(owl.y).toBe(948);
+    expect(owl.y).toBe(1000); // the Pet House door spawn: a pet coming out appears at its house door (presence rule)
     expect(owl.depth).toBeGreaterThan(scene.houses.get('pet-house')!.depth);
     expect(scene.houses.get('pet-house')!.depth).toBe(940);
     const before = Object.fromEntries([...scene.streetPets.pets].map(([id, p]) => [id, p.sprite.anims.currentAnim?.key]));

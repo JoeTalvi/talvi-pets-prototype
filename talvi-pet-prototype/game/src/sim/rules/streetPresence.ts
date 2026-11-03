@@ -1,14 +1,22 @@
 import type { Content } from '../../content/types';
-import type { Action } from '../actions';
+import type { Action, TickAction } from '../actions';
 import type { RuleResult, SimEvent } from '../events';
 import { mulberry32 } from '../rng';
-import type { GameState, PetId, RoomId } from '../state';
+import type { GameState, PetBehaviour, PetId, RoomId } from '../state';
 import { housePets, sitesOf, siteRef, yardRef, type SpaceRef } from '../space';
+import { phaseChanged } from './petBehaviour';
 import { verbEndedOf } from './reactions';
 
-/** DEC-045 / gate Q7(a): the chance a pet with ≥ 1 Heart is outside on a street visit. Named constant until the run
- * moves it to tuning.json (WORK-038-3 owns tuning.json in this wave; order fork (f)). */
-export const STREET_OUTSIDE_P = 0.6;
+/**
+ * Indoor / outdoor presence of the house pets (the Dog and the Owl; DEC-045), 2026-11-03 rule, replacing the WORK-035-1
+ * per-visit roll. `pets[p].outside` is kept at all times; every `tuning.presenceRollMs` (one global countdown) each house
+ * pet with ≥ 1 Heart is rolled once:
+ *   - inside, player on the street            → comes out with `presenceOutP`;
+ *   - outside (wherever the player is)        → goes back into its own house with `presenceInP` (not mid-meeting);
+ *   - player in the pet's own room            → brought in at that roll, so within `presenceRollMs`; stays in while the player is there;
+ *   - inside, player in another building      → stays in.
+ * Row 23 "Pets outside" overrides the roll: 'all' keeps every eligible pet out (the own-room rule still wins), 'none' keeps all in.
+ */
 
 /** FNV-1a 32-bit hash of a string (the pet id). */
 export function fnv1a32(text: string): number {
@@ -17,32 +25,41 @@ export function fnv1a32(text: string): number {
   return hash >>> 0;
 }
 
-/** Pure per-visit roll: one mulberry32 step over a hash of (seed, petId, visit); reads and writes no rngState. */
-export function rollOutside(seed: number, petId: PetId, visit: number): boolean {
-  const mixed = (seed ^ fnv1a32(petId) ^ Math.imul(visit, 0x9e3779b9)) >>> 0;
-  return mulberry32(mixed).value < STREET_OUTSIDE_P;
+/** Pure uniform draw in [0, 1) for one (seed, pet, roll index): one mulberry32 step over their hash; reads and writes no rngState. */
+export function presenceDraw(seed: number, petId: PetId, roll: number): number {
+  const mixed = (seed ^ fnv1a32(petId) ^ Math.imul(roll, 0x9e3779b9)) >>> 0;
+  return mulberry32(mixed).value;
 }
 
-type PetsOutside = GameState['session']['petsOutside'];
+const playerInRoom = (state: GameState, roomId: RoomId) => state.scene.kind === 'interior' && state.scene.roomId === roomId;
 
-/** Whether a house pet should be outside for this visit, before any presence change. */
-function wantedOutside(state: GameState, petId: PetId, roomId: RoomId, justLeft: RoomId | null, mode: PetsOutside): boolean {
-  if (state.pets[petId].hearts < 1 || mode === 'none') return false;
+/** Where a house pet should be after this roll; `draw` is consulted only in mode 'roll'. */
+export function wantedOutside(content: Content, state: GameState, petId: PetId, roomId: RoomId, draw: () => number): boolean {
+  const pet = state.pets[petId];
+  const mode = state.session.petsOutside;
+  if (playerInRoom(state, roomId) || pet.hearts < 1 || mode === 'none') return false;
   if (mode === 'all') return true;
-  return justLeft !== roomId && rollOutside(state.session.seed, petId, state.streetVisits);
+  if (pet.outside) return pet.behaviour.phase === 'meeting' || draw() >= content.tuning.presenceInP;
+  return state.scene.kind === 'street' && draw() < content.tuning.presenceOutP;
 }
 
-/** "Never in two places" (gate Q8(a)): flip `outside`, standing the pet idle at the first wander point of the space it is
- * now in (its yard on the street, its room inside); a no-op when the value is unchanged. No pet-stream draw. */
+/** Flip `outside`, standing the pet idle at the door it came through (its house door on the street, its room's street door
+ * inside); a pet coming home to the player's room holds its entry greeting (idle, reaction greeting, `greetingDelayMs`).
+ * A no-op when the value is unchanged. No pet-stream draw. */
 export function setOutside(content: Content, state: GameState, petId: PetId, outside: boolean): RuleResult {
   const pet = state.pets[petId];
   if (pet.outside === outside) return { state, events: [] };
   const entry = housePets(content).find(candidate => candidate.petId === petId);
   if (!entry) return { state, events: [] }; // only house pets change presence; a site's resident is always outside
-  const [point] = outside ? entry.house.wanderPoints! : content.rooms[entry.roomId].wanderPoints;
-  const behaviour = { phase: 'idle' as const, x: point.x, y: point.y, facing: pet.behaviour.facing,
-    timerMs: content.tuning.idleMs.min, target: null, verb: null, reaction: null };
-  const events: SimEvent[] = [...verbEndedOf(petId, pet.behaviour), { type: 'pet.outside', petId, outside }];
+  const room = content.rooms[entry.roomId];
+  const door = outside ? entry.house.door.spawn
+    : room.doors.find(candidate => candidate.target.scene === 'street')?.spawn ?? room.wanderPoints[0];
+  const greets = !outside && playerInRoom(state, entry.roomId);
+  const behaviour: PetBehaviour = { phase: 'idle', x: door.x, y: door.y, facing: pet.behaviour.facing,
+    timerMs: greets ? content.tuning.greetingDelayMs : content.tuning.idleMs.min,
+    target: null, verb: null, reaction: greets ? 'greeting' : null };
+  const events: SimEvent[] = [...verbEndedOf(petId, pet.behaviour), { type: 'pet.outside', petId, outside },
+    phaseChanged(petId, pet.behaviour.phase, behaviour)];
   return { state: { ...state, pets: { ...state.pets, [petId]: { ...pet, outside, behaviour } } }, events };
 }
 
@@ -56,24 +73,14 @@ function applyAll(content: Content, state: GameState, wanted: (petId: PetId, roo
   return { state: current, events };
 }
 
-/** Tick step 2 hook, same dispatch as `scene.changed`: a street arrival counts the visit then rolls each house pet; entering
- * a house brings its pet inside before tick step 4's entry greeting. No roll on load, boot or reset. */
-export function afterSceneChange(content: Content, doors: RuleResult): RuleResult {
-  const changed = doors.events.find(event => event.type === 'scene.changed');
-  if (!changed || changed.type !== 'scene.changed') return doors;
-  if (changed.to.kind === 'interior') {
-    const roomId = changed.to.roomId;
-    const entry = housePets(content).find(candidate => candidate.roomId === roomId);
-    if (!entry) return doors;
-    const inside = setOutside(content, doors.state, entry.petId, false);
-    return { state: inside.state, events: [...doors.events, ...inside.events] };
-  }
-  const counted = { ...doors.state, streetVisits: doors.state.streetVisits + 1 };
-  const justLeft = changed.from.kind === 'interior' ? changed.from.roomId : null;
-  const mode = counted.session.petsOutside;
-  const rolled = applyAll(content, counted,
-    (petId, roomId) => wantedOutside(counted, petId, roomId, mode === 'roll' ? justLeft : null, mode));
-  return { state: rolled.state, events: [...doors.events, ...rolled.events] };
+/** Tick step 2b (after doors, before pets): count the presence countdown down; at zero re-arm it and roll every house pet. */
+export function stepPresence(content: Content, state: GameState, action: TickAction): RuleResult {
+  const remaining = state.presence.rollInMs - action.dtMs;
+  if (remaining > 0) return { state: { ...state, presence: { ...state.presence, rollInMs: remaining } }, events: [] };
+  const rolls = state.presence.rolls + 1;
+  const armed: GameState = { ...state, presence: { rollInMs: content.tuning.presenceRollMs, rolls } };
+  return applyAll(content, armed, (petId, roomId) =>
+    wantedOutside(content, armed, petId, roomId, () => presenceDraw(armed.session.seed, petId, rolls)));
 }
 
 /** CONTRACT-SELECT (WORK-035-1): every pet on the street, content order — each arrived site's resident and each house
@@ -90,15 +97,17 @@ export function streetPets(content: Content, state: GameState): { petId: PetId; 
 }
 
 type ActionOf<T extends Action['type']> = Extract<Action, { type: T }>;
+type PetsOutside = GameState['session']['petsOutside'];
 const MODES: readonly PetsOutside[] = ['roll', 'all', 'none'];
 
-/** MEC-010 row 23 "Pets outside": sets the override; 'all'/'none' apply at once on the street, 'roll' waits for the next
- * arrival. 'all' keeps the ≥ 1 Heart rule (order fork (d)). */
+/** MEC-010 row 23 "Pets outside": sets the override; 'all' / 'none' apply at once in any scene (the own-room and ≥ 1 Heart
+ * rules still hold), 'roll' leaves every pet where it is until the next timed roll. */
 export function debugSetPetsOutside(content: Content, state: GameState, action: ActionOf<'debugSetPetsOutside'>): RuleResult {
   if (!MODES.includes(action.mode)) return { state, events: [{ type: 'action.rejected', action, reason: 'unknownMode' }] };
   const next = { ...state, session: { ...state.session, petsOutside: action.mode } };
   const applied: SimEvent = { type: 'debug.applied', action };
-  if (state.scene.kind !== 'street' || action.mode === 'roll') return { state: next, events: [applied] };
-  const result = applyAll(content, next, (petId, roomId) => wantedOutside(next, petId, roomId, null, action.mode));
+  if (action.mode === 'roll') return { state: next, events: [applied] };
+  const noDraw = () => { throw new Error('mode all/none never draws'); };
+  const result = applyAll(content, next, (petId, roomId) => wantedOutside(content, next, petId, roomId, noDraw));
   return { state: result.state, events: [applied, ...result.events] };
 }

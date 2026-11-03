@@ -23,7 +23,7 @@ import type { GameState } from './state';
 import { debugFillSpace, debugFulfilActiveWant, debugUnlockSpace } from './rules/debugSpace';
 import { maybeStartSiteArrival } from './rules/sites';
 import { chooseOutfit, debugSetOutfit } from './rules/outfits';
-import { afterSceneChange, debugSetPetsOutside } from './rules/streetPresence';
+import { debugSetPetsOutside, stepPresence } from './rules/streetPresence';
 import { debugGreetNow, stepGreetings } from './rules/greetings';
 
 type Payload = Record<string, unknown>;
@@ -77,8 +77,10 @@ type TickStep = (content: Content, state: GameState, action: TickAction,
   eventsSoFar: readonly SimEvent[]) => RuleResult;
 const tickSteps: TickStep[] = [
   (content, state, action) => ({ state: stepAvatar(content, state, action), events: [] }),
-  (content, state) => afterSceneChange(content, enterStreet(content, stepDoors(content, state))),
+  (content, state) => enterStreet(content, stepDoors(content, state)),
   // Play-session 2026-10-26 ("Wait for tap"): stepping onto the street no longer starts an owed celebration.
+  // 2026-11-03: the timed indoor/outdoor roll runs on the scene the doors left the player in, before the pets are stepped.
+  (content, state, action) => stepPresence(content, state, action),
   (content, state, action) => stepFeed(content, state, action),
   stepResidentPet,
   (content, state, action) => stepGreetings(content, state, action),
