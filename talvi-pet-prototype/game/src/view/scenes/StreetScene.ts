@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { attentionVisible, displayedPhase, scenePet } from '@sim/select';
+import { attentionVisible, displayedPhase } from '@sim/select';
 import type { ProjectId, SiteId } from '@sim/state';
 import type { Site } from '@content/schema/street';
 import { sitesOf } from '@sim/space';
@@ -8,15 +8,15 @@ import { AttentionIcon, HouseSprite } from '../objects/HouseSprite';
 import { CelebrationDirector, directorClock } from '../celebration/CelebrationDirector';
 import { ArrivalWalk, type Arrival, type SiteArrival } from '../celebration/ArrivalWalk';
 import { CharmSprite } from '../objects/CharmSprite';
-import { PetSprite } from '../objects/PetSprite';
-import { Bubble, textFrom } from '../objects/Bubble';
+import type { PetSprite } from '../objects/PetSprite';
+import type { Bubble } from '../objects/Bubble';
 import type { SlotOutline } from '../objects/SlotOutline';
 import { charmDepth, createOutlines, fadeCharm, outlineAt, popCharm, syncOutlineStates } from '../objects/slotLayer';
-import { registerClips, type SheetEntry } from '../anims';
 import { depthAtBase } from '../depth';
 import { MISSING_TEXTURE } from './BootScene';
 import type { ScenePointer } from './InteriorScene';
 import { WorldScene } from './WorldScene';
+import { StreetPetLayer } from './streetPets';
 
 export type { ScenePointer };
 
@@ -54,9 +54,15 @@ export class StreetScene extends WorldScene {
   outlines = new Map<string, SlotOutline>();
   /** Charms placed at site slots, keyed by slot id. */
   charms = new Map<string, CharmSprite>();
-  /** The arrived site resident (the Owl's mate) and its bubble (DEC-044/045); absent before its arrival. */
-  pet?: PetSprite;
-  bubble?: Bubble;
+  /** WORK-035-2 (DEC-045): every street pet's sprite and bubble, kept equal to `streetPets`. */
+  streetPets!: StreetPetLayer;
+  /** Compatibility (WORK-034-3 readers): the arrived site resident's sprite and bubble; absent before its arrival. */
+  get pet(): PetSprite | undefined { return this.siteResident()?.sprite; }
+  get bubble(): Bubble | undefined { return this.siteResident()?.bubble; }
+  private siteResident() {
+    const resident = this.context ? sitesOf(this.context.content).find(site => this.streetPets?.pets.has(site.residentPetId)) : undefined;
+    return resident ? this.streetPets.pets.get(resident.residentPetId) : undefined;
+  }
   private downs = new Map<number, PointerSample>();
   private joystickPointer: number | null = null;
   constructor() { super('Street'); }
@@ -72,8 +78,7 @@ export class StreetScene extends WorldScene {
     this.siteArt = new Map();
     this.outlines = new Map();
     this.charms = new Map();
-    this.pet = undefined;
-    this.bubble = undefined;
+    this.streetPets = new StreetPetLayer(this, () => this.context);
   }
   /** Presentation §4: "if `state.celebration` → `CelebrationDirector.replay(state.celebration)`" after the shared frame is built. */
   /** WORK-038-1 Heart scene seam: the site charm sprite at a slot. */
@@ -97,13 +102,10 @@ export class StreetScene extends WorldScene {
     this.arrival?.update(deltaMs);
     if (this.arrival?.finished) this.arrival = null;
     this.syncOutlines();
-    if (!this.pet) return;
-    this.pet.sync(this.context.store.getState().pets[this.pet.petId].behaviour);
-    this.bubble?.follow(this.pet.bubbleAnchor());
-    this.bubble?.update(deltaMs);
+    this.streetPets.update(deltaMs);
   }
-  /** The scene's pet bubble for the shared bubble subscriptions. */
-  protected petBubble(): Bubble | undefined { return this.bubble; }
+  /** WORK-035-2: the bubble of the street pet `petId` for the shared bubble subscriptions. */
+  protected override petBubble(petId?: string): Bubble | undefined { return this.streetPets.bubbleOf(petId); }
   /** DEC-044: `art.base` once the site is unlocked, else `art.empty`; anchored base-centre at the site's (x, y). */
   refreshSites(): void {
     const state = this.context.store.getState();
@@ -116,7 +118,7 @@ export class StreetScene extends WorldScene {
     }
     this.syncSiteCharms(false);
     this.showOutlines(false);
-    this.ensurePet();
+    this.streetPets.sync();
   }
   private siteOfSlot(slotId: string): Site | undefined { return sitesOf(this.context.content).find(site => site.slots.some(slot => slot.id === slotId)); }
   private sitePlacements(): Record<string, string> {
@@ -154,22 +156,6 @@ export class StreetScene extends WorldScene {
       this.charms.set(slotId, sprite);
       if (animate) popCharm(this, sprite);
     }
-  }
-  /** DEC-045: the site resident is drawn on the street once its arrival is done (`scenePet`), never before. */
-  private ensurePet(): void {
-    const { content, manifest, store } = this.context;
-    const state = store.getState();
-    const shared = scenePet(content, state);
-    if (this.pet || !shared || shared.ref.kind !== 'site' || state.siteArrival !== null) return;
-    const petId = shared.petId, pet = state.pets[petId];
-    if (!pet) return;
-    const entry = manifest.entries.find(e => e.id === content.pets[petId]?.sheet);
-    if (entry && this.textures.exists(entry.id)) registerClips(this, entry as SheetEntry);
-    this.pet = new PetSprite(this, petId, content.verbs, entry, pet.behaviour);
-    const { bubbleMs, bubbleTextMs } = content.tuning;
-    this.bubble = new Bubble(this, petId, 0, textFrom(content.strings), { bubbleMs, bubbleTextMs },
-      tap => this.context.bus.emit({ type: 'bubble.tapped', petId, class: tap.class, text: tap.text }));
-    this.bubble.follow(this.pet.bubbleAnchor());
   }
   drawWorld(): void {
     const { street } = this.context.content;
@@ -227,17 +213,18 @@ export class StreetScene extends WorldScene {
     if (!down) return;
     this.downs.delete(p.id);
     const up = { x: p.worldX, y: p.worldY, t: p.upTime };
-    // WORK-034-3: a visible site outline wins (design mode), then the mate's bubble and the mate (tap-to-text / `tapPet`), then a house.
+    // WORK-034-3 / WORK-035-2: a visible site outline wins (design mode), then the frontmost bubble and the frontmost street
+    // pet (tap-to-text / `tapPet`), then a house.
     const outline = outlineAt(this.outlines, up.x, up.y);
-    const onBubble = !outline && this.bubble?.contains(up.x, up.y) === true;
-    const onPet = !outline && !onBubble && this.pet?.hitContains(up.x, up.y) === true;
+    const onBubble = outline ? undefined : this.streetPets.bubbleAt(up.x, up.y);
+    const onPet = outline || onBubble ? undefined : this.streetPets.petAt(up.x, up.y);
     const projectId = outline || onBubble || onPet ? null : this.targetAt(up.x, up.y);
-    const petId = this.pet?.petId ?? '';
+    const petId = onBubble?.petId ?? onPet?.petId ?? '';
     const target = outline ? `slot:${outline.slotId}` : onBubble ? `bubble:${petId}` : onPet ? `pet:${petId}` : projectId ? `house:${projectId}` : 'world';
     const result = recordPointer(this.context.log.record, target, down, up);
     if (result.kind !== 'tap') return;
     if (outline) this.context.bus.emit({ type: 'slot.tapped', slotId: outline.slotId, filled: this.sitePlacements()[outline.slotId] !== undefined });
-    else if (onBubble) this.bubble!.tap();
+    else if (onBubble) onBubble.tap();
     else if (onPet) this.context.store.dispatch({ type: 'tapPet', petId });
     else if (projectId) this.context.store.dispatch({ type: 'acknowledgeProject', projectId });
   };
@@ -265,13 +252,10 @@ export class StreetScene extends WorldScene {
     this.on('charm.removed', event => { if (event.siteId) { this.syncOutlines(); this.syncSiteCharms(true); } });
     this.on('space.arrivalStarted', event => this.startArrival({ siteId: event.siteId, petId: event.petId }));
     // The walk ends on the 🎵 without a fade; the street sprite appears in the same dispatch, at the walk's last point.
-    this.on('pet.arrived', () => this.ensurePet());
-    this.on('pet.phaseChanged', event => {
-      if (!this.pet || event.petId !== this.pet.petId) return;
-      this.pet.setClip(this.pet.clipFor({ phase: event.to, verb: event.verb, reaction: event.reaction }));
-      if (event.to === 'reacting' || event.to === 'greeting') this.bubble?.releasePending();
-      else if (event.to !== 'walking') this.bubble?.dropPending();
-    });
+    this.on('pet.arrived', () => this.streetPets.sync());
+    // WORK-035-2: the drawn set follows `pet.outside` in the same dispatch (`debug.applied` and `state.reset` via refreshSites / create).
+    this.on('pet.outside', () => this.streetPets.sync());
+    this.on('pet.phaseChanged', event => this.streetPets.phaseChanged(event));
     this.subscribePetBubbles();
   }
 }
