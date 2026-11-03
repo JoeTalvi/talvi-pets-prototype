@@ -446,6 +446,16 @@ describe('mec-010 §3 row 19 Grant copies (TEST-002 arm)', () => {
     expect(dispatch.mock.calls.map(c => c[0])).toEqual([{ type: 'debugFulfilActiveWant', petId: select.options[0].value }]);
   });
 
+  it('VERIFY-MEC-010-017 (new) — a count outside 1..9 is rejected by the sim and shown under the row', async () => {
+    const s = await setup(); open(s);
+    const row = rowOf(s.root, 'Grant copies');
+    row.querySelector('input')!.value = '12';
+    click(buttons(s.root, 'Grant copies')[0]);
+    expect(errorIn(s.root, 'Grant copies')).toMatch(/^Rejected: /);
+  });
+});
+
+describe('mec-010 §3 row 23 Pets outside (WORK-035-1)', () => {
   it('VERIFY-WORK-035-1-07 panel half — row 23 "Pets outside" after row 22: Roll / All out / All in dispatch debugSetPetsOutside and reflect session.petsOutside', async () => {
     const s = await setup(); open(s);
     const labels = [...panelOf(s.root).querySelectorAll('.tpp-debug-row > label')].map(l => l.textContent);
@@ -459,13 +469,5 @@ describe('mec-010 §3 row 19 Grant copies (TEST-002 arm)', () => {
     expect(s.context.store.getState().session.petsOutside).toBe('all');
     expect(segment().map(b => b.getAttribute('aria-pressed'))).toEqual(['false', 'true', 'false']);
     expect(linesOf(s.context, 'debug.applied').at(-1)).toMatchObject({ action: { type: 'debugSetPetsOutside', mode: 'all' } });
-  });
-
-  it('VERIFY-MEC-010-017 (new) — a count outside 1..9 is rejected by the sim and shown under the row', async () => {
-    const s = await setup(); open(s);
-    const row = rowOf(s.root, 'Grant copies');
-    row.querySelector('input')!.value = '12';
-    click(buttons(s.root, 'Grant copies')[0]);
-    expect(errorIn(s.root, 'Grant copies')).toMatch(/^Rejected: /);
   });
 });
