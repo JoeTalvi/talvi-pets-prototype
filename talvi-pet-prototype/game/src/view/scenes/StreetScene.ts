@@ -17,6 +17,7 @@ import { MISSING_TEXTURE } from './BootScene';
 import type { ScenePointer } from './InteriorScene';
 import { WorldScene } from './WorldScene';
 import { StreetPetLayer } from './streetPets';
+import { GreetingBeats } from '../celebration/greetingBeat';
 
 export type { ScenePointer };
 
@@ -56,6 +57,8 @@ export class StreetScene extends WorldScene {
   charms = new Map<string, CharmSprite>();
   /** WORK-035-2 (DEC-045): every street pet's sprite and bubble, kept equal to `streetPets`. */
   streetPets!: StreetPetLayer;
+  /** WORK-036-2 (DEC-046, spec §10): the greeting beat on `greeting.played`. */
+  greetings!: GreetingBeats;
   /** Compatibility (WORK-034-3 readers): the arrived site resident's sprite and bubble; absent before its arrival. */
   get pet(): PetSprite | undefined { return this.siteResident()?.sprite; }
   get bubble(): Bubble | undefined { return this.siteResident()?.bubble; }
@@ -79,6 +82,7 @@ export class StreetScene extends WorldScene {
     this.outlines = new Map();
     this.charms = new Map();
     this.streetPets = new StreetPetLayer(this, () => this.context);
+    this.greetings = new GreetingBeats(this, petId => this.streetPets.pets.get(petId), () => this.context);
   }
   /** Presentation §4: "if `state.celebration` → `CelebrationDirector.replay(state.celebration)`" after the shared frame is built. */
   /** WORK-038-1 Heart scene seam: the site charm sprite at a slot. */
@@ -256,6 +260,9 @@ export class StreetScene extends WorldScene {
     // WORK-035-2: the drawn set follows `pet.outside` in the same dispatch (`debug.applied` and `state.reset` via refreshSites / create).
     this.on('pet.outside', () => this.streetPets.sync());
     this.on('pet.phaseChanged', event => this.streetPets.phaseChanged(event));
+    this.on('greeting.played', event => this.greetings.played(event));
+    this.on('state.reset', () => this.greetings.cancelAll());
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.greetings.cancelAll());
     this.subscribePetBubbles();
   }
 }
