@@ -4,6 +4,9 @@ import type { ViewContext } from '@view/context';
 import { milestonePopup } from './templates/milestonePopup';
 import { escapeHtml, image } from './templates/shared';
 import { dollars } from './hudStreet';
+import { outfitAssets, outfitCardFace } from './closet';
+import { createRewardCard } from '@view/celebration/rewardCard';
+import { SFX_VOLUMES } from '@view/celebration/timings';
 import { assetsFrom, createText, type Panel, type Text } from '../overlay';
 
 /** Presentation §8.2 fade in/out and the §12 no-destination collect fallback (order fork 2). */
@@ -61,6 +64,27 @@ function renderContent(p: Parts, context: ViewContext, text: Text, celebration: 
   }).join('');
   if (celebration.completes) p.skip.remove();
   else if (!p.skip.isConnected) p.section.insertBefore(p.skip, p.skipAnchor);
+}
+
+/** Outfit tile size: the charm tile's 126 px, so the grid keeps its rhythm. */
+export const OUTFIT_TILE_PX = 126;
+
+/**
+ * WORK-037-3 (gate Q13(a); spec §6 / §10 "Outfit unlocked"): a completing project with `completionOutfitId` gets an outfit tile
+ * after the charm tiles, derived from content (no `celebration` change): a §6 reward card flipped in once the popup has faded
+ * in, `reveal` (0.7) at the flip, "New" always (the set was not held).
+ */
+function addOutfitTile(p: Parts, context: ViewContext, text: Text, celebration: NonNullable<GameState['celebration']>,
+  schedule: (ms: number, fn: () => void) => void): void {
+  const outfitId = celebration.completes ? context.content.projects.find(pr => pr.id === celebration.projectId)?.completionOutfitId : undefined;
+  if (!outfitId) return;
+  const tile = document.createElement('div');
+  tile.className = 'tpp-reward-tile tpp-outfit-tile'; tile.dataset.outfitId = outfitId;
+  p.grid.append(tile);
+  const card = createRewardCard(tile, { content: context.content, assets: outfitAssets(context.manifest), text }, outfitCardFace(context, text, outfitId),
+    { at: { x: OUTFIT_TILE_PX / 2, y: OUTFIT_TILE_PX / 2 }, px: OUTFIT_TILE_PX });
+  card.flipIn(POPUP_FADE_MS);
+  schedule(POPUP_FADE_MS, () => context.audio?.play('reveal', { volume: SFX_VOLUMES.reveal }));
 }
 
 /** Mec-002 §2.6: Skip shown iff `completeNowOffered`, labelled with the live price; buttons re-enable on a state change. */
@@ -136,6 +160,7 @@ export function createMilestonePopup(root: HTMLElement, context: ViewContext): M
   const open = (state: GameState) => {
     if (state.celebration?.step !== 'milestone' || !p.section.hidden) return;
     renderContent(p, context, text, state.celebration);
+    addOutfitTile(p, context, text, state.celebration, schedule);
     p.skipButton.disabled = false; p.collect.disabled = false;
     renderSkip(p, context, text, state);
     p.section.hidden = false;
