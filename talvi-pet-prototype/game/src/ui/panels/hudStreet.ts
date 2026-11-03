@@ -3,6 +3,10 @@ import { hudProjectId, playerSpace, revealProjectId, starsOfSpace } from '@sim/s
 import type { ViewContext } from '@view/context';
 import { hudStreet } from './templates/hudStreet';
 import { hudInterior } from './templates/hudInterior';
+import { clearStarsBursts, createStarsFill, type Point, type StarsFill } from '@view/celebration/starsBurst';
+
+/** WORK-038-3: mirrors `StreetScene.SITE_SLOT_AT` (the ui layer does not import scenes). */
+const SITE_SLOT_AT = 'tpp:siteSlotAt';
 import { assetsFrom, createText, type Panel, type Text } from '../overlay';
 
 /** Presentation §8.2 / package fixed decision: the events-arm bar nudge. */
@@ -55,7 +59,7 @@ function partsOf(section: HTMLElement, options: Parameters<typeof hudInterior>[0
 /** DEC-044 / gate fork 11: once a site is unlocked, Decorate/Done and the site's Stars ("n / max ★", the interior bar's template),
  * hidden while locked; the Stars also hide with TEST-001 off (MEC-006 R7). Decorate is disabled while a dialogue, an arrival or a
  * site arrival is open (the sim rejects it then); Done stays usable. */
-function renderSite(site: Site, context: ViewContext, text: Text, state: GameState): void {
+function renderSite(site: Site, context: ViewContext, text: Text, state: GameState, pendingStars: number): void {
   const ref = playerSpace(context.content, state);
   site.toggle.hidden = ref === null;
   site.pill.hidden = ref === null || !state.session.starsVisible;
@@ -67,7 +71,14 @@ function renderSite(site: Site, context: ViewContext, text: Text, state: GameSta
   site.toggle.disabled = !design && (state.dialogue.current !== null || state.arrival !== null || state.siteArrival !== null);
   const { points, max } = starsOfSpace(context.content, state, ref);
   site.starsLabel.textContent = text('tpp.stars.label', { stars: points, max });
-  site.fill.style.width = `${max > 0 ? Math.min(100, (points / max) * 100) : 0}%`;
+  const filled = Math.max(0, points - pendingStars);
+  site.fill.style.width = `${max > 0 ? Math.min(100, (filled / max) * 100) : 0}%`;
+}
+
+/** DEC-049 §4 on the site pill: the same Stars burst as the interior bar, from the placed site slot (else the screen centre). */
+function siteBurst(root: HTMLElement, site: Site, fill: StarsFill, context: ViewContext, from: Point | null, delta: number): void {
+  fill.gain(root, site.fill.parentElement ?? site.stars, { from: from ?? { x: 960, y: 540 }, delta,
+    firstCopy: delta >= context.content.tuning.starsFirstCopy, audio: () => context.audio });
 }
 
 /** Writes the bar to `cents` over `ms` (0 = no tween); `dataset.barCents`/`barMs` let HEADLESS tests read target and duration. */
@@ -85,11 +96,11 @@ function setFrozen(p: Parts, frozen: boolean): void {
   p.reveal.disabled = frozen;
 }
 
-function renderHud(p: Parts, context: ViewContext, text: Text, state: GameState, nudgeMs: number | null): void {
+function renderHud(p: Parts, context: ViewContext, text: Text, state: GameState, nudgeMs: number | null, pendingStars = 0): void {
   const { content } = context;
   p.section.hidden = state.scene.kind !== 'street';
   setFrozen(p, state.celebration !== null);
-  if (state.scene.kind === 'street') renderSite(p.site, context, text, state);
+  if (state.scene.kind === 'street') renderSite(p.site, context, text, state, pendingStars);
   // Order fork 1: the selector verbatim (hidden while the only rising project is at goal but unacknowledged, R1-A1).
   p.reveal.hidden = revealProjectId(content, state) === null;
   const projectId = hudProjectId(content, state);
@@ -112,14 +123,34 @@ export function createHudStreet(root: HTMLElement, context: ViewContext): HudStr
   const p = partsOf(root.lastElementChild as HTMLElement, { text, assets });
   const onToggle = () => store.dispatch({ type: 'setDesignMode', on: store.getState().mode !== 'design' });
   p.site.toggle.addEventListener('click', onToggle);
-  const render = (state: GameState, nudgeMs: number | null = null) => renderHud(p, context, text, state, nudgeMs);
+  const fill = createStarsFill(() => render(store.getState()));
+  const render = (state: GameState, nudgeMs: number | null = null) => renderHud(p, context, text, state, nudgeMs, fill.pending());
+  const clearBursts = () => { clearStarsBursts(root); fill.release(); };
+  let slotAt: Point | null = null;
+  const onSlotAt = (e: Event) => { const d = (e as CustomEvent<Point>).detail; slotAt = { x: d.x, y: d.y }; };
+  window.addEventListener(SITE_SLOT_AT, onSlotAt);
   const offs = [...RENDER_ON.map(type => store.subscribe(type, (_event, after) => render(after))),
     // VERIFY-MEC-010-015: the trickle arm glides over one feed interval instead of the 300 ms nudge.
     store.subscribe('roundup.fired', (_event, after) => render(after,
-      after.session.feedPresentation === 'trickle' ? after.session.eventIntervalMs ?? BAR_NUDGE_MS : BAR_NUDGE_MS))];
+      after.session.feedPresentation === 'trickle' ? after.session.eventIntervalMs ?? BAR_NUDGE_MS : BAR_NUDGE_MS)),
+    // DEC-049 §4: a site gain bursts into the pill (nothing while Stars are hidden, MEC-006 R7); deferred to the end of the
+    // dispatch so the scene's slot point from the same `charm.placed` is known whichever subscriber ran first.
+    store.subscribe('space.stars.changed', event => {
+      if (event.delta <= 0) return;
+      queueMicrotask(() => {
+        const state = store.getState();
+        const from = slotAt; slotAt = null;
+        if (state.scene.kind !== 'street' || !state.session.starsVisible || p.site.pill.hidden) return;
+        siteBurst(root, p.site, fill, context, from, event.delta);
+      });
+    }),
+    store.subscribe('stars.visibilityChanged', (_event, after) => { if (!after.session.starsVisible) clearBursts(); }),
+    store.subscribe('state.reset', clearBursts),
+    store.subscribe('scene.changed', clearBursts),
+    () => window.removeEventListener(SITE_SLOT_AT, onSlotAt)];
   render(store.getState());
   return {
     render: () => render(store.getState()),
-    destroy() { for (const off of offs) off(); p.site.toggle.removeEventListener('click', onToggle); p.section.remove(); },
+    destroy() { for (const off of offs) off(); p.site.toggle.removeEventListener('click', onToggle); p.section.remove(); clearStarsBursts(root); },
   };
 }

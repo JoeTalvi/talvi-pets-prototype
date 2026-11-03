@@ -25,6 +25,8 @@ export const TILE_SIZE = { w: 320, h: 213 } as const;
 export const GROUND_DEPTH = -1;
 /** WORK-034-3: a site's ground art sits just above the ground tiles and below every other world object. */
 export const SITE_ART_DEPTH = GROUND_DEPTH + 0.5;
+/** DEC-049 §4 (WORK-038-3): window event `{ slotId, x, y }` (overlay px) fired on `charm.placed {siteId}`; `hudStreet` starts the site Stars burst there. */
+export const SITE_SLOT_AT = 'tpp:siteSlotAt';
 type Rect = { x: number; y: number; w: number; h: number };
 
 /** Presentation §4.2 street column (plus `celebration.stepped`, when `displayedPhase` moves to `toPhase`). */
@@ -75,9 +77,9 @@ export class StreetScene extends WorldScene {
     this.pet = undefined;
     this.bubble = undefined;
   }
-  /** Presentation §4: "if `state.celebration` → `CelebrationDirector.replay(state.celebration)`" after the shared frame is built. */
   /** WORK-038-1 Heart scene seam: the site charm sprite at a slot. */
   override charmAt(slotId: string): CharmSprite | undefined { return this.charms.get(slotId); }
+  /** Presentation §4: "if `state.celebration` → `CelebrationDirector.replay(state.celebration)`" after the shared frame is built. */
   create(): void {
     super.create();
     const state = this.context.store.getState();
@@ -256,12 +258,19 @@ export class StreetScene extends WorldScene {
     for (const type of REFRESH_ON) this.on(type, () => this.refreshHouses());
     this.subscribeSite();
   }
+  /** DEC-049 §4: tells the street HUD where a site slot is on screen (overlay = canvas px) so its Stars burst starts there. */
+  private announceSlotAt(slotId: string): void {
+    const slot = this.siteOfSlot(slotId)?.slots.find(s => s.id === slotId);
+    if (!slot) return;
+    const cam = this.cameras.main;
+    window.dispatchEvent(new CustomEvent(SITE_SLOT_AT, { detail: { slotId, x: slot.x - cam.scrollX, y: slot.y - 60 - cam.scrollY } }));
+  }
   /** WORK-034-3: the site's art, outlines, charms, the mate's arrival walk and the mate (bubbles through the shared subscriptions). */
   private subscribeSite(): void {
     this.on('space.unlocked', () => this.refreshSites());
     this.on('debug.applied', () => this.refreshSites());
     this.on('mode.changed', () => this.showOutlines(true));
-    this.on('charm.placed', event => { if (event.siteId) { this.syncOutlines(); this.syncSiteCharms(true); } });
+    this.on('charm.placed', event => { if (event.siteId) { this.syncOutlines(); this.syncSiteCharms(true); this.announceSlotAt(event.slotId); } });
     this.on('charm.removed', event => { if (event.siteId) { this.syncOutlines(); this.syncSiteCharms(true); } });
     this.on('space.arrivalStarted', event => this.startArrival({ siteId: event.siteId, petId: event.petId }));
     // The walk ends on the 🎵 without a fade; the street sprite appears in the same dispatch, at the walk's last point.
