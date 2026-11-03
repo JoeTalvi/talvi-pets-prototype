@@ -76,7 +76,8 @@ describe('M1 play-session verdicts (2026-10-26): panels', () => {
     vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
     s.context.store.dispatch({ type: 'tick', dtMs: 0, move: { x: 0, y: 0 } });
     expect(s.state().dialogue.current).not.toBeNull();
-    for (let i = 0; i < 800 && linesOf(s.context, 'roundup.fired').length < 4; i++) s.context.store.dispatch({ type: 'tick', dtMs: 50, move: { x: 0, y: 0 } });
+    // WORK-032-1 fix 1: the feed banks nothing while a dialogue is open, so the held round-ups come from the debug purchase.
+    for (let i = 0; i < 4; i++) s.context.store.dispatch({ type: 'debugSimulatePurchase' });
     const fired = linesOf(s.context, 'roundup.fired');
     expect(fired).toHaveLength(4);
     expect(s.panels.toast.queued()).toBe(2);

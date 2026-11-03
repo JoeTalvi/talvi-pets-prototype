@@ -2,6 +2,7 @@ import type { Content } from '@content/types';
 import type { GameState } from '@sim/state';
 import { hudProjectId, owedPhases, starsOf } from '@sim/select';
 import type { ViewContext } from '@view/context';
+import { centreIn, clearStarsBursts, starsBurst, worldToOverlay } from '@view/celebration/starsBurst';
 import { hudInterior } from './templates/hudInterior';
 import { assetsFrom, createText, type Panel, type Text } from '../overlay';
 
@@ -43,6 +44,15 @@ function floatDelta(stars: HTMLElement, text: Text, delta: number): HTMLElement 
     { duration: HUD_TIMING.deltaMs, easing: 'ease-out', fill: 'forwards' });
   setTimeout(() => el.remove(), HUD_TIMING.deltaMs);
   return el;
+}
+
+/** WORK-032-2 fix 6a: the burst flies from the slot `charm.placed` named in the same dispatch (else the screen centre) into the bar. */
+function burstFrom(root: HTMLElement, p: Parts, context: ViewContext, state: GameState, slotId: string | null): void {
+  if (state.scene.kind !== 'interior') return;
+  const slot = slotId ? context.content.rooms[state.scene.roomId]?.slots.find(s => s.id === slotId) : undefined;
+  const height = parseFloat(root.parentElement?.style.height ?? '') || 1080;
+  const from = worldToOverlay(slot ? { x: slot.x, y: slot.y - 60 } : { x: 960, y: 540 }, height);
+  starsBurst(root, from, centreIn(root, p.fill.parentElement ?? p.stars));
 }
 
 function pulse(hearts: HTMLElement): void {
@@ -103,6 +113,7 @@ export function createHudInterior(root: HTMLElement, context: ViewContext): Pane
   root.insertAdjacentHTML('beforeend', hudInterior({ text, assets: assetsFrom(context.manifest), idPrefix: 'hud' }));
   const p = partsOf(root.lastElementChild as HTMLElement, text);
   const render = (state: GameState) => renderHud(p, context, text, state);
+  let placedSlot: string | null = null;
   const onToggle = () => store.dispatch({ type: 'setDesignMode', on: store.getState().mode !== 'design' });
   // MEC-006 R6 / core §3: the record is `ui.starsExplained` (mec-006 spells it `ui.starsTapped`; core wins); R7: not while hidden.
   const onStars = () => {
@@ -114,9 +125,15 @@ export function createHudInterior(root: HTMLElement, context: ViewContext): Pane
   const onBadge = () => showTooltip(p.section, 'attention', text('tpp.hud.attention'), { left: '600px', top: '110px' });
   p.toggle.addEventListener('click', onToggle); p.stars.addEventListener('click', onStars); p.badge.addEventListener('click', onBadge);
   const offs = [...RENDER_ON.map(type => store.subscribe(type, (_event, after) => render(after))),
+    store.subscribe('charm.placed', event => { placedSlot = event.slotId; queueMicrotask(() => { placedSlot = null; }); }),
     store.subscribe('stars.changed', (event, after) => {
-      if (after.scene.kind === 'interior' && event.roomId === after.scene.roomId && after.session.starsVisible && event.delta !== 0) floatDelta(p.stars, text, event.delta);
+      if (after.scene.kind !== 'interior' || event.roomId !== after.scene.roomId || !after.session.starsVisible || event.delta === 0) return;
+      floatDelta(p.stars, text, event.delta);
+      if (event.delta > 0) burstFrom(root, p, context, after, placedSlot);
     }),
+    store.subscribe('stars.visibilityChanged', (_event, after) => { if (!after.session.starsVisible) clearStarsBursts(root); }),
+    store.subscribe('state.reset', () => clearStarsBursts(root)),
+    store.subscribe('scene.changed', () => clearStarsBursts(root)),
     store.subscribe('heart.earned', () => pulse(p.hearts))];
   // Play-session Q17: the dialogue box shows later than its state change (the want story waits for the nap), so Done's
   // disabled state follows the box itself.
@@ -131,6 +148,7 @@ export function createHudInterior(root: HTMLElement, context: ViewContext): Pane
       for (const off of offs) off();
       p.toggle.removeEventListener('click', onToggle); p.stars.removeEventListener('click', onStars); p.badge.removeEventListener('click', onBadge);
       p.section.remove();
+      clearStarsBursts(root);
     },
   };
 }

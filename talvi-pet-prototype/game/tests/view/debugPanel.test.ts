@@ -355,7 +355,7 @@ describe('VERIFY-TOOL-006 row 17 fixture', () => {
     load(s, text);
     const stored = s.storage.getItem(STORAGE_KEYS.save)!;
     const parsed = JSON.parse(stored);
-    expect(parsed.schemaVersion).toBe(1);
+    expect(parsed.schemaVersion).toBe(2);
     expect(typeof parsed.savedAt).toBe('string');
     expect(parsed.state).toEqual((parseSave(content, text) as { state: GameState }).state);
     expect(linesOf(s.context, 'save.loaded')).toEqual([{ type: 'save.loaded', source: 'fixture', bytes: new TextEncoder().encode(stored).length }]);
@@ -409,5 +409,48 @@ describe('verification GAP-2 alignment grid', () => {
     context.alignmentGrid = true;
     const scene = await bootScene(InteriorScene, context, { roomId: 'dog-room' }, ['charms/lamp', 'rooms/fixture']);
     expect(gridOf(scene)).not.toBeNull();
+  });
+});
+
+describe('mec-010 §3 row 19 Grant copies (TEST-002 arm)', () => {
+  const ROWS_1_18 = ['Simulate a purchase', 'Event interval', 'Feed seed', 'Set current progress', 'Jump to next phase', 'Complete project',
+    'Unlock all charm types', 'Stars display', 'Freeze donations', 'Mute SFX', 'Feed presentation', 'Tester label', 'Reset save',
+    'Export log', 'Room editor', 'Preview layers', 'Fixture', 'Alignment grid'];
+
+  it('VERIFY-MEC-010-017 (new) — row 19 "Grant copies" follows rows 1–18 (labels and order unchanged); select in catalogue order by name, count 1..9 default 1; Grant dispatches debugGrantCopies', async () => {
+    const s = await setup(); open(s);
+    const labels = [...panelOf(s.root).querySelectorAll('.tpp-debug-row > label')].map(l => l.textContent);
+    expect(labels).toEqual([...ROWS_1_18, 'Grant copies', 'Unlock garden', 'Fill garden', 'Fulfil active want']); // WORK-034-2 appends 20–22
+    const select = rowOf(s.root, 'Grant copies').querySelector('select')!;
+    expect([...select.options].map(o => [o.value, o.textContent])).toEqual(content.charms.types.map(t => [t.id, t.name]));
+    const count = rowOf(s.root, 'Grant copies').querySelector<HTMLInputElement>('input')!;
+    expect([count.type, count.min, count.max, count.value]).toEqual(['number', '1', '9', '1']);
+    const dispatch = vi.spyOn(s.context.store, 'dispatch');
+    select.value = 'vase'; count.value = '2';
+    const before = s.context.store.getState().inventory.counts.vase ?? 0;
+    click(buttons(s.root, 'Grant copies')[0]);
+    expect(dispatch.mock.calls.map(c => c[0])).toEqual([{ type: 'debugGrantCopies', typeId: 'vase', count: 2 }]);
+    expect(s.context.store.getState().inventory.counts.vase).toBe(before + 2);
+    expect(linesOf(s.context, 'items.granted').at(-1)).toMatchObject({ typeId: 'vase', count: 2, source: 'debug' });
+  });
+
+  it('VERIFY-T2-SITE-010 panel half — rows 20–22 render after Grant copies; Fulfil dispatches debugFulfilActiveWant for the chosen pet; site rows dispatch nothing without a site', async () => {
+    const s = await setup(); open(s);
+    const select = rowOf(s.root, 'Fulfil active want').querySelector('select')!;
+    expect([...select.options].map(o => o.value)).toEqual(Object.keys(content.pets));
+    const dispatch = vi.spyOn(s.context.store, 'dispatch');
+    click(buttons(s.root, 'Unlock garden')[0]); click(buttons(s.root, 'Fill garden')[0]);
+    expect(dispatch).not.toHaveBeenCalled(); // content-min has no street site
+    select.value = select.options[0].value;
+    click(buttons(s.root, 'Fulfil active want')[0]);
+    expect(dispatch.mock.calls.map(c => c[0])).toEqual([{ type: 'debugFulfilActiveWant', petId: select.options[0].value }]);
+  });
+
+  it('VERIFY-MEC-010-017 (new) — a count outside 1..9 is rejected by the sim and shown under the row', async () => {
+    const s = await setup(); open(s);
+    const row = rowOf(s.root, 'Grant copies');
+    row.querySelector('input')!.value = '12';
+    click(buttons(s.root, 'Grant copies')[0]);
+    expect(errorIn(s.root, 'Grant copies')).toMatch(/^Rejected: /);
   });
 });

@@ -48,7 +48,7 @@ export function rawContent(f: ContentFiles): Content {
             tags: Content['tags'];
         }).tags, charms: f['charms.json'], verbs: (f['verbs.json'] as {
             verbs: Content['verbs'];
-        }).verbs, street: f['street.json'], projects: (f['projects.json'] as {
+        }).verbs, street: { sites: [], ...(f['street.json'] as object) } as unknown as Content['street'], projects: (f['projects.json'] as {
             projects: Content['projects'];
         }).projects, merchants: (f['merchants.json'] as {
             merchants: Content['merchants'];

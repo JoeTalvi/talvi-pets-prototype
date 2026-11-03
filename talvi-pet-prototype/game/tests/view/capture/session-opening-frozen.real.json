@@ -1,8 +1,8 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "savedAt": "2026-01-01T00:00:00.000Z",
   "state": {
-    "schemaVersion": 1,
+    "schemaVersion": 2,
     "session": {
       "seed": 1234,
       "eventIntervalMs": null,
@@ -49,15 +49,16 @@
     },
     "celebration": null,
     "arrival": null,
+    "siteArrival": null,
     "inventory": {
-      "ownedTypeIds": [
-        "dog-bed",
-        "lamp",
-        "ball",
-        "food-bowl",
-        "painting",
-        "bookshelf"
-      ]
+      "counts": {
+        "dog-bed": 1,
+        "lamp": 1,
+        "ball": 1,
+        "food-bowl": 1,
+        "painting": 1,
+        "bookshelf": 1
+      }
     },
     "rooms": {
       "dog-room": {
@@ -65,6 +66,13 @@
       },
       "owl-room": {
         "placements": {}
+      }
+    },
+    "spaces": {
+      "garden": {
+        "unlocked": false,
+        "placements": {},
+        "arrivalDone": false
       }
     },
     "pets": {
@@ -77,6 +85,7 @@
           "look-at"
         ],
         "introduced": true,
+        "outside": false,
         "behaviour": {
           "phase": "idle",
           "x": 919,
@@ -89,7 +98,35 @@
         },
         "rngState": 2654436715,
         "recentTargets": [],
-        "wantBubbleInMs": 40000
+        "wantBubbleInMs": 40000,
+        "heartCharms": [],
+        "strippedPending": []
+      },
+      "owl-mate": {
+        "hearts": 0,
+        "fulfilledWantIds": [],
+        "revealedHiddenTags": {},
+        "verbs": [
+          "perch",
+          "look-at"
+        ],
+        "introduced": false,
+        "outside": true,
+        "behaviour": {
+          "phase": "idle",
+          "x": 160,
+          "y": 870,
+          "facing": "right",
+          "timerMs": 3000,
+          "target": null,
+          "verb": null,
+          "reaction": null
+        },
+        "rngState": 1013905312,
+        "recentTargets": [],
+        "wantBubbleInMs": 40000,
+        "heartCharms": [],
+        "strippedPending": []
       },
       "owl": {
         "hearts": 0,
@@ -100,6 +137,7 @@
           "look-at"
         ],
         "introduced": false,
+        "outside": false,
         "behaviour": {
           "phase": "idle",
           "x": 919,
@@ -110,9 +148,11 @@
           "verb": null,
           "reaction": null
         },
-        "rngState": 1013905312,
+        "rngState": 3668339193,
         "recentTargets": [],
-        "wantBubbleInMs": 40000
+        "wantBubbleInMs": 40000,
+        "heartCharms": [],
+        "strippedPending": []
       }
     }
   }

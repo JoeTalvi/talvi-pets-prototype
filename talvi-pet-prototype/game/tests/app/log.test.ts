@@ -51,7 +51,7 @@ describe('VERIFY-MEC-010-009 line schema', () => {
       expect(line).not.toHaveProperty('stateAfter');
     }
     expect(lines[0]).toEqual({ t: 0, wall: expect.stringMatching(WALL), type: 'session.started', build: 'tpp-test',
-      schemaVersion: 1, seed: 1, cadence: state.session.eventIntervalMs, feedPresentation: 'events', testerLabel: '',
+      schemaVersion: 2, seed: 1, cadence: state.session.eventIntervalMs, feedPresentation: 'events', testerLabel: '',
       userAgent: 'vitest', viewport: { w: 1920, h: 885, dpr: 3 } });
     if (EVIDENCE) (await import('node:fs')).writeFileSync(`${EVIDENCE}/sample-log.jsonl`, `${text}\n`);
   });

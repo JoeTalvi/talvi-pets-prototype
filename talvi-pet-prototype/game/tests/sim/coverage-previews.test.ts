@@ -27,9 +27,10 @@ describe('TOOL-003 coverage previews: panel', () => {
   });
 
   it('VERIFY-TOOL-003 --owned sets: starter, phase:n, hearts:k, all', () => {
-    expect(ownedSet(real, 'dog', 'starter')).toEqual(real.charms.starterSet);
-    expect(ownedSet(real, 'dog', 'phase:1')).toEqual([...real.charms.starterSet, 'fern', 'perch-branch']);
-    expect(ownedSet(real, 'dog', 'hearts:1')).toEqual([...real.charms.starterSet, 'rug', 'cushion']);
+    const starter = real.charms.starterSet.map(entry => entry.typeId);
+    expect(ownedSet(real, 'dog', 'starter')).toEqual(starter);
+    expect(ownedSet(real, 'dog', 'phase:1')).toEqual([...starter, 'fern', 'perch-branch']);
+    expect(ownedSet(real, 'dog', 'hearts:1')).toEqual([...starter, 'rug', 'cushion']);
     expect(ownedSet(real, 'dog', 'all')).toHaveLength(real.charms.types.length);
     expect(() => ownedSet(real, 'dog', 'phase:x')).toThrow();
     const owned = panelPreview(real, { kind: 'panel', petId: 'dog', wantId: 'bright-corner', owned: 'phase:1' });

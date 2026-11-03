@@ -1,0 +1,124 @@
+[
+  {
+    "file": "street.json",
+    "path": "/sites",
+    "value": [
+      {
+        "id": "garden",
+        "x": 200,
+        "y": 900,
+        "art": {
+          "empty": "houses/fixture",
+          "base": "houses/fixture"
+        },
+        "slots": [
+          {
+            "id": "g-s1",
+            "sizeClass": "small",
+            "x": 100,
+            "y": 800,
+            "anchor": {
+              "x": 100,
+              "y": 820,
+              "facing": "left"
+            },
+            "adjacent": [
+              "g-s2"
+            ]
+          },
+          {
+            "id": "g-s2",
+            "sizeClass": "small",
+            "x": 150,
+            "y": 800,
+            "anchor": {
+              "x": 150,
+              "y": 820,
+              "facing": "left"
+            },
+            "adjacent": [
+              "g-s1"
+            ]
+          },
+          {
+            "id": "g-s3",
+            "sizeClass": "small",
+            "x": 200,
+            "y": 800,
+            "anchor": {
+              "x": 200,
+              "y": 820,
+              "facing": "left"
+            },
+            "adjacent": []
+          },
+          {
+            "id": "g-s4",
+            "sizeClass": "small",
+            "x": 250,
+            "y": 800,
+            "anchor": {
+              "x": 250,
+              "y": 820,
+              "facing": "left"
+            },
+            "adjacent": []
+          },
+          {
+            "id": "g-s5",
+            "sizeClass": "small",
+            "x": 450,
+            "y": 960,
+            "anchor": {
+              "x": 300,
+              "y": 820,
+              "facing": "left"
+            },
+            "adjacent": []
+          },
+          {
+            "id": "g-l1",
+            "sizeClass": "large",
+            "x": 200,
+            "y": 850,
+            "anchor": {
+              "x": 220,
+              "y": 870,
+              "facing": "left"
+            },
+            "adjacent": []
+          }
+        ],
+        "wanderPoints": [
+          {
+            "id": "g-w1",
+            "x": 120,
+            "y": 900
+          },
+          {
+            "id": "g-w2",
+            "x": 300,
+            "y": 900
+          }
+        ],
+        "petSpawn": {
+          "x": 120,
+          "y": 900,
+          "facing": "right"
+        },
+        "residentPetId": "owl",
+        "arrivalPath": [
+          {
+            "x": 90,
+            "y": 900
+          },
+          {
+            "x": 120,
+            "y": 900
+          }
+        ],
+        "arrivalAtStars": 8
+      }
+    ]
+  }
+]

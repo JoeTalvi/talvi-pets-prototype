@@ -4,7 +4,7 @@ import { reduce } from '../../src/sim/reduce';
 import { buildScript, enqueueScript } from '../../src/sim/rules/dialogue';
 import type { GameState } from '../../src/sim/state';
 import { validContent } from '../content/helpers';
-import { advance, deepFreeze, designIn, eventsOf } from './helpers';
+import { advance, deepFreeze, designIn, eventsOf, giveCopies } from './helpers';
 
 const content = validContent();
 const tap = (petId: string): Action => ({ type: 'tapPet', petId });
@@ -19,7 +19,7 @@ function brightCorner(): GameState {
 /** Want 3 (feels-like-home) active; `placements` decide which tags are met. */
 function feelsLikeHome(placements: Record<string, string>): GameState {
   const state = designIn(content, ['soft-nap', 'bright-corner']);
-  state.inventory.ownedTypeIds.push('fern', 'ball');
+  giveCopies(state, ['fern', 'ball']);
   state.rooms['dog-room'].placements = placements;
   return state;
 }

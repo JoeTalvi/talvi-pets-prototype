@@ -69,7 +69,7 @@ function dispatch(content: Content, run: Run, action: Action): SimEvent[] {
 function placementsFor(content: Content, options: PetOptions): Map<string, string> {
   const placements = new Map<string, string>();
   const pool = options.fill === 'all' ? content.charms.types
-    : content.charms.types.filter(type => content.charms.starterSet.includes(type.id));
+    : content.charms.types.filter(type => content.charms.starterSet.some(item => item.typeId === type.id));
   if (options.fill !== 'none')
     for (const slot of content.rooms[options.room].slots) {
       const type = pool.find(candidate => candidate.sizeClass === slot.sizeClass);
@@ -77,6 +77,17 @@ function placementsFor(content: Content, options: PetOptions): Map<string, strin
     }
   for (const [slotId, typeId] of options.place) placements.set(slotId, typeId);
   return placements;
+}
+
+/** DEC-043: a fill may repeat a type across slots; the preview tops `counts` up so every listed placement has a
+ * copy in hand (a synthetic setup edit like `enterRoom`, no events). */
+function withCopiesFor(state: GameState, typeIds: string[]): GameState {
+  const needed: Record<string, number> = {};
+  typeIds.forEach(id => { needed[id] = (needed[id] ?? 0) + 1; });
+  const next = structuredClone(state);
+  for (const [id, count] of Object.entries(needed))
+    if (Object.hasOwn(next.inventory.counts, id)) next.inventory.counts[id] = Math.max(next.inventory.counts[id], count);
+  return next;
 }
 
 function enterRoom(content: Content, state: GameState, roomId: string): GameState {
@@ -101,8 +112,9 @@ function setup(content: Content, options: PetOptions): Run {
   const run: Run = { state: options.initial ?? initialState(content, options.seed), elapsedMs: 0, lines: [], events: [] };
   const placements = placementsFor(content, options);
   const wanted = [...placements.values(), ...options.at.flatMap(edit => (edit.typeId ? [edit.typeId] : []))];
-  if (options.fill === 'all' || wanted.some(id => !run.state.inventory.ownedTypeIds.includes(id)))
+  if (options.fill === 'all' || wanted.some(id => !Object.hasOwn(run.state.inventory.counts, id)))
     dispatch(content, run, { type: 'debugUnlockAllTypes' });
+  run.state = withCopiesFor(run.state, [...placements.values()]);
   run.state = enterRoom(content, run.state, options.room);
   dispatch(content, run, { type: 'debugSetEventInterval', ms: null });
   designEdit(content, run, [...placements].map(([slotId, typeId]) => ({ type: 'placeCharm', slotId, typeId })));

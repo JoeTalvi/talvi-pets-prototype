@@ -27,20 +27,38 @@
       "residentPetId": "owl",
       "phaseRewards": [
         [
-          "fern",
-          "ball"
+          {
+            "typeId": "fern",
+            "count": 1
+          },
+          {
+            "typeId": "ball",
+            "count": 1
+          }
         ],
         [
-          "lamp-planter"
+          {
+            "typeId": "lamp-planter",
+            "count": 1
+          }
         ],
         [
-          "bookshelf"
+          {
+            "typeId": "bookshelf",
+            "count": 1
+          }
         ],
         [
-          "perch-branch"
+          {
+            "typeId": "perch-branch",
+            "count": 1
+          }
         ],
         [
-          "tall-lamp"
+          {
+            "typeId": "tall-lamp",
+            "count": 1
+          }
         ]
       ],
       "clueCards": [

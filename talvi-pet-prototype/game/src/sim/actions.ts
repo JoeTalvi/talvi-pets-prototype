@@ -1,4 +1,4 @@
-import type { CharmTypeId, PetId, ProjectId, SlotId } from './state';
+import type { CharmTypeId, PetId, ProjectId, SiteId, SlotId } from './state';
 
 /** Exact action vocabulary from core.md §2. Types do not imply implemented rules. */
 export type Action =
@@ -22,6 +22,10 @@ export type Action =
   | { type: 'debugJumpPhase'; projectId: ProjectId }
   | { type: 'debugCompleteProject'; projectId: ProjectId }
   | { type: 'debugUnlockAllTypes' }
+  | { type: 'debugGrantCopies'; typeId: CharmTypeId; count: number }
+  | { type: 'debugUnlockSpace'; siteId: SiteId }
+  | { type: 'debugFillSpace'; siteId: SiteId }
+  | { type: 'debugFulfilActiveWant'; petId: PetId }
   | { type: 'debugSetStarsVisible'; on: boolean }
   | { type: 'debugSetMuted'; on: boolean }
   | { type: 'debugSetTesterLabel'; text: string }

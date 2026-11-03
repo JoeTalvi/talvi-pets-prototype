@@ -54,7 +54,7 @@ describe('VERIFY-CORE-012 CONTRACT-PERSIST', () => {
     const written = storage.getItem(STORAGE_KEYS.save)!;
     const saved = JSON.parse(written);
     expect(Object.keys(saved)).toEqual(['schemaVersion', 'savedAt', 'state']);
-    expect(saved.schemaVersion).toBe(1);
+    expect(saved.schemaVersion).toBe(2);
     expect(saved.savedAt).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
     expect(loadSave(content, storage, log, SEED).state).toEqual(store.getState());
     // Play-session Q18 (2026-10-26): routine writes are no longer logged; failures still are (log.quota).
@@ -95,7 +95,7 @@ describe('VERIFY-CORE-012 CONTRACT-PERSIST', () => {
 
 describe('VERIFY-CORE-012 FX-SAVE-BAD and size budget', () => {
   it.each([
-    ['schema-0', 'schemaVersion'], ['parse-error', 'parse'],
+    ['schema-0', 'schemaVersion'], ['schema-1-tier1', 'schemaVersion'], ['parse-error', 'parse'],
     ['unknown-id', 'unknownContentId'], ['invariant', 'invariantViolation'],
   ])('VERIFY-CORE-012 (b) FX-SAVE-BAD %s → fresh state and one save.discarded {reason: %s}', (name, reason) => {
     const content = validContent();
@@ -103,6 +103,18 @@ describe('VERIFY-CORE-012 FX-SAVE-BAD and size budget', () => {
     expect(loaded).toEqual({ state: initialState(content, SEED), source: 'fresh', reason });
     expect(linesOf(log, 'save.discarded').map(({ type, reason }) => ({ type, reason })))
       .toEqual([{ type: 'save.discarded', reason }]);
+  });
+
+  it('VERIFY-CORE-013 (new) a real tier 1 save (schemaVersion 1, ownedTypeIds) is discarded schemaVersion and the game starts fresh at version 2', () => {
+    const content = validContent();
+    const tier1 = JSON.parse(fixtureText('save-bad/schema-1-tier1.json'));
+    expect(tier1.schemaVersion).toBe(1);
+    expect(tier1.state.inventory).toHaveProperty('ownedTypeIds');
+    expect(parseSave(content, fixtureText('save-bad/schema-1-tier1.json'))).toEqual({ discarded: 'schemaVersion' });
+    const { log, loaded } = boot(content, fixtureText('save-bad/schema-1-tier1.json'));
+    expect(loaded.source).toBe('fresh');
+    expect(loaded.state.schemaVersion).toBe(2);
+    expect(linesOf(log, 'save.discarded').map(({ reason }) => reason)).toEqual(['schemaVersion']);
   });
 
   it('VERIFY-CORE-012 (b) an absent tpp.save → fresh with no save.discarded', () => {
@@ -135,7 +147,10 @@ function fullProgress(content: Content): GameState {
   store.dispatch({ type: 'debugUnlockAllTypes' });
   for (const slot of content.rooms['dog-room'].slots) {
     drain(store);
-    const type = chooserTypes(content, store.getState(), slot.id)[0];
+    const listed = chooserTypes(content, store.getState(), slot.id);
+    // DEC-043: a slot class with more slots than types takes a second copy from the TEST-002 arm.
+    let type = listed.find(candidate => store.getState().inventory.counts[candidate.id] > 0);
+    if (!type) { type = listed[0]; store.dispatch({ type: 'debugGrantCopies', typeId: type.id, count: 1 }); }
     store.dispatch({ type: 'placeCharm', slotId: slot.id, typeId: type.id });
   }
   drain(store);
@@ -221,10 +236,10 @@ describe('VERIFY-MEC-002-021 replay on load', () => {
     store.subscribeAll(event => seen.push(event));
     store.start();
     expect(seen).toEqual([replay(saved.state.celebration.unlockedTypeIds)]);
-    const owned = store.getState().inventory.ownedTypeIds;
+    const owned = store.getState().inventory.counts;
     store.dispatch(passed);
     expect(seen.slice(1)).toEqual([expect.objectContaining({ type: 'action.rejected', reason: 'wrongStep' })]);
-    expect(store.getState().inventory.ownedTypeIds).toEqual(owned);
+    expect(store.getState().inventory.counts).toEqual(owned);
   });
 
   it('VERIFY-MEC-002-021 save-v1 (celebration null) publishes nothing on start()', () => {
@@ -247,8 +262,8 @@ describe('VERIFY-MEC-009-020 mid-chain persistence', () => {
     expect(pets.dog.hearts).toBe(1);
     expect(pets.dog.fulfilledWantIds).toHaveLength(1);
     const reward = content.pets.dog.wants[0].reward;
-    expect(reward).toEqual({ kind: 'types', typeIds: ['rug', 'cushion'] });
-    if (reward.kind === 'types') expect(inventory.ownedTypeIds).toEqual(expect.arrayContaining(reward.typeIds));
+    expect(reward).toEqual([{ kind: 'items', items: [{ typeId: 'rug', count: 1 }, { typeId: 'cushion', count: 1 }] }]);
+    expect(inventory.counts).toMatchObject({ rug: 1, cushion: 1 });
     expect(dialogue.current).toMatchObject({ source: 'vignette', index: 0 });
     const store = createStore(content, loaded.state);
     const seen: SimEvent[] = [];

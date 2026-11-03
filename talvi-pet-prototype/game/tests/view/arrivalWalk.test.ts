@@ -58,7 +58,7 @@ it(`${t}path, speed, flip, depth, 🎵, fade, arrivalFinished once (HEADLESS jsd
   expect(sprite.anims.currentAnim?.key).toBe('pet-owl-walk');
   expect(sprite.flipX).toBe(true);
   expect(sprite.depth).toBeGreaterThan(scene.houses.get('pet-house')!.depth);
-  expect(Math.round(doorMs)).toBe(789);
+  expect(Math.round(doorMs)).toBe(729); // WORK-032-1 path (1820,910)→(1680,985)→(1490,965), 349.9 px at 0.48 px/ms
   expect(walk.plan).toEqual({ doorMs, fadeMs: doorMs + content.tuning.bubbleMs, finishMs: doorMs + content.tuning.bubbleMs + ARRIVAL_FADE_MS });
   run(scene, 300);
   const f = 300 * speed / seg[0];

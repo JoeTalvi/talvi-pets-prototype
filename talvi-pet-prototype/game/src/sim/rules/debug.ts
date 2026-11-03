@@ -3,7 +3,7 @@ import type { Action } from '../actions';
 import type { RuleResult, SimEvent } from '../events';
 import { initialState, type GameState } from '../state';
 import { generateRoundup } from './feed';
-import { grantTypes } from './inventory';
+import { grantItems, isGranted } from './inventory';
 import { ackFloorCents, activeProjectId, boundaryCents, creditProject, phaseOf, projectOf } from './projects';
 
 type ActionOf<T extends Action['type']> = Extract<Action, { type: T }>;
@@ -67,10 +67,18 @@ export function debugProgress(content: Content, state: GameState,
   return applied(action, creditProject(content, state, action.projectId, target));
 }
 
-/** MEC-004 R6 'debug': every type in `charms.types` file order. */
+/** MEC-004 R6 'debug' (v1.5): one copy of every type with no `counts` key, in `charms.types` file order;
+ * a second use grants nothing. */
 export function debugUnlockAllTypes(content: Content, state: GameState,
   action: ActionOf<'debugUnlockAllTypes'>): RuleResult {
-  return applied(action, grantTypes(content, state, content.charms.types.map(type => type.id), 'debug'));
+  const items = content.charms.types.filter(type => !isGranted(state, type.id)).map(type => ({ typeId: type.id, count: 1 }));
+  return applied(action, grantItems(content, state, items, 'debug'));
+}
+
+/** TEST-002 arm (MEC-010, DEC-043): `count` more copies of one type; the payload range is checked by `reduce`. */
+export function debugGrantCopies(content: Content, state: GameState, action: ActionOf<'debugGrantCopies'>): RuleResult {
+  if (!content.charms.types.some(type => type.id === action.typeId)) return reject(state, action, 'unknownType');
+  return applied(action, grantItems(content, state, [{ typeId: action.typeId, count: action.count }], 'debug'));
 }
 
 /** MEC-010 D3: write the field; idempotent. */

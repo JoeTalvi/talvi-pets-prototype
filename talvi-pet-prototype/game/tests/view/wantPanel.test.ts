@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import './setup';
+import { readFileSync } from 'node:fs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { destroyScene } from './sceneHarness';
 import { click, designSetup, linesOf } from './designHarness';
@@ -77,5 +78,27 @@ describe('core §3 ui.wantPanel', () => {
     expect(panel(s).dataset.state).toBe('normal');
     expect([textOf(s, '.tpp-want-brief'), pills(s).length, textOf(s, '.tpp-want-reward').length]).toEqual([['soft nap'], 2, 1]);
     expect(linesOf(s.context, 'ui.wantPanel')).toEqual([{ type: 'ui.wantPanel', expanded: true }, { type: 'ui.wantPanel', expanded: false }]);
+  });
+});
+
+describe('VERIFY-MEC-009-026 "n charms" reward labels (DEC-043)', () => {
+  const real = (pet: string) => JSON.parse(readFileSync(`src/content/pets/${pet}.json`, 'utf8')) as
+    { wants: { id: string; rewardLabel: string; reward: { kind: string; items?: { count: number }[] }[] }[] };
+
+  it('VERIFY-MEC-009-026 (new) — the want panel reads "Reward: 2 charms: Rug and Cushion" from the Dog\'s real want 1 label', async () => {
+    const s = await designSetup({ patches: [{ file: 'pets/dog.json', path: '/wants/0/rewardLabel', value: real('dog').wants[0].rewardLabel }] });
+    expect(textOf(s, '.tpp-want-reward')).toEqual(['Reward: 2 charms: Rug and Cushion']);
+  });
+
+  it('VERIFY-MEC-009-026 (new) — every items reward in the real pets reads "<copies> charms: …" (Owl want 2 "2 charms: Potted Tree, Night Light"); no "charm types" remains', () => {
+    for (const pet of ['dog', 'owl']) for (const want of real(pet).wants) {
+      const copies = want.reward.flatMap(entry => entry.items ?? []).reduce((sum, item) => sum + item.count, 0);
+      // WORK-034-2: a reward that also unlocks a site names the site and the charms instead of "<copies> charms: …".
+      const unlocksSite = want.reward.some(entry => entry.kind === 'space');
+      if (copies > 0 && !unlocksSite) expect(want.rewardLabel).toMatch(new RegExp(`^${copies} charms: `));
+      expect(want.rewardLabel).not.toMatch(/charm types/);
+      expect(want.rewardLabel.length).toBeLessThanOrEqual(40);
+    }
+    expect(real('owl').wants[1].rewardLabel).toBe('Garden + Potted Tree, Night Light');
   });
 });

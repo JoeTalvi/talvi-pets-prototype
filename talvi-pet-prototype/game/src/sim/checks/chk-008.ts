@@ -24,7 +24,7 @@ function checkPetLines(p: Content["pets"][string]): Finding[] {
     const { out, add, line } = lineReporter();
     const f = `pets/${p.id}.json`;
     for (const key of [
-        'greeting', 'chatter', 'dislike', 'intro'
+        'greeting', 'chatter', 'dislike', 'intro', 'stripped' // stripped: WORK-033-2-1 A2
     ] as const) {
         if (p.lines[key].length < (key === 'chatter' ? 2 : 1))
             add('01', f, '/lines/' + key, `Insufficient ${key} lines`);

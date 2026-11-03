@@ -13,7 +13,7 @@ type Tuning = Pick<Content['tuning'], 'bubbleMs' | 'bubbleTextMs'>;
 type Current = BubbleShow & { ageMs: number; lifeMs: number };
 
 /** mec-008 §2.1 reaction emoji; no new emoji set (art bible v1.4). */
-export const REACTION_EMOJI: Record<Reaction, string> = { love: '❤️', like: '🙂', dislike: '💢', interrupted: '🤔', greeting: '🎵' };
+export const REACTION_EMOJI: Record<Reaction, string> = { love: '❤️', like: '🙂', dislike: '💢', interrupted: '🤔', greeting: '🎵', stripped: '😢' };
 export const BUBBLE_DEPTH = 8000;
 const FADE_MS = 200;
 const MIN_W = 168, MIN_H = 128, PADDING = 48, ICON = 72;

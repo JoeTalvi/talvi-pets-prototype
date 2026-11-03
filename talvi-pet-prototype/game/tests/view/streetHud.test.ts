@@ -63,7 +63,7 @@ describe('VERIFY-MEC-002-026 street HUD bar', () => {
   it(`${t}hidden in an interior, shown on the street; the door walk (scene.changed) hides it`, () => {
     expect(hud(designIn(content)).section.hidden).toBe(true);
     const state = owing(content, 1, 1260);
-    state.avatar = { ...state.avatar, x: 480, y: 830, facing: 'up', immunityMs: 0 };
+    state.avatar = { ...state.avatar, x: 480, y: 900, facing: 'up', immunityMs: 0 };
     const h = hud(state);
     expect(h.section.hidden).toBe(false);
     h.dispatch({ type: 'tick', dtMs: 16, move: { x: 0, y: -1 } });
@@ -71,11 +71,12 @@ describe('VERIFY-MEC-002-026 street HUD bar', () => {
     expect(h.section.hidden).toBe(true);
   });
 
-  it(`${t}"More homes coming" iff activeProjectId === null (debugCompleteProject)`, () => {
+  it(`${t}WORK-034-3: "More homes coming" is retired (interim contract) — absent with or without an active project`, () => {
     const h = hud(owing(content, 1, 1260));
-    expect(h.q('.tpp-more-homes').hidden).toBe(true);
+    expect(h.section.querySelector('.tpp-more-homes')).toBeNull();
     h.dispatch({ type: 'debugCompleteProject', projectId: 'pet-house' });
-    expect([h.q('.tpp-more-homes').hidden, h.q('.tpp-more-homes').textContent]).toEqual([false, 'More homes coming']);
+    expect(h.section.querySelector('.tpp-more-homes')).toBeNull();
+    expect(h.section.textContent).not.toContain('More homes coming');
   });
 });
 

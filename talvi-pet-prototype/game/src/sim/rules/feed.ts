@@ -28,10 +28,17 @@ export function generateRoundup(content: Content, state: GameState): RuleResult 
   return { state: credit.state, events: [fired, ...credit.events] };
 }
 
-/** Tick step 3 (core §4): runs in every scene and mode; a frozen or finished feed banks no time. */
+/** WORK-032-1 fix 1: a dialogue is open, or the orientation is still owed (step 5 enqueues it after this step
+ * on a fresh save's first tick). Deliberately not `inputFrozen`: design mode, celebrations and the arrival accrue. */
+function feedPaused(state: GameState): boolean {
+  return state.dialogue.current !== null || !state.session.orientationShown;
+}
+
+/** Tick step 3 (core §4): runs in every scene and mode; a frozen or finished feed, an open dialogue or an owed
+ * orientation banks no time. */
 export function stepFeed(content: Content, state: GameState, action: TickAction): RuleResult {
   const interval = state.session.eventIntervalMs;
-  if (interval === null || activeProjectId(content, state) === null) return { state, events: [] };
+  if (interval === null || feedPaused(state) || activeProjectId(content, state) === null) return { state, events: [] };
   const since = state.feed.sinceLastEventMs + action.dtMs;
   if (since < interval) return { state: { ...state, feed: { ...state.feed, sinceLastEventMs: since } }, events: [] };
   return generateRoundup(content, { ...state, feed: { ...state.feed, sinceLastEventMs: since - interval } });

@@ -9,7 +9,7 @@ import { fulfil, hiddenTagOfActiveWant } from '../../src/sim/rules/wants';
 import { activeWant, missingWantTags, starsOf, tagAvailability, wantConditions } from '../../src/sim/select';
 import type { GameState } from '../../src/sim/state';
 import { files, manifest, patchFiles } from '../content/helpers';
-import { deepFreeze, dogRoomDesign } from './helpers';
+import { deepFreeze, dogRoomDesign, giveCopies } from './helpers';
 
 const place = (slotId: string, typeId: string): Action => ({ type: 'placeCharm', slotId, typeId });
 const remove = (slotId: string): Action => ({ type: 'removeCharm', slotId });
@@ -29,7 +29,7 @@ function dogRoom(fulfilled: string[], owned: string[] = [], placements: Record<s
   const { content, state } = dogRoomDesign();
   state.pets.dog.fulfilledWantIds = [...fulfilled];
   state.pets.dog.hearts = fulfilled.length;
-  state.inventory.ownedTypeIds.push(...owned);
+  giveCopies(state, [...owned]);
   state.rooms['dog-room'].placements = { ...placements };
   return { content, state };
 }
@@ -63,7 +63,7 @@ it('VERIFY-MEC-009-004 adjacency fulfils bright-corner and unlocks sit-on once',
   const progressed = result.events.find(event => event.type === 'want.progressed');
   expect(progressed).toMatchObject({ wantId: 'bright-corner', conditions: [{ met: true }, { met: true }, { kind: 'adjacent', met: true }] });
   expect(result.events).toContainEqual({ type: 'want.fulfilled', petId: 'dog', wantId: 'bright-corner', hearts: 2,
-    reward: { kind: 'verb', verb: 'sit-on' }, focusSlotId: 'floor-2' });
+    reward: [{ kind: 'verb', verb: 'sit-on' }], focusSlotId: 'floor-2' });
   expect(result.events.filter(event => event.type === 'verb.unlocked')).toEqual([{ type: 'verb.unlocked', petId: 'dog', verb: 'sit-on' }]);
   expect(result.state.pets.dog.verbs.filter(verb => verb === 'sit-on')).toHaveLength(1);
   expect(result.state.pets.dog.hearts).toBe(2);
@@ -179,22 +179,22 @@ it('VERIFY-MEC-009-014 the last want exhausts the pet; later placements emit no 
  * ball leaves phase 1 and the Owl's want rewards toy-mouse so `toy` is sourced only by a Heart. */
 function labelContent(): Content {
   return loadContent(manifest, patchFiles(files(), [
-    { file: 'charms.json', path: '/starterSet', value: ['dog-bed', 'lamp', 'painting', 'stool', 'picture'] },
-    { file: 'projects.json', path: '/projects/1/phaseRewards/0', value: ['fern'] },
-    { file: 'pets/owl.json', path: '/wants/0/reward', value: { kind: 'types', typeIds: ['toy-mouse'] } },
+    { file: 'charms.json', path: '/starterSet', value: ['dog-bed', 'lamp', 'painting', 'stool', 'picture'].map(typeId => ({ typeId, count: 1 })) },
+    { file: 'projects.json', path: '/projects/1/phaseRewards/0', value: [{ typeId: 'fern', count: 1 }] },
+    { file: 'pets/owl.json', path: '/wants/0/reward', value: [{ kind: 'items', items: [{ typeId: 'toy-mouse', count: 1 }] }] },
   ]));
 }
 
 it('VERIFY-MEC-009-015 all five availability labels (in-test content variant); phase 1 granted turns nextPhase into owned', () => {
   const content = labelContent();
   const state = dogRoomDesign().state;
-  state.inventory.ownedTypeIds = [...content.charms.starterSet];
+  state.inventory.counts = Object.fromEntries(content.charms.starterSet.map(entry => [entry.typeId, entry.count]));
   deepFreeze(state);
   expect(['soft', 'plant', 'tall', 'toy', 'food'].map(tag => tagAvailability(content, state, tag)))
     .toEqual(['owned', 'nextPhase', 'laterPhase', 'heart', 'never']);
   const collected = structuredClone(state) as GameState;
   collected.projects['pet-house'].acknowledgedPhase = 1;
-  collected.inventory.ownedTypeIds.push('fern');
+  giveCopies(collected, ['fern']);
   expect(tagAvailability(content, collected, 'plant')).toBe('owned');
   expect(tagAvailability(content, collected, 'tall')).toBe('laterPhase');
 });
@@ -207,7 +207,7 @@ it('VERIFY-MEC-009-016 a want satisfied at activation completes on the next remo
   expect(wantConditions(content, first.state, 'dog').every(view => view.met)).toBe(true);
   const removal = step(content, closeAll(content, first.state), remove('floor-5'));
   expect(removal.events).toContainEqual({ type: 'want.fulfilled', petId: 'dog', wantId: 'bright-corner', hearts: 2,
-    reward: { kind: 'verb', verb: 'sit-on' }, focusSlotId: 'floor-1' });
+    reward: [{ kind: 'verb', verb: 'sit-on' }], focusSlotId: 'floor-1' });
   expect(removal.state.dialogue.current).toMatchObject({ source: 'vignette', wantId: 'bright-corner' });
 });
 
@@ -220,4 +220,18 @@ it('VERIFY-MEC-009-018 partial: hearts equal fulfilledWantIds through a full Dog
     expect(current.pets.dog.hearts).toBe(current.pets.dog.fulfilledWantIds.length);
   }
   expect(current.pets.dog.fulfilledWantIds).toEqual(content.pets.dog.wants.map(want => want.id));
+});
+
+it('VERIFY-MEC-009-024 (new) a Heart items reward grants copies with source heart; want.fulfilled.reward is the array; a verb entry still emits verb.unlocked', () => {
+  const { content, state } = dogRoom([]);
+  const result = step(content, state, place('large-1', 'dog-bed'));
+  const fulfilled = result.events.find(event => event.type === 'want.fulfilled');
+  expect(fulfilled).toMatchObject({ wantId: 'soft-nap', reward: content.pets.dog.wants[0].reward });
+  expect(Array.isArray((fulfilled as { reward: unknown }).reward)).toBe(true);
+  expect(result.events.filter(event => event.type === 'items.granted')).toEqual([
+    { type: 'items.granted', typeId: 'rug', count: 1, source: 'heart' },
+    { type: 'items.granted', typeId: 'cushion', count: 1, source: 'heart' }]);
+  expect(result.state.inventory.counts).toMatchObject({ rug: 1, cushion: 1 });
+  const { result: adjacency } = afterAdjacency();
+  expect(adjacency.events.filter(event => event.type === 'verb.unlocked')).toEqual([{ type: 'verb.unlocked', petId: 'dog', verb: 'sit-on' }]);
 });

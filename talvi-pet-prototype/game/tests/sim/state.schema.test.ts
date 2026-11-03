@@ -4,7 +4,7 @@ import { parseSaveValue } from '../../src/sim/state.schema';
 import { reduce } from '../../src/sim/reduce';
 import type { GameState } from '../../src/sim/state';
 import { validContent } from '../content/helpers';
-import { deepFreeze } from './helpers';
+import { deepFreeze, giveCopies } from './helpers';
 
 const content = validContent();
 const saveV1Text = readFileSync('tests/fixtures/save-v1.json', 'utf8');
@@ -19,9 +19,10 @@ it('CONTRACT-PERSIST v1.4 parseSaveValue FX-SAVE-V1 (generated) → { state } de
     .some(event => event.type === 'action.rejected')).toBe(false);
 });
 
-it('CONTRACT-PERSIST v1.4 parseSaveValue schemaVersion 0 → discarded schemaVersion (checked before the shape)', () => {
+it('CONTRACT-PERSIST v1.5 parseSaveValue schemaVersion 0 or 1 (tier 1) → discarded schemaVersion (checked before the shape)', () => {
   expect(parseSaveValue(content, { ...saveV1(), schemaVersion: 0 })).toEqual({ discarded: 'schemaVersion' });
-  expect(parseSaveValue(content, { schemaVersion: 2 })).toEqual({ discarded: 'schemaVersion' });
+  expect(parseSaveValue(content, { ...saveV1(), schemaVersion: 1 })).toEqual({ discarded: 'schemaVersion' });
+  expect(parseSaveValue(content, { schemaVersion: 3 })).toEqual({ discarded: 'schemaVersion' });
 });
 
 it('CONTRACT-PERSIST v1.4 parseSaveValue a string, null, an array or a truncated object → discarded parse', () => {
@@ -36,12 +37,13 @@ it('CONTRACT-PERSIST v1.4 parseSaveValue a string, null, an array or a truncated
   expect(parseSaveValue(content, wrongType)).toEqual({ discarded: 'parse' });
 });
 
-it('CONTRACT-PERSIST v1.4 parseSaveValue an owned type id, placement slot or want id absent from content → discarded unknownContentId', () => {
-  const owned = saveV1(); owned.state.inventory.ownedTypeIds.push('unicorn-lamp');
+it('CONTRACT-PERSIST v1.5 parseSaveValue a counted type id, placement slot or want id absent from content → discarded unknownContentId', () => {
+  const owned = saveV1(); giveCopies(owned.state, ['unicorn-lamp']);
   const slot = saveV1(); slot.state.rooms['dog-room'].placements['floor-99'] = 'lamp';
   const want = saveV1(); want.state.pets.dog.fulfilledWantIds = ['no-such-want']; want.state.pets.dog.hearts = 1;
   const project = saveV1(); project.state.projects['old-house'] = { ...project.state.projects['pet-house'] };
-  for (const save of [owned, slot, want, project]) expect(parseSaveValue(content, save)).toEqual({ discarded: 'unknownContentId' });
+  const heart = saveV1(); heart.state.pets.dog.heartCharms = ['unicorn-lamp'];
+  for (const save of [owned, slot, want, project, heart]) expect(parseSaveValue(content, save)).toEqual({ discarded: 'unknownContentId' });
 });
 
 it('CONTRACT-PERSIST v1.4 parseSaveValue hearts ≠ fulfilledWantIds.length → discarded invariantViolation', () => {

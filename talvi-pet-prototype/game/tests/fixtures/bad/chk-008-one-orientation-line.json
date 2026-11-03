@@ -235,20 +235,38 @@
         "residentPetId": "owl",
         "phaseRewards": [
           [
-            "fern",
-            "ball"
+            {
+              "typeId": "fern",
+              "count": 1
+            },
+            {
+              "typeId": "ball",
+              "count": 1
+            }
           ],
           [
-            "lamp-planter"
+            {
+              "typeId": "lamp-planter",
+              "count": 1
+            }
           ],
           [
-            "bookshelf"
+            {
+              "typeId": "bookshelf",
+              "count": 1
+            }
           ],
           [
-            "perch-branch"
+            {
+              "typeId": "perch-branch",
+              "count": 1
+            }
           ],
           [
-            "tall-lamp"
+            {
+              "typeId": "tall-lamp",
+              "count": 1
+            }
           ]
         ],
         "clueCards": [
@@ -463,12 +481,30 @@
       }
     ],
     "starterSet": [
-      "dog-bed",
-      "lamp",
-      "painting",
-      "stool",
-      "vase",
-      "picture"
+      {
+        "typeId": "dog-bed",
+        "count": 1
+      },
+      {
+        "typeId": "lamp",
+        "count": 1
+      },
+      {
+        "typeId": "painting",
+        "count": 1
+      },
+      {
+        "typeId": "stool",
+        "count": 1
+      },
+      {
+        "typeId": "vase",
+        "count": 1
+      },
+      {
+        "typeId": "picture",
+        "count": 1
+      }
     ]
   },
   "verbs.json": {
@@ -476,7 +512,7 @@
       {
         "id": "sit-on",
         "name": "sit-on",
-        "emote": "\u2728",
+        "emote": "✨",
         "emoteText": "{pet} settles in.",
         "tags": [
           "seat"
@@ -486,7 +522,7 @@
       {
         "id": "nap",
         "name": "nap",
-        "emote": "\ud83d\ude34",
+        "emote": "😴",
         "emoteText": "{pet} is napping.",
         "tags": [
           "soft"
@@ -496,7 +532,7 @@
       {
         "id": "look-at",
         "name": "look-at",
-        "emote": "\ud83d\udc40",
+        "emote": "👀",
         "emoteText": "{pet} is taking a look.",
         "tags": [
           "plant",
@@ -508,7 +544,7 @@
       {
         "id": "perch",
         "name": "perch",
-        "emote": "\ud83e\udd89",
+        "emote": "🦉",
         "emoteText": "{pet} perches up high.",
         "tags": [
           "tall"
@@ -523,6 +559,7 @@
     "tpp.bubble.dislike": "Fixture",
     "tpp.bubble.interrupted": "Fixture",
     "tpp.bubble.greeting": "Fixture",
+    "tpp.bubble.stripped": "Fixture",
     "tpp.bubble.want": "Fixture",
     "tpp.bubble.wantHidden": "Fixture",
     "tpp.bubble.chatter": "Fixture",
@@ -683,6 +720,9 @@
       "dislike": [
         "That is not for me."
       ],
+      "stripped": [
+        "Something is missing."
+      ],
       "intro": [
         "This is a synthetic fixture."
       ],
@@ -723,13 +763,21 @@
             "tag": "seat"
           }
         ],
-        "reward": {
-          "kind": "types",
-          "typeIds": [
-            "rug",
-            "cushion"
-          ]
-        },
+        "reward": [
+          {
+            "kind": "items",
+            "items": [
+              {
+                "typeId": "rug",
+                "count": 1
+              },
+              {
+                "typeId": "cushion",
+                "count": 1
+              }
+            ]
+          }
+        ],
         "rewardLabel": "Rug and Cushion"
       },
       {
@@ -750,10 +798,12 @@
             "tagB": "plant"
           }
         ],
-        "reward": {
-          "kind": "verb",
-          "verb": "sit-on"
-        },
+        "reward": [
+          {
+            "kind": "verb",
+            "verb": "sit-on"
+          }
+        ],
         "rewardLabel": "Sit on"
       },
       {
@@ -774,9 +824,11 @@
             "min": 24
           }
         ],
-        "reward": {
-          "kind": "vignette"
-        },
+        "reward": [
+          {
+            "kind": "vignette"
+          }
+        ],
         "rewardLabel": "Story"
       }
     ]
@@ -824,6 +876,9 @@
       "dislike": [
         "That is not for me."
       ],
+      "stripped": [
+        "Something is missing."
+      ],
       "intro": [
         "This is a synthetic fixture."
       ],
@@ -852,9 +907,11 @@
             "tag": "light"
           }
         ],
-        "reward": {
-          "kind": "vignette"
-        },
+        "reward": [
+          {
+            "kind": "vignette"
+          }
+        ],
         "rewardLabel": "Story"
       }
     ]

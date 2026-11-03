@@ -3,7 +3,8 @@ import type { Action } from '../actions';
 import type { RuleResult, SimEvent } from '../events';
 import type { GameState, ProjectId } from '../state';
 import { buildScript, enqueueScript } from './dialogue';
-import { grantTypes } from './inventory';
+import { grantItems } from './inventory';
+import { finishSiteArrival } from './sites';
 import {
   completeNowOffered, completeNowPriceCents, creditProject, owedPhases, phaseOf, projectOf,
 } from './projects';
@@ -29,8 +30,8 @@ export function startCelebration(content: Content, state: GameState, projectId: 
   const toPhase = phaseOf(state.projects[projectId].currentCents, project.goalCents);
   const unlockedTypeIds: string[] = [];
   for (let phase = fromPhase + 1; phase <= toPhase; phase++)
-    for (const id of project.phaseRewards[phase - 1] ?? [])
-      if (!unlockedTypeIds.includes(id)) unlockedTypeIds.push(id);
+    for (const { typeId } of project.phaseRewards[phase - 1] ?? [])
+      if (!unlockedTypeIds.includes(typeId)) unlockedTypeIds.push(typeId);
   const completes = toPhase === 5;
   const celebration: Celebration = { projectId, fromPhase, toPhase, completes,
     unlockedTypeIds, step: 'cutscene', skipTaken: false };
@@ -48,7 +49,7 @@ export function acknowledgeProject(content: Content, state: GameState,
     : owedPhases(content, state, action.projectId) <= 0 ? 'nothingOwed'
     : state.celebration !== null ? 'celebrationActive'
     : state.dialogue.current !== null ? 'dialogueOpen'
-    : state.arrival !== null ? 'arrivalActive'
+    : state.arrival !== null || state.siteArrival !== null ? 'arrivalActive'
     : state.mode === 'design' ? 'designMode' : null;
   return reason ? reject(state, action, reason) : startCelebration(content, state, action.projectId);
 }
@@ -73,7 +74,9 @@ export function cutsceneFinished(content: Content, state: GameState,
 function collect(content: Content, state: GameState): RuleResult {
   const celebration = state.celebration as Celebration;
   const { projectId, fromPhase, toPhase, completes } = celebration;
-  const granted = grantTypes(content, state, celebration.unlockedTypeIds, 'phase');
+  // DEC-043: every item of phases fromPhase+1..toPhase, phase then list order, one `items.granted` each.
+  const items = projectOf(content, projectId).phaseRewards.slice(fromPhase, toPhase).flat();
+  const granted = grantItems(content, state, items, 'phase');
   const project = granted.state.projects[projectId];
   const next: GameState = { ...granted.state,
     projects: { ...granted.state.projects, [projectId]: { ...project,
@@ -144,8 +147,9 @@ export function closeReveal(content: Content, state: GameState, action: ActionOf
   return chain(cleared, queueMessages(content, cleared.state, ended));
 }
 
-export function arrivalFinished(_content: Content, state: GameState, action: ActionOf<'arrivalFinished'>): RuleResult {
+export function arrivalFinished(content: Content, state: GameState, action: ActionOf<'arrivalFinished'>): RuleResult {
   const arrival = state.arrival;
+  if (arrival === null && state.siteArrival !== null) return finishSiteArrival(content, state);
   if (arrival === null) return reject(state, action, 'noArrival');
   const progress = state.projects[arrival.projectId];
   return { state: { ...state, arrival: null,

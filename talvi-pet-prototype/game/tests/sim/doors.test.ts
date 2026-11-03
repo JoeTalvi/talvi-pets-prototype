@@ -25,8 +25,8 @@ it('VERIFY-MEC-001-008 arrival immunity survives 400 ms in the street door, then
   const { content, state } = squareFixture();
   state.avatar.y = 130;
   let current = reduce(content, state, tick(0, -1)).state;
-  for (let index = 0; index < 4; index++) {
-    const result = reduce(content, current, tick(0, -1, 100));
+  for (let index = 0; index < 4; index++) { // WORK-032-1: a slow walk up from the spawn below the door into its rect
+    const result = reduce(content, current, tick(0, -0.2, 100));
     expect(result.events).toEqual([]);
     expect(result.state.scene).toEqual({ kind: 'street' });
     current = result.state;

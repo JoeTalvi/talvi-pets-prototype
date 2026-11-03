@@ -1,5 +1,5 @@
 import type { Content } from '../../src/content/types';
-import type { Want } from '../../src/content/schema/pet';
+import { rewardItems, type Want } from '../../src/content/schema/pet';
 import type { Finding } from '../../src/sim/checks';
 import { tagSources, typeSources, allGrantedTypes, reachableMax } from '../../src/sim/checks/coverage-data';
 import { petLineCount } from '../../src/sim/checks/chk-008';
@@ -18,15 +18,15 @@ export function coverage(c: Content, findings: Finding[], opts: {
                         id: w.id, announcePresent: !!p.lines.wantAnnounce[w.id], vignettePresent: !!p.lines.vignettes[w.id]?.length, vignetteLines: p.lines.vignettes[w.id]?.length ?? 0
                     }))
                 }, rewardKinds: Object.fromEntries([
-                    'types', 'verb', 'vignette'
+                    'items', 'verb', 'vignette'
                 ].map(k => [
-                    k, p.wants.filter(w => w.reward.kind === k).length
+                    k, p.wants.filter(w => w.reward.some(r => r.kind === k)).length
                 ]))
             }
         ])),
         types: Object.fromEntries(c.charms.types.map(t => [
             t.id, {
-                sources: typeSources(c, t.id), phase: typeUnlockPhase(c, t.id), doubleGrant: typeSources(c, t.id).length > 1
+                sources: typeSources(c, t.id), phase: typeUnlockPhase(c, t.id), doubleGrant: typeSources(c, t.id).length > 1, copies: copiesBySource(c, t.id)
             }
         ])),
         projects: Object.fromEntries(c.projects.filter(p => !p.completeAtStart && (!opts.project || opts.project === p.id)).map(p => [
@@ -34,6 +34,14 @@ export function coverage(c: Content, findings: Finding[], opts: {
                 cards: p.clueCards.map((card, i) => ({
                     index: i, hintTag: card.hintTag ?? null, earlyWantTag: c.pets[p.residentPetId]?.wants.slice(0, 2).some(w => w.conditions.some(x => x.kind === 'tag' && x.tag === card.hintTag)) ?? false, nameLeak: findings.some(f => f.ids.includes('CHK-003-04') && f.path === `/projects/${c.projects.indexOf(p)}/clueCards/${i}/line`)
                 }))
+            }
+        ])),
+        // WORK-034-2 (TOOL-003): the outdoor sites, their slots and resident (the mate's wants are listed under pets).
+        sites: Object.fromEntries(c.street.sites.map(site => [
+            site.id, {
+                residentPetId: site.residentPetId, arrivalAtStars: site.arrivalAtStars, max: site.slots.length * c.tuning.starsFirstCopy,
+                slots: site.slots.map(slot => ({ id: slot.id, sizeClass: slot.sizeClass, x: slot.x, y: slot.y, adjacent: slot.adjacent })),
+                unlockedBy: Object.values(c.pets).flatMap(p => p.wants.filter(w => w.reward.some(r => r.kind === 'space' && r.siteId === site.id)).map(w => `${p.id}/${w.id}`))
             }
         ])),
         rooms: Object.fromEntries(Object.values(c.rooms).map(r => [
@@ -45,6 +53,15 @@ export function coverage(c: Content, findings: Finding[], opts: {
                 ] : [])) ?? []
             }
         ])), findings
+    };
+}
+/** DEC-043: copies of one type granted by each source (starter, every project phase, every Heart). */
+function copiesBySource(c: Content, typeId: string): { starter: number; phase: number; heart: number } {
+    const sum = (items: { typeId: string; count: number }[]) => items.filter(item => item.typeId === typeId).reduce((n, item) => n + item.count, 0);
+    return {
+        starter: sum(c.charms.starterSet),
+        phase: sum(c.projects.flatMap(p => p.phaseRewards.flat())),
+        heart: sum(Object.values(c.pets).flatMap(p => p.wants.flatMap(rewardItems)))
     };
 }
 export function coverageText(c: Content, r: ReturnType<typeof coverage>): string {
@@ -62,11 +79,12 @@ export function coverageText(c: Content, r: ReturnType<typeof coverage>): string
             }
         }
     }
+    lines.push('B0 — Copies granted per type by source (DEC-043)', ...Object.entries(r.types).map(([id, t]) => `  ${id}: starter ${t.copies.starter}, phase ${t.copies.phase}, heart ${t.copies.heart}`));
     lines.push('B — Type unlock timeline', JSON.stringify(r.types, null, 2), 'C — Clue cards', JSON.stringify(r.projects, null, 2), 'D — Dialogue lines', JSON.stringify(Object.fromEntries(Object.entries(r.pets).map(([id, p]) => [
         id, p.lines
     ])), null, 2), 'E — Reward kinds', JSON.stringify(Object.fromEntries(Object.entries(r.pets).map(([id, p]) => [
         id, p.rewardKinds
-    ])), null, 2), 'F — Stars', JSON.stringify(r.rooms, null, 2));
+    ])), null, 2), 'F — Stars', JSON.stringify(r.rooms, null, 2), 'G — Sites', JSON.stringify(r.sites, null, 2));
     return lines.join('\n');
 }
 function wantCoverage(c: Content, petId: string, w: Want, index: number, findings: Finding[]) {
@@ -79,11 +97,11 @@ function wantCoverage(c: Content, petId: string, w: Want, index: number, finding
         }] : []);
     const relevant = findings.filter(f => (f.file === `pets/${petId}.json` && (f.path === '/wants' || f.path === `/wants/${index}` || f.path.startsWith(`/wants/${index}/`))) ||
         (f.ids.includes('CHK-009-08') && tags.some(t => t.tag === f.details?.tag)));
-    const checks = Object.fromEntries(['08', '09', '10', '12', '13', '15', '16'].map(n => {
+    const checks = Object.fromEntries(['08', '09', '10', '12', '13', '15', '16', '17'].map(n => {
         const id = `CHK-009-${n}`;
         const matches = relevant.filter(f => f.ids.includes(id));
         const applicable = n !== '16' || (petId === 'dog' && index === 0);
         return [id, { status: !applicable ? 'not-applicable' : matches.some(f => f.level === 'error') ? 'error' : matches.length ? 'warning' : 'pass', findings: matches }];
     }));
-    return { id: w.id, index, brief: w.brief, rewardKind: w.reward.kind, tags, checks, findings: relevant };
+    return { id: w.id, index, brief: w.brief, rewardKind: w.reward.map(r => r.kind).join('+'), tags, checks, findings: relevant };
 }

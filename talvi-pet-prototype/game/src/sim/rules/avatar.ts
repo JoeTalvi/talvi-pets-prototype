@@ -1,7 +1,7 @@
 import type { Point } from '../../content/schema/common';
 import type { Content } from '../../content/types';
 import type { TickAction } from '../actions';
-import { pointInPolygon } from '../geometry';
+import { walkable, type Rect } from '../geometry';
 import { inputFrozen } from '../select';
 import type { Facing, GameState } from '../state';
 
@@ -31,21 +31,23 @@ function stepFacing(avatar: GameState['avatar'], move: Point, dtMs: number, debo
     facingCandidate: { facing: next, heldMs } };
 }
 
-function slide(position: Point, delta: Point, polygon: readonly Point[]): Point {
+function slide(position: Point, delta: Point, polygon: readonly Point[], blockers: readonly Rect[]): Point {
   const both = { x: position.x + delta.x, y: position.y + delta.y };
-  if (pointInPolygon(both, polygon)) return both;
+  if (walkable(both, polygon, blockers)) return both;
   const xOnly = { x: both.x, y: position.y };
-  if (pointInPolygon(xOnly, polygon)) return xOnly;
+  if (walkable(xOnly, polygon, blockers)) return xOnly;
   const yOnly = { x: position.x, y: both.y };
-  return pointInPolygon(yOnly, polygon) ? yOnly : position;
+  return walkable(yOnly, polygon, blockers) ? yOnly : position;
 }
 
 /** Tick step 1 only. Caller validates dtMs; movement follows MEC-001 R1–R3. */
 export function stepAvatar(content: Content, state: GameState, action: TickAction): GameState {
   const move = inputFrozen(content, state) ? { x: 0, y: 0 } : effectiveMove(action.move);
-  const polygon = state.scene.kind === 'street' ? content.street.walkArea : content.rooms[state.scene.roomId].walkArea;
+  const scene = state.scene;
+  const polygon = scene.kind === 'street' ? content.street.walkArea : content.rooms[scene.roomId].walkArea;
+  const blockers = scene.kind === 'street' ? content.street.houses.flatMap(house => house.blockers) : [];
   const distance = content.tuning.avatarSpeedRu * content.tuning.roomUnitPx * action.dtMs / 1000;
-  const position = slide(state.avatar, { x: move.x * distance, y: move.y * distance }, polygon);
+  const position = slide(state.avatar, { x: move.x * distance, y: move.y * distance }, polygon, blockers);
   return { ...state, avatar: {
     ...state.avatar, x: position.x, y: position.y,
     ...stepFacing(state.avatar, move, action.dtMs, content.tuning.facingDebounceMs),

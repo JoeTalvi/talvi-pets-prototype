@@ -1082,6 +1082,7 @@
       "hash": "251fce951a51d20b0862e7398e1f5014f18ebc71ebbb0d23a0cf843864fefa90",
       "recordedAt": "2026-10-27",
       "recordedBy": "WORK-026-2 / TASK-199",
+      "retired": true,
       "history": [
         {
           "hash": "251fce951a51d20b0862e7398e1f5014f18ebc71ebbb0d23a0cf843864fefa90",
@@ -1092,7 +1093,6 @@
           "recordedBy": "WORK-012 / TASK-031"
         }
       ],
-      "retired": true,
       "note": "Unreferenced by src/content at 771b964 (VERIFY-ASSET-001 warning); file kept on disk, row kept (ledger only grows); retired at the MILESTONE-007 ledger close-out (gate: recorded or resolved); un-retire by a row edit with a note if a later street references it"
     },
     {
@@ -3072,6 +3072,154 @@
       "recordedBy": "WORK-026-2 / TASK-199",
       "history": [],
       "note": "WORK-026-2 M3 playtest-ready batch under gate answer 2 (synthesized placeholder, zero spend, no audio-generation service); replaceable by id with no code change (ASSET-018); OGG route B libsndfile Vorbis validated by decode round-trip (gate fork Q-B; route A ffmpeg vorbis rejects mono); creative verdict (fit, not annoying at the 20 s cadence) at the MILESTONE-007 dry run; not status accepted"
+    },
+    {
+      "id": "pets/owl-mate-sheet",
+      "type": "spritesheet",
+      "url": "pets/owl-mate-sheet.png",
+      "px": {
+        "w": 1536,
+        "h": 1792
+      },
+      "frame": {
+        "w": 256,
+        "h": 256
+      },
+      "clips": {
+        "idle": {
+          "start": 0,
+          "end": 3,
+          "frameRate": 6,
+          "repeat": -1,
+          "frameDurationsMs": [
+            2600,
+            80,
+            120,
+            80
+          ]
+        },
+        "walk": {
+          "start": 6,
+          "end": 11,
+          "frameRate": 10,
+          "repeat": -1
+        },
+        "react": {
+          "start": 18,
+          "end": 21,
+          "frameRate": 8,
+          "repeat": -1
+        },
+        "use-lie": {
+          "start": 24,
+          "end": 27,
+          "frameRate": 4,
+          "repeat": -1,
+          "frameDurationsMs": [
+            1400,
+            250,
+            700,
+            250
+          ]
+        },
+        "use-look": {
+          "start": 30,
+          "end": 33,
+          "frameRate": 4,
+          "repeat": -1
+        },
+        "use-perch": {
+          "start": 36,
+          "end": 39,
+          "frameRate": 4,
+          "repeat": -1
+        }
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "recolour of pets/owl-sheet (a969075:public/assets/pets/owl-sheet.png, SHA-256 0534ee0169b4e6b92b8e78c7d0bcc06e46c60693dc8d21f55d2e2d224852d47b) by tools/assets/recolour.ts",
+      "generator": "tools/assets/recolour.ts + tools/assets/owl-mate-v1.config.json SHA-256 e12d0aefaa424d0837722236b943d6e7d8825060983c029d71855fb4381137c4",
+      "postProcess": "WORK-034-1 / TASK-214: npx tsx tools/assets/recolour.ts --config tools/assets/owl-mate-v1.config.json (config SHA-256 e12d0aefaa424d0837722236b943d6e7d8825060983c029d71855fb4381137c4; recipe tools/assets/recolour.ts at lane commit 2d4e0f3). Pure HSV palette shift of a969075:public/assets/pets/owl-sheet.png (SHA-256 0534ee0169b4e6b92b8e78c7d0bcc06e46c60693dc8d21f55d2e2d224852d47b): band hue 8..45 deg (feather 8), sat >= 0.38 (feather 0.06), value 0.36..0.82 (feather 0.05) moved to hue 212, sat x0.5, value x1.0; keep corner sat >= 0.6 and value <= 0.40 (irises); cream, contour, eyes and every alpha byte unchanged, no pixel moved (alpha IoU 1.0, determinism proven by two runs). 8-bit RGBA PNG, per-row min-residual filter, zlib 9.",
+      "batch": "tier2-m4",
+      "hash": "2b2e693eefeb8732b8678e2c8ec6eb850102116f35f1276e1b5c4e8e8f8354ac",
+      "recordedAt": "2026-11-02",
+      "recordedBy": "WORK-034-1 / TASK-214",
+      "history": [],
+      "note": "WORK-034-1 MILESTONE-009 batch tier2-m4 under DEC-040/DEC-044/DEC-048; recolour of pets/owl-sheet: slate blue-grey plumage, cream face kept, frames identical; origin authored (not derived) because VERIFY-ASSET-007 makes a derived row inherit the parent's accepted status, which this lane may not record; creative verdict at the MILESTONE-009 play session; not status accepted"
+    },
+    {
+      "id": "pets/owl-mate-portrait",
+      "type": "image",
+      "url": "pets/owl-mate-portrait.png",
+      "px": {
+        "w": 600,
+        "h": 600
+      },
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "recolour of pets/owl-portrait (a969075:public/assets/pets/owl-portrait.png, SHA-256 9663eb182f631b8120842a745c14192fc00db4c3ab80078e096685b0a9505ea6) by tools/assets/recolour.ts",
+      "generator": "tools/assets/recolour.ts + tools/assets/owl-mate-v1.config.json SHA-256 e12d0aefaa424d0837722236b943d6e7d8825060983c029d71855fb4381137c4",
+      "postProcess": "WORK-034-1 / TASK-214: npx tsx tools/assets/recolour.ts --config tools/assets/owl-mate-v1.config.json (config SHA-256 e12d0aefaa424d0837722236b943d6e7d8825060983c029d71855fb4381137c4; recipe tools/assets/recolour.ts at lane commit 2d4e0f3). Pure HSV palette shift of a969075:public/assets/pets/owl-portrait.png (SHA-256 9663eb182f631b8120842a745c14192fc00db4c3ab80078e096685b0a9505ea6; palette PNG decoded to RGBA, tRNS alpha kept): band hue 8..45 deg (feather 8), sat >= 0.38 (feather 0.06), value 0.36..0.82 (feather 0.05) moved to hue 212, sat x0.5, value x1.0; keep corner sat >= 0.6 and value <= 0.40 (irises); cream, contour, eyes and every alpha byte unchanged, no pixel moved (alpha IoU 1.0, determinism proven by two runs). 8-bit RGBA PNG, per-row min-residual filter, zlib 9.",
+      "batch": "tier2-m4",
+      "hash": "a72ca56849ed5800e78c2d45aef9434bef8dde865edd7463b7de6f6ec86562d0",
+      "recordedAt": "2026-11-02",
+      "recordedBy": "WORK-034-1 / TASK-214",
+      "history": [],
+      "note": "WORK-034-1 MILESTONE-009 batch tier2-m4 under DEC-040/DEC-044/DEC-048; recolour of pets/owl-portrait: slate blue-grey plumage, cream face kept, frames identical; origin authored (not derived) because VERIFY-ASSET-007 makes a derived row inherit the parent's accepted status, which this lane may not record; creative verdict at the MILESTONE-009 play session; not status accepted"
+    },
+    {
+      "id": "world/site-garden-empty",
+      "type": "image",
+      "url": "world/site-garden-empty.png",
+      "px": {
+        "w": 640,
+        "h": 320
+      },
+      "status": "ai-placeholder",
+      "origin": "asset-bot",
+      "source": "Asset-Bot run /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/world/1793643528453-8bz7ix/candidate_002.png (JPEG bytes, SHA-256 1e0ea38d9bd83bdcedbae005bf0a5e984b3f648c90ad08f57c94ed992947c2b1), chosen of 3",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 9410,
+      "prompt": "A single wide, flat, overgrown garden plot lying on the ground, seen from a three-quarter top-down view, isolated on a plain pure white background. An untended oval patch of earth covered in long grass tufts, a few weeds and three or four small grey stones. Everything stays low and flat on the ground; nothing tall. No fence, no sign, no lettering, no house, no characters.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/production/pet_house_lv3.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/game/public/assets/world/tile-grass-base.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/game/public/assets/world/bush-1.png"
+      ],
+      "postProcess": "WORK-034-1 / TASK-218: JPEG candidate converted to PNG (sips); evidence/WORK-034-1/recipes/site-cutout.ts (SHA-256 ef71f2e9c99a4db9e2369fbd0f57bb948038b2afee75f0456a408fe53fb62681): border flood-fill white key (min RGB >= 228, chroma <= 22), 3 px soft alpha band, crop to opaque bbox, common area-average scale 0.5024 for both states, 640x320 canvas, base-centre (bottom row, centred x); 8-bit RGBA via tools/assets/refit.ts encodePng.",
+      "batch": "tier2-m4",
+      "hash": "d37fcab78bcc0117160583812b484bb97e5dad211a1692fb09fe4b3e2c8f16c1",
+      "recordedAt": "2026-11-02",
+      "recordedBy": "WORK-034-1 / TASK-218",
+      "history": [],
+      "note": "WORK-034-1 MILESTONE-009 batch tier2-m4 under DEC-040/DEC-044/DEC-048; site state empty: overgrown untended patch (long grass tufts, a few stones), shown while the site is locked; canvas 640x320, base-centre pivot (origin 0.5, 1), world anchor {x: 380, y: 955}, ground decal above the ground tiles and below everything else; creative verdict at the MILESTONE-009 play session; not status accepted"
+    },
+    {
+      "id": "world/site-garden-base",
+      "type": "image",
+      "url": "world/site-garden-base.png",
+      "px": {
+        "w": 640,
+        "h": 320
+      },
+      "status": "ai-placeholder",
+      "origin": "asset-bot",
+      "source": "Asset-Bot run /Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/world/1793643557629-3dt236/candidate_002.png (JPEG bytes, SHA-256 ad543dd4972bdd772e38a66bc8991bc83c90dbc859605207cc73f22585493f03), chosen of 3",
+      "generator": "asset-bot/generate_image:nano-banana",
+      "seed": 9420,
+      "prompt": "The same oval garden plot as Image 1, with exactly the same oval outline, size and position, now cleared and ready: all long grass and weeds removed, smooth dark brown mulch beds, a curving path of flat pale stepping stones across it, and a low edge of small flat pale stones around the rim. Everything lies flat on the ground; nothing tall. Isolated on a plain pure white background. No plants, no fence, no sign, no lettering, no house, no characters.",
+      "refs": [
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/runs/generate-image/world/1793643528453-8bz7ix/candidate_002.png",
+        "/Users/joefrancia/Desktop/asset-bot/projects/talvi-pets-prototype/refs/production/pet_house_lv3.png",
+        "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/game/public/assets/world/tile-grass-base.png"
+      ],
+      "postProcess": "WORK-034-1 / TASK-218: JPEG candidate converted to PNG (sips); evidence/WORK-034-1/recipes/site-cutout.ts (SHA-256 ef71f2e9c99a4db9e2369fbd0f57bb948038b2afee75f0456a408fe53fb62681): border flood-fill white key (min RGB >= 228, chroma <= 22), 3 px soft alpha band, crop to opaque bbox, common area-average scale 0.5024 for both states, 640x320 canvas, base-centre (bottom row, centred x); 8-bit RGBA via tools/assets/refit.ts encodePng.",
+      "batch": "tier2-m4",
+      "hash": "2d406fc17162990bf1b53aeedd828df0d95d9065cbf91a37f0a7774f4d0ab200",
+      "recordedAt": "2026-11-02",
+      "recordedBy": "WORK-034-1 / TASK-218",
+      "history": [],
+      "note": "WORK-034-1 MILESTONE-009 batch tier2-m4 under DEC-040/DEC-044/DEC-048; site state base: cleared plot (two mulch beds, stepping-stone path, low stone edge), shown once unlocked; charms sit on it; canvas 640x320, base-centre pivot (origin 0.5, 1), world anchor {x: 380, y: 955}, ground decal above the ground tiles and below everything else; creative verdict at the MILESTONE-009 play session; not status accepted"
     }
   ]
 }

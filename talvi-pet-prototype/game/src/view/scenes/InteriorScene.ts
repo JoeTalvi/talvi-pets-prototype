@@ -1,16 +1,19 @@
+import Phaser from 'phaser';
 import type { Room, Slot } from '@content/schema/room';
 import { placementAt } from '@sim/select';
 import { recordPointer, type PointerSample } from '@app/input/pointerRouting';
 import { CharmSprite } from '../objects/CharmSprite';
 import { PetSprite } from '../objects/PetSprite';
-import { Bubble, chatterBubble, reactionBubble, textFrom, verbBubble, wantBubble } from '../objects/Bubble';
+import { Bubble, reactionBubble, textFrom } from '../objects/Bubble';
 import type { PetBehaviour } from '@sim/state';
-import { SlotOutline } from '../objects/SlotOutline';
+import type { SlotOutline } from '../objects/SlotOutline';
+import { charmDepth, createOutlines, fadeCharm, outlineAt, popCharm, syncOutlineStates } from '../objects/slotLayer';
 import { createEditorHook, type EditorHook } from '../editor';
 import { WorldScene } from './WorldScene';
-
-const POP_MS = 180;
-const REMOVE_FADE_MS = 120;
+import { burstConfetti } from '../celebration/Confetti';
+import { CONFETTI_LIFETIME, HEART_MOMENT, HEART_PET_DEPTH } from '../celebration/timings';
+import { HEART_MOMENT_END } from '../celebration/heartMoment';
+import { clipKey } from '../anims';
 
 /** The pointer fields the routing reads (a Phaser pointer, or synthetic data in jsdom — GAP-5). */
 export type ScenePointer = { id: number; worldX: number; worldY: number; downTime: number; upTime: number };
@@ -28,6 +31,9 @@ export class InteriorScene extends WorldScene {
   private downs = new Map<number, PointerSample>();
   private joystickPointer: number | null = null;
   private paintingErrorRecorded = false;
+  /** WORK-032-2 fix 6b: the Heart moment's scene half (confetti, the pet's big `react`), ended by its timer or the overlay's end event. */
+  heartPet: Phaser.GameObjects.Sprite | null = null;
+  private heartTimers: ReturnType<typeof setTimeout>[] = [];
   protected readonly previewKind = 'interior';
   constructor() { super('Interior'); }
   init(data: { roomId?: string }): void {
@@ -40,6 +46,8 @@ export class InteriorScene extends WorldScene {
     this.downs = new Map();
     this.joystickPointer = null;
     this.editor = null;
+    this.heartPet = null;
+    this.heartTimers = [];
   }
   /** The room the preview layers draw: the editor's draft while it is open, else the content room. */
   shownRoom(): Room { return this.editor?.draft() ?? this.room; }
@@ -54,24 +62,12 @@ export class InteriorScene extends WorldScene {
   }
   /** Presentation §6.2: one outline per slot, shown by `mode` (a reload in design mode shows them, MEC-001 R7). */
   private createOutlines(): void {
-    const design = this.context.store.getState().mode === 'design';
-    for (const slot of this.room.slots) {
-      const outline = new SlotOutline(this, slot);
-      outline.setShown(design);
-      this.outlines.set(slot.id, outline);
-    }
+    this.outlines = createOutlines(this, this.room.slots, this.context.store.getState().mode === 'design');
     this.syncOutlines();
   }
   /** Outline state from placements and the slot the chooser/sheet holds (`context.selectedSlotId`). */
   syncOutlines(): void {
-    const placements = this.context.store.getState().rooms[this.roomId]?.placements ?? {};
-    const selected = this.context.selectedSlotId ?? null;
-    for (const [slotId, outline] of this.outlines) outline.setOutlineState(slotId === selected ? 'selected' : placements[slotId] ? 'filled' : 'empty');
-  }
-  private outlineAt(x: number, y: number): SlotOutline | undefined {
-    let top: SlotOutline | undefined;
-    for (const outline of this.outlines.values()) if (outline.contains(x, y) && (!top || outline.depth > top.depth)) top = outline;
-    return top;
+    syncOutlineStates(this.outlines, this.context.store.getState().rooms[this.roomId]?.placements ?? {}, this.context.selectedSlotId ?? null);
   }
   /** Presentation §3.1: a pointer the joystick captured is not classified. */
   pointerDown = (p: ScenePointer): void => {
@@ -87,7 +83,7 @@ export class InteriorScene extends WorldScene {
     if (!down) return;
     this.downs.delete(p.id);
     const up = { x: p.worldX, y: p.worldY, t: p.upTime };
-    const outline = this.outlineAt(up.x, up.y);
+    const outline = outlineAt(this.outlines, up.x, up.y);
     const onBubble = !outline && this.bubble?.contains(up.x, up.y) === true;
     const onPet = !outline && !onBubble && this.pet?.hitContains(up.x, up.y) === true;
     const petId = this.pet?.petId ?? '';
@@ -152,15 +148,17 @@ export class InteriorScene extends WorldScene {
     if (!slot || !type) return undefined;
     this.charms.get(slotId)?.destroy();
     const sprite = this.charmSprite(slot, this.textures.exists(type.sprite) ? type.sprite : 'missing');
-    sprite.setDepth(type.standsOnFloor && slot.floorY !== undefined ? slot.floorY : slot.depthOverride ?? slot.y);
+    sprite.setDepth(charmDepth(slot, type));
     this.charms.set(slotId, sprite);
     return sprite;
   }
-  /** A charm image at the slot (wall paintings projected; other wall art is drawn for the left wall and mirrored on the
-   * right; a floor-standing charm sits on the slot's floor line); the fill preview layer reuses it. */
+  /** A charm image at the slot (wall paintings projected; other wall art is drawn for its type's `wallArtFacing` wall, default
+   * left, and mirrored on the other wall; a floor-standing charm sits on the slot's floor line); the fill preview layer reuses it. */
   charmSprite(slot: Slot, key: string): CharmSprite {
-    const standing = slot.floorY !== undefined && this.context.content.charms.types.some(t => t.sprite === key && t.standsOnFloor);
-    if (key !== 'charms/painting' || !slot.wall) return new CharmSprite(this, slot.x, standing ? slot.floorY! : slot.y, key).setFlipX(slot.wall === 'right');
+    const type = this.context.content.charms.types.find(t => t.sprite === key);
+    const standing = slot.floorY !== undefined && type?.standsOnFloor === true;
+    const flip = slot.wall !== undefined && slot.wall !== (type?.wallArtFacing ?? 'left');
+    if (key !== 'charms/painting' || !slot.wall) return new CharmSprite(this, slot.x, standing ? slot.floorY! : slot.y, key).setFlipX(flip);
     const sourceHash = this.context.manifest.entries.find(e => e.id === key)?.hash ?? '';
     try { return new CharmSprite(this, slot.x, slot.y, key, { side: slot.wall, sourceHash }); }
     catch (error) {
@@ -186,47 +184,50 @@ export class InteriorScene extends WorldScene {
       if (event.to === 'reacting' || event.to === 'greeting') this.bubble?.releasePending();
       else if (event.to !== 'walking') this.bubble?.dropPending();
     });
-    this.subscribeBubbles();
+    this.subscribePetBubbles();
+    this.on('heart.earned', event => this.heartMoment(event.petId));
+    const onMomentEnd = () => this.endHeartPet();
+    window.addEventListener(HEART_MOMENT_END, onMomentEnd);
+    this.unsubscribes.push(() => { window.removeEventListener(HEART_MOMENT_END, onMomentEnd); this.endHeartPet(); for (const t of this.heartTimers.splice(0)) clearTimeout(t); });
     this.editor = createEditorHook(this);
     this.unsubscribes.push(() => { this.editor?.destroy(); });
   }
-  /** mec-008 §2.1 / MEC-007 §3 consumers: every bubble fact comes from an event payload (the view computes no taste). */
-  private subscribeBubbles(): void {
-    const { content } = this.context;
-    const text = textFrom(content.strings);
-    const mine = (petId: string) => this.bubble && this.bubble.petId === petId ? this.bubble : undefined;
-    const name = (petId: string) => content.pets[petId]?.name ?? petId;
-    this.on('pet.reacted', event => {
-      const bubble = mine(event.petId);
-      const shown = reactionBubble(text, name(event.petId), event);
-      // Q11(a): the ladder grade after a verb ends arrives as `pet.reacted {walkOver:false}` and shows at once.
-      if (event.walkOver) bubble?.hold(shown); else bubble?.show(shown);
-    });
-    this.on('pet.verbStarted', event => {
-      const shown = verbBubble(content, name(event.petId), event.verb);
-      if (shown) mine(event.petId)?.show(shown);
-    });
-    this.on('pet.verbEnded', event => { mine(event.petId)?.clearClass('verb'); });
-    // Q12(a): a want whose unmet tags are all hidden arrives as `tag: null` and shows ❓.
-    this.on('pet.wantBubble', event => { mine(event.petId)?.show(wantBubble(content, text, name(event.petId), event.tag)); });
-    this.on('pet.tapped', event => {
-      const bubble = event.bubble.kind === 'want' ? wantBubble(content, text, name(event.petId), event.bubble.tag) : chatterBubble(event.bubble.line);
-      mine(event.petId)?.show(bubble);
-    });
+  /**
+   * WORK-032-2 fix 6b, the scene half of the Heart moment (the dim, the heart and the input capture are the overlay's): the existing
+   * confetti bursts up from mid-screen and the pet's `react` clip plays large in the overlay's spotlight, camera-fixed above the
+   * world, while the room's own pet keeps following the simulation (its walk-over is untouched).
+   */
+  private heartMoment(petId: string): void {
+    this.endHeartPet();
+    const { width, height } = this.scale.gameSize, top = this.cameras.main.scrollY;
+    const emitter = burstConfetti(this, new Phaser.Geom.Rectangle(width / 2 - 360, top + height / 2 - 80, 720, 160));
+    this.heartTimers.push(setTimeout(() => emitter.destroy(), CONFETTI_LIFETIME));
+    const sheet = `pets/${petId}-sheet`, react = clipKey(sheet, 'react');
+    if (!react || !this.anims.exists(react) || !this.textures.exists(sheet)) return;
+    this.heartPet = this.add.sprite(width / 2, height * HEART_MOMENT.petBaseY, sheet).setOrigin(0.5, 1).setScale(HEART_MOMENT.petScale)
+      .setScrollFactor(0).setDepth(HEART_PET_DEPTH).play(react);
+    this.tweens.add({ targets: this.heartPet, alpha: { from: 0, to: 1 }, duration: 160 });
+    this.heartTimers.push(setTimeout(() => this.endHeartPet(), HEART_MOMENT.totalMs));
   }
+  private endHeartPet(): void {
+    this.heartPet?.destroy();
+    this.heartPet = null;
+  }
+  /** The scene's pet bubble (the shared bubble subscriptions in `WorldScene` route through it). */
+  protected petBubble(): Bubble | undefined { return this.bubble; }
   private subscribeCharms(): void {
     this.on('charm.placed', event => {
       if (event.roomId !== this.roomId) return;
       this.syncOutlines();
       const sprite = this.placeCharm(event.slotId, event.typeId);
-      if (sprite) this.tweens.add({ targets: sprite, scale: { from: 0.6, to: 1 }, duration: POP_MS, ease: 'Back.easeOut' });
+      if (sprite) popCharm(this, sprite);
     });
     this.on('charm.removed', event => {
       const sprite = event.roomId === this.roomId ? this.charms.get(event.slotId) : undefined;
       this.syncOutlines();
       if (!sprite) return;
       this.charms.delete(event.slotId);
-      this.tweens.add({ targets: sprite, alpha: 0, duration: REMOVE_FADE_MS, onComplete: () => sprite.destroy() });
+      fadeCharm(this, sprite);
     });
   }
   protected syncScene(deltaMs: number): void {

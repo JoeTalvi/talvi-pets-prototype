@@ -9,7 +9,7 @@ import { starsOf } from '../../src/sim/select';
 import { mulberry32 } from '../../src/sim/rng';
 import { initialState, type GameState } from '../../src/sim/state';
 import { validContent } from '../content/helpers';
-import { deepFreeze, dogRoomDesign } from './helpers';
+import { deepFreeze, dogRoomDesign, giveCopies, allCopies } from './helpers';
 
 // Synthetic before/after placement snapshots: the full placement dispatch is not implemented here.
 function withPlacements(state: GameState, placements: Record<string, string>): GameState {
@@ -57,7 +57,7 @@ it('VERIFY-MEC-006-007: twelve compatible distinct types reach the maximum', () 
   const wall = content.charms.types.find(type => type.id === 'painting')!;
   content.charms.types.push({ ...wall, id: 'wall-fixture-a' }, { ...wall, id: 'wall-fixture-b' });
   const state = initialState(content, 1);
-  state.inventory.ownedTypeIds = content.charms.types.map(type => type.id);
+  state.inventory.counts = allCopies(content);
   const used = new Set<string>();
   for (const slot of content.rooms['dog-room'].slots) {
     const type = content.charms.types.find(type => type.sizeClass === slot.sizeClass && !used.has(type.id))!;
@@ -93,7 +93,7 @@ it('MEC-006 selector errors identify unknown rooms and charm references', () => 
 it.each([1, 2, 3])('VERIFY-MEC-006-008 isolated property: 500 valid snapshot edits, seed %i', seed => {
   const content = validContent();
   let state = initialState(content, seed);
-  state.inventory.ownedTypeIds = content.charms.types.map(type => type.id);
+  state.inventory.counts = allCopies(content);
   const slots = content.rooms['dog-room'].slots;
   for (let step = 0; step < 500; step++) {
     const draw = mulberry32(seed); seed = draw.seed;
@@ -131,6 +131,9 @@ function scoringRoom() {
   return room;
 }
 
+/** DEC-043: a second Lamp comes from the TEST-002 arm. */
+const secondLamp: Action = { type: 'debugGrantCopies', typeId: 'lamp', count: 1 };
+
 describe('MEC-006 through the placeCharm/removeCharm dispatch', () => {
   const place = (slotId: string, typeId: string): Action => ({ type: 'placeCharm', slotId, typeId });
   const starsEvents = (events: SimEvent[]) => events.filter(event => event.type === 'stars.changed');
@@ -146,7 +149,7 @@ describe('MEC-006 through the placeCharm/removeCharm dispatch', () => {
 
   it('VERIFY-MEC-006-003/004 via reduce: repeat 12 → 13, removal 13 → 9 leaves hearts and wants untouched', () => {
     const { content, state } = scoringRoom();
-    const three = dispatch(content, state, [place('large-1', 'dog-bed'), place('floor-1', 'lamp'), place('wall-1', 'painting')]);
+    const three = dispatch(content, state, [place('large-1', 'dog-bed'), place('floor-1', 'lamp'), place('wall-1', 'painting'), secondLamp]);
     const repeated = reduce(content, deepFreeze(three), place('floor-2', 'lamp'));
     expect(starsEvents(repeated.events)).toEqual([{ type: 'stars.changed', roomId: 'dog-room', from: 12, to: 13, delta: 1, max: 48 }]);
     const removed = reduce(content, repeated.state, { type: 'removeCharm', slotId: 'large-1' });
@@ -156,7 +159,7 @@ describe('MEC-006 through the placeCharm/removeCharm dispatch', () => {
 
   it('VERIFY-MEC-006-005/006 via reduce: one net replacement event; an equal score emits none', () => {
     const { content, state } = scoringRoom();
-    state.inventory.ownedTypeIds.push('fern');
+    giveCopies(state, ['fern'], 2); // DEC-043: the replace places a second fern
     const before = dispatch(content, state, [place('floor-1', 'lamp'), place('floor-2', 'fern')]);
     expect(starsEvents(reduce(content, deepFreeze(before), place('floor-1', 'fern')).events))
       .toEqual([{ type: 'stars.changed', roomId: 'dog-room', from: 8, to: 5, delta: -3, max: 48 }]);
@@ -167,7 +170,7 @@ describe('MEC-006 through the placeCharm/removeCharm dispatch', () => {
     const { content, state } = scoringRoom();
     const wall = content.charms.types.find(type => type.id === 'painting')!;
     content.charms.types.push({ ...wall, id: 'wall-fixture-a' }, { ...wall, id: 'wall-fixture-b' });
-    state.inventory.ownedTypeIds = content.charms.types.map(type => type.id);
+    state.inventory.counts = allCopies(content);
     const used = new Set<string>();
     const actions = content.rooms['dog-room'].slots.map(slot => {
       const type = content.charms.types.find(type => type.sizeClass === slot.sizeClass && !used.has(type.id))!;
@@ -179,7 +182,7 @@ describe('MEC-006 through the placeCharm/removeCharm dispatch', () => {
 
   it('VERIFY-MEC-006-010/013 via reduce: a disliked tall charm scores like any type; owl-room unchanged', () => {
     const { content, state } = scoringRoom();
-    state.inventory.ownedTypeIds.push('tall-lamp');
+    giveCopies(state, ['tall-lamp']);
     const owlBefore = starsOf(content, state, 'owl-room');
     const result = reduce(content, state, place('floor-1', 'tall-lamp'));
     expect(starsEvents(result.events)).toEqual([{ type: 'stars.changed', roomId: 'dog-room', from: 0, to: 4, delta: 4, max: 48 }]);

@@ -1,11 +1,15 @@
 import type Phaser from 'phaser';
-import type { PetId, ProjectId } from '@sim/state';
+import type { PetId, ProjectId, SiteId } from '@sim/state';
+import { siteOf } from '@sim/space';
 import { registerClips, type SheetEntry } from '../anims';
 import { Bubble, REACTION_EMOJI, textFrom } from '../objects/Bubble';
 import { PetSprite } from '../objects/PetSprite';
 import type { ViewContext } from '../context';
 
 export type Arrival = { projectId: ProjectId; petId: PetId };
+/** WORK-034-3: a site arrival (`state.siteArrival`): the site's `arrivalPath`, the 🎵 at its end, no door fade. */
+export type SiteArrival = { siteId: SiteId; petId: PetId };
+export const isSiteArrival = (arrival: Arrival | SiteArrival): arrival is SiteArrival => 'siteId' in arrival;
 type Point = { x: number; y: number };
 type Facing = 'left' | 'right';
 export type ArrivalBeat = 'walk' | 'door' | 'greeting' | 'fade' | 'finished';
@@ -18,6 +22,14 @@ function facingOf(from: Point, to: Point, previous: Facing): Facing {
   if (to.x < from.x) return 'left';
   if (to.x > from.x) return 'right';
   return previous;
+}
+
+/** The walked path: the house's `arrivalPath` for a project arrival, the site's for a site arrival. */
+function arrivalPathOf(content: ViewContext['content'], arrival: Arrival | SiteArrival): readonly Point[] {
+  if (isSiteArrival(arrival)) return siteOf(content, arrival.siteId).arrivalPath;
+  const house = content.street.houses.find(h => h.projectId === arrival.projectId);
+  if (!house || house.arrivalPath.length === 0) throw new Error(`Arrival walk: project "${arrival.projectId}" has no street arrivalPath`);
+  return house.arrivalPath;
 }
 
 /**
@@ -41,16 +53,18 @@ export class ArrivalWalk {
   private facing: Facing;
   private readonly lengths: number[];
   private readonly speedPxPerMs: number;
-  constructor(scene: Phaser.Scene, private readonly context: ViewContext, readonly arrival: Arrival, houseDepth: number) {
+  /** A site arrival has no door: the walk ends on the 🎵 and hands over to the street's pet sprite at the last point. */
+  readonly fades: boolean;
+  /** `houseDepth` null: the walker draws at its base y (a site arrival). */
+  constructor(scene: Phaser.Scene, private readonly context: ViewContext, readonly arrival: Arrival | SiteArrival, houseDepth: number | null) {
     const { content, manifest, store } = context;
-    const house = content.street.houses.find(h => h.projectId === arrival.projectId);
-    if (!house || house.arrivalPath.length === 0) throw new Error(`Arrival walk: project "${arrival.projectId}" has no street arrivalPath`);
-    this.path = house.arrivalPath;
+    this.path = arrivalPathOf(content, arrival);
+    this.fades = !isSiteArrival(arrival);
     this.lengths = this.path.slice(1).map((p, i) => Math.hypot(p.x - this.path[i].x, p.y - this.path[i].y));
     const { petSpeedRu, roomUnitPx, bubbleMs, bubbleTextMs } = content.tuning;
     this.speedPxPerMs = petSpeedRu * roomUnitPx / 1000;
     const doorMs = this.lengths.reduce((a, b) => a + b, 0) / this.speedPxPerMs;
-    this.plan = { doorMs, fadeMs: doorMs + bubbleMs, finishMs: doorMs + bubbleMs + ARRIVAL_FADE_MS };
+    this.plan = { doorMs, fadeMs: doorMs + bubbleMs, finishMs: doorMs + bubbleMs + (this.fades ? ARRIVAL_FADE_MS : 0) };
     const sheetId = content.pets[arrival.petId]?.sheet;
     const entry = manifest.entries.find(e => e.id === sheetId);
     if (entry && scene.textures.exists(entry.id)) registerClips(scene, entry as SheetEntry);
@@ -58,7 +72,7 @@ export class ArrivalWalk {
     const behaviour = { ...store.getState().pets[arrival.petId].behaviour,
       x: this.path[0].x, y: this.path[0].y, phase: 'walking' as const, facing: this.facing };
     this.sprite = new PetSprite(scene, arrival.petId, content.verbs, entry, behaviour);
-    this.sprite.setDepthOverride(houseDepth + 1);
+    this.sprite.setDepthOverride(houseDepth === null ? null : houseDepth + 1);
     this.bubble = new Bubble(scene, arrival.petId, 0, textFrom(content.strings), { bubbleMs, bubbleTextMs }, () => {});
     this.timeline.push({ beat: 'walk', atMs: 0 });
   }
@@ -71,7 +85,7 @@ export class ArrivalWalk {
     if (before < doorMs) this.walkTo(Math.min(this.elapsedMs, doorMs));
     if (before < doorMs && this.elapsedMs >= doorMs) this.reachDoor();
     if (this.elapsedMs > doorMs) this.bubble.update(this.elapsedMs - Math.max(before, doorMs));
-    if (this.elapsedMs >= fadeMs) {
+    if (this.fades && this.elapsedMs >= fadeMs) {
       if (before < fadeMs) this.timeline.push({ beat: 'fade', atMs: this.elapsedMs });
       this.sprite.setAlpha(Math.max(0, 1 - (this.elapsedMs - fadeMs) / ARRIVAL_FADE_MS));
     }

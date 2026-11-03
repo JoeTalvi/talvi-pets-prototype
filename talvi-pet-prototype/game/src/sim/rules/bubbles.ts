@@ -3,7 +3,7 @@ import type { Action, TickAction } from '../actions';
 import type { RuleResult, SimEvent } from '../events';
 import type { GameState, PetId, TagId } from '../state';
 import { petPick } from './petBehaviour';
-import { residentPet } from './pets';
+import { scenePet } from '../space';
 import { missingWantTags, wantConditions } from './wants';
 
 function withTimer(state: GameState, petId: PetId, wantBubbleInMs: number): GameState {
@@ -22,18 +22,21 @@ function wantBubbleTag(content: Content, state: GameState, petId: PetId): { tag:
   return { tag: pick.item, state: pick.state };
 }
 
-function resetsTimer(event: SimEvent, petId: PetId, roomId: string): boolean {
-  return (event.type === 'scene.changed' && event.to.kind === 'interior' && event.to.roomId === roomId) ||
+/** Entering the pet's scene (its room, or the street for a site's resident) or its next want resets the countdown. */
+function resetsTimer(event: SimEvent, petId: PetId, roomId: string | null): boolean {
+  return (event.type === 'scene.changed' && (roomId === null ? event.to.kind === 'street'
+    : event.to.kind === 'interior' && event.to.roomId === roomId)) ||
     (event.type === 'want.activated' && event.petId === petId);
 }
 
 /** Core §4 step 5, bubble half: the resident's want-bubble countdown; holds while a dialogue is open. */
 export function stepBubbles(content: Content, state: GameState, action: TickAction,
   eventsSoFar: readonly SimEvent[]): RuleResult {
-  const petId = residentPet(content, state);
-  if (petId === null) return { state, events: [] };
+  const here = scenePet(content, state);
+  if (here === null) return { state, events: [] };
+  const petId = here.petId;
   const every = content.tuning.wantBubbleEveryMs;
-  const roomId = (state.scene as { roomId: string }).roomId;
+  const roomId = here.ref.kind === 'room' ? here.ref.roomId : null;
   if (eventsSoFar.some(event => resetsTimer(event, petId, roomId))) return { state: withTimer(state, petId, every), events: [] };
   if (state.dialogue.current !== null) return { state, events: [] };
   const remaining = Math.max(0, state.pets[petId].wantBubbleInMs - action.dtMs);
@@ -45,7 +48,7 @@ export function stepBubbles(content: Content, state: GameState, action: TickActi
 /** Placement-chain link: a `want.activated` for the resident resets its countdown (MEC-008 §2.2). */
 export function afterWantActivated(content: Content, before: GameState, current: GameState,
   eventsSoFar: readonly SimEvent[]): RuleResult {
-  const petId = residentPet(content, before);
+  const petId = scenePet(content, before)?.petId ?? null;
   if (petId === null || !eventsSoFar.some(event => event.type === 'want.activated' && event.petId === petId))
     return { state: current, events: [] };
   return { state: withTimer(current, petId, content.tuning.wantBubbleEveryMs), events: [] };
@@ -54,7 +57,7 @@ export function afterWantActivated(content: Content, before: GameState, current:
 /** MEC-008 §2.3 `tapPet`: preconditions in core §2 order; never changes `behaviour`. */
 export function tapPet(content: Content, state: GameState, action: Extract<Action, { type: 'tapPet' }>): RuleResult {
   const reject = (reason: string): RuleResult => ({ state, events: [{ type: 'action.rejected', action, reason }] });
-  if (residentPet(content, state) !== action.petId) return reject('petNotHere');
+  if (scenePet(content, state)?.petId !== action.petId) return reject('petNotHere');
   if (state.dialogue.current !== null) return reject('dialogueOpen');
   if (state.celebration !== null) return reject('celebrationActive');
   const petId = action.petId;

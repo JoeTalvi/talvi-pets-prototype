@@ -1,0 +1,10 @@
+[
+  {
+    "file": "pets/dog.json",
+    "path": "/wants/0/conditions/0",
+    "value": {
+      "kind": "greeted",
+      "withPetId": "owl"
+    }
+  }
+]
