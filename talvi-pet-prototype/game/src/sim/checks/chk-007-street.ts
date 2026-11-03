@@ -3,10 +3,6 @@ import type { Content } from '../../content/types';
 import { pointInPolygon, pointInRect, segmentInPolygon, type Rect } from '../geometry';
 import { finding, type Finding } from './types';
 
-/** DEC-046: the greeting radius in room units; × tuning.roomUnitPx. Named constant until the run moves it to tuning.json
- * (WORK-036-1 may replace it by its tuning key; order fork (f)). */
-export const GREETING_RADIUS_RU = 1.5;
-
 type Labelled = { p: Point & { id?: string }; path: string };
 type StreetPet = { petId: string; points: Labelled[] };
 
@@ -71,7 +67,7 @@ export function checkStreetPresence(c: Content): Finding[] {
                 add('11', a.path, `Segment to ${b.path} leaves walkArea or crosses a blocker`);
         }));
     }
-    const radius = GREETING_RADIUS_RU * c.tuning.roomUnitPx;
+    const radius = c.tuning.greetRadiusRu * c.tuning.roomUnitPx; // DEC-046 greeting radius (ru)
     const reach = (pet: StreetPet) => meet ? [...pet.points, meet] : pet.points;
     pets.forEach((a, i) => pets.slice(i + 1).forEach(b => {
         const min = Math.min(Infinity, ...reach(a).flatMap(pa => reach(b).map(pb => Math.hypot(pa.p.x - pb.p.x, pa.p.y - pb.p.y))));
