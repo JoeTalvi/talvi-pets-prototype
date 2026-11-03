@@ -1,0 +1,109 @@
+{
+  "version": 1,
+  "$comment": "WORK-037-1 / TASK-237 (DEC-047 full re-render, gate Q11/Q15; batch tier2-m5, ai-placeholder): outfit cosy = cosy knit set (muted brick-red chunky knit jumper with cream ribbed collar/cuffs, warm grey-brown corduroy trousers); built from the six chosen Asset-Bot nano-banana candidates (JFIF data under .png names) copied under phase-4-build/runs/RUN-005/evidence/WORK-037-1/candidates/cosy/. Copied from avatar-sheet-v1.config.json (same frame, grid, key, headTolerancePx, standing 166 +/- 6, row order and cell counts); only $comment and poses[].source/sha256/scale/head.sourcePx differ. Head feature = pose top (hair top) to the first brick-red jumper row (evidence/WORK-037-1/measurements.json); scale = 63.0 / head.sourcePx. Run: npx tsx tools/assets/use-poses.ts --config tools/assets/avatar-cosy-v1.config.json --out <staging-dir>",
+  "frame": {
+    "w": 192,
+    "h": 256
+  },
+  "grid": {
+    "columns": 6,
+    "rows": 6
+  },
+  "key": {
+    "backgroundMin": 240,
+    "backgroundChroma": 18,
+    "dilation": 0,
+    "holeMinArea": 40
+  },
+  "headTolerancePx": 4,
+  "poses": [
+    {
+      "clip": "idle-down",
+      "row": 0,
+      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-005/evidence/WORK-037-1/candidates/cosy/idle-down-1.png",
+      "sha256": "165b28e64419ffadf0cba97adb7b859c6067f735d30a39b5d836755191243783",
+      "cells": 4,
+      "scale": 0.2377,
+      "head": {
+        "sourcePx": 265,
+        "referencePx": 63.0
+      },
+      "standing": {
+        "referencePx": 166,
+        "tolerancePx": 6
+      }
+    },
+    {
+      "clip": "idle-up",
+      "row": 1,
+      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-005/evidence/WORK-037-1/candidates/cosy/idle-up-1.png",
+      "sha256": "98a287711c155f81327a29ee0135ee42bb48117e6e01d90ae8e2f1c92649bc57",
+      "cells": 4,
+      "scale": 0.2442,
+      "head": {
+        "sourcePx": 258,
+        "referencePx": 63.0
+      }
+    },
+    {
+      "clip": "idle-side",
+      "row": 2,
+      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-005/evidence/WORK-037-1/candidates/cosy/idle-side-1.png",
+      "sha256": "c3f2d63bfaaa55fb625b50e6537e72c4c47ef36fab943f2d1abf60560c262ccf",
+      "cells": 4,
+      "scale": 0.236,
+      "head": {
+        "sourcePx": 267,
+        "referencePx": 63.0
+      },
+      "standing": {
+        "referencePx": 166,
+        "tolerancePx": 6
+      }
+    },
+    {
+      "clip": "walk-down",
+      "row": 3,
+      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-005/evidence/WORK-037-1/candidates/cosy/walk-down-1.png",
+      "sha256": "0b1b7dadb3b893fdfff444ae5109b806ab242a734d45a8371bd868f3b919ff2b",
+      "cells": 6,
+      "scale": 0.3443,
+      "head": {
+        "sourcePx": 183,
+        "referencePx": 63.0
+      },
+      "standing": {
+        "referencePx": 166,
+        "tolerancePx": 6
+      }
+    },
+    {
+      "clip": "walk-up",
+      "row": 4,
+      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-005/evidence/WORK-037-1/candidates/cosy/walk-up-1.png",
+      "sha256": "c853967494fbb08442839aa0ddbddc30aa7b46587372470e27209e6af56b9843",
+      "cells": 6,
+      "scale": 0.3405,
+      "head": {
+        "sourcePx": 185,
+        "referencePx": 63.0
+      }
+    },
+    {
+      "clip": "walk-side",
+      "row": 5,
+      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-005/evidence/WORK-037-1/candidates/cosy/walk-side-2.png",
+      "sha256": "bb34554a1009b0189e4bbc3c4d7662b0356eb308b120960dd7e231ea5daf41a9",
+      "cells": 6,
+      "scale": 0.35,
+      "head": {
+        "sourcePx": 180,
+        "referencePx": 63.0
+      },
+      "standing": {
+        "referencePx": 166,
+        "tolerancePx": 6
+      }
+    }
+  ]
+}
