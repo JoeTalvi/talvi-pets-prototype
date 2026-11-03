@@ -2,6 +2,14 @@ import type { GameState } from '@sim/state';
 import type { ViewContext } from '@view/context';
 import { toast } from './templates/toast';
 import { assetsFrom, createText, type Panel } from '../overlay';
+import { ROUNDUP } from '@view/celebration/timings';
+import { glyphBurst, type GlyphBurst } from '@view/celebration/glyphBurst';
+import { centreIn } from '@view/celebration/starsBurst';
+
+/** DEC-049 §1 (WORK-038-3): window event fired as a round-up toast shows; `detail.landMs` is when its coins reach the street bar. */
+export const ROUNDUP_COINS = 'tpp:roundupCoins';
+/** Spec §1 beat text (order fork (d)): the coin glyph and size. */
+export const COIN = { glyph: '●', px: 30, spreadPx: 18 } as const;
 
 export type Toast = Panel & { queued(): number };
 
@@ -10,7 +18,8 @@ type Item = { kind: 'roundup'; merchantName: string; amountCents: number; change
   | { kind: 'space' };
 
 /** Q14(a) (play session 2026-10-26): a dialogue or popup holds at most the latest 2 round-ups; older held ones are dropped (the project bar already counts them). */
-const IN_MS = 150, OUT_MS = 200, HELD_MAX = 2;
+export const IN_MS = 150;
+const OUT_MS = 200, HELD_MAX = 2;
 
 function animate(el: HTMLElement, frames: Keyframe[], duration: number): void {
   // jsdom has no Web Animations: the queue and `hidden` carry the state; the motion is the browser's.
@@ -30,6 +39,24 @@ export function createToast(root: HTMLElement, context: ViewContext): Toast {
   const line = section.querySelector<HTMLElement>('[data-string-key="tpp.toast.roundup"]')!;
   const queue: Item[] = [];
   let timer: ReturnType<typeof setTimeout> | null = null;
+  let coinTimer: ReturnType<typeof setTimeout> | null = null, coins: GlyphBurst | null = null;
+  const stopCoins = () => { if (coinTimer !== null) clearTimeout(coinTimer); coinTimer = null; coins?.cancel(); coins = null; };
+  /** DEC-049 §1: at `IN_MS` 1 (< 50¢) or 2 gold coins fly from the toast's delta to the street bar over `ROUNDUP.flightMs`. */
+  const launchCoins = (changeCents: number) => {
+    const count = changeCents < ROUNDUP.coinsThresholdCents ? ROUNDUP.coinsUnder50 : ROUNDUP.coins;
+    // Both coins launch together (spread apart), so they land at 150 + 450 = 600.
+    const landMs = IN_MS + ROUNDUP.flightMs;
+    window.dispatchEvent(new CustomEvent(ROUNDUP_COINS, { detail: { landMs } }));
+    stopCoins();
+    coinTimer = setTimeout(() => {
+      coinTimer = null;
+      const bar = root.querySelector<HTMLElement>('.tpp-hudStreet .tpp-chunks');
+      if (!bar) return;
+      coins = glyphBurst(root, { glyph: COIN.glyph, px: COIN.px, count, from: centreIn(root, delta), to: centreIn(root, bar), spreadPx: COIN.spreadPx,
+        staggerMs: 0, flightMs: ROUNDUP.flightMs });
+      coins.el.classList.add('tpp-roundup-coins');
+    }, IN_MS);
+  };
   const later = (ms: number, fn: () => void) => { timer = setTimeout(() => { timer = null; fn(); }, ms); };
   const hide = () => { section.hidden = true; section.dataset.state = 'hidden'; };
   const pump = () => {
@@ -44,6 +71,7 @@ export function createToast(root: HTMLElement, context: ViewContext): Toast {
       line.textContent = text('tpp.toast.roundup', { merchant: item.merchantName, amount: `$${(item.amountCents / 100).toFixed(2)}`,
         change: `${item.changeCents}¢`, cause: item.causeName });
       delta.hidden = false; delta.textContent = text('tpp.toast.delta', { change: `${item.changeCents}¢` });
+      launchCoins(item.changeCents);
     }
     section.hidden = false; section.dataset.state = 'visible';
     animate(section, [{ opacity: 0, transform: 'translateY(-24px)' }, { opacity: 1, transform: 'translateY(0)' }], IN_MS);
@@ -65,10 +93,10 @@ export function createToast(root: HTMLElement, context: ViewContext): Toast {
     store.subscribe('space.unlocked', () => { queue.push({ kind: 'space' }); pump(); }),
     store.subscribe('dialogue.closed', () => pump()),
     store.subscribe('celebration.ended', () => pump()),
-    store.subscribe('state.reset', () => { queue.length = 0; if (timer !== null) clearTimeout(timer); timer = null; hide(); }),
+    store.subscribe('state.reset', () => { queue.length = 0; if (timer !== null) clearTimeout(timer); timer = null; stopCoins(); hide(); }),
   ];
   return {
     queued: () => queue.length,
-    destroy() { if (timer !== null) clearTimeout(timer); for (const off of offs) off(); section.remove(); },
+    destroy() { if (timer !== null) clearTimeout(timer); stopCoins(); for (const off of offs) off(); section.remove(); },
   };
 }
