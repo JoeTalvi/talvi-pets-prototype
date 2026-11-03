@@ -69,8 +69,8 @@ const rows: [string, unknown, unknown][] = [
 describe('VERIFY-WORK-038-1-04 spec §C in timings.ts', () => {
   it.each(rows)('§C %s', (_name, actual, expected) => { expect(actual).toEqual(expected); });
 
-  it('§C tuning.* rows stay in tuning.json (changed by WORK-038-3): revealSilhouetteHoldMs 1500 kept; revealCardStaggerMs still the pre-ladder value here', () => {
-    expect([tuning.revealSilhouetteHoldMs, tuning.revealCardStaggerMs]).toEqual([1500, 250]);
+  it('§C tuning.* rows stay in tuning.json (changed by WORK-038-3): revealSilhouetteHoldMs 1500 kept; revealCardStaggerMs 250 -> 400 and revealResolveMs 800 -> 400 (§C)', () => {
+    expect([tuning.revealSilhouetteHoldMs, tuning.revealCardStaggerMs, tuning.revealResolveMs]).toEqual([1500, 400, 400]);
   });
 
   it('legacy exports unchanged (today\'s code compiles and plays as at 71f575c)', () => {

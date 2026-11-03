@@ -44,6 +44,9 @@ describe('VERIFY-WORK-038-3-04 Stars by value (DEC-049 §4)', () => {
     expect(bursts(root)).toHaveLength(0);
   });
 
+});
+
+describe('VERIFY-WORK-038-3-04 Stars by value: repeat and origin', () => {
   it('VERIFY-WORK-038-3-04: a repeat (+1) has no ring, 2 small ★ and 1 large ★ landing at 420; done by 500', async () => {
     const { root, context } = await designSetup({ edit: st => { st.rooms['dog-room'].placements['floor-1'] = 'lamp'; } });
     const play = vi.spyOn(context.audio!, 'play');
@@ -78,6 +81,9 @@ describe('VERIFY-WORK-038-3-04 Stars by value (DEC-049 §4)', () => {
     expect(bursts(root)).toHaveLength(1);
   });
 
+});
+
+describe('VERIFY-WORK-038-3-04 Stars by value: losses, hidden Stars, reset, tier exclusivity', () => {
   it('VERIFY-WORK-038-3-04: a loss shows the red delta only; no burst', async () => {
     const { root, context } = await designSetup({ edit: st => { st.rooms['dog-room'].placements['floor-1'] = 'lamp'; } });
     context.store.dispatch({ type: 'removeCharm', slotId: 'floor-1' });

@@ -149,7 +149,6 @@ describe('VERIFY-T2-SITE-104 the mate on the street after a reload (DEC-045)', (
 });
 
 describe('VERIFY-WORK-038-3-06 garden beacon and space card (DEC-049 §7)', () => {
-  const shown = (siteId = 'garden') => window.dispatchEvent(new CustomEvent('tpp:spaceToastShown', { detail: { siteId } }));
   it('VERIFY-WORK-038-3-06: the space toast takes the card styling with a punch and reveal, and fires tpp:spaceToastShown {siteId}', async () => {
     const { vi } = await import('vitest');
     const { mountOverlay } = await import('../../src/ui/overlay');
@@ -170,6 +169,10 @@ describe('VERIFY-WORK-038-3-06 garden beacon and space card (DEC-049 §7)', () =
     } finally { window.removeEventListener('tpp:spaceToastShown', onShown); }
   });
 
+});
+
+describe('VERIFY-WORK-038-3-06 garden beacon on the street (DEC-049 §7)', () => {
+  const shown = (siteId = 'garden') => window.dispatchEvent(new CustomEvent('tpp:spaceToastShown', { detail: { siteId } }));
   it('VERIFY-WORK-038-3-06: on the active street the site pulses 1.06 (GARDEN.pulseMs yoyo × 3), 16 confetti burst and a "New" bubble stays; no flash or shake', async () => {
     const { vi } = await import('vitest');
     const Phaser = (await import('phaser')).default;

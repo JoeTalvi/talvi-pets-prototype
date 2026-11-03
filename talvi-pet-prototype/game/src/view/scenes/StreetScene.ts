@@ -36,14 +36,14 @@ export const BEACON = { scale: 1.06, pulses: 3, tints: [0x6f7f3f, 0xd9a441] } as
 /** Fork (b): sites whose garden toast showed while no street was active (view-local module memory: never replayed after a reload). */
 const unseenBeacons = new Set<SiteId>();
 /** The running StreetScene, if any; the toast's window event reaches it here (one listener for the page's lifetime). */
-let liveStreet: StreetScene | null = null;
+const liveStreets = new Set<StreetScene>();
 let beaconListener = false;
 function listenForBeacons(): void {
   if (beaconListener || typeof window === 'undefined') return;
   beaconListener = true;
   window.addEventListener(SPACE_TOAST_SHOWN, e => {
     const siteId = (e as CustomEvent<{ siteId: SiteId }>).detail.siteId;
-    const street = liveStreet;
+    const street = [...liveStreets].at(-1);
     if (street && !(street.game as { pendingDestroy?: boolean }).pendingDestroy && street.sys.isActive() && street.context.store.getState().scene.kind === 'street' && !street.transitioning) street.beacon(siteId);
     else unseenBeacons.add(siteId);
   });
@@ -111,8 +111,8 @@ export class StreetScene extends WorldScene {
     // Presentation §7.6: a reload with `arrival ≠ null` replays the arrival.
     if (state.arrival) this.startArrival(state.arrival);
     else if (state.siteArrival) this.startArrival(state.siteArrival);
-    liveStreet = this;
-    const release = () => { if (liveStreet === this) liveStreet = null; };
+    liveStreets.add(this);
+    const release = () => { liveStreets.delete(this); };
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, release); this.events.once(Phaser.Scenes.Events.DESTROY, release);
     for (const siteId of [...unseenBeacons]) { unseenBeacons.delete(siteId); this.beacon(siteId); }
   }

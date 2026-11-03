@@ -278,8 +278,9 @@ describe('VERIFY-MEC-003-011 completion beat (view)', () => {
   });
 });
 
-describe('VERIFY-WORK-038-3-05 / -02 / -03 popup tiles, Collect and the reveal (DEC-049 §2, §3, §6)', () => {
-  const plays = (p: Popups) => vi.spyOn(p.context.audio!, 'play');
+const plays = (p: Popups) => vi.spyOn(p.context.audio!, 'play');
+
+describe('VERIFY-WORK-038-3-05 / -02 popup tiles and Collect (DEC-049 §2, §6)', () => {
   it('VERIFY-WORK-038-3-05: the milestone tiles flip in CARD.staggerMs apart with reveal +2 st each; "New" only on a type never granted before', async () => {
     const { CARD } = await import('../../src/view/celebration/timings');
     const state = owing(content, 1, 1260);
@@ -321,6 +322,9 @@ describe('VERIFY-WORK-038-3-05 / -02 / -03 popup tiles, Collect and the reveal (
     expect(play.mock.calls.filter(c => c[0] === 'tick').map(c => (c[1] as { semitones: number }).semitones)).toEqual([0, 4, 7, 12, 12, 12, 12].slice(0, n));
   });
 
+});
+
+describe('VERIFY-WORK-038-3-02 / -03 / -10 the reveal popup (DEC-049 §2, §3)', () => {
   it('VERIFY-WORK-038-3-02: the reveal popup clue cards play reveal +0/+2/+4 as each enters revealCardStaggerMs apart', () => {
     const p = atMilestone();
     const play = plays(p);

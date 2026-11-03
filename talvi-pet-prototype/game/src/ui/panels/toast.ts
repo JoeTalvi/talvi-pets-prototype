@@ -30,6 +30,51 @@ function animate(el: HTMLElement, frames: Keyframe[], duration: number): void {
   if (typeof el.animate === 'function') el.animate(frames, { duration, easing: 'ease-out', fill: 'forwards' });
 }
 
+/** DEC-049 §1: at `IN_MS` 1 (< 50¢) or 2 gold coins fly from the toast's delta to the street bar over `ROUNDUP.flightMs`. */
+function coinLauncher(root: HTMLElement, delta: HTMLElement): { launch(changeCents: number): void; stop(): void } {
+  let timer: ReturnType<typeof setTimeout> | null = null, coins: GlyphBurst | null = null;
+  const stop = () => { if (timer !== null) clearTimeout(timer); timer = null; coins?.cancel(); coins = null; };
+  return {
+    stop,
+    launch(changeCents) {
+      const count = changeCents < ROUNDUP.coinsThresholdCents ? ROUNDUP.coinsUnder50 : ROUNDUP.coins;
+      // Both coins launch together (spread apart), so they land at 150 + 450 = 600.
+      window.dispatchEvent(new CustomEvent(ROUNDUP_COINS, { detail: { landMs: IN_MS + ROUNDUP.flightMs } }));
+      stop();
+      timer = setTimeout(() => {
+        timer = null;
+        const bar = root.querySelector<HTMLElement>('.tpp-hudStreet .tpp-chunks');
+        if (!bar) return;
+        coins = glyphBurst(root, { glyph: COIN.glyph, px: COIN.px, count, from: centreIn(root, delta), to: centreIn(root, bar), spreadPx: COIN.spreadPx,
+          staggerMs: 0, flightMs: ROUNDUP.flightMs });
+        coins.el.classList.add('tpp-roundup-coins');
+      }, IN_MS);
+    },
+  };
+}
+
+/** DEC-049 §7: the space toast's reward-card treatment and the coupling event for the street beacon. */
+function spaceCard(section: HTMLElement, context: ViewContext, siteId: string): void {
+  animate(section, [{ transform: 'scale(1)' }, { transform: `scale(${SPACE_CARD_PUNCH})` }, { transform: 'scale(1)' }], IN_MS * 2);
+  context.audio?.play('reveal');
+  window.dispatchEvent(new CustomEvent(SPACE_TOAST_SHOWN, { detail: { siteId } }));
+}
+
+/** Writes one queued item into the toast shell (line, delta badge, kind and the §7 card class). */
+function fillItem(el: { section: HTMLElement; line: HTMLElement; delta: HTMLElement }, item: Item, text: ReturnType<typeof createText>): void {
+  el.section.dataset.kind = item.kind;
+  el.section.classList.toggle('tpp-toast-card', item.kind === 'space');
+  if (item.kind === 'space') {
+    el.line.dataset.stringKey = 'tpp.toast.space'; el.line.textContent = text('tpp.toast.space');
+    el.delta.hidden = true;
+    return;
+  }
+  el.line.dataset.stringKey = 'tpp.toast.roundup';
+  el.line.textContent = text('tpp.toast.roundup', { merchant: item.merchantName, amount: `$${(item.amountCents / 100).toFixed(2)}`,
+    change: `${item.changeCents}¢`, cause: item.causeName });
+  el.delta.hidden = false; el.delta.textContent = text('tpp.toast.delta', { change: `${item.changeCents}¢` });
+}
+
 /** Q7(a) (core §9): no toasts while a dialogue or a celebration popup is open; the queue drains after. */
 const blocked = (state: GameState) => state.dialogue.current !== null || state.celebration !== null;
 
@@ -43,45 +88,15 @@ export function createToast(root: HTMLElement, context: ViewContext): Toast {
   const line = section.querySelector<HTMLElement>('[data-string-key="tpp.toast.roundup"]')!;
   const queue: Item[] = [];
   let timer: ReturnType<typeof setTimeout> | null = null;
-  let coinTimer: ReturnType<typeof setTimeout> | null = null, coins: GlyphBurst | null = null;
-  const stopCoins = () => { if (coinTimer !== null) clearTimeout(coinTimer); coinTimer = null; coins?.cancel(); coins = null; };
-  /** DEC-049 §1: at `IN_MS` 1 (< 50¢) or 2 gold coins fly from the toast's delta to the street bar over `ROUNDUP.flightMs`. */
-  const launchCoins = (changeCents: number) => {
-    const count = changeCents < ROUNDUP.coinsThresholdCents ? ROUNDUP.coinsUnder50 : ROUNDUP.coins;
-    // Both coins launch together (spread apart), so they land at 150 + 450 = 600.
-    const landMs = IN_MS + ROUNDUP.flightMs;
-    window.dispatchEvent(new CustomEvent(ROUNDUP_COINS, { detail: { landMs } }));
-    stopCoins();
-    coinTimer = setTimeout(() => {
-      coinTimer = null;
-      const bar = root.querySelector<HTMLElement>('.tpp-hudStreet .tpp-chunks');
-      if (!bar) return;
-      coins = glyphBurst(root, { glyph: COIN.glyph, px: COIN.px, count, from: centreIn(root, delta), to: centreIn(root, bar), spreadPx: COIN.spreadPx,
-        staggerMs: 0, flightMs: ROUNDUP.flightMs });
-      coins.el.classList.add('tpp-roundup-coins');
-    }, IN_MS);
-  };
+  const { launch: launchCoins, stop: stopCoins } = coinLauncher(root, delta);
   const later = (ms: number, fn: () => void) => { timer = setTimeout(() => { timer = null; fn(); }, ms); };
   const hide = () => { section.hidden = true; section.dataset.state = 'hidden'; };
   const pump = () => {
     if (timer !== null || queue.length === 0 || blocked(store.getState())) return;
     const item = queue.shift()!;
-    section.dataset.kind = item.kind;
-    section.classList.toggle('tpp-toast-card', item.kind === 'space');
-    if (item.kind === 'space') {
-      line.dataset.stringKey = 'tpp.toast.space'; line.textContent = text('tpp.toast.space');
-      delta.hidden = true;
-      // DEC-049 §7: the toast takes the reward-card styling (gold border, garden glyph via CSS) with a punch and `reveal`.
-      animate(section, [{ transform: 'scale(1)' }, { transform: `scale(${SPACE_CARD_PUNCH})` }, { transform: 'scale(1)' }], IN_MS * 2);
-      context.audio?.play('reveal');
-      window.dispatchEvent(new CustomEvent(SPACE_TOAST_SHOWN, { detail: { siteId: item.siteId } }));
-    } else {
-      line.dataset.stringKey = 'tpp.toast.roundup';
-      line.textContent = text('tpp.toast.roundup', { merchant: item.merchantName, amount: `$${(item.amountCents / 100).toFixed(2)}`,
-        change: `${item.changeCents}¢`, cause: item.causeName });
-      delta.hidden = false; delta.textContent = text('tpp.toast.delta', { change: `${item.changeCents}¢` });
-      launchCoins(item.changeCents);
-    }
+    fillItem({ section, line, delta }, item, text);
+    // DEC-049 §7: the space toast takes the reward-card styling (gold border, garden glyph via CSS) with a punch and `reveal`.
+    if (item.kind === 'space') spaceCard(section, context, item.siteId); else launchCoins(item.changeCents);
     section.hidden = false; section.dataset.state = 'visible';
     animate(section, [{ opacity: 0, transform: 'translateY(-24px)' }, { opacity: 1, transform: 'translateY(0)' }], IN_MS);
     later(IN_MS + content.tuning.toastMs, () => {

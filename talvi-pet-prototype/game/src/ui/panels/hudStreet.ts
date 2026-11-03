@@ -119,6 +119,65 @@ function renderHud(p: Parts, context: ViewContext, text: Text, state: GameState,
   else if (!barHeld && p.section.dataset.barCents !== String(cents)) setBar(p, cents, project.goalCents, 0);
 }
 
+type RoundupEvent = { projectId: string; changeCents: number; currentCents: number };
+type Nudge = { held(): boolean; onRoundup(event: RoundupEvent, after: GameState): void; clear(): void; destroy(): void };
+
+/** DEC-049 §1: a round-up whose toast shows now launches coins (`ROUNDUP_COINS`); the bar holds its pre-purchase value and the
+ * nudge, the glow and the tick wait for the landing. Without coins (a held toast) the nudge starts at the end of the dispatch. */
+function roundupNudge(p: Parts, context: ViewContext, render: (state: GameState, nudgeMs: number | null) => void): Nudge {
+  const { content, store } = context;
+  const timers = new Set<ReturnType<typeof setTimeout>>();
+  let deciding = false, coinsLand: number | null = null;
+  const onCoins = (e: Event) => { coinsLand = (e as CustomEvent<{ landMs: number }>).detail.landMs; };
+  window.addEventListener(ROUNDUP_COINS, onCoins);
+  const land = () => {
+    render(store.getState(), BAR_NUDGE_MS);
+    const bar = p.section.querySelector<HTMLElement>('.tpp-chunks');
+    bar?.animate?.([{ filter: 'brightness(1)' }, { filter: 'brightness(1.5) drop-shadow(0 0 10px rgba(255, 220, 120, 0.9))' }, { filter: 'brightness(1)' }],
+      { duration: ROUNDUP.glowMs });
+    if (bar) bar.dataset.glows = String(Number(bar.dataset.glows ?? 0) + 1);
+    context.audio?.play('tick', COIN_TICK);
+  };
+  const clear = () => { for (const t of timers) clearTimeout(t); timers.clear(); coinsLand = null; deciding = false; };
+  return {
+    held: () => deciding || timers.size > 0,
+    clear,
+    destroy() { window.removeEventListener(ROUNDUP_COINS, onCoins); clear(); },
+    onRoundup(event, after) {
+      // A re-render earlier in the same dispatch (`debug.applied`) may already show the new total: hold the pre-purchase value.
+      const goal = content.projects.find(pr => pr.id === event.projectId)?.goalCents;
+      if (goal && hudProjectId(content, after) === event.projectId) setBar(p, event.currentCents - event.changeCents, goal, 0);
+      deciding = true;
+      queueMicrotask(() => {
+        deciding = false;
+        const ms = coinsLand; coinsLand = null;
+        if (ms === null) { render(store.getState(), BAR_NUDGE_MS); return; }
+        const t = setTimeout(() => { timers.delete(t); land(); }, ms);
+        timers.add(t);
+      });
+    },
+  };
+}
+
+/** DEC-049 §4: the site pill's Stars burst from the slot the street announced in the same dispatch (`SITE_SLOT_AT`). */
+function siteGains(root: HTMLElement, p: Parts, context: ViewContext, fill: StarsFill): { off(): void } {
+  const { store } = context;
+  let slotAt: Point | null = null;
+  const onSlotAt = (e: Event) => { const d = (e as CustomEvent<Point>).detail; slotAt = { x: d.x, y: d.y }; };
+  window.addEventListener(SITE_SLOT_AT, onSlotAt);
+  // Deferred to the end of the dispatch so the scene's slot point from the same `charm.placed` is known whichever subscriber ran first.
+  const off = store.subscribe('space.stars.changed', event => {
+    if (event.delta <= 0) return;
+    queueMicrotask(() => {
+      const state = store.getState();
+      const from = slotAt; slotAt = null;
+      if (state.scene.kind !== 'street' || !state.session.starsVisible || p.site.pill.hidden) return;
+      siteBurst(root, p.site, fill, context, from, event.delta);
+    });
+  });
+  return { off() { off(); window.removeEventListener(SITE_SLOT_AT, onSlotAt); } };
+}
+
 /** Presentation §8.2 `hudStreet`: the project bar (nudge / trickle glide), "More homes coming", the reveal icon, `.frozen`; the debug entry and the reveal icon are bound by the debug and reveal panels. */
 export function createHudStreet(root: HTMLElement, context: ViewContext): HudStreet {
   const { content, store } = context;
@@ -129,59 +188,20 @@ export function createHudStreet(root: HTMLElement, context: ViewContext): HudStr
   const onToggle = () => store.dispatch({ type: 'setDesignMode', on: store.getState().mode !== 'design' });
   p.site.toggle.addEventListener('click', onToggle);
   const fill = createStarsFill(() => render(store.getState()));
-  const nudgeTimers = new Set<ReturnType<typeof setTimeout>>();
-  let deciding = false;
-  const render = (state: GameState, nudgeMs: number | null = null) => renderHud(p, context, text, state, nudgeMs, fill.pending(), deciding || nudgeTimers.size > 0);
+  const render = (state: GameState, nudgeMs: number | null = null) => renderHud(p, context, text, state, nudgeMs, fill.pending(), nudge.held());
+  const nudge = roundupNudge(p, context, render);
+  const gains = siteGains(root, p, context, fill);
   const clearBursts = () => { clearStarsBursts(root); fill.release(); };
-  let slotAt: Point | null = null;
-  const onSlotAt = (e: Event) => { const d = (e as CustomEvent<Point>).detail; slotAt = { x: d.x, y: d.y }; };
-  window.addEventListener(SITE_SLOT_AT, onSlotAt);
-  // DEC-049 §1: a round-up whose toast shows now launches coins; the nudge, the glow and the tick wait for them to land.
-  let coinsLand: number | null = null;
-  const onCoins = (e: Event) => { coinsLand = (e as CustomEvent<{ landMs: number }>).detail.landMs; };
-  window.addEventListener(ROUNDUP_COINS, onCoins);
-  const clearNudges = () => { for (const t of nudgeTimers) clearTimeout(t); nudgeTimers.clear(); coinsLand = null; deciding = false; };
-  const glow = () => {
-    const bar = p.section.querySelector<HTMLElement>('.tpp-chunks');
-    bar?.animate?.([{ filter: 'brightness(1)' }, { filter: 'brightness(1.5) drop-shadow(0 0 10px rgba(255, 220, 120, 0.9))' }, { filter: 'brightness(1)' }],
-      { duration: ROUNDUP.glowMs });
-    if (bar) bar.dataset.glows = String(Number(bar.dataset.glows ?? 0) + 1);
-  };
-  const eventsNudge = () => { deciding = true; queueMicrotask(() => {
-    deciding = false;
-    const land = coinsLand; coinsLand = null;
-    if (land === null) { render(store.getState(), BAR_NUDGE_MS); return; }
-    const t = setTimeout(() => {
-      nudgeTimers.delete(t);
-      render(store.getState(), BAR_NUDGE_MS); glow(); context.audio?.play('tick', COIN_TICK);
-    }, land);
-    nudgeTimers.add(t);
-  }); };
   const offs = [...RENDER_ON.map(type => store.subscribe(type, (_event, after) => render(after))),
     // VERIFY-MEC-010-015: the trickle arm glides over one feed interval instead of the 300 ms nudge.
     store.subscribe('roundup.fired', (event, after) => {
-      if (after.session.feedPresentation === 'trickle') { render(after, after.session.eventIntervalMs ?? BAR_NUDGE_MS); return; }
-      // A re-render earlier in the same dispatch (`debug.applied`) may already show the new total: hold the pre-purchase value.
-      const goal = content.projects.find(pr => pr.id === event.projectId)?.goalCents;
-      if (goal && hudProjectId(content, after) === event.projectId) setBar(p, event.currentCents - event.changeCents, goal, 0);
-      eventsNudge();
-    }),
-    // DEC-049 §4: a site gain bursts into the pill (nothing while Stars are hidden, MEC-006 R7); deferred to the end of the
-    // dispatch so the scene's slot point from the same `charm.placed` is known whichever subscriber ran first.
-    store.subscribe('space.stars.changed', event => {
-      if (event.delta <= 0) return;
-      queueMicrotask(() => {
-        const state = store.getState();
-        const from = slotAt; slotAt = null;
-        if (state.scene.kind !== 'street' || !state.session.starsVisible || p.site.pill.hidden) return;
-        siteBurst(root, p.site, fill, context, from, event.delta);
-      });
+      if (after.session.feedPresentation === 'trickle') render(after, after.session.eventIntervalMs ?? BAR_NUDGE_MS);
+      else nudge.onRoundup(event, after);
     }),
     store.subscribe('stars.visibilityChanged', (_event, after) => { if (!after.session.starsVisible) clearBursts(); }),
-    store.subscribe('state.reset', () => { clearBursts(); clearNudges(); }),
+    store.subscribe('state.reset', () => { clearBursts(); nudge.clear(); }),
     store.subscribe('scene.changed', clearBursts),
-    () => window.removeEventListener(SITE_SLOT_AT, onSlotAt),
-    () => { window.removeEventListener(ROUNDUP_COINS, onCoins); clearNudges(); }];
+    gains.off, nudge.destroy];
   render(store.getState());
   return {
     render: () => render(store.getState()),

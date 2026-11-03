@@ -43,6 +43,31 @@ function cardsHtml(view: RevealPopupView, text: Text, assets: Record<string, str
 }
 
 type FullView = Extract<RevealPopupView, { image: 'full' }>;
+
+/** DEC-049 §2: a new clue card flips in (`CARD.flipMs`), its "Phase n" label shimmers (`CARD.shimmerMs`), `reveal` +2 st per card. */
+function showClueCard(card: HTMLElement, i: number, audio: PlayAudio): void {
+  card.hidden = false;
+  card.animate?.(TILE_FLIP_FRAMES, { duration: CARD.flipMs, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)' });
+  card.querySelector<HTMLElement>('.tpp-clue-phase')?.animate?.([{ filter: 'brightness(1)' },
+    { filter: 'brightness(1.6) drop-shadow(0 0 6px rgba(255, 220, 120, 0.9))', offset: 0.5 }, { filter: 'brightness(1)' }], { duration: CARD.shimmerMs });
+  audio()?.play('reveal', { semitones: REVEAL_BEATS.cardSemitones * i });
+}
+
+/** DEC-049 §3 resolve hit: a white flash on the tile only (dropped under reduced motion), 24 confetti glyphs, `reveal` + `heart`. */
+function resolveHit(section: HTMLElement, tile: HTMLElement, resolveMs: number, audio: PlayAudio, later: (fn: () => void, ms: number) => void): void {
+  if (!reducedMotion()) {
+    const flash = document.createElement('span');
+    flash.className = 'tpp-tile-flash';
+    Object.assign(flash.style, { position: 'absolute', inset: '0', background: '#fff', pointerEvents: 'none', borderRadius: 'inherit' });
+    tile.append(flash);
+    flash.animate?.([{ opacity: 1 }, { opacity: 0 }], { duration: REVEAL.tileFlashMs, fill: 'forwards' });
+    later(() => flash.remove(), REVEAL.tileFlashMs);
+  }
+  const root = section.parentElement;
+  if (root) glyphBurst(root, { glyph: '✦', px: 28, count: REVEAL_BEATS.confetti, from: centreIn(root, tile), spreadPx: REVEAL_BEATS.confettiSpreadPx,
+    staggerMs: 0, flightMs: resolveMs * 2 });
+  audio()?.play('reveal'); audio()?.play('heart');
+}
 type BeatTuning = { revealCardStaggerMs: number; revealSilhouetteHoldMs: number; revealResolveMs: number };
 type Stage = { reset(completes: boolean): void; play(view: FullView, delayMs: number | null): void; enter(cards: HTMLElement[], full: FullView | null): void; cancel(): void };
 
@@ -66,21 +91,7 @@ function createStage(section: HTMLElement, text: Text, assets: Record<string, st
     title.animate?.([{ transform: 'scale(0)' }, { transform: `scale(${REVEAL_BEATS.namePopPeak})`, offset: 0.6 }, { transform: 'scale(1)' }],
       { duration: REVEAL.namePopMs, easing: 'ease-out' });
   };
-  /** DEC-049 §3 resolve hit: a white flash on the tile only (dropped under reduced motion), 24 confetti glyphs, `reveal` + `heart`. */
-  const hit = () => {
-    if (!reducedMotion()) {
-      const flash = document.createElement('span');
-      flash.className = 'tpp-tile-flash';
-      Object.assign(flash.style, { position: 'absolute', inset: '0', background: '#fff', pointerEvents: 'none', borderRadius: 'inherit' });
-      tile.append(flash);
-      flash.animate?.([{ opacity: 1 }, { opacity: 0 }], { duration: REVEAL.tileFlashMs, fill: 'forwards' });
-      later(() => flash.remove(), REVEAL.tileFlashMs);
-    }
-    const root = section.parentElement;
-    if (root) glyphBurst(root, { glyph: '✦', px: 28, count: REVEAL_BEATS.confetti, from: centreIn(root, tile), spreadPx: REVEAL_BEATS.confettiSpreadPx,
-      staggerMs: 0, flightMs: tuning.revealResolveMs * 2 });
-    audio()?.play('reveal'); audio()?.play('heart');
-  };
+  const hit = () => resolveHit(section, tile, tuning.revealResolveMs, audio, later);
   const resolve = (view: FullView) => {
     hit();
     tile.insertAdjacentHTML('beforeend', image({ assets }, view.descriptorImage, 'tpp-beat-next'));
@@ -109,14 +120,7 @@ function createStage(section: HTMLElement, text: Text, assets: Record<string, st
     /** Live open: cards enter `revealCardStaggerMs` apart; the beat starts once the last new card has entered (order fork 3). */
     enter(cards, full) {
       cards.forEach((card, i) => {
-        // DEC-049 §2: each new clue card flips in (`CARD.flipMs`), the "Phase n" label shimmers, `reveal` +2 st per card.
-        const show = () => {
-          card.hidden = false;
-          card.animate?.(TILE_FLIP_FRAMES, { duration: CARD.flipMs, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)' });
-          card.querySelector<HTMLElement>('.tpp-clue-phase')?.animate?.([{ filter: 'brightness(1)', color: 'inherit' },
-            { filter: 'brightness(1.6) drop-shadow(0 0 6px rgba(255, 220, 120, 0.9))', offset: 0.5 }, { filter: 'brightness(1)' }], { duration: CARD.shimmerMs });
-          audio()?.play('reveal', { semitones: REVEAL_BEATS.cardSemitones * i });
-        };
+        const show = () => showClueCard(card, i, audio);
         if (i === 0) show(); else { card.hidden = true; later(show, i * tuning.revealCardStaggerMs); }
       });
       if (full) this.play(full, (cards.length - 1) * tuning.revealCardStaggerMs);
