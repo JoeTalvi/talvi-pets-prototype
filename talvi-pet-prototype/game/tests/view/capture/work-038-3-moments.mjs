@@ -172,6 +172,8 @@ async function reactions(browser) {
     out.s9[reaction] = { shown: ok, heartsAt250: hearts, sounds: await sounds(page, t0) };
   }
   // First use: the first pet.verbStarted per (pet, charm type) sparkles at the charm (called on the scene; no verb on demand).
+  // Not driven here (review WORK-038-3 A5): this fixture has no placed charm, so slotId is null and no sparkle is drawn;
+  // the beat rests on bubbles.test.ts. The still is labelled so.
   await page.evaluate(() => { window.__sounds = []; });
   const t0 = await now(page);
   out.s9.firstUse = await page.evaluate(() => {
@@ -181,10 +183,10 @@ async function reactions(browser) {
     sc.firstUse(petId, slotId, st); return { slotId, petId, sparkles: document.querySelectorAll('canvas').length > 0 };
   });
   await page.waitForTimeout(150);
-  await shot(page, browser, captures, 's9-first-use-1080', { note: 'WORK-038-3 fix round 1: first-use sparkle' });
+  await shot(page, browser, captures, 's9-first-use-not-driven-1080', { note: 'WORK-038-3: first-use (not driven: no placed charm, no sparkle drawn)' });
   await page.waitForTimeout(800);
   out.s9.firstUse.sounds = await sounds(page, t0);
-  out.s9.loop = encode(loops, 's9-reactions', await rec.stop(), { note: 'WORK-038-3 §9 love, dislike, stripped (+B9 line), first use' }, { maxMs: 20000 }).outputs?.mp4 ?? null;
+  out.s9.loop = encode(loops, 's9-reactions', await rec.stop(), { note: 'WORK-038-3 §9 love, dislike, stripped (+B9 line), first use (not driven)' }, { maxMs: 20000 }).outputs?.mp4 ?? null;
   errs.push({ window: 's9', ...errorsSummary(w.errors, await lines(page)) }); await w.context.close();
 }
 
