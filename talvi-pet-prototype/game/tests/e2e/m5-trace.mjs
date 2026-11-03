@@ -14,7 +14,7 @@ import { GAME_DIR, base, evidenceRoot, sha, launch, boot, waitScene, lines, getS
 import { greetingBeats, greetingLoops } from './lib/m5-greeting.mjs';
 
 mkdirSync(evidenceRoot, { recursive: true }); // review WORK-036-2-1 A3: a cold evidence folder must not ENOENT
-const loopsDir = join(evidenceRoot, '..', 'loops'), stillsDir = join(evidenceRoot, '..', 'stills');
+const loopsDir = join(evidenceRoot, 'loops'), stillsDir = join(evidenceRoot, 'stills'); // review WORK-035-2-1 A7: under TPP_EVIDENCE
 export const SEED = join(evidenceRoot, 'm5-seed.real.json');
 const SEED_STEPS = join(evidenceRoot, 'm5-seed.steps.json');
 if (!existsSync(SEED)) {

@@ -6,7 +6,7 @@ import { copyFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { lines, getState, setDebug, debugOpen, evidenceRoot } from './harness.mjs';
 
-const EV = join(evidenceRoot, '..'), capturesDir = join(EV, 'captures'), rowsDir = join(EV, 'rows');
+const capturesDir = join(evidenceRoot, 'captures'), rowsDir = join(evidenceRoot, 'rows'); // review WORK-035-2-1 A7: under TPP_EVIDENCE
 const GREET_EMOJI = { friendly: '🎵', polite: '🙂', surprised: '😮' };
 const RADIUS_PX = 1.5 * 240, APPROACH_MS = 90000, NATURAL_MS = 90000;
 const PAIR = ['owl', 'owl-mate'], KEY = 'owl-mate|owl';
