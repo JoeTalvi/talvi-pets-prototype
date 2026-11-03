@@ -10,6 +10,7 @@ import type { Action } from '../../src/sim/actions';
 import { mountOverlay } from '../../src/ui/overlay';
 import { chunkFills } from '../../src/ui/panels/hudStreet';
 import { ROUNDUP_COINS } from '../../src/ui/panels/toast';
+import { blockSpies, stubReducedMotion } from './motionHarness';
 import type { ViewContext } from '../../src/view/context';
 import { files, manifest, patchFiles } from '../content/helpers';
 import { fixtureText } from '../app/helpers';
@@ -214,4 +215,25 @@ describe('VERIFY-WORK-038-3-01 post-run (review A1): no stale coin landing', () 
       } finally { window.removeEventListener(ROUNDUP_COINS, onCoins); }
     } finally { vi.useRealTimers(); }
   });
+});
+
+describe('VERIFY-WORK-038-3-10 / -11 §1 round-up: reduced motion and tier exclusivity', () => {
+  for (const reduce of [false, true]) {
+    it(`VERIFY-WORK-038-3-1${reduce ? 0 : 1}: reduce ${reduce} — the coins, the nudge and the tick stay; no screenFlash, shake or hitstop`, async () => {
+      stubReducedMotion(reduce);
+      const blocks = blockSpies();
+      vi.useFakeTimers();
+      try {
+        const h = hud(owing(content, 1, 900));
+        const play = vi.spyOn(h.context.audio!, 'play');
+        h.dispatch({ type: 'debugSimulatePurchase' });
+        await Promise.resolve();
+        vi.advanceTimersByTime(150);
+        const coins = h.host.querySelectorAll('.tpp-roundup-coins .tpp-glyph').length;
+        vi.advanceTimersByTime(450);
+        expect([coins > 0, h.section.dataset.barMs, play.mock.calls.filter(c => c[0] === 'tick').length]).toEqual([true, '300', 1]);
+        expect(blocks.calls()).toEqual([0, 0, 0]);
+      } finally { vi.useRealTimers(); vi.unstubAllGlobals(); vi.restoreAllMocks(); }
+    });
+  }
 });

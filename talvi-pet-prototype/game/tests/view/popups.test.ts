@@ -13,6 +13,7 @@ import { fixtureText } from '../app/helpers';
 import { owing } from '../sim/helpers';
 import { contextFor } from './sceneHarness';
 import { click, linesOf, REAL_STRINGS } from './designHarness';
+import { blockSpies, stubReducedMotion } from './motionHarness';
 
 beforeEach(() => { vi.useFakeTimers(); });
 afterEach(() => { vi.useRealTimers(); document.body.replaceChildren(); });
@@ -361,4 +362,26 @@ describe('VERIFY-WORK-038-3-02 / -03 / -10 the reveal popup (DEC-049 §2, §3)',
       } finally { vi.unstubAllGlobals(); document.body.replaceChildren(); }
     }
   });
+});
+
+describe('VERIFY-WORK-038-3-10 / -11 §6 popup tiles: reduced motion and tier exclusivity', () => {
+  for (const reduce of [false, true]) {
+    it(`VERIFY-WORK-038-3-1${reduce ? 0 : 1}: reduce ${reduce} — the tiles, their reveal sounds and Collect's tick stay; no screenFlash, shake or hitstop`, () => {
+      stubReducedMotion(reduce);
+      const blocks = blockSpies();
+      try {
+        const p = popups(owing(content, 1, 1260));
+        const play = plays(p);
+        ack(p);
+        p.dispatch({ type: 'cutsceneFinished' });
+        const n = p.tiles().length;
+        vi.advanceTimersByTime(5000);
+        expect([n > 0, play.mock.calls.filter(c => c[0] === 'reveal').length]).toEqual([true, n]);
+        click(p.milestone.querySelector('.tpp-collect'));
+        vi.advanceTimersByTime(5000);
+        expect(play.mock.calls.filter(c => c[0] === 'tick').length).toBe(n);
+        expect(blocks.calls()).toEqual([0, 0, 0]);
+      } finally { vi.unstubAllGlobals(); vi.restoreAllMocks(); }
+    });
+  }
 });
