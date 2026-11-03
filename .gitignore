@@ -1,0 +1,30 @@
+# Only talvi-pet-prototype/game is version-controlled. The GRA workflow package
+# (design, technical, pre-production and build documents) is checkpointed by
+# state.json, not git, so it is ignored here along with caches and older
+# concept material at the repo root.
+
+# caches, locks, tooling
+.agents/
+.npm-cache/
+node_modules/
+skills-lock.json
+talvi-pet-prototype/.workflow.lock
+
+# GRA workflow package (checkpointed in state.json)
+talvi-pet-prototype/AGENTS.md
+talvi-pet-prototype/manifest.md
+talvi-pet-prototype/state.json
+talvi-pet-prototype/phase-0-intake/
+talvi-pet-prototype/phase-1-design/
+talvi-pet-prototype/phase-2-technical/
+talvi-pet-prototype/phase-3-preproduction/
+talvi-pet-prototype/phase-4-build/
+talvi-pet-prototype/wiki/
+talvi-pet-prototype/working/
+
+# pre-workflow concept material
+NEW_PET_DIRECTION.md
+TALVI_DESIGN_BASELINE.md
+TALVI_PROTOTYPE_DESIGN.md
+presentation/
+presentation_brief.json
