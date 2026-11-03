@@ -51,7 +51,7 @@ describe('CONTRACT-ACTIONS v1.4 reduce', () => {
   });
 });
 
-it('CONTRACT-ACTIONS v1.5 reduce handles all 28 actions: a minimal dispatch of each returns a RuleResult, none throws', () => {
+it('CONTRACT-ACTIONS v1.5 reduce handles all 30 actions: a minimal dispatch of each returns a RuleResult, none throws', () => {
   const { content, state } = dogRoomDesign();
   const minimal: Record<Action['type'], Action> = {
     tick: tick(), setDesignMode: { type: 'setDesignMode', on: false },
@@ -70,6 +70,7 @@ it('CONTRACT-ACTIONS v1.5 reduce handles all 28 actions: a minimal dispatch of e
     debugUnlockAllTypes: { type: 'debugUnlockAllTypes' }, debugGrantCopies: { type: 'debugGrantCopies', typeId: 'lamp', count: 1 },
     debugSetStarsVisible: { type: 'debugSetStarsVisible', on: false },
     debugSetMuted: { type: 'debugSetMuted', on: true }, debugSetTesterLabel: { type: 'debugSetTesterLabel', text: ' T1 ' },
+    chooseOutfit: { type: 'chooseOutfit', outfitId: 'default' }, debugSetOutfit: { type: 'debugSetOutfit', outfitId: 'default' },
     reset: { type: 'reset' },
   };
   expect(Object.keys(minimal).sort()).toEqual([...actionNames].sort());

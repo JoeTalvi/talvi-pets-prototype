@@ -187,6 +187,8 @@ function decorate(section: HTMLElement, row: (name: string) => HTMLElement, cont
     .map(type => `<option value="${escapeHtml(type.id)}">${escapeHtml(type.name)}</option>`).join('');
   row('Fulfil active want').querySelector('select')!.innerHTML = Object.values(content.pets)   // WORK-034-2 row 22: pets in content order
     .map(pet => `<option value="${escapeHtml(pet.id)}">${escapeHtml(pet.name)}</option>`).join('');
+  row('Outfits').querySelector('select')!.innerHTML = (content.outfits ?? [])   // WORK-037-2 row 25: outfits in content order
+    .map(outfit => `<option value="${escapeHtml(outfit.id)}">${escapeHtml(content.strings[outfit.nameKey] ?? outfit.id)}</option>`).join('');
   const caption = document.createElement('small'); row('Set current progress').querySelector('div')!.append(caption);
   section.querySelector('.tpp-debug-scroll > p:not(.tpp-debug-error)')?.remove();
   const noProject = document.createElement('p'); noProject.className = 'tpp-debug-note'; noProject.textContent = 'All projects complete'; noProject.hidden = true;
@@ -234,6 +236,8 @@ function bindDispatchRows(b: Binding): void {
   go('Unlock garden', 0, () => { const id = siteId(); return id ? { type: 'debugUnlockSpace', siteId: id } : null; });
   go('Fill garden', 0, () => { const id = siteId(); return id ? { type: 'debugFillSpace', siteId: id } : null; });
   go('Fulfil active want', 0, () => ({ type: 'debugFulfilActiveWant', petId: row('Fulfil active want').querySelector('select')!.value }));
+  // Row 25 "Outfits" (WORK-037-2, gate Q17): wear any known outfit regardless of its lock; found by label, not index.
+  go('Outfits', 0, () => ({ type: 'debugSetOutfit', outfitId: row('Outfits').querySelector('select')!.value }));
   go('Feed presentation', 0, () => ({ type: 'debugSetFeedPresentation', mode: 'events' }));
   go('Feed presentation', 1, () => ({ type: 'debugSetFeedPresentation', mode: 'trickle' }));
   const flip = (name: string, action: () => Action) => listen(switchOf(row(name)), () => dispatchFrom(name, action()));

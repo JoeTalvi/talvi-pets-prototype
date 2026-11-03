@@ -22,6 +22,7 @@ import { activateFirstWant, afterRoomChange as wantsAfterRoomChange } from './ru
 import type { GameState } from './state';
 import { debugFillSpace, debugFulfilActiveWant, debugUnlockSpace } from './rules/debugSpace';
 import { maybeStartSiteArrival } from './rules/sites';
+import { chooseOutfit, debugSetOutfit } from './rules/outfits';
 
 type Payload = Record<string, unknown>;
 const isString = (value: unknown) => typeof value === 'string';
@@ -46,6 +47,8 @@ const payloadValid: Record<Action['type'], (action: Payload) => boolean> = {
   cutsceneFinished: none, collectRewards: none, skipWait: none, closeReveal: none,
   arrivalFinished: none, advanceDialogue: none, debugSimulatePurchase: none, debugUnlockAllTypes: none,
   tapPet: action => isString(action.petId),
+  chooseOutfit: action => isString(action.outfitId),
+  debugSetOutfit: action => isString(action.outfitId),
   debugSetEventInterval: action => action.ms === null || isInteger(action.ms),
   debugSetFeedPresentation: action => action.mode === 'events' || action.mode === 'trickle',
   debugSetSeed: action => isInteger(action.seed),
@@ -130,6 +133,7 @@ const handlers: Handlers = {
   debugSetFeedPresentation: debugSetting, debugSetStarsVisible: debugSetting, debugSetMuted: debugSetting,
   debugSetTesterLabel: debugSetting,
   debugUnlockSpace, debugFulfilActiveWant,
+  chooseOutfit, debugSetOutfit, // WORK-037-2
   debugFillSpace: (content, state, action) => debugFillSpace(content, state, action, runPlacement),
 };
 

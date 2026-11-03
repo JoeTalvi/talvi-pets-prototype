@@ -1,7 +1,7 @@
 import type { RewardList } from '../content/schema/pet';
 import type { Action } from './actions';
 import type {
-  CharmTypeId, DialogueScript, DoorId, GameState, PetBehaviour, PetId,
+  CharmTypeId, DialogueScript, DoorId, GameState, OutfitId, PetBehaviour, PetId,
   ProjectId, Reaction, RoomId, Scene, SiteId, SlotId, TagId, VerbId, WantId,
 } from './state';
 
@@ -55,6 +55,9 @@ export type SimEvent =
   | { type: 'dialogue.advanced'; index: number }
   | { type: 'dialogue.closed'; source: DialogueScript['source'] }
   | { type: 'audio.muteChanged'; muted: boolean }
+  // WORK-037-2 (DEC-047): derived grants at the completion / arrival beats, and the worn outfit changing
+  | { type: 'outfit.unlocked'; outfitId: OutfitId; source: 'completion' | 'arrival'; projectId?: ProjectId; siteId?: SiteId }
+  | { type: 'outfit.changed'; from: OutfitId; to: OutfitId }
   | { type: 'debug.applied'; action: Action; adjusted?: { field: string; requested: number; applied: number } }
   | { type: 'state.reset' }
   | { type: 'action.rejected'; action: Action; reason: string };

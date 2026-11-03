@@ -1,4 +1,4 @@
-import type { CharmTypeId, PetId, ProjectId, SiteId, SlotId } from './state';
+import type { CharmTypeId, OutfitId, PetId, ProjectId, SiteId, SlotId } from './state';
 
 /** Exact action vocabulary from core.md §2. Types do not imply implemented rules. */
 export type Action =
@@ -14,6 +14,7 @@ export type Action =
   | { type: 'arrivalFinished' }
   | { type: 'advanceDialogue' }
   | { type: 'tapPet'; petId: PetId }
+  | { type: 'chooseOutfit'; outfitId: OutfitId }           // WORK-037-2 (MEC-001)
   | { type: 'debugSimulatePurchase' }
   | { type: 'debugSetEventInterval'; ms: number | null }
   | { type: 'debugSetFeedPresentation'; mode: 'events' | 'trickle' }
@@ -29,6 +30,7 @@ export type Action =
   | { type: 'debugSetStarsVisible'; on: boolean }
   | { type: 'debugSetMuted'; on: boolean }
   | { type: 'debugSetTesterLabel'; text: string }
+  | { type: 'debugSetOutfit'; outfitId: OutfitId }         // WORK-037-2: debug row 25 "Outfits"
   | { type: 'reset'; seed?: number };
 
 export type TickAction = Extract<Action, { type: 'tick' }>;

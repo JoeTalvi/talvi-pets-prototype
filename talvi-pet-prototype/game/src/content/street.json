@@ -3873,7 +3873,8 @@
           "y": 870
         }
       ],
-      "arrivalAtStars": 8
+      "arrivalAtStars": 8,
+      "arrivalOutfitId": "garden"
     }
   ]
 }

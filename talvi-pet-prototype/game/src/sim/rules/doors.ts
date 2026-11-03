@@ -25,6 +25,7 @@ export function stepDoors(content: Content, state: GameState): RuleResult {
   return {
     state: { ...state, scene: to, mode: 'play', avatar: {
       ...targetDoor.spawn, immunityMs: content.tuning.arrivalImmunityMs, facingCandidate: null,
+      outfitId: state.avatar.outfitId, // WORK-037-2: the worn outfit survives a door
     } },
     events: [{ type: 'scene.changed', from: state.scene, to, doorId: hit.id }],
   };

@@ -96,7 +96,7 @@ function enterRoom(content: Content, state: GameState, roomId: string): GameStat
   const door = room.doors.find(candidate => candidate.target.scene === 'street')!;
   const next = structuredClone(state);
   next.scene = { kind: 'interior', roomId };
-  next.avatar = { x: door.spawn.x, y: door.spawn.y, facing: door.spawn.facing ?? 'down', immunityMs: 0, facingCandidate: null };
+  next.avatar = { x: door.spawn.x, y: door.spawn.y, facing: door.spawn.facing ?? 'down', immunityMs: 0, facingCandidate: null, outfitId: next.avatar.outfitId };
   next.pets[room.residentPetId].introduced = true;
   return next;
 }
