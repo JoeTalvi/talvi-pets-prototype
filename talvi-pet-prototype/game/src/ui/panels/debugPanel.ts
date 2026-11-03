@@ -240,6 +240,7 @@ function bindDispatchRows(b: Binding): void {
   go('Pets outside', 0, () => ({ type: 'debugSetPetsOutside', mode: 'roll' }));
   go('Pets outside', 1, () => ({ type: 'debugSetPetsOutside', mode: 'all' }));
   go('Pets outside', 2, () => ({ type: 'debugSetPetsOutside', mode: 'none' }));
+  go('Greet now', 0, () => ({ type: 'debugGreetNow' })); // row 24 (WORK-036-1, gate Q17)
   go('Feed presentation', 0, () => ({ type: 'debugSetFeedPresentation', mode: 'events' }));
   go('Feed presentation', 1, () => ({ type: 'debugSetFeedPresentation', mode: 'trickle' }));
   const flip = (name: string, action: () => Action) => listen(switchOf(row(name)), () => dispatchFrom(name, action()));
