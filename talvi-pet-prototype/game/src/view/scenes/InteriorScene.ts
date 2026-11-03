@@ -10,10 +10,6 @@ import type { SlotOutline } from '../objects/SlotOutline';
 import { charmDepth, createOutlines, fadeCharm, outlineAt, popCharm, syncOutlineStates } from '../objects/slotLayer';
 import { createEditorHook, type EditorHook } from '../editor';
 import { WorldScene } from './WorldScene';
-import { burstConfetti } from '../celebration/Confetti';
-import { CONFETTI_LIFETIME, HEART_MOMENT, HEART_PET_DEPTH } from '../celebration/timings';
-import { HEART_MOMENT_END } from '../celebration/heartMoment';
-import { clipKey } from '../anims';
 
 /** The pointer fields the routing reads (a Phaser pointer, or synthetic data in jsdom — GAP-5). */
 export type ScenePointer = { id: number; worldX: number; worldY: number; downTime: number; upTime: number };
@@ -31,9 +27,6 @@ export class InteriorScene extends WorldScene {
   private downs = new Map<number, PointerSample>();
   private joystickPointer: number | null = null;
   private paintingErrorRecorded = false;
-  /** WORK-032-2 fix 6b: the Heart moment's scene half (confetti, the pet's big `react`), ended by its timer or the overlay's end event. */
-  heartPet: Phaser.GameObjects.Sprite | null = null;
-  private heartTimers: ReturnType<typeof setTimeout>[] = [];
   protected readonly previewKind = 'interior';
   constructor() { super('Interior'); }
   init(data: { roomId?: string }): void {
@@ -46,8 +39,6 @@ export class InteriorScene extends WorldScene {
     this.downs = new Map();
     this.joystickPointer = null;
     this.editor = null;
-    this.heartPet = null;
-    this.heartTimers = [];
   }
   /** The room the preview layers draw: the editor's draft while it is open, else the content room. */
   shownRoom(): Room { return this.editor?.draft() ?? this.room; }
@@ -185,34 +176,11 @@ export class InteriorScene extends WorldScene {
       else if (event.to !== 'walking') this.bubble?.dropPending();
     });
     this.subscribePetBubbles();
-    this.on('heart.earned', event => this.heartMoment(event.petId));
-    const onMomentEnd = () => this.endHeartPet();
-    window.addEventListener(HEART_MOMENT_END, onMomentEnd);
-    this.unsubscribes.push(() => { window.removeEventListener(HEART_MOMENT_END, onMomentEnd); this.endHeartPet(); for (const t of this.heartTimers.splice(0)) clearTimeout(t); });
     this.editor = createEditorHook(this);
     this.unsubscribes.push(() => { this.editor?.destroy(); });
   }
-  /**
-   * WORK-032-2 fix 6b, the scene half of the Heart moment (the dim, the heart and the input capture are the overlay's): the existing
-   * confetti bursts up from mid-screen and the pet's `react` clip plays large in the overlay's spotlight, camera-fixed above the
-   * world, while the room's own pet keeps following the simulation (its walk-over is untouched).
-   */
-  private heartMoment(petId: string): void {
-    this.endHeartPet();
-    const { width, height } = this.scale.gameSize, top = this.cameras.main.scrollY;
-    const emitter = burstConfetti(this, new Phaser.Geom.Rectangle(width / 2 - 360, top + height / 2 - 80, 720, 160));
-    this.heartTimers.push(setTimeout(() => emitter.destroy(), CONFETTI_LIFETIME));
-    const sheet = `pets/${petId}-sheet`, react = clipKey(sheet, 'react');
-    if (!react || !this.anims.exists(react) || !this.textures.exists(sheet)) return;
-    this.heartPet = this.add.sprite(width / 2, height * HEART_MOMENT.petBaseY, sheet).setOrigin(0.5, 1).setScale(HEART_MOMENT.petScale)
-      .setScrollFactor(0).setDepth(HEART_PET_DEPTH).play(react);
-    this.tweens.add({ targets: this.heartPet, alpha: { from: 0, to: 1 }, duration: 160 });
-    this.heartTimers.push(setTimeout(() => this.endHeartPet(), HEART_MOMENT.totalMs));
-  }
-  private endHeartPet(): void {
-    this.heartPet?.destroy();
-    this.heartPet = null;
-  }
+  /** WORK-038-1 Heart scene seam: this room's charm sprite at a slot. */
+  override charmAt(slotId: string): CharmSprite | undefined { return this.charms.get(slotId); }
   /** The scene's pet bubble (the shared bubble subscriptions in `WorldScene` route through it). */
   protected petBubble(): Bubble | undefined { return this.bubble; }
   private subscribeCharms(): void {

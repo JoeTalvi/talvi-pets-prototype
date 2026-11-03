@@ -4,6 +4,7 @@ import Phaser from 'phaser';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createAudio } from '../../src/app/audio';
 import { CONFETTI_DEPTH } from '../../src/view/celebration/Confetti';
+import { HEART_ARRIVED, HEART_MOMENT_END } from '../../src/view/celebration/heartMoment';
 import { HEART_MOMENT, HEART_PET_DEPTH } from '../../src/view/celebration/timings';
 import { destroyScene } from '../view/sceneHarness';
 import { designSetup, type DesignSetup } from '../view/designHarness';
@@ -76,15 +77,33 @@ describe('VERIFY-WORK-032-2-08 Heart moment (cont.)', () => {
     expect(seen).toEqual(['up', 'down']);
   });
 
-  it('VERIFY-WORK-032-2-08: sfx/heart plays exactly once (audio.ts on heart.earned; the moment adds none)', async () => {
+  it('VERIFY-WORK-038-1-10: sfx/heart plays exactly once, view-timed at the moment start (audio.ts no longer plays it on heart.earned)', async () => {
     const s = await designSetup({ patches: SHORT_HOLD });
     fake();
-    const played: string[] = [];
-    const audio = createAudio({ play: id => { played.push(id); }, setMute: () => {}, locked: () => false }, { available: new Set(['sfx/heart']), record: () => {} });
+    const played: [string, number][] = [];
+    let t = 0;
+    const audio = createAudio({ play: id => { played.push([id, t]); }, setMute: () => {}, locked: () => false }, { available: new Set(['sfx/heart']), record: () => {} });
     audio.attach(s.context.store);
+    s.context.audio = audio;
     fulfil(s);
+    expect([played, moment(s) !== null]).toEqual([[['sfx/heart', 0]], true]);
+    t = 1;
     vi.advanceTimersByTime(HEART_MOMENT.totalMs + 100);
-    expect(played.filter(id => id === 'sfx/heart')).toEqual(['sfx/heart']);
+    expect(played).toEqual([['sfx/heart', 0]]);
+  });
+
+  it('VERIFY-WORK-038-1-09: tpp:heartArrived fires once at the moment finish (interim) and before tpp:heartMomentEnd', async () => {
+    const s = await designSetup({ patches: SHORT_HOLD });
+    fake();
+    const seen: string[] = [];
+    const onArrived = () => seen.push(HEART_ARRIVED), onEnd = () => seen.push(HEART_MOMENT_END);
+    window.addEventListener(HEART_ARRIVED, onArrived); window.addEventListener(HEART_MOMENT_END, onEnd);
+    fulfil(s);
+    vi.advanceTimersByTime(HEART_MOMENT.totalMs - 1);
+    expect(seen).toEqual([]);
+    vi.advanceTimersByTime(1);
+    expect(seen).toEqual([HEART_ARRIVED, HEART_MOMENT_END]);
+    window.removeEventListener(HEART_ARRIVED, onArrived); window.removeEventListener(HEART_MOMENT_END, onEnd);
   });
 
 });
@@ -135,11 +154,13 @@ describe('VERIFY-WORK-032-2-08 Heart moment (cont.)', () => {
     expect([seen, box(s).hidden]).toEqual([['down'], true]);
   });
 
-  it('VERIFY-WORK-032-2-08: with Stars hidden the moment still plays (Hearts are not Stars); the Hearts pulse is kept', async () => {
+  it('VERIFY-WORK-032-2-08: with Stars hidden the moment still plays (Hearts are not Stars); the Hearts pulse is kept (WORK-038-1: at the moment heartArrived)', async () => {
     const s = await designSetup({ patches: SHORT_HOLD });
+    fake();
     s.context.store.dispatch({ type: 'debugSetStarsVisible', on: false });
     fulfil(s);
     expect(moment(s)).not.toBeNull();
+    vi.advanceTimersByTime(HEART_MOMENT.totalMs);
     expect(s.root.querySelector<HTMLElement>('.tpp-hearts')!.dataset.pulses).toBe('1');
   });
 });

@@ -3,6 +3,7 @@ import type { GameState } from '@sim/state';
 import { hudProjectId, owedPhases, starsOf } from '@sim/select';
 import type { ViewContext } from '@view/context';
 import { centreIn, clearStarsBursts, starsBurst, worldToOverlay } from '@view/celebration/starsBurst';
+import { HEART_ARRIVED, HEART_MOMENT_END } from '@view/celebration/heartMoment';
 import { hudInterior } from './templates/hudInterior';
 import { assetsFrom, createText, type Panel, type Text } from '../overlay';
 
@@ -11,6 +12,10 @@ const RENDER_ON = ['mode.changed', 'stars.changed', 'stars.visibilityChanged', '
   'rewards.collected', 'debug.applied', 'roundup.fired'] as const;
 /** Presentation §8.2 timings: fill tween, floating delta, explanation / badge text. */
 export const HUD_TIMING = { tweenMs: 250, deltaMs: 900, deltaRisePx: 40, tooltipMs: 3000, pulseMs: 300 } as const;
+/** DEC-049 spec §5 Count: the Hearts count pulses 1.5× when the moment's heart arrives. */
+export const HEART_ARRIVED_PULSE = 1.5;
+/** WORK-038-1 safety net: a held count is released after this long even if no moment end ever arrives (≥ the Bigger 3-card total). */
+export const HEART_HOLD_FALLBACK_MS = 5000;
 
 /**
  * Q13(a) (mec-002 Q9): inside an interior the badge shows iff a home phase is owed with no celebration or arrival —
@@ -55,9 +60,9 @@ function burstFrom(root: HTMLElement, p: Parts, context: ViewContext, state: Gam
   starsBurst(root, from, centreIn(root, p.fill.parentElement ?? p.stars));
 }
 
-function pulse(hearts: HTMLElement): void {
+function pulse(hearts: HTMLElement, scale: number): void {
   hearts.dataset.pulses = String(Number(hearts.dataset.pulses ?? 0) + 1);
-  hearts.animate?.([{ transform: 'scale(1)' }, { transform: 'scale(1.3)' }, { transform: 'scale(1)' }], { duration: HUD_TIMING.pulseMs });
+  hearts.animate?.([{ transform: 'scale(1)' }, { transform: `scale(${scale})` }, { transform: 'scale(1)' }], { duration: HUD_TIMING.pulseMs });
 }
 
 function attentionBadge(section: HTMLElement, text: Text): HTMLButtonElement {
@@ -82,7 +87,10 @@ function partsOf(section: HTMLElement, text: Text): Parts {
     hearts: section.querySelector<HTMLElement>('.tpp-hearts')!, badge: attentionBadge(section, text) };
 }
 
-function renderHud(p: Parts, context: ViewContext, text: Text, state: GameState): void {
+/** WORK-038-1 Hearts-counter seam: while a Heart is in flight the count shows the pet's Hearts before it (`hearts − 1`). */
+type HeldHeart = { petId: string; shown: number };
+
+function renderHud(p: Parts, context: ViewContext, text: Text, state: GameState, held: HeldHeart | null): void {
   const { content } = context;
   p.section.hidden = state.scene.kind !== 'interior';
   p.badge.hidden = !interiorAttentionVisible(content, state);
@@ -103,7 +111,8 @@ function renderHud(p: Parts, context: ViewContext, text: Text, state: GameState)
   if (p.stars.hidden) for (const el of p.stars.querySelectorAll('.tpp-stars-delta')) el.remove();
   p.starsLabel.textContent = text('tpp.stars.label', { stars: points, max });
   p.fill.style.width = `${max > 0 ? Math.min(100, (points / max) * 100) : 0}%`;
-  p.hearts.textContent = text('tpp.hud.hearts', { hearts: state.pets[room.residentPetId]?.hearts ?? 0 });
+  const hearts = held?.petId === room.residentPetId ? held.shown : state.pets[room.residentPetId]?.hearts ?? 0;
+  p.hearts.textContent = text('tpp.hud.hearts', { hearts });
 }
 
 /** Presentation §8.2 `hudInterior`: Decorate/Done (Q14(b)), the Stars bar (tween, delta, explanation), Hearts and the Q13(a) badge. */
@@ -112,7 +121,20 @@ export function createHudInterior(root: HTMLElement, context: ViewContext): Pane
   const text = createText(content.strings);
   root.insertAdjacentHTML('beforeend', hudInterior({ text, assets: assetsFrom(context.manifest), idPrefix: 'hud' }));
   const p = partsOf(root.lastElementChild as HTMLElement, text);
-  const render = (state: GameState) => renderHud(p, context, text, state);
+  let held: HeldHeart | null = null;
+  let holdTimer: ReturnType<typeof setTimeout> | null = null;
+  const render = (state: GameState) => renderHud(p, context, text, state, held);
+  // Spec §5 Count: `heart.earned` holds n − 1 until `tpp:heartArrived` (then n, 1.5× pulse); the moment's end, cancel or the
+  // fallback timer release a held count without the pulse so it can never stick.
+  const release = (arrived: boolean) => {
+    if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
+    if (!held) return;
+    held = null;
+    render(store.getState());
+    if (arrived) pulse(p.hearts, HEART_ARRIVED_PULSE);
+  };
+  const onArrived = () => release(true), onMomentEnd = () => release(false);
+  window.addEventListener(HEART_ARRIVED, onArrived); window.addEventListener(HEART_MOMENT_END, onMomentEnd);
   let placedSlot: string | null = null;
   const onToggle = () => store.dispatch({ type: 'setDesignMode', on: store.getState().mode !== 'design' });
   // MEC-006 R6 / core §3: the record is `ui.starsExplained` (mec-006 spells it `ui.starsTapped`; core wins); R7: not while hidden.
@@ -124,7 +146,12 @@ export function createHudInterior(root: HTMLElement, context: ViewContext): Pane
   // Q13(a) tap-to-text; core §3 names no record for a badge tap, so none is written.
   const onBadge = () => showTooltip(p.section, 'attention', text('tpp.hud.attention'), { left: '600px', top: '110px' });
   p.toggle.addEventListener('click', onToggle); p.stars.addEventListener('click', onStars); p.badge.addEventListener('click', onBadge);
-  const offs = [...RENDER_ON.map(type => store.subscribe(type, (_event, after) => render(after))),
+  const offs = [store.subscribe('heart.earned', event => {
+    held = { petId: event.petId, shown: event.hearts - 1 };
+    if (holdTimer) clearTimeout(holdTimer);
+    holdTimer = setTimeout(() => release(false), HEART_HOLD_FALLBACK_MS);
+  }),
+    ...RENDER_ON.map(type => store.subscribe(type, (_event, after) => render(after))),
     store.subscribe('charm.placed', event => { placedSlot = event.slotId; queueMicrotask(() => { placedSlot = null; }); }),
     store.subscribe('stars.changed', (event, after) => {
       if (after.scene.kind !== 'interior' || event.roomId !== after.scene.roomId || !after.session.starsVisible || event.delta === 0) return;
@@ -134,7 +161,8 @@ export function createHudInterior(root: HTMLElement, context: ViewContext): Pane
     store.subscribe('stars.visibilityChanged', (_event, after) => { if (!after.session.starsVisible) clearStarsBursts(root); }),
     store.subscribe('state.reset', () => clearStarsBursts(root)),
     store.subscribe('scene.changed', () => clearStarsBursts(root)),
-    store.subscribe('heart.earned', () => pulse(p.hearts))];
+    store.subscribe('state.reset', () => release(false)),
+    () => { window.removeEventListener(HEART_ARRIVED, onArrived); window.removeEventListener(HEART_MOMENT_END, onMomentEnd); release(false); }];
   // Play-session Q17: the dialogue box shows later than its state change (the want story waits for the nap), so Done's
   // disabled state follows the box itself.
   const boxWatch = new MutationObserver(records => {
