@@ -7,7 +7,7 @@ import { initialState } from '../../src/sim/state';
 import { StreetScene } from '../../src/view/scenes/StreetScene';
 import { directorClock, phaserClock } from '../../src/view/celebration/CelebrationDirector';
 import { CONFETTI_DEPTH } from '../../src/view/celebration/Confetti';
-import { HEART_CENTRE, HEART_HIT, HEART_MOMENT_END } from '../../src/view/celebration/heartMoment';
+import { HEART_CENTRE, HEART_HIT, HEART_MOMENT_BEGIN, HEART_MOMENT_END } from '../../src/view/celebration/heartMoment';
 import { HEART, HEART_PET_DEPTH } from '../../src/view/celebration/timings';
 import { addTexture, bootScene, contextFor, destroyScene, realManifest } from './sceneHarness';
 import { designSetup, linesOf } from './designHarness';
@@ -69,5 +69,30 @@ describe('VERIFY-WORK-038-1-09 / VERIFY-WORK-038-2-08 Heart scene seam (fork (a)
     expect(emitters(scene).some(e => (e as Phaser.GameObjects.Particles.ParticleEmitter).depth === CONFETTI_DEPTH)).toBe(true);
     window.dispatchEvent(new Event(HEART_MOMENT_END));
     expect(scene.heartPet).toBeNull();
+  });
+});
+
+describe('VERIFY-WORK-038-2-08 post-run (review A4): a queued Heart\'s scene half waits for its own overlay moment', () => {
+  it('a second heart.earned while a moment plays starts no hitstop or punch until the second overlay moment begins; the first Heart starts at once', async () => {
+    const s = await designSetup();
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    const pause = vi.spyOn(s.scene.tweens, 'pauseAll');
+    const begins: unknown[] = [];
+    const onBegin = (e: Event) => begins.push((e as CustomEvent).detail);
+    window.addEventListener(HEART_MOMENT_BEGIN, onBegin);
+    let ended = 0;
+    const onEnd = () => { ended++; };
+    window.addEventListener(HEART_MOMENT_END, onEnd);
+    try {
+      s.context.store.dispatch({ type: 'placeCharm', slotId: 'large-1', typeId: 'dog-bed' });
+      expect([pause.mock.calls.length, begins]).toEqual([1, [{ petId: 'dog', hearts: 1 }]]);
+      vi.advanceTimersByTime(500);
+      s.context.store.dispatch({ type: 'debugFulfilActiveWant', petId: 'dog' });
+      expect(linesOf(s.context, 'heart.earned').map(l => l.hearts)).toEqual([1, 2]);
+      expect([pause.mock.calls.length, begins.length, s.panels.dialogue.heartMoment.active()]).toEqual([1, 1, true]);
+      for (let t = 0; t < 20000 && ended === 0; t += 10) vi.advanceTimersByTime(10);
+      expect([ended, begins]).toEqual([1, [{ petId: 'dog', hearts: 1 }, { petId: 'dog', hearts: 2 }]]);
+      expect(pause.mock.calls.length).toBe(2);
+    } finally { window.removeEventListener(HEART_MOMENT_BEGIN, onBegin); window.removeEventListener(HEART_MOMENT_END, onEnd); }
   });
 });

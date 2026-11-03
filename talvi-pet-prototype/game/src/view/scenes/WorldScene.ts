@@ -12,8 +12,8 @@ import { startSceneFor } from '../startup';
 import { drawAlignment } from '../alignmentGrid';
 import { previewLayers, type Preview } from '../preview';
 import { DesignTint } from '../objects/DesignTint';
-import { startHeartScene, type HeartScene } from '../celebration/heartScene';
-import { HEART_MOMENT_END } from '../celebration/heartMoment';
+import { startHeartScene, type HeartScene, type HeartSceneOptions } from '../celebration/heartScene';
+import { HEART_MOMENT_BEGIN, HEART_MOMENT_END, type HeartMomentBeginDetail } from '../celebration/heartMoment';
 import { playMakeover, type Makeover } from '../celebration/makeover';
 import { Bubble, chatterBubble, reactionBubble, textFrom, verbBubble, wantBubble } from '../objects/Bubble';
 import type { PetSprite } from '../objects/PetSprite';
@@ -187,20 +187,40 @@ export abstract class WorldScene extends Phaser.Scene {
     this.subscribeMakeover();
   }
 
-  /** WORK-038-1 fork (a): `heart.earned` starts the Heart moment's scene half in the Interior and the Street; the overlay's end removes it. */
+  /**
+   * WORK-038-1 fork (a): `heart.earned` starts the Heart moment's scene half in the Interior and the Street; the overlay's end removes it.
+   * Review WORK-038-2 A4: a Heart whose overlay moment is queued behind another starts its scene half on that moment's begin event.
+   */
   private subscribeHeartScene(): void {
     this.hearts = [];
     let focusSlotId: string | null = null;
+    /** The overlay moment playing now (from its begin event to its end), and the queued Hearts' scene halves by `petId:hearts`. */
+    let playing: string | null = null;
+    const queued = new Map<string, HeartSceneOptions>();
+    const start = (opts: HeartSceneOptions) => {
+      this.hearts.at(-1)?.end();
+      this.hearts.push(startHeartScene(this, opts));
+      while (this.hearts.length > HEART_SCENES_KEPT) this.hearts.shift()!.destroy();
+    };
     this.on('want.fulfilled', event => { focusSlotId = event.focusSlotId; });
     this.on('heart.earned', event => {
-      this.hearts.at(-1)?.end();
-      this.hearts.push(startHeartScene(this, { petId: event.petId, focusSlotId, charmAt: slotId => this.charmAt(slotId) }));
-      while (this.hearts.length > HEART_SCENES_KEPT) this.hearts.shift()!.destroy();
+      const key = `${event.petId}:${event.hearts}`, opts = { petId: event.petId, focusSlotId, charmAt: (slotId: string) => this.charmAt(slotId) };
+      if (playing === null || playing === key) start(opts); else queued.set(key, opts);
       focusSlotId = null;
     });
-    const onMomentEnd = () => this.hearts.at(-1)?.end();
+    const onMomentBegin = (e: Event) => {
+      const { petId, hearts } = (e as CustomEvent<HeartMomentBeginDetail>).detail;
+      playing = `${petId}:${hearts}`;
+      const opts = queued.get(playing);
+      if (opts) { queued.delete(playing); start(opts); }
+    };
+    const onMomentEnd = () => { playing = null; this.hearts.at(-1)?.end(); };
+    window.addEventListener(HEART_MOMENT_BEGIN, onMomentBegin);
     window.addEventListener(HEART_MOMENT_END, onMomentEnd);
-    this.unsubscribes.push(() => { window.removeEventListener(HEART_MOMENT_END, onMomentEnd); for (const h of this.hearts.splice(0)) h.destroy(); });
+    this.unsubscribes.push(() => {
+      window.removeEventListener(HEART_MOMENT_BEGIN, onMomentBegin); window.removeEventListener(HEART_MOMENT_END, onMomentEnd);
+      for (const h of this.hearts.splice(0)) h.destroy();
+    });
   }
 
   /** WORK-037-3 (gate Q12; spec §10): `outfit.changed` (the Closet or debug row 25) plays the makeover on the avatar. */

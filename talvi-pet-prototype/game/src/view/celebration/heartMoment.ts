@@ -7,6 +7,10 @@ import { CARD, HEART, HEART_MOMENT } from './timings';
 
 /** Dispatched on `window` whenever a moment ends or is cancelled; the scene half (`heartScene.ts`) removes itself on it. */
 export const HEART_MOMENT_END = 'tpp:heartMomentEnd';
+/** Dispatched on `window` as a `CustomEvent<HeartMomentBeginDetail>` as each moment begins (a queued one: when its turn comes);
+ * the scene half of a queued Heart starts on it (review WORK-038-2 A4). */
+export const HEART_MOMENT_BEGIN = 'tpp:heartMomentBegin';
+export type HeartMomentBeginDetail = { petId: string; hearts: number };
 /** DEC-049 Hearts-counter seam: dispatched on `window` when the moment's heart reaches the counter (the fly's end, or a skip). */
 export const HEART_ARRIVED = 'tpp:heartArrived';
 /** Spec §5 hit frame, dispatched on `window` as a `CustomEvent<HeartHitDetail>`: the scene half flashes, shakes, bursts confetti and shows the ×2 pet. */
@@ -227,6 +231,7 @@ export function createHeartMoment(root: HTMLElement, onEnd: () => void, audio: (
   function begin(next: HeartMomentData): void {
     run = new HeartRun(env, next);
     window.addEventListener('keydown', onKey, true);
+    window.dispatchEvent(new CustomEvent<HeartMomentBeginDetail>(HEART_MOMENT_BEGIN, { detail: { petId: next.petId, hearts: next.hearts } }));
     run.begin();
   }
   return {
