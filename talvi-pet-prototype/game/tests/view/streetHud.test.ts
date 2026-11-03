@@ -9,6 +9,8 @@ import { parseSaveValue } from '../../src/sim/state.schema';
 import type { Action } from '../../src/sim/actions';
 import { mountOverlay } from '../../src/ui/overlay';
 import { chunkFills } from '../../src/ui/panels/hudStreet';
+import { ROUNDUP_COINS } from '../../src/ui/panels/toast';
+import { blockSpies, stubReducedMotion } from './motionHarness';
 import type { ViewContext } from '../../src/view/context';
 import { files, manifest, patchFiles } from '../content/helpers';
 import { fixtureText } from '../app/helpers';
@@ -184,4 +186,54 @@ describe('VERIFY-WORK-038-3-01 round-up coins and the delayed nudge (DEC-049 §1
       expect([h.host.querySelectorAll('.tpp-roundup-coins').length, play.mock.calls.length]).toEqual([0, 0]);
     } finally { vi.useRealTimers(); }
   });
+});
+
+describe('VERIFY-WORK-038-3-01 post-run (review A1): no stale coin landing', () => {
+  it('VERIFY-WORK-038-3-01 (review A1): a toast queued behind another launches no coins when it shows, so the next held round-up nudges at its event with no tick', async () => {
+    vi.useFakeTimers();
+    try {
+      const h = hud(owing(content, 1, 900));
+      const play = vi.spyOn(h.context.audio!, 'play');
+      const coins: unknown[] = [];
+      const onCoins = (e: Event) => coins.push((e as CustomEvent).detail);
+      window.addEventListener(ROUNDUP_COINS, onCoins);
+      try {
+        h.dispatch({ type: 'debugSimulatePurchase' });
+        await Promise.resolve();
+        h.dispatch({ type: 'debugSimulatePurchase' });
+        await Promise.resolve();
+        expect([coins.length, h.panels.toast.queued()]).toEqual([1, 1]);
+        vi.advanceTimersByTime(150 + 3000 + 200);
+        expect([h.panels.toast.queued(), coins.length]).toEqual([0, 1]);
+        play.mockClear();
+        h.dispatch({ type: 'debugSimulatePurchase' });
+        await Promise.resolve();
+        const third = rows(h.context).at(-1)!;
+        expect([h.panels.toast.queued(), h.section.dataset.barCents, h.section.dataset.barMs]).toEqual([1, String(third.currentCents), '300']);
+        vi.advanceTimersByTime(1000);
+        expect([coins.length, play.mock.calls.filter(c => c[0] === 'tick')]).toEqual([1, []]);
+      } finally { window.removeEventListener(ROUNDUP_COINS, onCoins); }
+    } finally { vi.useRealTimers(); }
+  });
+});
+
+describe('VERIFY-WORK-038-3-10 / -11 §1 round-up: reduced motion and tier exclusivity', () => {
+  for (const reduce of [false, true]) {
+    it(`VERIFY-WORK-038-3-1${reduce ? 0 : 1}: reduce ${reduce} — the coins, the nudge and the tick stay; no screenFlash, shake or hitstop`, async () => {
+      stubReducedMotion(reduce);
+      const blocks = blockSpies();
+      vi.useFakeTimers();
+      try {
+        const h = hud(owing(content, 1, 900));
+        const play = vi.spyOn(h.context.audio!, 'play');
+        h.dispatch({ type: 'debugSimulatePurchase' });
+        await Promise.resolve();
+        vi.advanceTimersByTime(150);
+        const coins = h.host.querySelectorAll('.tpp-roundup-coins .tpp-glyph').length;
+        vi.advanceTimersByTime(450);
+        expect([coins > 0, h.section.dataset.barMs, play.mock.calls.filter(c => c[0] === 'tick').length]).toEqual([true, '300', 1]);
+        expect(blocks.calls()).toEqual([0, 0, 0]);
+      } finally { vi.useRealTimers(); vi.unstubAllGlobals(); vi.restoreAllMocks(); }
+    });
+  }
 });

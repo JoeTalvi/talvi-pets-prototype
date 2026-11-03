@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import './setup';
-import { afterEach, beforeEach, expect, it } from 'vitest';
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { loadContent } from '../../src/content/load';
 import type { GameState } from '../../src/sim/state';
 import { doorEnabled, inputFrozen } from '../../src/sim/select';
@@ -11,6 +11,7 @@ import { BUBBLE_DEPTH, REACTION_EMOJI } from '../../src/view/objects/Bubble';
 import { owing } from '../sim/helpers';
 import { addTexture, bootScene, contextFor, destroyScene, realManifest } from './sceneHarness';
 import { linesOf } from './designHarness';
+import { blockSpies, stubReducedMotion } from './motionHarness';
 
 /** The director's timers never fire here: the test dispatches the celebration's steps itself. */
 beforeEach(() => { directorClock.create = () => ({ now: () => 0, after: () => () => {} }); });
@@ -171,5 +172,46 @@ it('VERIFY-WORK-038-3-07 (the mate, DEC-049 §8): 🎵 + 0.4 dust + reaction at 
   expect(play.mock.calls.at(-1)).toEqual(['reaction', { semitones: 4 }]);
   expect(panels.querySelectorAll('.tpp-glyph-burst .tpp-glyph')).toHaveLength(16);
   expect(walk.plan.finishMs).toBe(door + content.tuning.bubbleMs);
+  walk.cancel();
+});
+
+for (const reduce of [false, true]) {
+  it(`VERIFY-WORK-038-3-1${reduce ? 0 : 1} (§8 the mate): reduce ${reduce} — the 🎵, the dust, the 16 ♥ and both reaction sounds stay; no screenFlash, shake or hitstop`, async () => {
+    const { ArrivalWalk } = await import('../../src/view/celebration/ArrivalWalk');
+    const { DustPoof } = await import('../../src/view/celebration/DustPoof');
+    const { siteOf } = await import('../../src/sim/space');
+    stubReducedMotion(reduce);
+    const blocks = blockSpies();
+    try {
+      const context = contextFor(content, owing(content, 1, 100));
+      context.manifest = realManifest;
+      const panels = document.createElement('div'); panels.id = 'panels'; document.body.append(panels);
+      const scene = await bootScene(StreetScene, context);
+      const play = vi.spyOn(context.audio!, 'play');
+      const walk = new ArrivalWalk(scene, context, { siteId: 'garden', petId: siteOf(content, 'garden').residentPetId ?? 'owl-mate' }, null);
+      expect([walk.bubble.current()?.text, scene.children.list.some(c => c instanceof DustPoof)]).toEqual([REACTION_EMOJI.greeting, true]);
+      for (let t = 0; t <= walk.plan.doorMs; t += 10) walk.update(10);
+      expect(play.mock.calls).toEqual([['reaction'], ['reaction', { semitones: 4 }]]);
+      expect(panels.querySelectorAll('.tpp-glyph-burst .tpp-glyph')).toHaveLength(16);
+      expect(blocks.calls()).toEqual([0, 0, 0]);
+      walk.cancel();
+    } finally { vi.unstubAllGlobals(); vi.restoreAllMocks(); }
+  });
+}
+
+it('VERIFY-WORK-038-3-07 post-run (review A3): on the integrated B16 garden path (~1700 ms) the mate kicks 4 step puffs (400/800/1200/1600) after the start poof', async () => {
+  const { ArrivalWalk } = await import('../../src/view/celebration/ArrivalWalk');
+  const { DustPoof } = await import('../../src/view/celebration/DustPoof');
+  const { ARRIVE } = await import('../../src/view/celebration/timings');
+  const context = contextFor(content, owing(content, 1, 100));
+  context.manifest = realManifest;
+  const panels = document.createElement('div'); panels.id = 'panels'; document.body.append(panels);
+  const scene = await bootScene(StreetScene, context);
+  const walk = new ArrivalWalk(scene, context, { siteId: 'garden', petId: 'owl-mate' }, null);
+  expect(Math.floor(walk.plan.doorMs / ARRIVE.stepDustMs)).toBe(4);
+  const poofs = () => scene.children.list.filter(c => c instanceof DustPoof).length;
+  const at: number[] = [];
+  for (let t = 10; t <= walk.plan.doorMs; t += 10) { const n = poofs(); walk.update(10); if (poofs() > n) at.push(t); }
+  expect(at).toEqual([400, 800, 1200, 1600]);
   walk.cancel();
 });

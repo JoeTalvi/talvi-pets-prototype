@@ -74,7 +74,8 @@ describe('VERIFY-WORK-038-1-04 spec §C in timings.ts', () => {
   });
 
   it('legacy exports unchanged (today\'s code compiles and plays as at 71f575c)', () => {
-    expect(T.STARS_BURST).toEqual({ count: 8, staggerMs: 35, flightMs: 600, spreadPx: 70, totalMs: 900 });
+    // Review WORK-038-3 A4: the unused 8 × 48 px STARS_BURST (superseded by §4 Stars by value) is retired.
+    expect('STARS_BURST' in T).toBe(false);
     expect([T.HEART_MOMENT.totalMs, T.HEART_MOMENT.popMs, T.HEART_MOMENT.dimAlpha, T.HEART_PET_DEPTH, T.DESIGN_TINT.depth, T.OUTLINE_BAND]).toEqual([2200, 520, 0.5, 8500, 1500, 1501]);
     expect([T.FLASH, T.FLASH_PEAK, T.CONFETTI_HOLD, T.CONFETTI_LIFETIME]).toEqual([350, 0.75, 1750, 4000]);
   });

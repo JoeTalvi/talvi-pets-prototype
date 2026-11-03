@@ -7,6 +7,7 @@ import type { GameState } from '../../src/sim/state';
 import type { InteriorScene } from '../../src/view/scenes/InteriorScene';
 import { designSetup, linesOf, pointer } from './designHarness';
 import { destroyScene } from './sceneHarness';
+import { blockSpies, stubReducedMotion } from './motionHarness';
 
 afterEach(() => { destroyScene(); document.body.replaceChildren(); vi.restoreAllMocks(); });
 
@@ -263,4 +264,40 @@ describe('VERIFY-WORK-038-3-08 reaction beats, first use and B9 (DEC-049 §9, DE
     expect(scene.children.list.filter(c => c.getData?.('tppFirstUse'))).toHaveLength(6);
     void state();
   });
+});
+
+describe('VERIFY-WORK-038-3-10 / -11 §9 reactions and first use: reduced motion and tier exclusivity', () => {
+  const id = (reduce: boolean) => `VERIFY-WORK-038-3-1${reduce ? 0 : 1}: reduce ${reduce}`;
+  for (const reduce of [false, true]) {
+    it(`${id(reduce)} — love keeps its ❤️ pop, 3 ♥ and hop; no screenFlash, shake or hitstop`, async () => {
+      stubReducedMotion(reduce);
+      const blocks = blockSpies();
+      try {
+        // The Dog's first want is already met, so this placement is a plain love reaction (no Heart, whose hitstop is the signature's).
+        const { scene, context, state } = await designSetup({ edit: s => { owning('bookshelf')(s); wantTwo(s); } });
+        const { REACT } = await import('../../src/view/celebration/timings');
+        const counters = vi.spyOn(scene.tweens, 'addCounter');
+        context.store.dispatch({ type: 'placeCharm', slotId: 'large-1', typeId: 'dog-bed' });
+        for (let i = 0; i < 200 && state().pets.dog.behaviour.phase !== 'reacting'; i++) tick(scene);
+        expect(linesOf(context, 'heart.earned')).toHaveLength(0);
+        expect(counters.mock.calls.map(c => (c[0] as { duration: number }).duration)).toEqual([REACT.popMs, REACT.hopMs]);
+        expect([glyph(scene), scene.children.list.filter(c => c.getData?.('tppReactHeart')).length]).toEqual(['❤️', 3]);
+        tick(scene, 30);
+        expect(blocks.calls()).toEqual([0, 0, 0]);
+      } finally { vi.unstubAllGlobals(); }
+    });
+
+    it(`${id(reduce)} — the first use keeps its 6 ✨ and the +12 st tick; no screenFlash, shake or hitstop`, async () => {
+      stubReducedMotion(reduce);
+      const blocks = blockSpies();
+      try {
+        const { scene, context } = await designSetup({ edit: s => { play(s); wantTwo(s); s.rooms['dog-room'].placements['large-1'] = 'dog-bed'; } });
+        const sound = vi.spyOn(context.audio!, 'play');
+        for (let i = 0; i < 400 && linesOf(context, 'pet.verbStarted').length === 0; i++) tick(scene);
+        expect(sound.mock.calls.filter(c => c[0] === 'tick')).toEqual([['tick', { semitones: 12 }]]);
+        expect(scene.children.list.filter(c => c.getData?.('tppFirstUse'))).toHaveLength(6);
+        expect(blocks.calls()).toEqual([0, 0, 0]);
+      } finally { vi.unstubAllGlobals(); }
+    });
+  }
 });

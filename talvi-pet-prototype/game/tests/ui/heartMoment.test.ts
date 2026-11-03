@@ -8,7 +8,9 @@ import { CONFETTI_DEPTH, FLASH_DEPTH } from '../../src/view/celebration/Confetti
 import { HEART_ARRIVED, HEART_MOMENT_END, heartPlan } from '../../src/view/celebration/heartMoment';
 import { CARD, HEART, HEART_PET_DEPTH } from '../../src/view/celebration/timings';
 import { destroyScene } from '../view/sceneHarness';
-import { designSetup, type DesignSetup, type SetupOptions } from '../view/designHarness';
+import { loadContent } from '../../src/content/load';
+import { files, manifest } from '../content/helpers';
+import { designSetup, linesOf, type DesignSetup, type SetupOptions } from '../view/designHarness';
 
 const rigs: DesignSetup[] = [];
 afterEach(() => { for (const r of rigs.splice(0)) r.panels.dialogue.destroy(); vi.useRealTimers(); destroyScene(); document.body.replaceChildren(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
@@ -272,6 +274,23 @@ describe('VERIFY-WORK-038-2-05 (cont.)', () => {
     const before = hearts();
     s.step(1749); expect(hearts()).toBe(before);
     s.step(1750); expect(hearts()).not.toBe(before);
+  });
+});
+
+describe('VERIFY-WORK-038-2-05 post-run (review A1): scene change mid-moment', () => {
+  it('VERIFY-WORK-038-2-05: scene.changed at 1800 ms cancels with the held box — no layer, cards, glyphs or big pet; the box shows the held line', async () => {
+    // The avatar waits on the room's door; one tick at 1800 walks it through (`scene.changed`).
+    const door = loadContent(manifest, files()).rooms['dog-room'].doors[0];
+    const s = await rig({ edit: st => { Object.assign(st.avatar, { x: door.rect.x + door.rect.w / 2, y: door.rect.y + door.rect.h / 2, immunityMs: 0 }); } });
+    fulfil(s);
+    s.step(1800);
+    expect([cards(s).length > 0, s.scene.heartPet !== null, box(s).hidden]).toEqual([true, true, true]);
+    const held = s.state().dialogue.current!;
+    s.context.store.dispatch({ type: 'tick', dtMs: 16, move: { x: 0, y: 0 } });
+    expect(linesOf(s.context, 'scene.changed')).toHaveLength(1);
+    expect([layer(s), cards(s), s.root.querySelectorAll('.tpp-glyph-burst').length, s.scene.heartPet]).toEqual([null, [], 0, null]);
+    expect(s.seen.filter(e => e[0] === HEART_MOMENT_END)).toHaveLength(1);
+    expect([box(s).hidden, line(s)]).toEqual([false, held.lines[held.index]]);
   });
 });
 

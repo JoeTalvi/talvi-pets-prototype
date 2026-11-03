@@ -18,7 +18,8 @@ export type HeartSceneOptions = {
 export type HeartScene = {
   /** The big `react` pet, null before the hit, when the sheet or clip is missing, or once it has ended. */
   readonly pet: Phaser.GameObjects.Sprite | null;
-  /** Removes the big pet (the overlay's end event, a new moment); the confetti keeps falling. */
+  /** Removes the big pet and stops answering the overlay's beats (its end event, a new moment); the confetti keeps falling and
+   * is destroyed on its own timer, so the caller may drop an ended half. */
   end(): void;
   /** `end()` plus every pending timer and listener (scene teardown). */
   destroy(): void;
@@ -86,14 +87,16 @@ export function startHeartScene(scene: Phaser.Scene, opts: HeartSceneOptions): H
   };
   window.addEventListener(HEART_HIT, onHit);
   window.addEventListener(HEART_SETTLE, onSettle);
-  const end = () => { pet?.destroy(); pet = null; };
+  const end = () => {
+    pet?.destroy(); pet = null;
+    window.removeEventListener(HEART_HIT, onHit); window.removeEventListener(HEART_SETTLE, onSettle);
+  };
   return {
     get pet() { return pet; },
     end,
     destroy() {
       end(); stop.cancel();
       for (const t of timers.splice(0)) clearTimeout(t);
-      window.removeEventListener(HEART_HIT, onHit); window.removeEventListener(HEART_SETTLE, onSettle);
       if (newest === id) newest = null;
     },
   };
