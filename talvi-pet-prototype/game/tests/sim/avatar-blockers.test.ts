@@ -25,7 +25,8 @@ describe.each(sets)('VERIFY-WORK-032-1-04 buildings are solid (%s)', (_name, con
     }
   });
 
-  const starts = [{ x: 200, y: 800 }, { x: 600, y: 790 }, { x: 1000, y: 800 }, { x: 1200, y: 860 }, { x: 1800, y: 800 },
+  // WORK-035-1 (B1): (600, 790) and (1200, 860) now lie inside the widened blockers; the starts moved to their left edges.
+  const starts = [{ x: 200, y: 800 }, { x: 390, y: 790 }, { x: 1000, y: 800 }, { x: 1190, y: 860 }, { x: 1800, y: 800 },
     { x: 790, y: 900 }, { x: 1600, y: 980 }, { x: 300, y: 1000 }];
   it('steering from in front of, beside and between both houses toward each blocker centre for 5 s never ends a tick inside one', () => {
     for (const start of starts) for (const b of blockers) {
@@ -38,7 +39,9 @@ describe.each(sets)('VERIFY-WORK-032-1-04 buildings are solid (%s)', (_name, con
   });
 
   it('R3 slide: pushing diagonally into a blocker side slides along its edge and keeps going', () => {
-    const starter = content.street.houses[0].blockers[0];
+    // WORK-035-1 (B1): the Starter blocker now ends above its door rect's left half, so a slide off its left edge walks into
+    // the door; the slide is exercised on the Pet House blocker, whose door sits right of its left edge, where it does not.
+    const starter = content.street.houses[content.street.houses.length - 1].blockers[0];
     const from = { x: starter.x - 20, y: starter.y + 10 };
     let touched = false;
     const end = hold(content, streetReady(content, from), { x: 1, y: 0.5 }, 1500, s => {

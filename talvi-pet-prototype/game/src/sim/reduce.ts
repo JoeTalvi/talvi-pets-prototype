@@ -22,6 +22,7 @@ import { activateFirstWant, afterRoomChange as wantsAfterRoomChange } from './ru
 import type { GameState } from './state';
 import { debugFillSpace, debugFulfilActiveWant, debugUnlockSpace } from './rules/debugSpace';
 import { maybeStartSiteArrival } from './rules/sites';
+import { afterSceneChange, debugSetPetsOutside } from './rules/streetPresence';
 
 type Payload = Record<string, unknown>;
 const isString = (value: unknown) => typeof value === 'string';
@@ -62,6 +63,7 @@ const payloadValid: Record<Action['type'], (action: Payload) => boolean> = {
   debugSetMuted: action => isBoolean(action.on),
   debugSetTesterLabel: action => isString(action.text) && action.text.trim().length <= 40,
   reset: action => action.seed === undefined || isInteger(action.seed),
+  debugSetPetsOutside: action => action.mode === 'roll' || action.mode === 'all' || action.mode === 'none',
 };
 
 /** Convention 2: core §4 tick order: avatar, doors (+ the street-arrival hook), feed, pets (4),
@@ -70,7 +72,7 @@ type TickStep = (content: Content, state: GameState, action: TickAction,
   eventsSoFar: readonly SimEvent[]) => RuleResult;
 const tickSteps: TickStep[] = [
   (content, state, action) => ({ state: stepAvatar(content, state, action), events: [] }),
-  (content, state) => enterStreet(content, stepDoors(content, state)),
+  (content, state) => afterSceneChange(content, enterStreet(content, stepDoors(content, state))),
   // Play-session 2026-10-26 ("Wait for tap"): stepping onto the street no longer starts an owed celebration.
   (content, state, action) => stepFeed(content, state, action),
   stepResidentPet,
@@ -131,6 +133,7 @@ const handlers: Handlers = {
   debugSetTesterLabel: debugSetting,
   debugUnlockSpace, debugFulfilActiveWant,
   debugFillSpace: (content, state, action) => debugFillSpace(content, state, action, runPlacement),
+  debugSetPetsOutside,
 };
 
 /** CONTRACT-ACTIONS v1.5: apply fully, or reject with `result.state === state`. Every action is handled. */

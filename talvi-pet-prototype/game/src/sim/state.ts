@@ -25,6 +25,7 @@ export type GameState = {
     muted: boolean;               // DEC-034, default false
     testerLabel: string;          // free text, first log line; kept across `reset`
     orientationShown: boolean;    // the two opening lines (design §4, 0:00) shown once per save
+    petsOutside: 'roll' | 'all' | 'none'; // WORK-035-1 (MEC-010 row 23): the street presence override; default 'roll'
   };
   scene: { kind: 'street' } | { kind: 'interior'; roomId: RoomId };
   avatar: { x: number; y: number; facing: Facing; immunityMs: number;
@@ -56,7 +57,7 @@ export type GameState = {
     revealedHiddenTags: Record<WantId, TagId[]>; // hidden "?" slots revealed (DEC-021)
     verbs: VerbId[];              // profile `atStart` verbs + Heart unlocks
     introduced: boolean;          // intro dialogue shown on first room entry (a site resident: at its arrival)
-    outside: boolean;             // DEC-045: true for a space-homed pet (always outside); Dog/Owl false until WORK-035
+    outside: boolean;             // DEC-045: a space-homed pet is always outside; a room pet per the street roll (WORK-035-1)
     behaviour: PetBehaviour;      // mec-007 state machine; stepped only while the player is in the pet's room
     rngState: number;             // pet RNG stream; initial (seed ^ (0x9E3779B9 × (i + 1))) >>> 0, i = pet index in content order
     recentTargets: SlotId[];      // last tuning.recentTargetsKept slots used (mec-007)
@@ -64,6 +65,7 @@ export type GameState = {
     heartCharms: CharmTypeId[];   // distinct types credited at any fulfilment (tag-matching home placements), first-credit order
     strippedPending: CharmTypeId[]; // Heart charms removed from the home room whose reaction has not played; FIFO, distinct
   }>;
+  streetVisits: number;           // WORK-035-1 (gate Q7(a)): street arrivals so far, +1 before each per-visit roll; initial 0
 };
 export type Facing = 'left' | 'right' | 'up' | 'down';
 export type DialogueScript = { source: 'orientation' | 'intro' | 'wantAnnounce' | 'vignette' | 'phaseMessage' | 'completionMessage' | 'tutorial';
@@ -107,7 +109,7 @@ export function initialState(content: Content, seed: number): GameState {
     schemaVersion: 2,
     session: { seed, eventIntervalMs: content.tuning.eventIntervalMs,
       feedPresentation: 'events', starsVisible: true, muted: false,
-      testerLabel: '', orientationShown: false },
+      testerLabel: '', orientationShown: false, petsOutside: 'roll' },
     scene: { kind: 'street' },
     avatar: { ...content.street.playerSpawn, immunityMs: 0, facingCandidate: null },
     mode: 'play', dialogue: { current: null, queue: [] },
@@ -122,5 +124,6 @@ export function initialState(content: Content, seed: number): GameState {
     rooms: Object.fromEntries(Object.keys(content.rooms).map(id => [id, { placements: {} }])),
     spaces: Object.fromEntries(sitesOf(content).map(site => [site.id, { unlocked: false, placements: {}, arrivalDone: false }])),
     pets: initialPets(content, seed),
+    streetVisits: 0,
   };
 }

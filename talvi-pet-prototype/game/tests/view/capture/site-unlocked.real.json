@@ -10,7 +10,8 @@
       "starsVisible": true,
       "muted": false,
       "testerLabel": "",
-      "orientationShown": true
+      "orientationShown": true,
+      "petsOutside": "roll"
     },
     "scene": {
       "kind": "street"
@@ -168,6 +169,7 @@
         "heartCharms": [],
         "strippedPending": []
       }
-    }
+    },
+    "streetVisits": 0
   }
 }

@@ -5,6 +5,7 @@ import type { GameState } from './state';
 export { chooserTypes, copiesOf, ownsTag } from './rules/inventory';
 export { starsOf, starsOfSpace } from './rules/stars';
 export { scenePet, playerSpace, homeSpaceOf } from './space';
+export { streetPets } from './rules/streetPresence';
 export { slotOf, placementAt } from './rules/slots';
 export { residentPet, petUsingSlot } from './rules/pets';
 export { revealProjectId, revealView, revealPopupView } from './rules/reveal';

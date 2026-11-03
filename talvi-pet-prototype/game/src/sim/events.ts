@@ -57,6 +57,7 @@ export type SimEvent =
   | { type: 'audio.muteChanged'; muted: boolean }
   | { type: 'debug.applied'; action: Action; adjusted?: { field: string; requested: number; applied: number } }
   | { type: 'state.reset' }
-  | { type: 'action.rejected'; action: Action; reason: string };
+  | { type: 'action.rejected'; action: Action; reason: string }
+  | { type: 'pet.outside'; petId: PetId; outside: boolean }; // WORK-035-1 (DEC-045): emitted only on a change
 
 export type RuleResult = { state: GameState; events: SimEvent[] };

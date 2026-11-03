@@ -7,7 +7,8 @@ it('CONTRACT-STATE v1.4 initial session, avatar, projects and inventory match th
   const content = deepFreeze(validContent()), state = initialState(content, 1234);
   expect(state.schemaVersion).toBe(2);
   expect(state.session).toEqual({ seed: 1234, eventIntervalMs: 20000, feedPresentation: 'events',
-    starsVisible: true, muted: false, testerLabel: '', orientationShown: false });
+    starsVisible: true, muted: false, testerLabel: '', orientationShown: false, petsOutside: 'roll' });
+  expect(state.streetVisits).toBe(0);
   expect(state.scene).toEqual({ kind: 'street' });
   expect(state.avatar).toEqual({ ...content.street.playerSpawn, immunityMs: 0, facingCandidate: null });
   expect(state.mode).toBe('play');
