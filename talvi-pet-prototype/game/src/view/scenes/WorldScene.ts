@@ -88,7 +88,7 @@ export abstract class WorldScene extends Phaser.Scene {
   syncDesignTint(state: Pick<GameState, 'mode'>): void { this.designTint.setOn(state.mode === 'design'); }
 
   /** The scene's pet bubble, if it shows a pet (Interior: the resident; Street: the arrived site resident, WORK-034-3). */
-  protected petBubble(_petId?: string): Bubble | undefined { return undefined; }
+  protected petBubble(petId?: string): Bubble | undefined { void petId; return undefined; }
 
   /** mec-008 §2.1 / MEC-007 §3 consumers: every bubble fact comes from an event payload (the view computes no taste). */
   protected subscribePetBubbles(): void {

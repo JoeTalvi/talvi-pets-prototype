@@ -37,6 +37,8 @@ export class StreetPetLayer {
       this.pets.delete(petId);
     }
     for (const petId of wanted) if (!this.pets.has(petId) && state.pets[petId]) this.pets.set(petId, this.create(petId, state));
+    // Keep the map in `streetPets` (content) order: `petAt` breaks depth ties by it.
+    for (const petId of wanted) { const pet = this.pets.get(petId); if (pet) { this.pets.delete(petId); this.pets.set(petId, pet); } }
   }
 
   private create(petId: PetId, state: GameState): StreetPet {
