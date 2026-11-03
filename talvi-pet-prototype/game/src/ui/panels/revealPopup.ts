@@ -6,6 +6,17 @@ import { escapeHtml, image, text as textSpan } from './templates/shared';
 import type { MilestonePopup } from './milestonePopup';
 import { POPUP_FADE_MS } from './milestonePopup';
 import { assetsFrom, createText, type Panel, type Text } from '../overlay';
+import type { Audio } from '@app/audio';
+import { CARD, REVEAL } from '@view/celebration/timings';
+import { glyphBurst } from '@view/celebration/glyphBurst';
+import { centreIn } from '@view/celebration/starsBurst';
+import { reducedMotion } from '@view/celebration/motion';
+import { TILE_FLIP_FRAMES } from './milestonePopup';
+
+/** DEC-049 spec §2/§3 beat text (order fork (d)): clue cards' `reveal` +2 st each; the silhouette wobble scale; the riser lead;
+ * the name pop peak; the resolve's 24 DOM confetti glyphs from the tile. */
+export const REVEAL_BEATS = { cardSemitones: 2, wobbleScale: 1.03, riserLeadMs: 450, namePopPeak: 1.2, confetti: 24, confettiSpreadPx: 140 } as const;
+type PlayAudio = () => Pick<Audio, 'play'> | null;
 
 export type RevealPopup = Panel & { isOpen(): boolean };
 type RevealPopupView = NonNullable<ReturnType<typeof revealPopupView>>;
@@ -40,7 +51,7 @@ type Stage = { reset(completes: boolean): void; play(view: FullView, delayMs: nu
  * descriptor image fades in over `revealResolveMs` and the title names the pet. `dataset.state` mystery → silhouette → complete.
  * Ids come from `revealView` only (DEC-033); `play(view, null)` starts at once (a reload); a live open waits `delayMs` (a timer, even at 0).
  */
-function createStage(section: HTMLElement, text: Text, assets: Record<string, string>, tuning: BeatTuning): Stage {
+function createStage(section: HTMLElement, text: Text, assets: Record<string, string>, tuning: BeatTuning, audio: PlayAudio): Stage {
   const tile = section.querySelector<HTMLElement>('.tpp-mystery-tile')!;
   const title = section.querySelector<HTMLElement>('.tpp-reveal-popup-title')!;
   let timers: ReturnType<typeof setTimeout>[] = [], resolving: Animation | null = null;
@@ -52,8 +63,26 @@ function createStage(section: HTMLElement, text: Text, assets: Record<string, st
     tile.innerHTML = image({ assets }, view.descriptorImage);
     setTitle('tpp.reveal.arrived', text('tpp.reveal.arrived', { pet: view.petName }));
     section.dataset.state = 'complete';
+    title.animate?.([{ transform: 'scale(0)' }, { transform: `scale(${REVEAL_BEATS.namePopPeak})`, offset: 0.6 }, { transform: 'scale(1)' }],
+      { duration: REVEAL.namePopMs, easing: 'ease-out' });
+  };
+  /** DEC-049 §3 resolve hit: a white flash on the tile only (dropped under reduced motion), 24 confetti glyphs, `reveal` + `heart`. */
+  const hit = () => {
+    if (!reducedMotion()) {
+      const flash = document.createElement('span');
+      flash.className = 'tpp-tile-flash';
+      Object.assign(flash.style, { position: 'absolute', inset: '0', background: '#fff', pointerEvents: 'none', borderRadius: 'inherit' });
+      tile.append(flash);
+      flash.animate?.([{ opacity: 1 }, { opacity: 0 }], { duration: REVEAL.tileFlashMs, fill: 'forwards' });
+      later(() => flash.remove(), REVEAL.tileFlashMs);
+    }
+    const root = section.parentElement;
+    if (root) glyphBurst(root, { glyph: '✦', px: 28, count: REVEAL_BEATS.confetti, from: centreIn(root, tile), spreadPx: REVEAL_BEATS.confettiSpreadPx,
+      staggerMs: 0, flightMs: tuning.revealResolveMs * 2 });
+    audio()?.play('reveal'); audio()?.play('heart');
   };
   const resolve = (view: FullView) => {
+    hit();
     tile.insertAdjacentHTML('beforeend', image({ assets }, view.descriptorImage, 'tpp-beat-next'));
     const next = tile.lastElementChild as HTMLElement;
     if (typeof next.animate === 'function') resolving = next.animate([{ opacity: 0 }, { opacity: 1 }], { duration: tuning.revealResolveMs, fill: 'forwards' });
@@ -62,6 +91,10 @@ function createStage(section: HTMLElement, text: Text, assets: Record<string, st
   const silhouette = (view: FullView) => {
     tile.innerHTML = image({ assets }, view.silhouetteImage);
     section.dataset.state = 'silhouette';
+    // DEC-049 §3: the hold wobbles (1 ↔ 1.03, two `REVEAL.wobbleMs` cycles) and the riser plays in its last 450 ms.
+    tile.animate?.([{ transform: 'scale(1)' }, { transform: `scale(${REVEAL_BEATS.wobbleScale})` }, { transform: 'scale(1)' }],
+      { duration: REVEAL.wobbleMs, iterations: 2, easing: 'ease-in-out' });
+    later(() => audio()?.play('riser'), Math.max(0, tuning.revealSilhouetteHoldMs - REVEAL_BEATS.riserLeadMs));
     later(() => resolve(view), tuning.revealSilhouetteHoldMs);
   };
   return {
@@ -75,7 +108,17 @@ function createStage(section: HTMLElement, text: Text, assets: Record<string, st
     play(view, delayMs) { if (delayMs === null) silhouette(view); else later(() => silhouette(view), delayMs); },
     /** Live open: cards enter `revealCardStaggerMs` apart; the beat starts once the last new card has entered (order fork 3). */
     enter(cards, full) {
-      cards.forEach((card, i) => { if (i > 0) { card.hidden = true; later(() => { card.hidden = false; }, i * tuning.revealCardStaggerMs); } });
+      cards.forEach((card, i) => {
+        // DEC-049 §2: each new clue card flips in (`CARD.flipMs`), the "Phase n" label shimmers, `reveal` +2 st per card.
+        const show = () => {
+          card.hidden = false;
+          card.animate?.(TILE_FLIP_FRAMES, { duration: CARD.flipMs, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)' });
+          card.querySelector<HTMLElement>('.tpp-clue-phase')?.animate?.([{ filter: 'brightness(1)', color: 'inherit' },
+            { filter: 'brightness(1.6) drop-shadow(0 0 6px rgba(255, 220, 120, 0.9))', offset: 0.5 }, { filter: 'brightness(1)' }], { duration: CARD.shimmerMs });
+          audio()?.play('reveal', { semitones: REVEAL_BEATS.cardSemitones * i });
+        };
+        if (i === 0) show(); else { card.hidden = true; later(show, i * tuning.revealCardStaggerMs); }
+      });
       if (full) this.play(full, (cards.length - 1) * tuning.revealCardStaggerMs);
     },
   };
@@ -91,7 +134,7 @@ export function createRevealPopup(root: HTMLElement, context: ViewContext, miles
   section.dataset.state = 'normal';
   const clues = section.querySelector<HTMLElement>('.tpp-popup-clues')!;
   const proceed = section.querySelector<HTMLButtonElement>('.tpp-collect')!;
-  const stage = createStage(section, text, assets, content.tuning);
+  const stage = createStage(section, text, assets, content.tuning, () => context.audio);
   let timers: ReturnType<typeof setTimeout>[] = [], generation = 0, fading: Animation | null = null;
   const hide = () => { generation++; for (const t of timers) clearTimeout(t); timers = []; fading?.cancel(); fading = null; stage.cancel(); section.hidden = true; delete section.dataset.completes; };
   /** Presentation §8.2 fade-out on `celebration.ended`; state.reset and destroy still hide at once. */

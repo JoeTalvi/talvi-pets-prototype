@@ -25,9 +25,9 @@
   "recentTargetPenalty": 0.3,
   "recentTargetsKept": 2,
   "hiddenSlotFromWant": 3,
-  "revealCardStaggerMs": 250,
+  "revealCardStaggerMs": 400,
   "revealSilhouetteHoldMs": 1500,
-  "revealResolveMs": 800,
+  "revealResolveMs": 400,
   "joystick": {
     "x": 220,
     "bottomOffset": 300,
