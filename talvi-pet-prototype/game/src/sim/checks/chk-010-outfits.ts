@@ -30,14 +30,14 @@ function oneDefault(c: Content): Finding[] {
     : [finding('CHK-010-02', 'error', FILE, '/outfits', `Exactly one outfit "${DEFAULT_OUTFIT_ID}" with sheet "${BASE_AVATAR_SHEET}" is required`)];
 }
 
-/** CHK-010-03: each sheet is a 192×256 spritesheet with the base sheet's clip names; an absent row is info (later batch). */
+/** CHK-010-03: each sheet is a manifest row, a 192×256 spritesheet with the base sheet's clip names (WORK-037-3: an absent row is an error since the WORK-037-1 rows merged). */
 function sheets(c: Content, m?: AssetManifest): Finding[] {
   if (!m) return [];
   const base = m.entries.find(entry => entry.id === BASE_AVATAR_SHEET);
   const baseClips = Object.keys(base?.clips ?? {}).sort().join(',');
   return c.outfits.flatMap((outfit, i) => {
     const path = `/outfits/${i}/sheet`, entry = m.entries.find(candidate => candidate.id === outfit.sheet);
-    if (!entry) return [finding(['CHK-010-03', 'KNOWN-MISSING'], 'info', FILE, path, `Sheet "${outfit.sheet}" is not in the manifest yet (later batch)`)];
+    if (!entry) return [finding('CHK-010-03', 'error', FILE, path, `Sheet "${outfit.sheet}" is not in the manifest`)];
     const clips = Object.keys(entry.clips ?? {}).sort().join(',');
     const ok = entry.type === 'spritesheet' && entry.frame?.w === 192 && entry.frame?.h === 256 && clips === baseClips;
     return ok ? [] : [finding('CHK-010-03', 'error', FILE, path,

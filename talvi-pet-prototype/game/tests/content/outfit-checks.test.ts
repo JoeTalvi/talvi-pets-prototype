@@ -7,14 +7,14 @@ import { realContent } from '../sim/helpers';
 
 /** WORK-037-2 (TOOL-001): one pass and one broken fixture per outfit CHK rule (CHK-010-01..06). */
 const shipped = AssetManifest.parse(JSON.parse(readFileSync('public/assets/manifest.json', 'utf8')));
-const base = shipped.entries.find(entry => entry.id === 'player/avatar-sheet')!;
-/** The shipped manifest plus the two outfit rows WORK-037-1 produces (same grid and clips as the base sheet). */
+/** The shipped manifest (WORK-037-1 rows merged in WORK-037-3) with the cosy sheet's row edited. */
 const withOutfitRows = (edit: (row: AssetManifest['entries'][number]) => void = () => {}): AssetManifest => ({
-  ...shipped, entries: [...shipped.entries, ...['player/avatar-cosy-sheet', 'player/avatar-garden-sheet'].map(id => {
-    const row = structuredClone({ ...base, id, url: `${id}.png` });
-    if (id.endsWith('cosy-sheet')) edit(row);
+  ...shipped, entries: shipped.entries.map(entry => {
+    if (entry.id !== 'player/avatar-cosy-sheet') return entry;
+    const row = structuredClone(entry);
+    edit(row);
     return row;
-  })],
+  }),
 });
 function broken(edit: (c: Content) => void): Content {
   const c = structuredClone(realContent());
@@ -29,9 +29,10 @@ describe('outfit CHK rules (WORK-037-2)', () => {
     expect(runContentChecks(realContent(), withOutfitRows()).filter(f => f.ids.some(id => id.startsWith('CHK-010')))).toEqual([]);
   });
 
-  it('shipped content with the shipped manifest: the two absent sheets are info only, no error', () => {
-    const found = runContentChecks(realContent(), shipped).filter(f => f.ids.some(id => id.startsWith('CHK-010')));
-    expect(found.map(f => [f.level, f.path])).toEqual([['info', '/outfits/1/sheet'], ['info', '/outfits/2/sheet']]);
+  it('WORK-037-3 (review A2 of WORK-037-2-1): a sheet missing from the manifest is an error', () => {
+    const without = { ...shipped, entries: shipped.entries.filter(entry => entry.id !== 'player/avatar-garden-sheet') };
+    const found = runContentChecks(realContent(), without).filter(f => f.ids.some(id => id.startsWith('CHK-010')));
+    expect(found.map(f => [f.level, f.path])).toEqual([['error', '/outfits/2/sheet']]);
   });
 
   it('CHK-010-01: a duplicate outfit id', () => {
