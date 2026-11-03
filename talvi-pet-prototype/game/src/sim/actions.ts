@@ -30,7 +30,8 @@ export type Action =
   | { type: 'debugSetMuted'; on: boolean }
   | { type: 'debugSetTesterLabel'; text: string }
   | { type: 'reset'; seed?: number }
-  | { type: 'debugSetPetsOutside'; mode: 'roll' | 'all' | 'none' }; // WORK-035-1: MEC-010 row 23 "Pets outside" 
+  | { type: 'debugSetPetsOutside'; mode: 'roll' | 'all' | 'none' } // WORK-035-1: MEC-010 row 23 "Pets outside" 
+  | { type: 'debugGreetNow' }; // WORK-036-1: MEC-010 row 24 "Greet now"
 
 export type TickAction = Extract<Action, { type: 'tick' }>;
 export type SceneAction = Extract<Action, { type: 'tick' | 'setDesignMode' }>;

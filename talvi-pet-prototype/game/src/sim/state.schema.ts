@@ -18,7 +18,7 @@ const DialogueScriptSchema = z.object({
 });
 
 const PetBehaviourSchema = z.object({
-  phase: z.enum(['idle', 'walking', 'using', 'reacting', 'greeting']),
+  phase: z.enum(['idle', 'walking', 'using', 'reacting', 'greeting', 'meeting']), // meeting: WORK-036-1 (DEC-046)
   x: z.number(), y: z.number(), facing: z.enum(['left', 'right']), timerMs: z.number(),
   target: z.union([z.object({ slotId: z.string() }), z.object({ wanderPointId: z.string() }), z.null()]),
   verb: z.string().nullable(), reaction: ReactionSchema.nullable(),
@@ -61,6 +61,7 @@ export const GameStateSchema = z.object({
   spaces: z.record(z.string(), z.object({ unlocked: z.boolean(), placements: z.record(z.string(), z.string()), arrivalDone: z.boolean() })),
   pets: z.record(z.string(), PetSchema),
   streetVisits: z.number().int().min(0).default(0), // WORK-035-1: additive, schemaVersion stays 2
+  greetings: z.record(z.string(), z.object({ cooldownMs: z.number().min(0) })).default({}), // WORK-036-1: additive, version 2
 });
 
 /** The save wrapper version; every other version (all tier 1 saves are 1) is discarded, no migration. */
@@ -91,7 +92,15 @@ function unknownContentId(content: Content, state: GameState): boolean {
     const slots = new Set(content.rooms[roomId].slots.map(slot => slot.id));
     if (Object.entries(room.placements).some(([slotId, typeId]) => !slots.has(slotId) || !types.has(typeId))) return true;
   }
+  if (Object.keys(state.greetings).some(key => !knownPairKey(content, key))) return true;
   return Object.entries(state.pets).some(([petId, pet]) => unknownPetId(content, petId, pet, verbs, types));
+}
+
+/** WORK-036-1: a greetings key names two distinct known pets in content order. */
+function knownPairKey(content: Content, key: string): boolean {
+  const order = Object.keys(content.pets);
+  const [a, b, ...rest] = key.split('|');
+  return rest.length === 0 && b !== undefined && order.includes(a) && order.indexOf(a) < order.indexOf(b);
 }
 
 function unknownPetId(content: Content, petId: string, pet: GameState['pets'][string], verbs: Set<string>,
