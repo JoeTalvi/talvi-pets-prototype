@@ -92,8 +92,9 @@ describe('VERIFY-WORK-035-2-01 one sprite per street pet, kept equal to streetPe
     expect(Object.getOwnPropertyNames(StreetPetLayer.prototype)).not.toContain('clear');
     const { context, scene } = await allOut();
     const old = scene.streetPets, sprite = old.pets.get('dog')!.sprite;
+    const created = new Promise(resolve => scene.events.once('create', resolve));
     scene.scene.restart();
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await created;
     expect(sprite.active).toBe(false);
     expect(scene.streetPets).not.toBe(old);
     expect(drawn(scene)).toEqual(streetPets(content, context.store.getState()).map(p => p.petId));
