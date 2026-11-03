@@ -17,17 +17,17 @@ const close = async (w, name) => { errors.push({ window: name, ...errorsSummary(
 const open = async (name, height = 1080) => { const w = await boot(browser, { height, save: save(name), query: '' }); await waitScene(w.page, 'Street', 1200); return w; };
 
 async function b1() {
-  const w = await open('mate-arrived'), { page } = w;
   const result = {};
-  for (const [key, x, y] of [['starter', 410, 965], ['pet', 1300, 1000]]) {
+  for (const [key, x, y] of [['starter', 570, 965], ['pet', 1300, 1000]]) {
+    const w = await open('mate-arrived'), { page } = w; // one window per house; x 570 lies right of starter-front, on the lawn the old blocker left open (B1)
     await steer(page, x, y, `() => Math.abs(window.__tpp.store.getState().avatar.x - ${x}) < 14 && Math.abs(window.__tpp.store.getState().avatar.y - ${y}) < 14`, 15000);
     await holdUntil(page, 'KeyW', () => false, null, 1500).catch(() => null);
     const { avatar, scene } = await getState(page);
     const png = await shot(page, browser, stills, `b1-${key}-1080`, { note: `avatar held up from (${x}, ${y}) for 1.5 s: stops below the B1 blocker` });
     result[key] = { avatar: { x: avatar.x, y: avatar.y }, scene: scene.kind, png };
+    await close(w, `b1-${key}`);
   }
-  rows.b1 = { sha, ...result, pass: result.starter.avatar.y >= 880 && result.pet.avatar.y >= 940 };
-  await close(w, 'b1');
+  rows.b1 = { sha, ...result, pass: result.starter.scene === 'street' && result.pet.scene === 'street' && result.starter.avatar.y >= 880 && result.pet.avatar.y >= 940 };
 }
 
 async function debug() {
@@ -50,14 +50,17 @@ async function b16() {
     await setDebug(page, false);
     const started = await until(page, () => window.__tpp.log.lines().some(l => l.type === 'space.arrivalStarted'), null, 3000).catch(() => null);
     if (!started) await page.getByRole('button', { name: /done/i }).first().click().catch(() => null);
-    const a = await waitLine(page, 'space.arrivalStarted', {}, 10000).catch(() => null);
-    const b = await waitLine(page, 'pet.arrived', {}, 20000).catch(() => null);
+    await waitLine(page, 'space.arrivalStarted', {}, 10000);
+    await waitLine(page, 'pet.arrived', {}, 20000);
+    const log = await lines(page, 'space.arrivalStarted', 'pet.arrived');
+    const startLine = log.find(l => l.type === 'space.arrivalStarted'), endLine = log.find(l => l.type === 'pet.arrived');
     await page.waitForTimeout(800);
     const frames = await rec.stop();
-    const t0 = a?.t ?? frames[0]?.t, t1 = (b?.t ?? frames.at(-1)?.t) + 800;
+    const t0 = startLine?.t ?? frames[0]?.t, t1 = (endLine?.t ?? frames.at(-1)?.t) + 800;
     const mp4 = frames.length ? encode(loops, `b16-mate-arrival-${height}`, frames.filter(f => f.t >= t0 - 300 && f.t <= t1),
       { viewport: { width: 1920, height }, seededSave: 'site-unlocked.real.json', note: 'Fill garden -> arrival walk -> pet.arrived' }, { maxMs: 12000 }) : null;
-    rows.b16.push({ height, arrivalStartedT: a?.t ?? null, arrivedT: b?.t ?? null, walkMs: a && b ? b.t - a.t : null, loop: mp4, pass: !!(a && b) });
+    rows.b16.push({ height, arrivalStartedT: startLine?.t ?? null, arrivedT: endLine?.t ?? null,
+      walkMs: startLine && endLine ? endLine.t - startLine.t : null, loop: mp4, pass: !!(startLine && endLine) });
     await close(w, `b16-${height}`);
   }
 }
