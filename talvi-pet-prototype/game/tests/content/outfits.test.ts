@@ -21,7 +21,9 @@ describe('outfits content (WORK-037-2)', () => {
   });
 
   it('an absent outfits.json loads as no outfits (pre-tier-2 bundles)', () => {
-    expect(loadContent(undefined, files()).outfits).toEqual([]);
+    const bundle = files();
+    delete bundle['outfits.json'];
+    expect(loadContent(undefined, bundle).outfits).toEqual([]);
   });
 
   it('the schema rejects an empty list and a missing sheet', () => {

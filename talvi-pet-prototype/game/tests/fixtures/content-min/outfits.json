@@ -1,0 +1,5 @@
+{
+  "outfits": [
+    { "id": "default", "nameKey": "tpp.outfit.default", "sheet": "player/avatar-sheet" }
+  ]
+}
