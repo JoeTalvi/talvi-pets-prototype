@@ -26,8 +26,12 @@
 | VERIFY-WORK-038-3-09 | B8 the "none left" label below the sprite (static, last in the card column), ink on paper2 ≥ 4.5:1, label not dimmed | Vitest + still | `tests/ui/chooserNoneLeft.test.ts`; still `captures/b8-none-left-1080.png` when captured |
 | VERIFY-WORK-038-3-10 | Reduced motion: completion without hitstop / flash / shake (confetti, sounds, timings kept); the reveal tile flash dropped | Vitest | `celebration.test.ts`, `popups.test.ts` |
 | VERIFY-WORK-038-3-11 | Tier exclusivity: `screenFlash` / `hitstop` / `shake` never called outside the §3 completion (and the Heart files) | Vitest spies + grep | `starsBurst.test.ts`, `celebration.test.ts`, `arrivalWalk.test.ts`, `streetSite.test.ts`; `evidence/WORK-038-3/exclusive-callers.txt` |
-| VERIFY-WORK-038-3-12 | Live loops per moment with sound times relative to their trigger | Chrome capture | `tests/view/capture/work-038-3.mjs` (not built in this lane: see the lane journal) |
+| VERIFY-WORK-038-3-12 | Live loops per moment with sound times relative to their trigger | Chrome capture | `tests/view/capture/work-038-3.mjs`: built for §4 (loop `loops/s4-stars-by-value.mp4`, row `rows/s4.json`: ticks at 527/615/705/794 ms after the first copy, 422 ms after the repeat) and the B8 still; the §1–§3, §6–§9 loops are left to the integrator's milestone capture set (partial) |
 | VERIFY-WORK-038-3-13 | Smoke and m1–m3 traces green on this head, or a proven patch per break | e2e | `evidence/WORK-038-3/{smoke,m1-trace,m2-trace,m3-trace}/`, `patches/` |
+
+### Trace patch (fork (a))
+
+- `tests/e2e/m2-trace.mjs`, beat "12:00 project.completed → reveal beat": the resolve expectation 800 ± 100 → **400 ± 100** (§C `REVEAL.resolveMs` 400; `tuning.revealResolveMs` 800 → 400). Patch `evidence/WORK-038-3/patches/m2-trace.patch`; unpatched run measured hold 1503 / resolve 403 (the only failing beat); patched run green (`evidence/WORK-038-3/m2-trace-patched.txt`). Smoke, m1-trace and m3-trace (38 beats, real 120 s frozen wait) are green unpatched.
 | VERIFY-WORK-038-3-14 | VERIFY-PRES-006 / -007 re-timed, VERIFY-WORK-032-2-06 / -07 superseded (this file) | grep | `evidence/WORK-038-3/verify-rows.txt` |
 
 ## Changed test pins (bbc5c45 → this lane)
