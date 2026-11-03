@@ -83,8 +83,11 @@ async function cards(browser) {
   const w = await boot(browser, { save });
   await waitScene(w.page, 'Interior', 900);
   await drain(w.page);
-  for (const kind of ['items', 'verb', 'space']) {
-    await w.page.evaluate(async kind => {
+  // Fix round 1 (F1): every kind at CARD.px 220 and CARD_BIGGER.px 260, plus the long verb (the Owl's "look at").
+  const variants = [['items', { kind: 'items', typeId: 'dog-bed', heldBefore: 0 }], ['verb', { kind: 'verb', petId: 'dog', verbId: 'nap' }],
+    ['space', { kind: 'space', siteId: 'garden' }], ['verb-owl-look-at', { kind: 'verb', petId: 'owl', verbId: 'look-at' }]];
+  for (const px of [220, 260]) for (const [label, spec] of variants) {
+    await w.page.evaluate(async ({ spec, px }) => {
       const { createRewardCard } = await import('/src/view/celebration/rewardCard.ts');
       const { createText, assetsFrom } = await import('/src/ui/overlay.ts');
       const { content, context } = window.__tpp, root = document.querySelector('#panels');
@@ -93,14 +96,25 @@ async function cards(browser) {
       plain.className = 'tpp-capture-plain';
       Object.assign(plain.style, { position: 'absolute', inset: '0', background: 'rgba(40, 28, 18, 0.55)', pointerEvents: 'none', zIndex: 'var(--z-toast)' });
       root.append(plain);
-      const spec = kind === 'items' ? { kind, typeId: 'dog-bed', heldBefore: 0 } : kind === 'verb' ? { kind, petId: 'dog', verbId: 'nap' } : { kind, siteId: 'garden' };
-      const card = createRewardCard(root, { content, assets: assetsFrom(context.manifest), text: createText(content.strings) }, spec, { at: { x: 960, y: 520 } });
+      const card = createRewardCard(root, { content, assets: assetsFrom(context.manifest), text: createText(content.strings) }, spec, { at: { x: 960, y: 520 }, px });
       card.flipIn(0);
-    }, kind);
+    }, { spec, px });
     await w.page.waitForTimeout(600);
-    await w.page.screenshot({ path: join(captures, `reward-card-${kind}-1080.png`) });
-    const read = await w.page.evaluate(() => { const c = document.querySelector('.tpp-reward-card'); return { kind: c?.dataset.kind, name: c?.querySelector('.tpp-reward-card-name')?.textContent, isNew: !!c?.querySelector('.tpp-reward-card-new'), w: c?.getBoundingClientRect().width }; });
-    step(`capture 3: reward card ${kind} mounted`, read.kind === kind, `a ${kind} card on the plain overlay`, read);
+    const suffix = px === 220 ? '' : `-${px}`;
+    await w.page.screenshot({ path: join(captures, `reward-card-${label}${suffix}-1080.png`) });
+    await w.page.screenshot({ path: join(captures, `reward-card-${label}${suffix}-crop.png`), clip: { x: 960 - px / 2 - 10, y: 520 - px / 2 - 10, width: px + 20, height: px + 20 } });
+    const read = await w.page.evaluate(() => {
+      const c = document.querySelector('.tpp-reward-card'), r = c.getBoundingClientRect();
+      const name = c.querySelector('.tpp-reward-card-name'), n = name.getBoundingClientRect();
+      const art = c.querySelector('.tpp-reward-card-glyph, .tpp-reward-card-art').getBoundingClientRect();
+      const lh = parseFloat(getComputedStyle(name).lineHeight);
+      return { kind: c.dataset.kind, name: name.textContent, isNew: !!c.querySelector('.tpp-reward-card-new'), w: r.width,
+        nameLines: Math.round(name.scrollHeight / lh), nameClipped: name.scrollHeight > name.clientHeight + 1 || name.scrollWidth > name.clientWidth + 1,
+        sizes: [name.scrollWidth, name.clientWidth, name.scrollHeight, name.clientHeight], nameInset: { left: n.left - r.left, right: r.right - n.right, bottom: r.bottom - n.bottom }, artBottom: art.bottom, nameTop: n.top };
+    });
+    step(`capture 3: reward card ${label} at ${px} px fits (name ≤ 2 lines, not clipped, inset ≥ 30 px, no glyph/name overlap)`,
+      read.w === px && read.nameLines <= 2 && !read.nameClipped && Math.min(read.nameInset.left, read.nameInset.right, read.nameInset.bottom) >= 30 && read.artBottom <= read.nameTop + 0.5,
+      `a ${label} card at ${px} px`, read);
   }
   errorsByWindow.push({ window: 'cards', ...errorsSummary(w.errors, await lines(w.page)) });
   await w.context.close();

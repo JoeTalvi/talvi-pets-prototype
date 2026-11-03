@@ -19,16 +19,26 @@ export type RewardCard = {
   readonly face: RewardCardFace;
   /** Flip in: rotateY 90° → 0° and scale 1.1 → 1 over `CARD.flipMs`, after `delayMs`. */
   flipIn(delayMs?: number): void;
-  /** Shrink and fly to `to` (overlay point) over `CARD.sendMs`, then remove itself and call `onDone`. */
-  send(to: Point, onDone?: () => void): void;
+  /** Shrink and fly to `to` (overlay point) over `durationMs` (default `CARD.sendMs`; the §5 skip passes half), then remove itself and call `onDone`. */
+  send(to: Point, onDone?: () => void, durationMs?: number): void;
   /** Remove now (skip, reset, scene change); no `onDone`. */
   cancel(): void;
 };
 
 /** The garden glyph a space card shows (spec §6 space card; no art row exists for it). */
 export const SPACE_GLYPH = '🌱';
-/** Verb emote size on a card (spec §0: "verb `emote` at 120 px"). */
+/** Verb emote size on a card (spec §0: "verb `emote` at 120 px"); the cap `cardGlyphPx` sizes down from. */
 export const CARD_GLYPH_PX = 120;
+/** Names longer than this take the smaller name font so they wrap to at most two lines inside the frame. */
+export const CARD_LONG_NAME_CHARS = 18;
+
+/**
+ * The glyph size that fits the frame beside a two-line name: 42 % of the card, capped at `CARD_GLYPH_PX`
+ * (92 px at `CARD.px` 220, 109 px at `CARD_BIGGER.px` 260). FORK (fix round 1): the spec's 120 px does not fit at 220.
+ */
+export function cardGlyphPx(px: number): number {
+  return Math.min(CARD_GLYPH_PX, Math.round(px * 0.42));
+}
 
 /** Resolves a built-in spec against content: charm sprite + name, verb emote + `tpp.reward.verb`, garden glyph + `tpp.toast.space`. */
 export function cardFace(ctx: RewardCardContext, spec: RewardCardSpec): RewardCardFace {
@@ -53,10 +63,11 @@ function cardMarkup(ctx: RewardCardContext, face: RewardCardFace, px: number): H
   el.setAttribute('aria-hidden', 'true');
   Object.assign(el.style, { width: `${px}px`, height: `${px}px`, pointerEvents: 'none' });
   const art = face.imageId ? image({ assets: ctx.assets }, face.imageId, 'tpp-reward-card-art')
-    : `<span class="tpp-reward-card-glyph" style="font-size:${CARD_GLYPH_PX}px">${face.glyph ?? ''}</span>`;
+    : `<span class="tpp-reward-card-glyph" style="font-size:${cardGlyphPx(px)}px">${face.glyph ?? ''}</span>`;
   el.innerHTML = art;
   const name = document.createElement('span');
-  name.className = 'tpp-reward-card-name'; name.textContent = face.name;
+  name.className = face.name.length > CARD_LONG_NAME_CHARS ? 'tpp-reward-card-name tpp-reward-card-name--long' : 'tpp-reward-card-name';
+  name.textContent = face.name;
   el.append(name);
   if (face.isNew) {
     const ribbon = document.createElement('span');
@@ -85,11 +96,11 @@ export function createRewardCard(root: HTMLElement, ctx: RewardCardContext, spec
       el.animate?.([{ transform: 'perspective(800px) rotateY(90deg) scale(1.1)', opacity: 1 }, { transform: 'perspective(800px) rotateY(0deg) scale(1)', opacity: 1 }],
         { duration: CARD.flipMs, delay: delayMs, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)', fill: 'backwards' });
     },
-    send(to, onDone) {
+    send(to, onDone, durationMs = CARD.sendMs) {
       const dx = to.x - opts.at.x, dy = to.y - opts.at.y;
       el.animate?.([{ transform: 'translate(0, 0) scale(1)', opacity: 1 }, { transform: `translate(${dx}px, ${dy}px) scale(0.2)`, opacity: 0.6 }],
-        { duration: CARD.sendMs, easing: 'cubic-bezier(0.5, 0, 0.75, 0.2)', fill: 'forwards' });
-      timers.push(setTimeout(() => { card.cancel(); onDone?.(); }, CARD.sendMs));
+        { duration: durationMs, easing: 'cubic-bezier(0.5, 0, 0.75, 0.2)', fill: 'forwards' });
+      timers.push(setTimeout(() => { card.cancel(); onDone?.(); }, durationMs));
     },
     cancel() { for (const t of timers.splice(0)) clearTimeout(t); el.remove(); },
   };

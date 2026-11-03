@@ -3,8 +3,8 @@ import '../view/setup';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { loadContent } from '../../src/content/load';
 import { createText } from '../../src/ui/overlay';
-import { CARD } from '../../src/view/celebration/timings';
-import { CARD_GLYPH_PX, SPACE_GLYPH, cardFace, createRewardCard, type RewardCardContext } from '../../src/view/celebration/rewardCard';
+import { CARD, CARD_BIGGER } from '../../src/view/celebration/timings';
+import { CARD_GLYPH_PX, SPACE_GLYPH, cardFace, cardGlyphPx, createRewardCard, type RewardCardContext } from '../../src/view/celebration/rewardCard';
 
 const content = loadContent();
 const bed = content.charms.types.find(t => t.id === 'dog-bed')!;
@@ -31,11 +31,17 @@ describe('VERIFY-WORK-038-1-05 reward card block', () => {
     expect(createRewardCard(root, ctx, { kind: 'items', typeId: 'dog-bed', heldBefore: 0 }, { at: { x: 0, y: 0 }, px: 260 }).el.style.width).toBe('260px');
   });
 
-  it('verb card: the emote at 120 px and "Dog can now nap" from tpp.reward.verb + verbs[].name', () => {
+  it('verb card: the emote sized to fit beside a two-line name (92 px at 220, 109 at 260, cap 120) and "Dog can now nap"', () => {
     expect(content.strings['tpp.reward.verb']).toBe('{pet} can now {verb}');
     const card = createRewardCard(root, ctx, { kind: 'verb', petId: 'dog', verbId: 'nap' }, { at: { x: 0, y: 0 } });
     const glyph = card.el.querySelector<HTMLElement>('.tpp-reward-card-glyph')!;
-    expect([glyph.textContent, glyph.style.fontSize, CARD_GLYPH_PX]).toEqual(['😴', '120px', 120]);
+    expect([glyph.textContent, glyph.style.fontSize, CARD_GLYPH_PX]).toEqual(['😴', '92px', 120]);
+    expect([cardGlyphPx(CARD.px), cardGlyphPx(CARD_BIGGER.px), cardGlyphPx(400)]).toEqual([92, 109, 120]);
+    const bigger = createRewardCard(root, ctx, { kind: 'verb', petId: 'dog', verbId: 'nap' }, { at: { x: 0, y: 0 }, px: CARD_BIGGER.px });
+    expect(bigger.el.querySelector<HTMLElement>('.tpp-reward-card-glyph')!.style.fontSize).toBe('109px');
+    expect(card.el.querySelector('.tpp-reward-card-name')?.className).toBe('tpp-reward-card-name');
+    const owl = createRewardCard(root, ctx, { kind: 'verb', petId: 'owl', verbId: 'look-at' }, { at: { x: 0, y: 0 } });
+    expect(owl.el.querySelector('.tpp-reward-card-name')?.className).toBe('tpp-reward-card-name tpp-reward-card-name--long');
     expect(card.el.querySelector('.tpp-reward-card-name')?.textContent).toBe('Dog can now nap');
     expect(card.el.querySelector('.tpp-reward-card-new')).toBeNull();
   });
@@ -75,5 +81,17 @@ describe('VERIFY-WORK-038-1-05 reward card block (motion)', () => {
     other.cancel();
     vi.advanceTimersByTime(1000);
     expect([root.contains(other.el), late.mock.calls.length]).toEqual([false, 0]);
+  });
+
+  it('send(to, onDone, durationMs): an optional duration (the §5 skip half-duration Send) drives the flight and the removal', () => {
+    vi.useFakeTimers();
+    const card = createRewardCard(root, ctx, { kind: 'items', typeId: 'dog-bed', heldBefore: 0 }, { at: { x: 0, y: 0 } });
+    const done = vi.fn();
+    card.send({ x: 10, y: 10 }, done, CARD.sendMs / 2);
+    expect(calls.at(-1)!.opts.duration).toBe(200);
+    vi.advanceTimersByTime(199);
+    expect(done).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(1);
+    expect([root.contains(card.el), done.mock.calls.length]).toEqual([false, 1]);
   });
 });
