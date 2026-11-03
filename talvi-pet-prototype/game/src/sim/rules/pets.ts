@@ -57,12 +57,14 @@ function candidates(step: Step): { slotId: SlotId; weight: number }[] {
   });
 }
 
-/** §2.4 step 4 (fork #36 resolved 2026-10-26): one draw among the wander points other than the one the pet stands on,
- * so it never wanders to the same point twice in a row. */
+/** §2.4 step 4 (fork #36 resolved 2026-10-26): one draw among the wander points other than the one the pet stands on
+ * and the one a meeting interrupted (kept on the idle behaviour, WORK-036-1 A2), so it never wanders to the same point
+ * twice in a row. */
 function wanderTarget(step: Step): { target: PetBehaviour['target']; state: GameState } {
   const points = step.def.wanderPoints;
-  const { x, y } = step.state.pets[step.petId].behaviour;
-  const others = points.filter(point => point.x !== x || point.y !== y);
+  const { x, y, target } = step.state.pets[step.petId].behaviour;
+  const previous = target !== null && 'wanderPointId' in target ? target.wanderPointId : null;
+  const others = points.filter(point => (point.x !== x || point.y !== y) && point.id !== previous);
   const pick = petPick(step.state, step.petId, others.length > 0 ? others : points);
   return { target: { wanderPointId: pick.item.id }, state: pick.state };
 }
@@ -152,6 +154,10 @@ function afterBubble(step: Step): RuleResult {
   const slotId = behaviour.target !== null && 'slotId' in behaviour.target ? behaviour.target.slotId : null;
   if (behaviour.verb !== null && slotId !== null && slotHolds(step, slotId))
     return startVerb(step, behaviour, slotId, behaviour.verb);
+  if (behaviour.phase === 'meeting') { // WORK-036-1 A2: idle keeps the interrupted wander target for the next pick
+    const idle = toIdle(step.content, step.state, step.petId);
+    return transition(step, idle.state, { ...idle.behaviour, target: behaviour.target });
+  }
   return toIdleFrom(step, behaviour);
 }
 

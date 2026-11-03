@@ -175,23 +175,24 @@ describe('VERIFY-WORK-035-1-05 street stepping among W(p)', () => {
     let state = apply(withHearts(), { type: 'debugSetPetsOutside', mode: 'all' }).state;
     expect(streetPets(content, state).map(pet => pet.petId)).toEqual(['dog', 'owl-mate', 'owl']);
     const targets: Record<string, string[]> = { dog: [], owl: [], 'owl-mate': [] };
+    const greetings: Record<string, number> = { dog: 0, owl: 0, 'owl-mate': 0 };
     for (let i = 0; i < 3000; i++) { // 5 min at 100 ms
       const result = reduce(content, state, tick());
       state = result.state;
       for (const event of result.events) {
         if (event.type === 'pet.phaseChanged' && event.to === 'walking' && event.target && 'wanderPointId' in event.target)
           targets[event.petId].push(event.target.wanderPointId);
-        // WORK-036-1: a meeting interrupts a walk, so the next walk may resume the same target; restart the run there.
-        if (event.type === 'greeting.played') for (const petId of [event.petA, event.petB]) targets[petId].push('|');
+        // WORK-036-1 A2: a meeting interrupts a walk; the interrupted target still counts as the previous one.
+        if (event.type === 'greeting.played') for (const petId of [event.petA, event.petB]) greetings[petId]++;
       }
       for (const petId of Object.keys(W)) expect(pointInPolygon(state.pets[petId].behaviour, content.street.walkArea)).toBe(true);
     }
     for (const [petId, list] of Object.entries(targets)) {
-      expect(list.filter(target => target !== '|').length, petId).toBeGreaterThan(4);
+      expect(list.length, petId).toBeGreaterThan(4);
+      expect(greetings[petId], petId).toBeGreaterThan(0);
       list.forEach((target, i) => {
-        if (target === '|') return;
         expect(W[petId]).toContain(target);
-        if (i > 0 && list[i - 1] !== '|') expect(target).not.toBe(list[i - 1]);
+        if (i > 0) expect(target, `${petId} #${i}`).not.toBe(list[i - 1]);
       });
       expect(list, petId).toContain('street-meet');
     }
