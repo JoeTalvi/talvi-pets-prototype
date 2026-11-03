@@ -1,0 +1,16 @@
+[
+  {
+    "file": "pets/dog.json",
+    "path": "/compatibility",
+    "value": {
+      "owl": 0.6
+    }
+  },
+  {
+    "file": "pets/owl.json",
+    "path": "/compatibility",
+    "value": {
+      "dog": 0.4
+    }
+  }
+]
