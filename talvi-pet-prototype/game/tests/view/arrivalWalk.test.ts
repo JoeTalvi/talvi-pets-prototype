@@ -123,3 +123,53 @@ it(`${t}state.reset mid-walk dispatches nothing`, async () => {
   expect(finishes(context)).toHaveLength(0);
   expect(linesOf(context, 'arrival.finished')).toHaveLength(0);
 });
+
+it('VERIFY-WORK-038-3-03 (Owl door, DEC-049 §3): a 0.4 dust poof at the walk start; at the door the 24 px hop over ARRIVE.hopMs, 20 red-and-gold confetti and reaction +4 st; no flash or shake', async () => {
+  const { context, scene } = await completing();
+  const { DustPoof } = await import('../../src/view/celebration/DustPoof');
+  const { ARRIVE } = await import('../../src/view/celebration/timings');
+  const { vi } = await import('vitest');
+  const Phaser = (await import('phaser')).default;
+  const play = vi.spyOn(context.audio!, 'play');
+  const explode = vi.spyOn(Phaser.GameObjects.Particles.ParticleEmitter.prototype, 'explode');
+  const camShake = vi.spyOn(scene.cameras.main, 'shake');
+  expect(scene.arrival).not.toBeNull();
+  expect(scene.children.list.filter(c => c instanceof DustPoof)).toHaveLength(1);
+  run(scene, doorMs - 10);
+  expect(play.mock.calls.filter(c => c[0] === 'reaction')).toEqual([]);
+  run(scene, 20);
+  expect(play.mock.calls.filter(c => c[0] === 'reaction')).toEqual([['reaction', { semitones: 4 }]]);
+  expect(explode.mock.calls.map(c => c[0])).toEqual([20]);
+  const hop = scene.tweens.getTweensOf(scene.arrival!.sprite)[0];
+  expect(hop.data[0].duration * 2).toBe(ARRIVE.hopMs);
+  expect(camShake).not.toHaveBeenCalled();
+  expect(scene.children.list.filter(c => c instanceof Phaser.GameObjects.Rectangle && c !== scene.designTint.rect)).toHaveLength(0);
+  explode.mockRestore();
+});
+
+it('VERIFY-WORK-038-3-07 (the mate, DEC-049 §8): 🎵 + 0.4 dust + reaction at 0, a puff every ARRIVE.stepDustMs while walking, 16 ♥ and reaction +4 st at the path end; finish timing unchanged', async () => {
+  const { ArrivalWalk } = await import('../../src/view/celebration/ArrivalWalk');
+  const { DustPoof } = await import('../../src/view/celebration/DustPoof');
+  const { ARRIVE } = await import('../../src/view/celebration/timings');
+  const { siteOf } = await import('../../src/sim/space');
+  const { vi } = await import('vitest');
+  const context = spy(contextFor(content, owing(content, 1, 100)));
+  context.manifest = realManifest;
+  const panels = document.createElement('div'); panels.id = 'panels'; document.body.append(panels);
+  const scene = await bootScene(StreetScene, context);
+  const play = vi.spyOn(context.audio!, 'play');
+  const petId = siteOf(content, 'garden').residentPetId ?? 'owl-mate';
+  const walk = new ArrivalWalk(scene, context, { siteId: 'garden', petId }, null);
+  expect(walk.bubble.current()).toMatchObject({ class: 'greeting', text: REACTION_EMOJI.greeting });
+  expect(play.mock.calls).toEqual([['reaction']]);
+  const poofs = () => scene.children.list.filter(c => c instanceof DustPoof).length;
+  expect(poofs()).toBe(1);
+  const door = walk.plan.doorMs;
+  for (let t = 0; t < door - 1; t += 10) walk.update(Math.min(10, door - 1 - t));
+  expect(poofs()).toBe(1 + Math.floor((door - 1) / ARRIVE.stepDustMs));
+  walk.update(2);
+  expect(play.mock.calls.at(-1)).toEqual(['reaction', { semitones: 4 }]);
+  expect(panels.querySelectorAll('.tpp-glyph-burst .tpp-glyph')).toHaveLength(16);
+  expect(walk.plan.finishMs).toBe(door + content.tuning.bubbleMs);
+  walk.cancel();
+});
