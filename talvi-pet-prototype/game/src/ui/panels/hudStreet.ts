@@ -1,8 +1,9 @@
 import type { GameState } from '@sim/state';
-import { hudProjectId, playerSpace, revealProjectId, starsOfSpace } from '@sim/select';
+import { hudProjectId, inputFrozen, playerSpace, revealProjectId, starsOfSpace, unlockedOutfitIds } from '@sim/select';
 import type { ViewContext } from '@view/context';
 import { hudStreet } from './templates/hudStreet';
 import { hudInterior } from './templates/hudInterior';
+import { createCloset } from './closet';
 import { assetsFrom, createText, type Panel, type Text } from '../overlay';
 
 /** Presentation §8.2 / package fixed decision: the events-arm bar nudge. */
@@ -13,7 +14,8 @@ const RENDER_ON = ['phase.reached', 'feed.stopped', 'debug.applied', 'state.rese
   'scene.changed', 'celebration.started', 'celebration.ended',
   // WORK-034-3: the site's Decorate and Stars (presentation §8.2 `hudStreet`, DEC-044, gate fork 11).
   'space.unlocked', 'space.stars.changed', 'mode.changed', 'stars.visibilityChanged', 'dialogue.opened', 'dialogue.closed',
-  'arrival.started', 'arrival.finished', 'space.arrivalStarted'] as const;
+  'arrival.started', 'arrival.finished', 'space.arrivalStarted',
+  'outfit.unlocked', 'outfit.changed'] as const;   // WORK-037-3: the Closet button
 
 export type HudStreet = Panel & { render(): void };
 
@@ -27,7 +29,13 @@ export function chunkFills(currentCents: number, goalCents: number): number[] {
 export const dollars = (cents: number): string => `$${(cents / 100).toFixed(2)}`;
 
 type Site = { pill: HTMLElement; stars: HTMLElement; starsLabel: HTMLElement; fill: HTMLElement; toggle: HTMLButtonElement; label: HTMLElement };
-type Parts = { section: HTMLElement; name: HTMLElement; amount: HTMLElement; fills: HTMLElement[]; reveal: HTMLButtonElement; site: Site };
+type Parts = { section: HTMLElement; name: HTMLElement; amount: HTMLElement; fills: HTMLElement[]; reveal: HTMLButtonElement; site: Site; closet: HTMLButtonElement };
+
+/** WORK-037-3 (gate Q14(a)): the Closet button shows once an outfit beyond the default is unlocked, never in design mode; disabled while input is frozen. */
+function renderClosetButton(button: HTMLButtonElement, context: ViewContext, state: GameState): void {
+  button.hidden = state.mode === 'design' || unlockedOutfitIds(context.content, state).length <= 1;
+  button.disabled = inputFrozen(context.content, state);
+}
 
 /** The site Stars pill and the Decorate/Done control, taken from the interior HUD's template so they share its treatment; the
  * pill sits under the street bar (no Hearts: the site has no resident Hearts row). */
@@ -49,7 +57,8 @@ function siteParts(section: HTMLElement, options: Parameters<typeof hudInterior>
 function partsOf(section: HTMLElement, options: Parameters<typeof hudInterior>[0]): Parts {
   const [name, amount] = [...section.querySelectorAll<HTMLElement>('.tpp-project-label > span')];
   const reveal = section.querySelector<HTMLButtonElement>('.tpp-reveal-link')!;
-  return { section, name, amount, reveal, fills: [...section.querySelectorAll<HTMLElement>('.tpp-chunks b')], site: siteParts(section, options) };
+  return { section, name, amount, reveal, fills: [...section.querySelectorAll<HTMLElement>('.tpp-chunks b')], site: siteParts(section, options),
+    closet: section.querySelector<HTMLButtonElement>('.tpp-closet-button')! };
 }
 
 /** DEC-044 / gate fork 11: once a site is unlocked, Decorate/Done and the site's Stars ("n / max ★", the interior bar's template),
@@ -90,6 +99,7 @@ function renderHud(p: Parts, context: ViewContext, text: Text, state: GameState,
   p.section.hidden = state.scene.kind !== 'street';
   setFrozen(p, state.celebration !== null);
   if (state.scene.kind === 'street') renderSite(p.site, context, text, state);
+  renderClosetButton(p.closet, context, state);
   // Order fork 1: the selector verbatim (hidden while the only rising project is at goal but unacknowledged, R1-A1).
   p.reveal.hidden = revealProjectId(content, state) === null;
   const projectId = hudProjectId(content, state);
@@ -112,6 +122,7 @@ export function createHudStreet(root: HTMLElement, context: ViewContext): HudStr
   const p = partsOf(root.lastElementChild as HTMLElement, { text, assets });
   const onToggle = () => store.dispatch({ type: 'setDesignMode', on: store.getState().mode !== 'design' });
   p.site.toggle.addEventListener('click', onToggle);
+  const closet = createCloset(root, context, p.closet);   // WORK-037-3: the picker and the arrival outfit card
   const render = (state: GameState, nudgeMs: number | null = null) => renderHud(p, context, text, state, nudgeMs);
   const offs = [...RENDER_ON.map(type => store.subscribe(type, (_event, after) => render(after))),
     // VERIFY-MEC-010-015: the trickle arm glides over one feed interval instead of the 300 ms nudge.
@@ -120,6 +131,6 @@ export function createHudStreet(root: HTMLElement, context: ViewContext): HudStr
   render(store.getState());
   return {
     render: () => render(store.getState()),
-    destroy() { for (const off of offs) off(); p.site.toggle.removeEventListener('click', onToggle); p.section.remove(); },
+    destroy() { for (const off of offs) off(); p.site.toggle.removeEventListener('click', onToggle); closet.destroy(); p.section.remove(); },
   };
 }

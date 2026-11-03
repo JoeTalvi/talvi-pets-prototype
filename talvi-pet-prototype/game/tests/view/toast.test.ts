@@ -95,7 +95,7 @@ describe('presentation §8 mount order (WORK-019-3, WORK-020-1, WORK-020-3, WORK
   it('presentation §8 mount order (WORK-019-3, WORK-020-1, WORK-020-3, WORK-015-2, WORK-023-1) — #panels: hudInterior, hudStreet, toast, wantPanel, dialogue, chooser, replaceRemove, milestonePopup, revealPopup, revealPanel, debugPanel, roomEditor; Panels.dialogue and Panels.toast defined', async () => {
     const s = await designSetup();
     expect([...s.root.querySelectorAll<HTMLElement>('[data-panel]')].map(c => c.dataset.panel))
-      .toEqual(['hudInterior', 'hudStreet', 'toast', 'wantPanel', 'dialogue', 'chooser', 'replaceRemove', 'milestonePopup', 'revealPopup', 'revealPanel', 'debugPanel', 'roomEditor']);
+      .toEqual(['hudInterior', 'hudStreet', 'closet', 'toast', 'wantPanel', 'dialogue', 'chooser', 'replaceRemove', 'milestonePopup', 'revealPopup', 'revealPanel', 'debugPanel', 'roomEditor']);   // WORK-037-3: closet after hudStreet
     expect([typeof s.panels.dialogue.isDeferred, typeof s.panels.toast.queued]).toEqual(['function', 'function']);
   });
 });
