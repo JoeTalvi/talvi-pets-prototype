@@ -8,7 +8,7 @@ const rows: [string, unknown, unknown][] = [
     ['ROUNDUP.flightMs', [T.ROUNDUP.flightMs, T.ROUNDUP_BIGGER.flightMs], [450, 450]],
     ['ROUNDUP.glowMs', [T.ROUNDUP.glowMs, T.ROUNDUP_BIGGER.glowMs], [300, 300]],
     ['PHASE.punchMs', [T.PHASE.punchMs, T.PHASE_BIGGER.punchMs], [260, 260]],
-    ['PHASE.sparkles', [T.PHASE.sparkles, T.PHASE.confetti, T.PHASE_BIGGER.sparkles, T.PHASE_BIGGER.confetti], [24, 0, 24, 60]],
+    ['PHASE.sparkles', [T.PHASE.sparkles, T.PHASE.confetti, T.PHASE_BIGGER.sparkles, T.PHASE_BIGGER.confetti], [24, null, 24, 60]],
     ['PHASE.cameraPunch', [T.PHASE.cameraPunch, T.PHASE_BIGGER.cameraPunch], [null, { zoom: 1.04, inMs: 120, backMs: 200 }]],
     ['PHASE.collectStaggerMs', [T.PHASE.collectStaggerMs, T.PHASE_BIGGER.collectStaggerMs], [120, 120]],
     ['CARD.flipMs', [T.CARD.flipMs, T.CARD_BIGGER.flipMs], [320, 320]],
@@ -69,8 +69,8 @@ const rows: [string, unknown, unknown][] = [
 describe('VERIFY-WORK-038-1-04 spec §C in timings.ts', () => {
   it.each(rows)('§C %s', (_name, actual, expected) => { expect(actual).toEqual(expected); });
 
-  it('§C tuning.* rows stay in tuning.json (changed by WORK-038-3): revealSilhouetteHoldMs 1500 kept; revealCardStaggerMs still the pre-ladder value here', () => {
-    expect([tuning.revealSilhouetteHoldMs, tuning.revealCardStaggerMs]).toEqual([1500, 250]);
+  it('§C tuning.* rows stay in tuning.json (changed by WORK-038-3): revealSilhouetteHoldMs 1500 kept; revealCardStaggerMs 250 -> 400 and revealResolveMs 800 -> 400 (§C)', () => {
+    expect([tuning.revealSilhouetteHoldMs, tuning.revealCardStaggerMs, tuning.revealResolveMs]).toEqual([1500, 400, 400]);
   });
 
   it('legacy exports unchanged (today\'s code compiles and plays as at 71f575c)', () => {

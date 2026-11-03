@@ -39,7 +39,7 @@ export type CelebrationCue = {
 };
 
 export type BeatName = 'barFadeIn' | 'pan' | 'fill' | 'pop' | 'popAll' | 'leftover'
-  | 'anticipation' | 'dust' | 'swap' | 'completionDust' | 'completionSwap' | 'confetti' | 'finish';
+  | 'anticipation' | 'dust' | 'swap' | 'completionDust' | 'completionSwap' | 'completionHitstop' | 'confetti' | 'confettiWave' | 'finish';
 export type Beat = { beat: BeatName; startMs: number; durationMs: number; phase?: number; chunk?: number; pct?: number };
 export type CelebrationPlan = { beats: Beat[]; totalMs: number };
 
@@ -88,12 +88,18 @@ function stageBeats(cue: CelebrationCue, start: number, beats: Beat[]): number {
   return t;
 }
 
-/** Beat 6 (order fork 7 reading): dust at t0, lv6 at +170 with the 300 bloom, confetti + flash at +470, hold 1750. */
+/**
+ * Beat 6 (order fork 7 reading; DEC-049 spec §3 Big, WORK-038-3): dust at t0, lv6 at +170 then the `COMPLETE.hitstopMs` 120 hitstop,
+ * the 300 bloom from +290, the hit (confetti 140 + flash + shake + `complete`) at +590, the second wave of 60 `COMPLETE.wave2At` 430
+ * after the hit, hold 1750 from the hit: every total is the 71f575c chain + 120.
+ */
 function completionBeats(start: number, beats: Beat[]): number {
   beats.push({ beat: 'completionDust', startMs: start, durationMs: DUST_LIFETIME, phase: 5 });
-  beats.push({ beat: 'completionSwap', startMs: start + COMPLETION_SWAP_AT, durationMs: BLOOM, phase: 5 });
-  const confettiAt = start + COMPLETION_SWAP_AT + BLOOM;
+  beats.push({ beat: 'completionSwap', startMs: start + COMPLETION_SWAP_AT, durationMs: COMPLETE.hitstopMs + BLOOM, phase: 5 });
+  beats.push({ beat: 'completionHitstop', startMs: start + COMPLETION_SWAP_AT, durationMs: COMPLETE.hitstopMs });
+  const confettiAt = start + COMPLETION_SWAP_AT + COMPLETE.hitstopMs + BLOOM;
   beats.push({ beat: 'confetti', startMs: confettiAt, durationMs: CONFETTI_HOLD });
+  beats.push({ beat: 'confettiWave', startMs: confettiAt + COMPLETE.wave2At, durationMs: 0 });
   return confettiAt + CONFETTI_HOLD;
 }
 
@@ -134,7 +140,7 @@ export const HEART_PET_DEPTH = 8500;
 export const ROUNDUP = { coinsUnder50: 1, coins: 2, coinsThresholdCents: 50, flightMs: 450, glowMs: 300 } as const;
 export const ROUNDUP_BIGGER = ROUNDUP;
 
-export const PHASE = { punchMs: 260, sparkles: 24, confetti: 0, cameraPunch: null, collectStaggerMs: 120 } as const;
+export const PHASE = { punchMs: 260, sparkles: 24, confetti: null, cameraPunch: null, collectStaggerMs: 120 } as const;
 export const PHASE_BIGGER = { punchMs: 260, sparkles: 24, confetti: 60, cameraPunch: { zoom: 1.04, inMs: 120, backMs: 200 }, collectStaggerMs: 120 } as const;
 
 export const CARD = { flipMs: 320, staggerMs: 250, holdMs: 600, sendMs: 400, px: 220, shimmerMs: 600 } as const;

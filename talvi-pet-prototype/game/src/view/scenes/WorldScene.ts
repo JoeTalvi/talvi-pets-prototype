@@ -15,6 +15,16 @@ import { DesignTint } from '../objects/DesignTint';
 import { startHeartScene, type HeartScene } from '../celebration/heartScene';
 import { HEART_MOMENT_END } from '../celebration/heartMoment';
 import { Bubble, chatterBubble, reactionBubble, textFrom, verbBubble, wantBubble } from '../objects/Bubble';
+import type { PetSprite } from '../objects/PetSprite';
+import { REACT } from '../celebration/timings';
+
+/** DEC-049 §9 beat text (order fork (d)): the love hop height; the first-use sparkle (6 ✨, +12 st tick). */
+export const LOVE_HOP_PX = 10;
+export const FIRST_USE = { glyphs: 6, semitones: 12, spreadPx: 50, ms: 600 } as const;
+/** DEC-049 §9 first use per (pet, charm type) this session: view-local, one set per ViewContext (a reload starts a new one; no state). */
+const firstUses = new WeakMap<ViewContext, Set<string>>();
+/** A Heart scene half stays listed only while it may still be fading; older ones are destroyed (review advisory A4). */
+const HEART_SCENES_KEPT = 2;
 
 export const FADE_MS = 250;
 
@@ -89,6 +99,41 @@ export abstract class WorldScene extends Phaser.Scene {
 
   /** The scene's pet bubble, if it shows a pet (Interior: the resident; Street: the arrived site resident, WORK-034-3). */
   protected petBubble(): Bubble | undefined { return undefined; }
+  /** The scene's pet sprite: Interior and Street both expose a public `pet` field (read structurally; InteriorScene is not this lane's). */
+  private scenePetSprite(): PetSprite | undefined { return (this as { pet?: PetSprite }).pet; }
+
+  /** DEC-049 §9 love: the pet hops `LOVE_HOP_PX` over `REACT.hopMs` (by its origin, so the per-frame position sync keeps it). */
+  private hopPet(petId: string): void {
+    const pet = this.scenePetSprite();
+    if (!pet || pet.petId !== petId || !pet.active) return;
+    const ox = pet.originX, oy = pet.originY, lift = LOVE_HOP_PX / Math.max(1, pet.displayHeight);
+    this.tweens.addCounter({ from: 0, to: 1, duration: REACT.hopMs, onUpdate: t => {
+      if (pet.active) pet.setOrigin(ox, oy + lift * Math.sin((t.getValue() ?? 0) * Math.PI));
+    }, onComplete: () => { if (pet.active) pet.setOrigin(ox, oy); } });
+  }
+
+  /** DEC-049 §9: the first `pet.verbStarted` per (pet, charm type) this session sparkles 6 ✨ at the charm and ticks +12 st. */
+  private firstUse(petId: string, slotId: string, state: GameState): void {
+    const typeId = Object.values(state.rooms).map(r => r.placements[slotId]).find(Boolean)
+      ?? Object.values(state.spaces).map(s => s.placements[slotId]).find(Boolean);
+    if (!typeId) return;
+    const seen = firstUses.get(this.context) ?? new Set<string>();
+    firstUses.set(this.context, seen);
+    const key = `${petId}:${typeId}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    this.context.audio?.play('tick', { semitones: FIRST_USE.semitones });
+    const charm = this.charmAt(slotId);
+    if (!charm) return;
+    const at = { x: charm.x, y: charm.y - charm.displayHeight / 2 };
+    for (let i = 0; i < FIRST_USE.glyphs; i++) {
+      const angle = (i / FIRST_USE.glyphs) * Math.PI * 2;
+      const glyph = this.add.text(at.x, at.y, '✨', { fontSize: '32px' }).setOrigin(0.5).setDepth(charm.depth + 1);
+      glyph.setData('tppFirstUse', true);
+      this.tweens.add({ targets: glyph, x: at.x + Math.cos(angle) * FIRST_USE.spreadPx, y: at.y + Math.sin(angle) * FIRST_USE.spreadPx, alpha: 0,
+        duration: FIRST_USE.ms, ease: 'Quad.easeOut', onComplete: () => glyph.destroy() });
+    }
+  }
 
   /** mec-008 §2.1 / MEC-007 §3 consumers: every bubble fact comes from an event payload (the view computes no taste). */
   protected subscribePetBubbles(): void {
@@ -99,12 +144,14 @@ export abstract class WorldScene extends Phaser.Scene {
     this.on('pet.reacted', event => {
       const bubble = mine(event.petId);
       const shown = reactionBubble(text, name(event.petId), event);
+      if (bubble) bubble.onBeat = beat => { if (beat === 'love') this.hopPet(event.petId); };
       // Q11(a): the ladder grade after a verb ends arrives as `pet.reacted {walkOver:false}` and shows at once.
       if (event.walkOver) bubble?.hold(shown); else bubble?.show(shown);
     });
-    this.on('pet.verbStarted', event => {
+    this.on('pet.verbStarted', (event, after) => {
       const shown = verbBubble(content, name(event.petId), event.verb);
       if (shown) mine(event.petId)?.show(shown);
+      this.firstUse(event.petId, event.slotId, after);
     });
     this.on('pet.verbEnded', event => { mine(event.petId)?.clearClass('verb'); });
     // Q12(a): a want whose unmet tags are all hidden arrives as `tag: null` and shows ❓.
@@ -139,6 +186,7 @@ export abstract class WorldScene extends Phaser.Scene {
     this.on('heart.earned', event => {
       this.hearts.at(-1)?.end();
       this.hearts.push(startHeartScene(this, { petId: event.petId, focusSlotId, charmAt: slotId => this.charmAt(slotId) }));
+      while (this.hearts.length > HEART_SCENES_KEPT) this.hearts.shift()!.destroy();
       focusSlotId = null;
     });
     const onMomentEnd = () => this.hearts.at(-1)?.end();

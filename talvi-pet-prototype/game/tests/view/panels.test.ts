@@ -36,8 +36,12 @@ describe('presentation §8.2 hudInterior', () => {
     const { root, context } = await designSetup();
     const label = q(root, '.tpp-stars [data-string-key="tpp.stars.label"]');
     expect(label.textContent).toBe('0 / 48 ★');
+    vi.useFakeTimers();
     context.store.dispatch({ type: 'placeCharm', slotId: 'floor-1', typeId: 'lamp' });
     expect(label.textContent).toBe('4 / 48 ★');
+    // DEC-049 §4 (WORK-038-3): the fill steps 1 ★ per landed star; all landed by STARS.totalMs.first.
+    vi.advanceTimersByTime(1000);
+    vi.useRealTimers();
     expect(q(root, '.tpp-stars-track i').style.width).toBe(`${(4 / 48) * 100}%`);
     expect(q(root, '.tpp-hearts').textContent).toBe('♥ 0');
     context.store.dispatch({ type: 'debugSetStarsVisible', on: false });

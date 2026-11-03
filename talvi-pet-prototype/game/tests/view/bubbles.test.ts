@@ -211,3 +211,56 @@ describe('VERIFY-MEC-007-020 stripped reaction (view)', () => {
     expect(state().pets.dog.strippedPending).toEqual([]);
   });
 });
+
+describe('VERIFY-WORK-038-3-08 reaction beats, first use and B9 (DEC-049 §9, DEC-043)', () => {
+  const stripped = (s: GameState) => {
+    play(s); wantTwo(s);
+    s.pets.dog.hearts = 1; s.pets.dog.heartCharms = ['dog-bed']; s.pets.dog.strippedPending = ['dog-bed'];
+    s.pets.dog.behaviour = { ...s.pets.dog.behaviour, phase: 'idle', timerMs: 100, target: null, verb: null, reaction: null };
+  };
+  it('VERIFY-WORK-038-3-08 B9: a stripped 😢 shows for bubbleMs, then its line once without a tap (no bubble.tapped), then clears', async () => {
+    const { scene, context, state } = await designSetup({ edit: stripped });
+    for (let i = 0; i < 20 && state().pets.dog.behaviour.reaction !== 'stripped'; i++) tick(scene);
+    const reacted = linesOf(context, 'pet.reacted').at(-1)!;
+    expect(glyph(scene)).toBe('😢');
+    const { bubbleMs, bubbleTextMs } = context.content.tuning;
+    // The emoji is already up to one 100 ms frame old here.
+    scene.bubble!.update(bubbleMs - 200);
+    expect(glyph(scene)).toBe('😢');
+    scene.bubble!.update(200);
+    expect(scene.bubble!.current()).toEqual({ kind: 'text', class: 'stripped', text: reacted.line });
+    expect(linesOf(context, 'ui.bubbleTapped')).toHaveLength(0);
+    scene.bubble!.update(bubbleTextMs);
+    expect(scene.bubble!.current()).toBeNull();
+  });
+
+  it('VERIFY-WORK-038-3-08: love pops the bubble (0 → 1.15 → 1 over REACT.popMs), raises 3 ♥ and hops the pet; dislike shakes; like/greeting pop only; the view plays no reaction sound', async () => {
+    const { REACT } = await import('../../src/view/celebration/timings');
+    const { scene, context, state } = await designSetup({ edit: owning('bookshelf') });
+    const sound = vi.spyOn(context.audio!, 'play');
+    const bubble = scene.bubble!;
+    const counters = vi.spyOn(scene.tweens, 'addCounter');
+    context.store.dispatch({ type: 'placeCharm', slotId: 'large-1', typeId: 'dog-bed' });
+    for (let i = 0; i < 200 && state().pets.dog.behaviour.phase !== 'reacting'; i++) tick(scene);
+    expect(glyph(scene)).toBe('❤️');
+    expect(counters.mock.calls.map(c => (c[0] as { duration: number }).duration)).toEqual([REACT.popMs, REACT.hopMs]);
+    expect(scene.children.list.filter(c => c.getData?.('tppReactHeart'))).toHaveLength(3);
+    counters.mockClear();
+    bubble.show({ kind: 'emoji', class: 'dislike', glyph: '💢', beat: 'shake' });
+    expect(counters.mock.calls.map(c => (c[0] as { duration: number }).duration)).toEqual([REACT.shakeMs]);
+    counters.mockClear();
+    bubble.show({ kind: 'emoji', class: 'like', glyph: '🙂', beat: 'pop' });
+    expect(counters.mock.calls.map(c => (c[0] as { duration: number }).duration)).toEqual([REACT.popMs]);
+    expect(sound.mock.calls.filter(c => c[0] === 'reaction')).toEqual([]);
+  });
+
+  it('VERIFY-WORK-038-3-08: the first pet.verbStarted per (pet, charm type) sparkles 6 ✨ at the charm and ticks +12 st (once: the tick list has exactly one entry)', async () => {
+    const { scene, context, state } = await designSetup({ edit: s => { play(s); wantTwo(s); s.rooms['dog-room'].placements['large-1'] = 'dog-bed'; } });
+    const sound = vi.spyOn(context.audio!, 'play');
+    for (let i = 0; i < 400 && linesOf(context, 'pet.verbStarted').length === 0; i++) tick(scene);
+    expect(linesOf(context, 'pet.verbStarted').length).toBeGreaterThan(0);
+    expect(sound.mock.calls.filter(c => c[0] === 'tick')).toEqual([['tick', { semitones: 12 }]]);
+    expect(scene.children.list.filter(c => c.getData?.('tppFirstUse'))).toHaveLength(6);
+    void state();
+  });
+});

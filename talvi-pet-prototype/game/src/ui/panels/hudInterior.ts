@@ -2,7 +2,7 @@ import type { Content } from '@content/types';
 import type { GameState } from '@sim/state';
 import { hudProjectId, owedPhases, starsOf } from '@sim/select';
 import type { ViewContext } from '@view/context';
-import { centreIn, clearStarsBursts, starsBurst, worldToOverlay } from '@view/celebration/starsBurst';
+import { clearStarsBursts, createStarsFill, worldToOverlay, type StarsFill } from '@view/celebration/starsBurst';
 import { HEART_ARRIVED, HEART_MOMENT_END } from '@view/celebration/heartMoment';
 import { hudInterior } from './templates/hudInterior';
 import { assetsFrom, createText, type Panel, type Text } from '../overlay';
@@ -51,13 +51,14 @@ function floatDelta(stars: HTMLElement, text: Text, delta: number): HTMLElement 
   return el;
 }
 
-/** WORK-032-2 fix 6a: the burst flies from the slot `charm.placed` named in the same dispatch (else the screen centre) into the bar. */
-function burstFrom(root: HTMLElement, p: Parts, context: ViewContext, state: GameState, slotId: string | null): void {
+/** WORK-032-2 fix 6a / DEC-049 §4: the burst flies from the slot `charm.placed` named in the same dispatch (else the screen centre)
+ * into the bar, sized by value (first copy: `delta ≥ tuning.starsFirstCopy`). */
+function burstFrom(root: HTMLElement, p: Parts, fill: StarsFill, context: ViewContext, state: GameState, slotId: string | null, delta: number): void {
   if (state.scene.kind !== 'interior') return;
   const slot = slotId ? context.content.rooms[state.scene.roomId]?.slots.find(s => s.id === slotId) : undefined;
   const height = parseFloat(root.parentElement?.style.height ?? '') || 1080;
   const from = worldToOverlay(slot ? { x: slot.x, y: slot.y - 60 } : { x: 960, y: 540 }, height);
-  starsBurst(root, from, centreIn(root, p.fill.parentElement ?? p.stars));
+  fill.gain(root, p.fill.parentElement ?? p.stars, { from, delta, firstCopy: delta >= context.content.tuning.starsFirstCopy, audio: () => context.audio });
 }
 
 function pulse(hearts: HTMLElement, scale: number): void {
@@ -90,7 +91,7 @@ function partsOf(section: HTMLElement, text: Text): Parts {
 /** WORK-038-1 Hearts-counter seam: while a Heart is in flight the count shows the pet's Hearts before it (`hearts − 1`). */
 type HeldHeart = { petId: string; shown: number };
 
-function renderHud(p: Parts, context: ViewContext, text: Text, state: GameState, held: HeldHeart | null): void {
+function renderHud(p: Parts, context: ViewContext, text: Text, state: GameState, held: HeldHeart | null, pendingStars: number): void {
   const { content } = context;
   p.section.hidden = state.scene.kind !== 'interior';
   p.badge.hidden = !interiorAttentionVisible(content, state);
@@ -110,7 +111,9 @@ function renderHud(p: Parts, context: ViewContext, text: Text, state: GameState,
   p.stars.hidden = !state.session.starsVisible;
   if (p.stars.hidden) for (const el of p.stars.querySelectorAll('.tpp-stars-delta')) el.remove();
   p.starsLabel.textContent = text('tpp.stars.label', { stars: points, max });
-  p.fill.style.width = `${max > 0 ? Math.min(100, (points / max) * 100) : 0}%`;
+  // DEC-049 §4: while a gain is in flight the fill holds back the ★ not yet landed (it steps by 1 ★ per arrival).
+  const filled = Math.max(0, points - pendingStars);
+  p.fill.style.width = `${max > 0 ? Math.min(100, (filled / max) * 100) : 0}%`;
   const hearts = held?.petId === room.residentPetId ? held.shown : state.pets[room.residentPetId]?.hearts ?? 0;
   p.hearts.textContent = text('tpp.hud.hearts', { hearts });
 }
@@ -158,7 +161,9 @@ export function createHudInterior(root: HTMLElement, context: ViewContext): Pane
   root.insertAdjacentHTML('beforeend', hudInterior({ text, assets: assetsFrom(context.manifest), idPrefix: 'hud' }));
   const p = partsOf(root.lastElementChild as HTMLElement, text);
   const hold = holdHearts(context, p.hearts, () => render(store.getState()));
-  const render = (state: GameState) => renderHud(p, context, text, state, hold.held());
+  const fill = createStarsFill(() => render(store.getState()));
+  const render = (state: GameState) => renderHud(p, context, text, state, hold.held(), fill.pending());
+  const clearBursts = () => { clearStarsBursts(root); fill.release(); };
   let placedSlot: string | null = null;
   const onToggle = () => store.dispatch({ type: 'setDesignMode', on: store.getState().mode !== 'design' });
   // MEC-006 R6 / core §3: the record is `ui.starsExplained` (mec-006 spells it `ui.starsTapped`; core wins); R7: not while hidden.
@@ -175,11 +180,11 @@ export function createHudInterior(root: HTMLElement, context: ViewContext): Pane
     store.subscribe('stars.changed', (event, after) => {
       if (after.scene.kind !== 'interior' || event.roomId !== after.scene.roomId || !after.session.starsVisible || event.delta === 0) return;
       floatDelta(p.stars, text, event.delta);
-      if (event.delta > 0) burstFrom(root, p, context, after, placedSlot);
+      if (event.delta > 0) burstFrom(root, p, fill, context, after, placedSlot, event.delta);
     }),
-    store.subscribe('stars.visibilityChanged', (_event, after) => { if (!after.session.starsVisible) clearStarsBursts(root); }),
-    store.subscribe('state.reset', () => clearStarsBursts(root)),
-    store.subscribe('scene.changed', () => clearStarsBursts(root)),
+    store.subscribe('stars.visibilityChanged', (_event, after) => { if (!after.session.starsVisible) clearBursts(); }),
+    store.subscribe('state.reset', clearBursts),
+    store.subscribe('scene.changed', clearBursts),
     hold.unsubscribe];
   // Play-session Q17: the dialogue box shows later than its state change (the want story waits for the nap), so Done's
   // disabled state follows the box itself.

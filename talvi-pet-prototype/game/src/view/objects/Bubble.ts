@@ -2,11 +2,18 @@ import Phaser from 'phaser';
 import type { Content } from '@content/types';
 import type { Reaction } from '@sim/state';
 import type { SimEvent } from '@sim/events';
+import { REACT } from '../celebration/timings';
 
 /** mec-008 §2.1 classes; `verb` is view-internal (the bus `class` for a verb-emote tap is `chatter`, order fork 4). */
 export type BubbleClass = 'want' | 'chatter' | 'verb' | Reaction;
 export type BubbleKind = 'icon' | 'emoji' | 'text';
-export type BubbleShow = { kind: BubbleKind; class: BubbleClass; glyph?: string; icon?: string; text?: string; tapText?: string };
+/** DEC-049 §9 reaction beats: `love` pops and raises 3 ♥, `pop` pops only, `shake` shakes ±3 px. */
+export type BubbleBeat = 'love' | 'pop' | 'shake';
+export type BubbleShow = { kind: BubbleKind; class: BubbleClass; glyph?: string; icon?: string; text?: string; tapText?: string;
+  /** DEC-049 §9: played when the bubble shows (a held walk-over bubble plays it on release). */
+  beat?: BubbleBeat;
+  /** B9 (DEC-043 "one sad emote and one line"): when the emoji's time is up its `tapText` shows once, untapped. */
+  autoText?: boolean };
 export type BubbleTap = { class: BubbleClass; text: string };
 export type TextFn = (key: string, params?: Record<string, string>) => string;
 type Tuning = Pick<Content['tuning'], 'bubbleMs' | 'bubbleTextMs'>;
@@ -21,6 +28,13 @@ const FILL = 0xfffdf8, SHADOW = 0x3a2a1f, INK = '#3a2a1f';
 /** The tail (24 px then 14 px circles) trails below-left of the body; the 14 px circle's bottom sits on the anchor (0, 0). */
 const TAIL = [{ x: 0, y: -7, r: 7 }, { x: 12, y: -32, r: 12 }];
 const BODY_GAP = 50;
+/** DEC-049 §9 beat text (order fork (d)): pop peak, the shake amplitude, the ♥ count and rise. */
+export const REACT_BEATS = { popPeak: 1.15, shakePx: 3, hearts: 3, heartRisePx: 70 } as const;
+
+/** §9 reaction → bubble beat: love = pop + ♥ rise, dislike = shake, every other reaction = pop. */
+export function reactionBeat(reaction: Reaction): BubbleBeat {
+  return reaction === 'love' ? 'love' : reaction === 'dislike' ? 'shake' : 'pop';
+}
 
 /** `{param}` substitution over content strings (the view does not import `ui`). */
 export function textFrom(strings: Record<string, string>): TextFn {
@@ -29,7 +43,8 @@ export function textFrom(strings: Record<string, string>): TextFn {
 
 /** mec-008 §2.1 Reaction row: emoji for `bubbleMs`; tap → `line` if present else `tpp.bubble.<reaction>` with `{pet}`. */
 export function reactionBubble(text: TextFn, pet: string, event: Extract<SimEvent, { type: 'pet.reacted' }>): BubbleShow {
-  return { kind: 'emoji', class: event.reaction, glyph: REACTION_EMOJI[event.reaction], tapText: event.line ?? text(`tpp.bubble.${event.reaction}`, { pet }) };
+  return { kind: 'emoji', class: event.reaction, glyph: REACTION_EMOJI[event.reaction], tapText: event.line ?? text(`tpp.bubble.${event.reaction}`, { pet }),
+    beat: reactionBeat(event.reaction), ...(event.reaction === 'stripped' ? { autoText: true } : {}) };
 }
 
 /** mec-008 §2.1 Verb row: `verbs[verb].emote`; tap → `emoteText` with `{pet}`. */
@@ -62,6 +77,9 @@ export class Bubble extends Phaser.GameObjects.Container {
   bodyH = MIN_H;
   private shown: Current | null = null;
   private pending: BubbleShow | null = null;
+  private offsetX = 0;
+  /** DEC-049 §9: called with the beat when a bubble with one shows (the scene hops the pet on `love`). */
+  onBeat: ((beat: BubbleBeat) => void) | null = null;
   constructor(scene: Phaser.Scene, readonly petId: string, petIndex: number, private text: TextFn, private tuning: Tuning,
     private onTapped: (tap: BubbleTap) => void) {
     super(scene, 0, 0);
@@ -80,6 +98,33 @@ export class Bubble extends Phaser.GameObjects.Container {
     const lifeMs = bubble.kind === 'text' ? this.tuning.bubbleTextMs : this.tuning.bubbleMs;
     this.shown = { ...bubble, ageMs: 0, lifeMs };
     this.redraw();
+    if (bubble.beat && bubble.kind !== 'text') this.playBeat(bubble.beat);
+  }
+  /** DEC-049 §9: pop 0 → 1.15 → 1 over `REACT.popMs` (love: + 3 ♥ rising over `REACT.riseMs`); shake ±3 px over `REACT.shakeMs`. */
+  private playBeat(beat: BubbleBeat): void {
+    const tweens = this.scene.tweens;
+    if (beat === 'shake') {
+      tweens.addCounter({ from: 0, to: 1, duration: REACT.shakeMs, onUpdate: t => { this.offsetX = Math.sin((t.getValue() ?? 0) * Math.PI * 4) * REACT_BEATS.shakePx; },
+        onComplete: () => { this.offsetX = 0; } });
+    } else {
+      this.setScale(0);
+      tweens.addCounter({ from: 0, to: 1, duration: REACT.popMs, onUpdate: t => {
+        const v = t.getValue() ?? 1;
+        this.setScale(v < 0.6 ? REACT_BEATS.popPeak * (v / 0.6) : REACT_BEATS.popPeak + (1 - REACT_BEATS.popPeak) * ((v - 0.6) / 0.4));
+      }, onComplete: () => this.setScale(1) });
+    }
+    if (beat === 'love') this.riseHearts();
+    this.onBeat?.(beat);
+  }
+  private riseHearts(): void {
+    const c = this.bodyCentre();
+    for (let i = 0; i < REACT_BEATS.hearts; i++) {
+      const heart = this.scene.add.text(this.x + c.x + (i - 1) * 36, this.y + c.y - this.bodyH / 2, '♥', { fontSize: '36px', color: '#b5523f' })
+        .setOrigin(0.5).setDepth(this.depth + 1);
+      heart.setData('tppReactHeart', true);
+      this.scene.tweens.add({ targets: heart, y: heart.y - REACT_BEATS.heartRisePx, alpha: 0, duration: REACT.riseMs, delay: i * 40,
+        onComplete: () => heart.destroy() });
+    }
   }
   /** MEC-007 §3: a walk-over reaction waits for the matching `pet.phaseChanged {to:'reacting'|'greeting'}`. */
   hold(bubble: BubbleShow): void { this.pending = bubble; }
@@ -92,12 +137,18 @@ export class Bubble extends Phaser.GameObjects.Container {
     this.setVisible(false).setAlpha(1);
   }
   clearClass(cls: BubbleClass): void { if (this.shown?.class === cls && this.shown.kind !== 'text') this.clear(); }
-  follow(anchor: { x: number; y: number }): void { this.setPosition(anchor.x, anchor.y); }
+  follow(anchor: { x: number; y: number }): void { this.setPosition(anchor.x + this.offsetX, anchor.y); }
   update(dtMs: number): void {
     if (!this.shown) return;
     this.shown.ageMs += dtMs;
     const left = this.shown.lifeMs - this.shown.ageMs;
-    if (left <= 0) { this.clear(); return; }
+    if (left <= 0) {
+      const shown = this.shown;
+      // B9: a stripped emoji hands over to its line once, without a tap (not a `bubble.tapped`).
+      if (shown.autoText && shown.kind !== 'text' && shown.tapText !== undefined) this.show({ kind: 'text', class: shown.class, text: shown.tapText });
+      else this.clear();
+      return;
+    }
     this.setAlpha(left < FADE_MS ? left / FADE_MS : 1);
   }
   /** Tap-to-text (mec-008 §2.1): swaps an icon/emoji for its text; a text bubble ignores the tap. */

@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import '../view/setup';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { STARS } from '../../src/view/celebration/timings';
 import { loadContent } from '../../src/content/load';
 import type { GameState } from '../../src/sim/state';
 import { initialState } from '../../src/sim/state';
@@ -8,7 +9,7 @@ import type { Action } from '../../src/sim/actions';
 import { mountOverlay } from '../../src/ui/overlay';
 import { contextFor, realManifest } from '../view/sceneHarness';
 
-afterEach(() => { document.body.replaceChildren(); });
+afterEach(() => { vi.useRealTimers(); vi.restoreAllMocks(); document.body.replaceChildren(); });
 
 /** Real content: the garden (6 slots × 4 = 24 ★ max) and the real strings. */
 const content = loadContent();
@@ -109,5 +110,32 @@ describe('VERIFY-T2-SITE-103 (sheet half) the replace/remove sheet opens over an
     h.host.querySelector<HTMLElement>('.tpp-replaceRemove [data-action="remove"]')!.click();
     expect(h.context.store.getState().spaces.garden.placements['garden-small-1']).toBeUndefined();
     expect(h.context.store.getState().inventory.counts[small.id]).toBe(before + 1);
+  });
+});
+
+describe('VERIFY-WORK-038-3-04 the site pill gets the Stars burst by value (DEC-049 §4)', () => {
+  const small = () => content.charms.types.find(t => t.sizeClass === 'small')!.id;
+  const fill = (h: ReturnType<typeof hud>) => h.pill.querySelector<HTMLElement>('.tpp-stars-track i')!.style.width;
+  it('VERIFY-WORK-038-3-04: a first copy on the site: 4 large ★ into the pill, the fill stepping per arrival with the tick arpeggio; hidden Stars show nothing', async () => {
+    const h = hud();
+    h.context.store.dispatch({ type: 'debugUnlockSpace', siteId: 'garden' });
+    const play = vi.spyOn(h.context.audio!, 'play');
+    vi.useFakeTimers();
+    window.dispatchEvent(new CustomEvent('tpp:siteSlotAt', { detail: { slotId: 'garden-small-1', x: 700, y: 600 } }));
+    h.dispatch({ type: 'setDesignMode', on: true }, { type: 'debugGrantCopies', typeId: small(), count: 2 }, { type: 'placeCharm', slotId: 'garden-small-1', typeId: small() });
+    await Promise.resolve();
+    const burst = h.host.querySelector<HTMLElement>('.tpp-stars-burst')!;
+    expect(burst.dataset.kind).toBe('first');
+    expect(burst.querySelectorAll('.tpp-stars-large .tpp-glyph')).toHaveLength(4);
+    expect(burst.querySelectorAll('.tpp-stars-ring')).toHaveLength(1);
+    expect(fill(h)).toBe('0%');
+    vi.advanceTimersByTime(STARS.flightMs + 3 * STARS.staggerMs);
+    expect(fill(h)).toBe(`${(4 / 24) * 100}%`);
+    expect(play.mock.calls.filter(c => c[0] === 'tick').map(c => (c[1] as { semitones: number }).semitones)).toEqual([0, 4, 7, 12]);
+    vi.advanceTimersByTime(STARS.totalMs.first);
+    expect(h.host.querySelector('.tpp-stars-burst')).toBeNull();
+    h.dispatch({ type: 'debugSetStarsVisible', on: false }, { type: 'placeCharm', slotId: 'garden-small-2', typeId: small() });
+    await Promise.resolve();
+    expect(h.host.querySelector('.tpp-stars-burst')).toBeNull();
   });
 });
