@@ -81,7 +81,10 @@ function addOutfitTile(p: Parts, context: ViewContext, text: Text, celebration: 
   const tile = document.createElement('div');
   tile.className = 'tpp-reward-tile tpp-outfit-tile'; tile.dataset.outfitId = outfitId;
   p.grid.append(tile);
-  const card = createRewardCard(tile, { content: context.content, assets: outfitAssets(context.manifest), text }, outfitCardFace(context, text, outfitId),
+  const face = outfitCardFace(context, text, outfitId);
+  // The 126 px tile shows the art and the ribbon only (as the charm tiles show no name); the name is the tile's label.
+  tile.setAttribute('role', 'img'); tile.setAttribute('aria-label', face.name);
+  const card = createRewardCard(tile, { content: context.content, assets: outfitAssets(context.manifest), text }, face,
     { at: { x: OUTFIT_TILE_PX / 2, y: OUTFIT_TILE_PX / 2 }, px: OUTFIT_TILE_PX });
   card.flipIn(POPUP_FADE_MS);
   schedule(POPUP_FADE_MS, () => context.audio?.play('reveal', { volume: SFX_VOLUMES.reveal }));
