@@ -256,7 +256,7 @@ export function contentChecks(m: AssetManifest, contentDir: string, add: Add, kn
         }
     }
     for (const e of m.entries)
-        if (!e.retired && !referenced.has(e.id) && !ui[e.id.split('/')[1]] && !/^ui\/Btn_(Primary|Secondary|Tab)_/.test(e.id) && !['ui/game-portrait', 'ui/mystery-shape'].includes(e.id) && !['font', 'audio'].includes(e.type) && e.id !== 'world/dust-poof' && e.id !== 'player/avatar-sheet')
+        if (!e.retired && !referenced.has(e.id) && !ui[e.id.split('/')[1]] && !/^ui\/Btn_(Primary|Secondary|Tab)_/.test(e.id) && !['ui/game-portrait', 'ui/mystery-shape', 'ui/icon-closet'].includes(e.id) && !['font', 'audio'].includes(e.type) && e.id !== 'world/dust-poof' && e.id !== 'player/avatar-sheet')
             add('001', 'warning', '/entries/' + m.entries.indexOf(e), 'Asset unreferenced by available content/presentation table');
     if (!json.length)
         add('001', 'info', '', 'No content JSON yet; reference checks deferred to combined FX-CONTENT-MIN run');
