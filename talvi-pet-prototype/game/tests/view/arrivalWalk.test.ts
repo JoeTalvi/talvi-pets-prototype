@@ -198,3 +198,20 @@ for (const reduce of [false, true]) {
     } finally { vi.unstubAllGlobals(); vi.restoreAllMocks(); }
   });
 }
+
+it('VERIFY-WORK-038-3-07 post-run (review A3): on the integrated B16 garden path (~1700 ms) the mate kicks 4 step puffs (400/800/1200/1600) after the start poof', async () => {
+  const { ArrivalWalk } = await import('../../src/view/celebration/ArrivalWalk');
+  const { DustPoof } = await import('../../src/view/celebration/DustPoof');
+  const { ARRIVE } = await import('../../src/view/celebration/timings');
+  const context = contextFor(content, owing(content, 1, 100));
+  context.manifest = realManifest;
+  const panels = document.createElement('div'); panels.id = 'panels'; document.body.append(panels);
+  const scene = await bootScene(StreetScene, context);
+  const walk = new ArrivalWalk(scene, context, { siteId: 'garden', petId: 'owl-mate' }, null);
+  expect(Math.floor(walk.plan.doorMs / ARRIVE.stepDustMs)).toBe(4);
+  const poofs = () => scene.children.list.filter(c => c instanceof DustPoof).length;
+  const at: number[] = [];
+  for (let t = 10; t <= walk.plan.doorMs; t += 10) { const n = poofs(); walk.update(10); if (poofs() > n) at.push(t); }
+  expect(at).toEqual([400, 800, 1200, 1600]);
+  walk.cancel();
+});
