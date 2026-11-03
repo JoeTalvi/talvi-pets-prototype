@@ -1,9 +1,41 @@
 {
   "seed": 1234,
   "steps": [
-    {"action": {"type": "tick", "dtMs": 0, "move": {"x": 0, "y": 0}}},
-    {"action": {"type": "advanceDialogue"}, "repeat": "drain"},
-    {"action": {"type": "debugSetCurrent", "projectId": "pet-house", "cents": 290}},
-    {"set": {"path": "/avatar", "value": {"x": 960, "y": 900, "facing": "down", "immunityMs": 0, "facingCandidate": null}}}
+    {
+      "action": {
+        "type": "tick",
+        "dtMs": 0,
+        "move": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "action": {
+        "type": "advanceDialogue"
+      },
+      "repeat": "drain"
+    },
+    {
+      "action": {
+        "type": "debugSetCurrent",
+        "projectId": "pet-house",
+        "cents": 290
+      }
+    },
+    {
+      "set": {
+        "path": "/avatar",
+        "value": {
+          "x": 960,
+          "y": 900,
+          "facing": "down",
+          "immunityMs": 0,
+          "facingCandidate": null,
+          "outfitId": "default"
+        }
+      }
+    }
   ]
 }
