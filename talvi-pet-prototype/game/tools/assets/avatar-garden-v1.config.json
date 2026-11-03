@@ -1,0 +1,109 @@
+{
+  "version": 1,
+  "$comment": "WORK-037-1 / TASK-237 (DEC-047 full re-render, gate Q11/Q15; batch tier2-m5, ai-placeholder): outfit garden = garden-work set (mustard-ochre rolled-sleeve shirt under dusty slate-blue bib dungarees); built from the six chosen Asset-Bot nano-banana candidates (JFIF data under .png names) copied under phase-4-build/runs/RUN-005/evidence/WORK-037-1/candidates/garden/. Copied from avatar-sheet-v1.config.json (same frame, grid, key, headTolerancePx, standing 166 +/- 6, row order and cell counts); only $comment and poses[].source/sha256/scale/head.sourcePx differ. Head feature = pose top (hair top) to the first mustard-ochre shirt / slate-blue strap row (evidence/WORK-037-1/measurements.json); scale = 63.0 / head.sourcePx. Run: npx tsx tools/assets/use-poses.ts --config tools/assets/avatar-garden-v1.config.json --out <staging-dir>",
+  "frame": {
+    "w": 192,
+    "h": 256
+  },
+  "grid": {
+    "columns": 6,
+    "rows": 6
+  },
+  "key": {
+    "backgroundMin": 240,
+    "backgroundChroma": 18,
+    "dilation": 0,
+    "holeMinArea": 40
+  },
+  "headTolerancePx": 4,
+  "poses": [
+    {
+      "clip": "idle-down",
+      "row": 0,
+      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-005/evidence/WORK-037-1/candidates/garden/idle-down-1.png",
+      "sha256": "d8bd53d7accacd0c7dbcc8e9b3bc515768d29dca877b30dab91e275e70afe434",
+      "cells": 4,
+      "scale": 0.251,
+      "head": {
+        "sourcePx": 251,
+        "referencePx": 63.0
+      },
+      "standing": {
+        "referencePx": 166,
+        "tolerancePx": 6
+      }
+    },
+    {
+      "clip": "idle-up",
+      "row": 1,
+      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-005/evidence/WORK-037-1/candidates/garden/idle-up-2.png",
+      "sha256": "48702631c9aa9c866de1916890a94491f6d8d0c7ad961c8f0dab0d07ceac86bc",
+      "cells": 4,
+      "scale": 0.2739,
+      "head": {
+        "sourcePx": 230,
+        "referencePx": 63.0
+      }
+    },
+    {
+      "clip": "idle-side",
+      "row": 2,
+      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-005/evidence/WORK-037-1/candidates/garden/idle-side-1.png",
+      "sha256": "558e8e526f1af9c875dadf1a78c2bb708ef1a02082de8308fc9b3b989a309de8",
+      "cells": 4,
+      "scale": 0.25,
+      "head": {
+        "sourcePx": 252,
+        "referencePx": 63.0
+      },
+      "standing": {
+        "referencePx": 166,
+        "tolerancePx": 6
+      }
+    },
+    {
+      "clip": "walk-down",
+      "row": 3,
+      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-005/evidence/WORK-037-1/candidates/garden/walk-down-2.png",
+      "sha256": "f4b5d0165d99e962ab6214772bcf09f38fae160e6a3a9269f04fa3c3350c020d",
+      "cells": 6,
+      "scale": 0.36,
+      "head": {
+        "sourcePx": 175,
+        "referencePx": 63.0
+      },
+      "standing": {
+        "referencePx": 166,
+        "tolerancePx": 6
+      }
+    },
+    {
+      "clip": "walk-up",
+      "row": 4,
+      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-005/evidence/WORK-037-1/candidates/garden/walk-up-2.png",
+      "sha256": "e6d808b743646ecdac5da3c88185d358a5488f0c55df1e4f112ce8904d43ccac",
+      "cells": 6,
+      "scale": 0.36,
+      "head": {
+        "sourcePx": 175,
+        "referencePx": 63.0
+      }
+    },
+    {
+      "clip": "walk-side",
+      "row": 5,
+      "source": "/Users/joefrancia/Desktop/Talvi/Talvi-Concepts/talvi-pet-prototype/phase-4-build/runs/RUN-005/evidence/WORK-037-1/candidates/garden/walk-side-2.png",
+      "sha256": "7b4985a3bd469312b2eab54986ccc6693bf6dd9eeb2cfc36961db25413b10464",
+      "cells": 6,
+      "scale": 0.3642,
+      "head": {
+        "sourcePx": 173,
+        "referencePx": 63.0
+      },
+      "standing": {
+        "referencePx": 166,
+        "tolerancePx": 6
+      }
+    }
+  ]
+}
