@@ -17,6 +17,8 @@ import { depthAtBase } from '../depth';
 import { MISSING_TEXTURE } from './BootScene';
 import type { ScenePointer } from './InteriorScene';
 import { WorldScene } from './WorldScene';
+import { burstConfetti } from '../celebration/Confetti';
+import { CONFETTI_LIFETIME, GARDEN } from '../celebration/timings';
 
 export type { ScenePointer };
 
@@ -27,6 +29,25 @@ export const GROUND_DEPTH = -1;
 export const SITE_ART_DEPTH = GROUND_DEPTH + 0.5;
 /** DEC-049 §4 (WORK-038-3): window event `{ slotId, x, y }` (overlay px) fired on `charm.placed {siteId}`; `hudStreet` starts the site Stars burst there. */
 export const SITE_SLOT_AT = 'tpp:siteSlotAt';
+/** DEC-049 §7: mirrors `toast.SPACE_TOAST_SHOWN` (the view does not import ui panels). */
+const SPACE_TOAST_SHOWN = 'tpp:spaceToastShown';
+/** Spec §7 beat text (order fork (d)): the site pulse scale, 3 yoyo pulses, the confetti tints (green and gold). */
+export const BEACON = { scale: 1.06, pulses: 3, tints: [0x6f7f3f, 0xd9a441] } as const;
+/** Fork (b): sites whose garden toast showed while no street was active (view-local module memory: never replayed after a reload). */
+const unseenBeacons = new Set<SiteId>();
+/** The running StreetScene, if any; the toast's window event reaches it here (one listener for the page's lifetime). */
+let liveStreet: StreetScene | null = null;
+let beaconListener = false;
+function listenForBeacons(): void {
+  if (beaconListener || typeof window === 'undefined') return;
+  beaconListener = true;
+  window.addEventListener(SPACE_TOAST_SHOWN, e => {
+    const siteId = (e as CustomEvent<{ siteId: SiteId }>).detail.siteId;
+    const street = liveStreet;
+    if (street && !(street.game as { pendingDestroy?: boolean }).pendingDestroy && street.sys.isActive() && street.context.store.getState().scene.kind === 'street' && !street.transitioning) street.beacon(siteId);
+    else unseenBeacons.add(siteId);
+  });
+}
 type Rect = { x: number; y: number; w: number; h: number };
 
 /** Presentation §4.2 street column (plus `celebration.stepped`, when `displayedPhase` moves to `toPhase`). */
@@ -59,6 +80,8 @@ export class StreetScene extends WorldScene {
   /** The arrived site resident (the Owl's mate) and its bubble (DEC-044/045); absent before its arrival. */
   pet?: PetSprite;
   bubble?: Bubble;
+  /** DEC-049 §7: the garden beacon's "New" bubble, kept until the next `scene.changed` (this scene's shutdown). */
+  beaconBubble?: Bubble;
   private downs = new Map<number, PointerSample>();
   private joystickPointer: number | null = null;
   constructor() { super('Street'); }
@@ -76,6 +99,7 @@ export class StreetScene extends WorldScene {
     this.charms = new Map();
     this.pet = undefined;
     this.bubble = undefined;
+    this.beaconBubble = undefined;
   }
   /** WORK-038-1 Heart scene seam: the site charm sprite at a slot. */
   override charmAt(slotId: string): CharmSprite | undefined { return this.charms.get(slotId); }
@@ -87,6 +111,29 @@ export class StreetScene extends WorldScene {
     // Presentation §7.6: a reload with `arrival ≠ null` replays the arrival.
     if (state.arrival) this.startArrival(state.arrival);
     else if (state.siteArrival) this.startArrival(state.siteArrival);
+    liveStreet = this;
+    const release = () => { if (liveStreet === this) liveStreet = null; };
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, release); this.events.once(Phaser.Scenes.Events.DESTROY, release);
+    for (const siteId of [...unseenBeacons]) { unseenBeacons.delete(siteId); this.beacon(siteId); }
+  }
+  /**
+   * DEC-049 §7 world beacon (WORK-038-3): the site art (and any shown outline) pulses 1 → 1.06 `GARDEN.pulseMs` yoyo × 3,
+   * `GARDEN.confetti` 16 green and gold confetti burst over the site, and a "New" bubble stays until the next `scene.changed`.
+   */
+  beacon(siteId: SiteId): void {
+    const site = sitesOf(this.context.content).find(s => s.id === siteId);
+    const art = this.siteArt.get(siteId);
+    if (!site || !art) return;
+    const targets = [art, ...site.slots.map(slot => this.outlines.get(slot.id)).filter((o): o is SlotOutline => o !== undefined && o.visible)];
+    this.tweens.add({ targets, scale: BEACON.scale, duration: GARDEN.pulseMs / 2, yoyo: true, repeat: BEACON.pulses - 1, onComplete: () => { for (const t of targets) t.setScale(1); } });
+    const b = art.getBounds();
+    const confetti = burstConfetti(this, b, { count: GARDEN.confetti, tints: BEACON.tints });
+    this.time.delayedCall(CONFETTI_LIFETIME, () => confetti.destroy());
+    this.beaconBubble?.destroy();
+    const { bubbleMs, bubbleTextMs } = this.context.content.tuning;
+    this.beaconBubble = new Bubble(this, `beacon:${siteId}`, 1, textFrom(this.context.content.strings), { bubbleMs, bubbleTextMs }, () => {});
+    this.beaconBubble.follow({ x: b.centerX, y: b.top });
+    this.beaconBubble.show({ kind: 'text', class: 'chatter', text: this.context.content.strings['tpp.reward.new'] ?? 'New' });
   }
   private startArrival(arrival: Arrival | SiteArrival): void {
     if (this.arrival && !this.arrival.finished && this.arrival.arrival.petId === arrival.petId) return;
@@ -257,6 +304,7 @@ export class StreetScene extends WorldScene {
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.cancelArrival());
     for (const type of REFRESH_ON) this.on(type, () => this.refreshHouses());
     this.subscribeSite();
+    this.subscribeBeacon();
   }
   /** DEC-049 §4: tells the street HUD where a site slot is on screen (overlay = canvas px) so its Stars burst starts there. */
   private announceSlotAt(slotId: string): void {
@@ -264,6 +312,11 @@ export class StreetScene extends WorldScene {
     if (!slot) return;
     const cam = this.cameras.main;
     window.dispatchEvent(new CustomEvent(SITE_SLOT_AT, { detail: { slotId, x: slot.x - cam.scrollX, y: slot.y - 60 - cam.scrollY } }));
+  }
+  /** DEC-049 §7: the garden toast showed; the active street plays the beacon, otherwise the next Street create does (fork (b)). */
+  private subscribeBeacon(): void {
+    listenForBeacons();
+    this.on('state.reset', () => unseenBeacons.clear());
   }
   /** WORK-034-3: the site's art, outlines, charms, the mate's arrival walk and the mate (bubbles through the shared subscriptions). */
   private subscribeSite(): void {

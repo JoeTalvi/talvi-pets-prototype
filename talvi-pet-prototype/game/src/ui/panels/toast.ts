@@ -10,12 +10,16 @@ import { centreIn } from '@view/celebration/starsBurst';
 export const ROUNDUP_COINS = 'tpp:roundupCoins';
 /** Spec §1 beat text (order fork (d)): the coin glyph and size. */
 export const COIN = { glyph: '●', px: 30, spreadPx: 18 } as const;
+/** DEC-049 §7: window event `{ siteId }` fired as the garden toast shows; the street plays its beacon (or keeps it for its next create). */
+export const SPACE_TOAST_SHOWN = 'tpp:spaceToastShown';
+/** Spec §7 beat text (order fork (d)): the reward-card punch on the space toast. */
+export const SPACE_CARD_PUNCH = 1.06;
 
 export type Toast = Panel & { queued(): number };
 
 type Item = { kind: 'roundup'; merchantName: string; amountCents: number; changeCents: number; causeName: string }
   /** WORK-034-3: the `space` reward announcement (`space.unlocked`), one line through the same toast shell. */
-  | { kind: 'space' };
+  | { kind: 'space'; siteId: string };
 
 /** Q14(a) (play session 2026-10-26): a dialogue or popup holds at most the latest 2 round-ups; older held ones are dropped (the project bar already counts them). */
 export const IN_MS = 150;
@@ -63,9 +67,14 @@ export function createToast(root: HTMLElement, context: ViewContext): Toast {
     if (timer !== null || queue.length === 0 || blocked(store.getState())) return;
     const item = queue.shift()!;
     section.dataset.kind = item.kind;
+    section.classList.toggle('tpp-toast-card', item.kind === 'space');
     if (item.kind === 'space') {
       line.dataset.stringKey = 'tpp.toast.space'; line.textContent = text('tpp.toast.space');
       delta.hidden = true;
+      // DEC-049 §7: the toast takes the reward-card styling (gold border, garden glyph via CSS) with a punch and `reveal`.
+      animate(section, [{ transform: 'scale(1)' }, { transform: `scale(${SPACE_CARD_PUNCH})` }, { transform: 'scale(1)' }], IN_MS * 2);
+      context.audio?.play('reveal');
+      window.dispatchEvent(new CustomEvent(SPACE_TOAST_SHOWN, { detail: { siteId: item.siteId } }));
     } else {
       line.dataset.stringKey = 'tpp.toast.roundup';
       line.textContent = text('tpp.toast.roundup', { merchant: item.merchantName, amount: `$${(item.amountCents / 100).toFixed(2)}`,
@@ -90,7 +99,7 @@ export function createToast(root: HTMLElement, context: ViewContext): Toast {
       pump();
     }),
     // The Owl's want story is open when the garden unlocks: the announcement waits in the queue and shows after it (Q7(a)).
-    store.subscribe('space.unlocked', () => { queue.push({ kind: 'space' }); pump(); }),
+    store.subscribe('space.unlocked', event => { queue.push({ kind: 'space', siteId: event.siteId }); pump(); }),
     store.subscribe('dialogue.closed', () => pump()),
     store.subscribe('celebration.ended', () => pump()),
     store.subscribe('state.reset', () => { queue.length = 0; if (timer !== null) clearTimeout(timer); timer = null; stopCoins(); hide(); }),
