@@ -18,6 +18,8 @@ export class AvatarSprite extends Phaser.GameObjects.Sprite {
   private outfitId: string = DEFAULT_OUTFIT_ID;
   /** WORK-037-3 makeover (spec §10): while set, the sprite keeps showing this outfit until the swap frame. */
   private heldOutfitId: string | null = null;
+  /** WORK-037-3 makeover shiver: a view-only x offset over the sim position (sync re-applies it every frame). */
+  offsetX = 0;
 
   constructor(scene: Phaser.Scene, x: number, y: number, facing: Facing = 'down') {
     super(scene, x, y, BASE_AVATAR_SHEET, 0);
@@ -32,7 +34,7 @@ export class AvatarSprite extends Phaser.GameObjects.Sprite {
     this.last = { x: pose.x, y: pose.y };
     this.facing = pose.facing ?? this.facing;
     this.outfitId = pose.outfitId ?? this.outfitId;
-    this.setPosition(pose.x, pose.y).setDepth(depthAtBase(pose.y)).setFlipX(this.facing === 'left');
+    this.setPosition(pose.x + this.offsetX, pose.y).setDepth(depthAtBase(pose.y)).setFlipX(this.facing === 'left');
     // Gate Q11: the worn outfit's key, else the default's (lenient boot without that sheet); playing it swaps the texture.
     const key = outfitClipKey(this.scene.anims, this.shownOutfitId, `${moved ? 'walk' : 'idle'}-${avatarRow(this.facing)}`);
     // Lenient boots may lack the sheet's clips: keep frame 0 rather than play a missing key.
