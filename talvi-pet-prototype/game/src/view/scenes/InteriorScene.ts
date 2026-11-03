@@ -1,4 +1,3 @@
-import Phaser from 'phaser';
 import type { Room, Slot } from '@content/schema/room';
 import { placementAt } from '@sim/select';
 import { recordPointer, type PointerSample } from '@app/input/pointerRouting';

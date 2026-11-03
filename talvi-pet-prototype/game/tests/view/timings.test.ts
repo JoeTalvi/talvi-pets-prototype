@@ -3,8 +3,7 @@ import * as T from '../../src/view/celebration/timings';
 import tuning from '../../src/content/tuning.json';
 
 /** VERIFY-WORK-038-1-04: spec §C (DEC-049) pasted whole, Big and Bigger side by side; one assertion per §C row. */
-describe('VERIFY-WORK-038-1-04 spec §C in timings.ts', () => {
-  const rows: [string, unknown, unknown][] = [
+const rows: [string, unknown, unknown][] = [
     ['ROUNDUP.coins', [T.ROUNDUP.coinsUnder50, T.ROUNDUP.coins, T.ROUNDUP.coinsThresholdCents], [1, 2, 50]],
     ['ROUNDUP.flightMs', [T.ROUNDUP.flightMs, T.ROUNDUP_BIGGER.flightMs], [450, 450]],
     ['ROUNDUP.glowMs', [T.ROUNDUP.glowMs, T.ROUNDUP_BIGGER.glowMs], [300, 300]],
@@ -65,7 +64,9 @@ describe('VERIFY-WORK-038-1-04 spec §C in timings.ts', () => {
     ['OUTFIT.shiverMs / dustAt / swapAt', [T.OUTFIT, T.OUTFIT_BIGGER], [{ shiverMs: 300, dustAt: 300, swapAt: 470 }, { shiverMs: 300, dustAt: 300, swapAt: 470 }]],
     ['SFX semitone steps (tick arpeggio)', [[...T.TICK_STEPS], T.TICK_MIN_GAP_MS], [[0, 4, 7, 12], 45]],
     ['SFX volumes (new)', [T.SFX_VOLUMES, T.SFX_VOLUMES_BIGGER], [{ tick: 0.5, riser: 0.6, reveal: 0.7 }, { heartFanfare: 0.9, whoosh: 0.4 }]],
-  ];
+];
+
+describe('VERIFY-WORK-038-1-04 spec §C in timings.ts', () => {
   it.each(rows)('§C %s', (_name, actual, expected) => { expect(actual).toEqual(expected); });
 
   it('§C tuning.* rows stay in tuning.json (changed by WORK-038-3): revealSilhouetteHoldMs 1500 kept; revealCardStaggerMs still the pre-ladder value here', () => {

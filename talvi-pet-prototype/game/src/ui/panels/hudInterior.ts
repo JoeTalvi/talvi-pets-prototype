@@ -115,26 +115,50 @@ function renderHud(p: Parts, context: ViewContext, text: Text, state: GameState,
   p.hearts.textContent = text('tpp.hud.hearts', { hearts });
 }
 
+/**
+ * WORK-038-1 Hearts-counter seam (spec §5 Count): `heart.earned` holds n − 1 until `tpp:heartArrived` (then n, 1.5× pulse); the
+ * moment's end or cancel, `state.reset` or the fallback timer release a held count without the pulse so it can never stick.
+ * `subscribe()` must be the first `heart.earned` subscriber so the HUD's own render on that event already reads the held count.
+ */
+function holdHearts(context: ViewContext, hearts: HTMLElement, rerender: () => void) {
+  let held: HeldHeart | null = null;
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  const release = (arrived: boolean) => {
+    if (timer) { clearTimeout(timer); timer = null; }
+    if (!held) return;
+    held = null;
+    rerender();
+    if (arrived) pulse(hearts, HEART_ARRIVED_PULSE);
+  };
+  const onArrived = () => release(true), onMomentEnd = () => release(false);
+  let offs: (() => void)[] = [];
+  return {
+    held: () => held,
+    subscribe(): () => void {
+      window.addEventListener(HEART_ARRIVED, onArrived); window.addEventListener(HEART_MOMENT_END, onMomentEnd);
+      offs = [context.store.subscribe('heart.earned', event => {
+        held = { petId: event.petId, shown: event.hearts - 1 };
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(() => release(false), HEART_HOLD_FALLBACK_MS);
+      }), context.store.subscribe('state.reset', () => release(false))];
+      return () => { for (const off of offs.splice(0)) off(); };
+    },
+    unsubscribe() {
+      window.removeEventListener(HEART_ARRIVED, onArrived); window.removeEventListener(HEART_MOMENT_END, onMomentEnd);
+      for (const off of offs.splice(0)) off();
+      release(false);
+    },
+  };
+}
+
 /** Presentation §8.2 `hudInterior`: Decorate/Done (Q14(b)), the Stars bar (tween, delta, explanation), Hearts and the Q13(a) badge. */
 export function createHudInterior(root: HTMLElement, context: ViewContext): Panel {
   const { content, store, log } = context;
   const text = createText(content.strings);
   root.insertAdjacentHTML('beforeend', hudInterior({ text, assets: assetsFrom(context.manifest), idPrefix: 'hud' }));
   const p = partsOf(root.lastElementChild as HTMLElement, text);
-  let held: HeldHeart | null = null;
-  let holdTimer: ReturnType<typeof setTimeout> | null = null;
-  const render = (state: GameState) => renderHud(p, context, text, state, held);
-  // Spec §5 Count: `heart.earned` holds n − 1 until `tpp:heartArrived` (then n, 1.5× pulse); the moment's end, cancel or the
-  // fallback timer release a held count without the pulse so it can never stick.
-  const release = (arrived: boolean) => {
-    if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
-    if (!held) return;
-    held = null;
-    render(store.getState());
-    if (arrived) pulse(p.hearts, HEART_ARRIVED_PULSE);
-  };
-  const onArrived = () => release(true), onMomentEnd = () => release(false);
-  window.addEventListener(HEART_ARRIVED, onArrived); window.addEventListener(HEART_MOMENT_END, onMomentEnd);
+  const hold = holdHearts(context, p.hearts, () => render(store.getState()));
+  const render = (state: GameState) => renderHud(p, context, text, state, hold.held());
   let placedSlot: string | null = null;
   const onToggle = () => store.dispatch({ type: 'setDesignMode', on: store.getState().mode !== 'design' });
   // MEC-006 R6 / core §3: the record is `ui.starsExplained` (mec-006 spells it `ui.starsTapped`; core wins); R7: not while hidden.
@@ -146,12 +170,7 @@ export function createHudInterior(root: HTMLElement, context: ViewContext): Pane
   // Q13(a) tap-to-text; core §3 names no record for a badge tap, so none is written.
   const onBadge = () => showTooltip(p.section, 'attention', text('tpp.hud.attention'), { left: '600px', top: '110px' });
   p.toggle.addEventListener('click', onToggle); p.stars.addEventListener('click', onStars); p.badge.addEventListener('click', onBadge);
-  const offs = [store.subscribe('heart.earned', event => {
-    held = { petId: event.petId, shown: event.hearts - 1 };
-    if (holdTimer) clearTimeout(holdTimer);
-    holdTimer = setTimeout(() => release(false), HEART_HOLD_FALLBACK_MS);
-  }),
-    ...RENDER_ON.map(type => store.subscribe(type, (_event, after) => render(after))),
+  const offs = [hold.subscribe(), ...RENDER_ON.map(type => store.subscribe(type, (_event, after) => render(after))),
     store.subscribe('charm.placed', event => { placedSlot = event.slotId; queueMicrotask(() => { placedSlot = null; }); }),
     store.subscribe('stars.changed', (event, after) => {
       if (after.scene.kind !== 'interior' || event.roomId !== after.scene.roomId || !after.session.starsVisible || event.delta === 0) return;
@@ -161,8 +180,7 @@ export function createHudInterior(root: HTMLElement, context: ViewContext): Pane
     store.subscribe('stars.visibilityChanged', (_event, after) => { if (!after.session.starsVisible) clearStarsBursts(root); }),
     store.subscribe('state.reset', () => clearStarsBursts(root)),
     store.subscribe('scene.changed', () => clearStarsBursts(root)),
-    store.subscribe('state.reset', () => release(false)),
-    () => { window.removeEventListener(HEART_ARRIVED, onArrived); window.removeEventListener(HEART_MOMENT_END, onMomentEnd); release(false); }];
+    hold.unsubscribe];
   // Play-session Q17: the dialogue box shows later than its state change (the want story waits for the nap), so Done's
   // disabled state follows the box itself.
   const boxWatch = new MutationObserver(records => {

@@ -67,5 +67,7 @@
   "tpp.hud.progress": "{current} / {goal}",
   "tpp.popup.rewards": "Rewards",
   "tpp.reveal.phase": "Phase {phase}",
-  "tpp.toast.space": "A garden plot is open on the street"
+  "tpp.toast.space": "A garden plot is open on the street",
+  "tpp.reward.verb": "{pet} can now {verb}",
+  "tpp.reward.new": "New"
 }

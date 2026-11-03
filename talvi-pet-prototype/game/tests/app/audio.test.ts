@@ -50,6 +50,9 @@ describe('presentation §9 audio subscriber', () => {
     expect(calls.at(-1)).toEqual({ play: ['sfx/phase-pop', 0.7, 0] });
   });
 
+});
+
+describe('VERIFY-WORK-038-1-01 audio pitch and options', () => {
   it('VERIFY-WORK-038-1-01 the reaction pitch map: love +3, like 0, dislike -4 at 0.35, the others plain', () => {
     const { player, calls } = fakePlayer();
     const handlers: ((event: unknown) => void)[] = [];
@@ -79,6 +82,9 @@ describe('presentation §9 audio subscriber', () => {
     ]);
   });
 
+});
+
+describe('presentation §9 audio subscriber (cont.)', () => {
   it('presentation §9 audio routes audio.muteChanged and the saved session.muted to setMute', () => {
     const { content, state } = dogRoomDesign();
     const { player, calls } = fakePlayer();
