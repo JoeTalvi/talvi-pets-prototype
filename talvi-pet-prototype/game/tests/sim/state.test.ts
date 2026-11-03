@@ -9,7 +9,7 @@ it('CONTRACT-STATE v1.4 initial session, avatar, projects and inventory match th
   expect(state.session).toEqual({ seed: 1234, eventIntervalMs: 20000, feedPresentation: 'events',
     starsVisible: true, muted: false, testerLabel: '', orientationShown: false });
   expect(state.scene).toEqual({ kind: 'street' });
-  expect(state.avatar).toEqual({ ...content.street.playerSpawn, immunityMs: 0, facingCandidate: null });
+  expect(state.avatar).toEqual({ ...content.street.playerSpawn, immunityMs: 0, facingCandidate: null, outfitId: 'default' });
   expect(state.mode).toBe('play');
   expect(state.projects).toEqual({
     'starter-house': { currentCents: 1500, acknowledgedPhase: 5, complete: true, arrivalDone: true },

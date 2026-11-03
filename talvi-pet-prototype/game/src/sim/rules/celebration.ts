@@ -5,6 +5,7 @@ import type { GameState, ProjectId } from '../state';
 import { buildScript, enqueueScript } from './dialogue';
 import { grantItems } from './inventory';
 import { finishSiteArrival } from './sites';
+import { completionOutfitEvents } from './outfits';
 import {
   completeNowOffered, completeNowPriceCents, creditProject, owedPhases, phaseOf, projectOf,
 } from './projects';
@@ -85,7 +86,7 @@ function collect(content: Content, state: GameState): RuleResult {
     celebration: { ...celebration, step: 'reveal' } };
   const events: SimEvent[] = [...granted.events, { type: 'rewards.collected', projectId,
     phases: clueIndices(fromPhase, toPhase).map(index => index + 1), typeIds: [...celebration.unlockedTypeIds] }];
-  if (completes) events.push({ type: 'project.completed', projectId });
+  if (completes) events.push({ type: 'project.completed', projectId }, ...completionOutfitEvents(content, projectId)); // WORK-037-2
   events.push({ type: 'celebration.stepped', step: 'reveal' });
   return { state: next, events };
 }

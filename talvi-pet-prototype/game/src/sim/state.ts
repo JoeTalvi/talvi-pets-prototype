@@ -14,6 +14,7 @@ export type TagId = string;
 export type VerbId = string;
 export type DoorId = string;
 export type SiteId = string;
+export type OutfitId = string;  // WORK-037-2: outfits.json id; "default" = the base avatar sheet
 
 export type GameState = {
   schemaVersion: 2;                // v1.5: tier 1 saves (version 1) are discarded on load, no migration (DEC-043)
@@ -28,7 +29,8 @@ export type GameState = {
   };
   scene: { kind: 'street' } | { kind: 'interior'; roomId: RoomId };
   avatar: { x: number; y: number; facing: Facing; immunityMs: number;
-            facingCandidate: { facing: Facing; heldMs: number } | null }; // 60 ms facing debounce (mec-001 R2)
+            facingCandidate: { facing: Facing; heldMs: number } | null;   // 60 ms facing debounce (mec-001 R2)
+            outfitId: OutfitId };   // WORK-037-2 (MEC-001): the worn outfit; unlocked outfits are derived (unlockedOutfitIds)
   mode: 'play' | 'design';        // design in interiors, and on the street once a site is unlocked (MEC-001, WORK-034-2)
   dialogue: { current: DialogueScript | null; queue: DialogueScript[] }; // MEC-008; open ⇒ input frozen
   projects: Record<ProjectId, {
@@ -109,7 +111,7 @@ export function initialState(content: Content, seed: number): GameState {
       feedPresentation: 'events', starsVisible: true, muted: false,
       testerLabel: '', orientationShown: false },
     scene: { kind: 'street' },
-    avatar: { ...content.street.playerSpawn, immunityMs: 0, facingCandidate: null },
+    avatar: { ...content.street.playerSpawn, immunityMs: 0, facingCandidate: null, outfitId: 'default' },
     mode: 'play', dialogue: { current: null, queue: [] },
     projects: Object.fromEntries(content.projects.map(project => [project.id, {
       currentCents: project.completeAtStart ? project.goalCents : 0,

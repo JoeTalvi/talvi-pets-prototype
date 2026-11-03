@@ -45,7 +45,9 @@ export const GameStateSchema = z.object({
   }),
   scene: z.union([z.object({ kind: z.literal('street') }), z.object({ kind: z.literal('interior'), roomId: z.string() })]),
   avatar: z.object({ x: z.number(), y: z.number(), facing: FacingSchema, immunityMs: z.number(),
-    facingCandidate: z.object({ facing: FacingSchema, heldMs: z.number() }).nullable() }),
+    facingCandidate: z.object({ facing: FacingSchema, heldMs: z.number() }).nullable(),
+    // WORK-037-2 (Q16(a)): additive with a default, so a v2 save from before outfits loads wearing "default"
+    outfitId: z.string().default('default') }),
   mode: z.enum(['play', 'design']),
   dialogue: z.object({ current: DialogueScriptSchema.nullable(), queue: z.array(DialogueScriptSchema) }),
   projects: z.record(z.string(), z.object({
@@ -80,6 +82,8 @@ function unknownContentId(content: Content, state: GameState): boolean {
   if (state.celebration && (!state.projects[state.celebration.projectId] || state.celebration.unlockedTypeIds.some(id => !types.has(id)))) return true;
   if (state.arrival && (!state.projects[state.arrival.projectId] || !state.pets[state.arrival.petId])) return true;
   if (!sameKeys(state.spaces, sitesOf(content).map(site => site.id))) return true;
+  // WORK-037-2: an outfit id no longer in content discards (a known but locked id is tolerated; only debug makes one)
+  if (state.avatar.outfitId !== 'default' && !(content.outfits ?? []).some(outfit => outfit.id === state.avatar.outfitId)) return true;
   if (state.siteArrival && (!state.spaces[state.siteArrival.siteId] || !state.pets[state.siteArrival.petId])) return true;
   for (const site of sitesOf(content)) {
     const slots = new Set(site.slots.map(slot => slot.id));

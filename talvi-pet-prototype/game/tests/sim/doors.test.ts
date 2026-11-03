@@ -15,7 +15,7 @@ it('VERIFY-MEC-001-007 qualified: R3 rejects y94 overshoot; 16 ms reaches the do
   const crossing = reduce(content, state, tick(0, -1));
   expect(crossing.state.scene).toEqual({ kind: 'street' });
   expect(crossing.state.avatar).toEqual({ ...content.street.houses[0].door.spawn,
-    immunityMs: 500, facingCandidate: null });
+    immunityMs: 500, facingCandidate: null, outfitId: 'default' });
   expect(crossing.state.mode).toBe('play');
   expect(crossing.events).toEqual([{ type: 'scene.changed', from: state.scene,
     to: { kind: 'street' }, doorId: 'to-street' }]);
@@ -53,7 +53,7 @@ it('VERIFY-MEC-001-009 gate requires both completion and arrival; target spawn b
   expect(doorEnabled(content, state, door)).toBe(true);
   expect(result.state.scene).toEqual({ kind: 'interior', roomId: 'owl-room' });
   expect(result.state.avatar).toEqual({ ...content.rooms['owl-room'].doors[0].spawn,
-    immunityMs: 500, facingCandidate: null });
+    immunityMs: 500, facingCandidate: null, outfitId: 'default' });
   expect(result.events).toEqual([{ type: 'scene.changed', from: state.scene,
     to: result.state.scene, doorId: door.id }]);
 });

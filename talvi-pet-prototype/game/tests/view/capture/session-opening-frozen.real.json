@@ -21,7 +21,8 @@
       "y": 631,
       "facing": "down",
       "immunityMs": 500,
-      "facingCandidate": null
+      "facingCandidate": null,
+      "outfitId": "default"
     },
     "mode": "play",
     "dialogue": {
