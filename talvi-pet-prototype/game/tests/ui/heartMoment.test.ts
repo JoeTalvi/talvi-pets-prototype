@@ -49,7 +49,6 @@ describe('VERIFY-WORK-038-2-01 the §5 Big beat table (two and three cards)', ()
       const s = await rig({ patches: [...SHORT_HOLD, ...patches] }, d => {
         vi.spyOn(d.scene.tweens, 'pauseAll'); vi.spyOn(d.scene.cameras.main, 'shake');
       });
-      const plan = heartPlan(n, true);
       fulfil(s);
       expect(s.state().dialogue.current?.source).toBe('vignette');
       expect(s.scene.tweens.pauseAll).toHaveBeenCalledTimes(1);
@@ -70,8 +69,18 @@ describe('VERIFY-WORK-038-2-01 the §5 Big beat table (two and three cards)', ()
       expect(layer(s)!.querySelectorAll('.tpp-glyph-burst .tpp-glyph')).toHaveLength(HEART.glyphs);
       const pet = s.scene.heartPet!;
       expect([pet.anims.currentAnim?.key, pet.depth, pet.scrollFactorX, pet.scale]).toEqual(['pet-dog-react', HEART_PET_DEPTH, 0, HEART.petScale]);
-      const hop = s.scene.tweens.getTweensOf(pet).find(t => t.data.some(d => d.key === 'y'));
+      const hop = s.scene.tweens.getTweensOf(pet).find(t => t.data.some(d => (d as Phaser.Tweens.TweenData).key === 'y'));
       expect(hop?.data[0]).toEqual(expect.objectContaining({ duration: HEART.hopMs, yoyo: true, repeat: HEART.hops - 1 }));
+    });
+  }
+});
+
+describe('VERIFY-WORK-038-2-01 (cont.) the count, reveal, send and settle', () => {
+  for (const [n, patches] of [[2, []], [3, [THREE_CARDS]]] as const) {
+    it(`VERIFY-WORK-038-2-01: ${n} cards — the count at 1750 (tick +7), reveals, send ticks, settle; onEnd and the vignette at ${HEART.totalMs(n)}`, async () => {
+      const s = await rig({ patches: [...SHORT_HOLD, ...patches] });
+      const plan = heartPlan(n, true);
+      fulfil(s);
       s.step(plan.flyEnd - 1);
       expect(s.seen.filter(e => e[0] === HEART_ARRIVED)).toEqual([]);
       s.step(plan.flyEnd);
@@ -106,7 +115,7 @@ describe('VERIFY-WORK-038-2-01 the §5 Big beat table (two and three cards)', ()
   });
 });
 
-describe('VERIFY-WORK-038-2-02/-03 skip-to-result and the first Heart', () => {
+describe('VERIFY-WORK-038-2-02 skip-to-result', () => {
   it('VERIFY-WORK-038-2-02: second Heart — tap at 300 consumed; 700 jumps to the result (arrived, all cards face-up); 1000 consumed; hold end 1300 → half send + settle; onEnd at 1650', async () => {
     const s = await rig({ edit: st => { st.pets.dog.hearts = 1; } });
     const dispatch = vi.spyOn(s.context.store, 'dispatch');
@@ -149,6 +158,9 @@ describe('VERIFY-WORK-038-2-02/-03 skip-to-result and the first Heart', () => {
     expect(game).toEqual(['up', 'down']);
   });
 
+});
+
+describe('VERIFY-WORK-038-2-03 the first Heart', () => {
   it('VERIFY-WORK-038-2-03: first Heart (hearts 1) — taps at 700, 1500, 2000 ignored; 2100 (after the last flip ends at 2070) jumps to the result; no new state field', async () => {
     const s = await rig();
     const keys = Object.keys(s.state()).sort();
@@ -225,6 +237,9 @@ describe('VERIFY-WORK-038-2-05 vignette after; cancel on reset, close and scene 
     expect([game, box(s).hidden]).toEqual([['down'], true]);
   });
 
+});
+
+describe('VERIFY-WORK-038-2-05 (cont.)', () => {
   it('VERIFY-WORK-038-2-05: with Stars hidden the moment still plays and the Hearts pulse once (at the arrival)', async () => {
     const s = await rig();
     s.context.store.dispatch({ type: 'debugSetStarsVisible', on: false });
@@ -268,7 +283,7 @@ describe('VERIFY-WORK-038-2-06 reduced motion', () => {
     expect(s.scene.cameras.main.shake).not.toHaveBeenCalled();
     expect(flashes(s).filter(f => (f as Phaser.GameObjects.Rectangle).active)).toHaveLength(0);
     const pet = s.scene.heartPet!;
-    expect(s.scene.tweens.getTweensOf(pet).some(t => t.data.some(d => d.key === 'y'))).toBe(false);
+    expect(s.scene.tweens.getTweensOf(pet).some(t => t.data.some(d => (d as Phaser.Tweens.TweenData).key === 'y'))).toBe(false);
     expect(layer(s)!.querySelector<HTMLElement>('.tpp-heart-moment-dim')!.style.opacity).toBe('1');
     s.step(HEART.totalMs(2) - 1);
     expect(new Set(s.played.map(p => p[0]))).toEqual(new Set(['riser', 'heart', 'tick', 'reveal']));
