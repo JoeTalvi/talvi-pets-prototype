@@ -85,14 +85,16 @@ describe('VERIFY-WORK-038-2-01 (cont.) the count, reveal, send and settle', () =
       expect(s.seen.filter(e => e[0] === HEART_ARRIVED)).toEqual([]);
       s.step(plan.flyEnd);
       expect(s.seen.filter(e => e[0] === HEART_ARRIVED)).toEqual([[HEART_ARRIVED, 1750]]);
-      expect(s.played.filter(p => p[0] === 'tick')[0]).toEqual(['tick', 7, 1750]);
+      // Integration (WORK-038-2 x WORK-038-3): the placement's interior Stars burst ticks before the moment's count; only the moment's ticks count here.
+      const heartTicks = () => s.played.filter(p => p[0] === 'tick' && p[2] >= plan.flyEnd);
+      expect(heartTicks()[0]).toEqual(['tick', 7, 1750]);
       s.step(plan.endAt - 1);
       expect(s.played.filter(p => p[0] === 'reveal')).toEqual(Array.from({ length: n }, (_, i) => ['reveal', 2 * i, HEART.cardsAt + i * CARD.staggerMs]));
       expect(s.seen.find(e => e[0] === 'tpp:heartSettle')).toEqual(['tpp:heartSettle', plan.settleAt]);
       expect(plan.sendAt).toBe(n === 2 ? 2670 : 2920);
       // One rising send tick per card (the arpeggio after the count tick +7, reset for the Send).
-      expect(s.played.filter(p => p[0] === 'tick').slice(1).map(p => p[1])).toEqual([0, 4, 7].slice(0, n));
-      expect(s.played.filter(p => p[0] === 'tick').slice(1).every(p => p[2] > plan.sendAt! && p[2] <= plan.settleAt)).toBe(true);
+      expect(heartTicks().slice(1).map(p => p[1])).toEqual([0, 4, 7].slice(0, n));
+      expect(heartTicks().slice(1).every(p => p[2] > plan.sendAt! && p[2] <= plan.settleAt)).toBe(true);
       expect([box(s).hidden, layer(s) !== null]).toEqual([true, true]);
       s.step(plan.endAt);
       expect(plan.endAt).toBe(n === 2 ? 3370 : 3620);
