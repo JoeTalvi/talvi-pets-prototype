@@ -11,6 +11,7 @@ import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { GAME_DIR, base, evidenceRoot, sha, launch, boot, waitScene, lines, getState, waitLine, steer, shot, encode,
   startStreamRecording, domRead, errorsSummary, writeJson, setDebug, WORK, MILESTONE } from './lib/harness.mjs';
+import { greetingBeats, greetingLoops } from './lib/m5-greeting.mjs';
 
 const loopsDir = join(evidenceRoot, '..', 'loops'), stillsDir = join(evidenceRoot, '..', 'stills');
 export const SEED = join(evidenceRoot, 'm5-seed.real.json');
@@ -211,6 +212,7 @@ try {
   await window823();
   // --- WORK-037-3 / WORK-036-2 beats ---
   // Append beats here (or import from tests/e2e/lib/m5-outfits.mjs); `page`, `beat`, `still`, `mark`, `streetView`, `rowButton` are in scope.
+  await greetingBeats({ page, beat, still, mark, rowButton, drain }); // WORK-036-2 g1–g8
 } catch (error) {
   beat('trace aborted', false, 'no exception', String(error?.stack ?? error).slice(0, 800));
 }
@@ -220,6 +222,7 @@ report.loops = [];
 for (const [name, a, b, target, maxMs] of [
   ['street-pets-wander-1080', marks.wanderStart, marks.wanderEnd, 'three street pets wandering incl. a walk to street-meet (1920×1080)', 22000],
   ['pets-outside-override-1080', marks.toggleStart - 300, marks.toggleEnd + 300, 'row 23 All out → All in → Roll (1920×1080)', 12000],
+  ...greetingLoops(marks), // WORK-036-2
 ]) {
   if (!Number.isFinite(a) || !Number.isFinite(b) || b <= a) { report.loops.push({ name, gap: 'beat not reached (no marks)' }); continue; }
   const sc = encode(loopsDir, name, between(a, b), { target, viewport: { width: 1920, height: 1080 }, seededSave: 'm5-seed.real.json' }, { maxMs, crf: 26 });
