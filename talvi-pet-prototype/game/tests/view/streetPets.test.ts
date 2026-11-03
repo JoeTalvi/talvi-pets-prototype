@@ -2,10 +2,12 @@
 import './setup';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { loadContent } from '../../src/content/load';
+import type { SimEvent } from '../../src/sim/events';
 import type { GameState } from '../../src/sim/state';
 import { initialState } from '../../src/sim/state';
 import { streetPets } from '../../src/sim/select';
 import { StreetScene, type ScenePointer } from '../../src/view/scenes/StreetScene';
+import { StreetPetLayer } from '../../src/view/scenes/streetPets';
 import { directorClock, phaserClock } from '../../src/view/celebration/CelebrationDirector';
 import { addTexture, bootScene, contextFor, destroyScene, realManifest } from './sceneHarness';
 import { linesOf } from './designHarness';
@@ -25,10 +27,15 @@ async function street(state: GameState) {
   context.manifest = realManifest;
   const types: string[] = [], dispatch = context.store.dispatch.bind(context.store);
   context.store.dispatch = action => { types.push(action.type); return dispatch(action); };
+  // The scene's store subscriptions, so a test can publish an event the sim would not produce on demand (VERIFY-04).
+  const listeners: { type: string; fn: (event: SimEvent, after: GameState) => void }[] = [];
+  const subscribe = context.store.subscribe.bind(context.store);
+  context.store.subscribe = (type, fn) => { listeners.push({ type, fn: fn as never }); return subscribe(type, fn); };
+  const publish = (event: SimEvent) => listeners.filter(l => l.type === event.type).forEach(l => l.fn(event, context.store.getState()));
   const scene = await bootScene(StreetScene, context, {}, ART);
   for (const sheet of SHEETS) addTexture(scene, sheet.id, sheet.px!.w, sheet.px!.h, sheet.frame);
   scene.cameras.main.emit('camerafadeincomplete');
-  return { context, scene, types };
+  return { context, scene, types, publish };
 }
 let nextId = 1;
 function tapAt(scene: StreetScene, x: number, y: number): void {
@@ -79,6 +86,18 @@ describe('VERIFY-WORK-035-2-01 one sprite per street pet, kept equal to streetPe
     const behaviour = again.context.store.getState().pets.owl.behaviour;
     expect([owl.x, owl.y]).toEqual([behaviour.x, behaviour.y]);
     expect(['dog', 'owl', 'owl-mate'].map(id => sprites(again.scene, id))).toEqual([1, 1, 1]);
+  });
+
+  it('WORK-035-2 A3: the layer has no clear(); each scene start builds a fresh layer and Phaser\'s shutdown destroys the old sprites', async () => {
+    expect(Object.getOwnPropertyNames(StreetPetLayer.prototype)).not.toContain('clear');
+    const { context, scene } = await allOut();
+    const old = scene.streetPets, sprite = old.pets.get('dog')!.sprite;
+    const created = new Promise(resolve => scene.events.once('create', resolve));
+    scene.scene.restart();
+    await created;
+    expect(sprite.active).toBe(false);
+    expect(scene.streetPets).not.toBe(old);
+    expect(drawn(scene)).toEqual(streetPets(content, context.store.getState()).map(p => p.petId));
   });
 
   it('before the mate\'s arrival no mate sprite (mid-walk); state.reset rebuilds the set', async () => {
@@ -178,7 +197,7 @@ describe('VERIFY-WORK-035-2-03 tap priority: outlines and houses', () => {
 
 describe('VERIFY-WORK-035-2-04 bubbles routed per pet', () => {
   it('pet.tapped {dog} shows the Dog\'s bubble only; pet.reacted {owl-mate} the mate\'s only', async () => {
-    const { context, scene } = await allOut();
+    const { context, scene, publish } = await allOut();
     const bubbles = () => Object.fromEntries([...scene.streetPets.pets].map(([id, p]) => [id, p.bubble.current() !== null]));
     expect(bubbles()).toEqual({ dog: false, owl: false, 'owl-mate': false });
     const dog = scene.streetPets.pets.get('dog')!.sprite;
@@ -189,6 +208,10 @@ describe('VERIFY-WORK-035-2-04 bubbles routed per pet', () => {
     const mate = scene.streetPets.pets.get('owl-mate')!.sprite;
     tapAt(scene, mate.x, mate.y - 40);
     expect(linesOf(context, 'pet.tapped').at(-1)).toEqual(expect.objectContaining({ petId: 'owl-mate' }));
+    expect(bubbles()).toEqual({ dog: false, owl: false, 'owl-mate': true });
+    scene.streetPets.pets.get('owl-mate')!.bubble.clear();
+    expect(bubbles()).toEqual({ dog: false, owl: false, 'owl-mate': false });
+    publish({ type: 'pet.reacted', petId: 'owl-mate', reaction: 'love', slotId: null, typeId: null, line: null, walkOver: false });
     expect(bubbles()).toEqual({ dog: false, owl: false, 'owl-mate': true });
     // The shared subscriptions (pet.reacted / pet.wantBubble / pet.verbStarted) resolve their bubble through petBubble(petId).
     const seam = (scene as unknown as { petBubble(petId?: string): unknown });

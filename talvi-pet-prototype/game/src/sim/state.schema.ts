@@ -107,6 +107,20 @@ function knownPairKey(content: Content, key: string): boolean {
   return rest.length === 0 && b !== undefined && order.includes(a) && order.indexOf(a) < order.indexOf(b);
 }
 
+/** WORK-036-1 A3: a key naming two distinct known pets in reversed order is rewritten to content order (both spellings
+ * present: the longer cooldown is kept); any other key is left for `knownPairKey` to reject. */
+function normalisedGreetings(content: Content, greetings: GameState['greetings']): GameState['greetings'] {
+  const order = Object.keys(content.pets);
+  const out: GameState['greetings'] = {};
+  for (const [key, value] of Object.entries(greetings)) {
+    const [a, b, ...rest] = key.split('|');
+    const reversed = rest.length === 0 && b !== undefined && order.includes(b) && order.indexOf(b) < order.indexOf(a);
+    const canonical = reversed ? `${b}|${a}` : key;
+    out[canonical] = out[canonical] && out[canonical].cooldownMs > value.cooldownMs ? out[canonical] : value;
+  }
+  return out;
+}
+
 function unknownPetId(content: Content, petId: string, pet: GameState['pets'][string], verbs: Set<string>,
   types: Set<string>): boolean {
   const wants = new Set(content.pets[petId].wants.map(want => want.id));
@@ -123,7 +137,8 @@ export function parseSaveValue(content: Content, value: unknown): { state: GameS
   if ((value as { schemaVersion?: unknown }).schemaVersion !== SAVE_SCHEMA_VERSION) return { discarded: 'schemaVersion' };
   const parsed = SaveSchema.safeParse(value);
   if (!parsed.success) return { discarded: 'parse' };
-  const state = parsed.data.state as GameState;
+  const raw = parsed.data.state as GameState;
+  const state: GameState = { ...raw, greetings: normalisedGreetings(content, raw.greetings) };
   if (unknownContentId(content, state)) return { discarded: 'unknownContentId' };
   if (checkInvariants(content, state).length > 0) return { discarded: 'invariantViolation' };
   return { state };

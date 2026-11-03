@@ -35,6 +35,12 @@ describe('outfit CHK rules (WORK-037-2)', () => {
     expect(found.map(f => [f.level, f.path])).toEqual([['error', '/outfits/2/sheet']]);
   });
 
+  it('WORK-037-2 A2: a mistyped outfit sheet id is a CHK-010-03 error', () => {
+    const c = broken(c => { c.outfits[1].sheet = 'player/avatar-cosy-shet'; });
+    const found = runContentChecks(c, withOutfitRows()).filter(f => f.ids.some(id => id.startsWith('CHK-010')));
+    expect(found.map(f => [f.ids, f.level, f.path])).toEqual([[['CHK-010-03'], 'error', '/outfits/1/sheet']]);
+  });
+
   it('CHK-010-01: a duplicate outfit id', () => {
     expect(levels(broken(c => { c.outfits[2].id = 'cosy'; }), 'CHK-010-01')).toEqual(['error']);
   });

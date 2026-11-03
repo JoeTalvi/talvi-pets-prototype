@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { loadContent } from '../../src/content/load';
 import type { Content } from '../../src/content/types';
 import { registeredIds, runContentChecks } from '../../src/sim/checks';
-import { GREETING_RADIUS_RU, segmentCrossesRect } from '../../src/sim/checks/chk-007-street';
+import { segmentCrossesRect } from '../../src/sim/checks/chk-007-street';
 
 /** WORK-035-1 VERIFY-WORK-035-1-08 / -10: CHK-007-09..13 street presence geometry on the shipped street, and B16. */
 const IDS = ['CHK-007-09', 'CHK-007-10', 'CHK-007-11', 'CHK-007-12', 'CHK-007-13'];
@@ -10,9 +10,15 @@ const shipped = () => structuredClone(loadContent());
 const fired = (c: Content) => [...new Set(runContentChecks(c).flatMap(f => f.ids).filter(id => IDS.includes(id)))].sort();
 
 describe('VERIFY-WORK-035-1-08 CHK-007-09..13', () => {
-  it('registeredIds lists CHK-007-09..13; GREETING_RADIUS_RU 1.5 (360 px at 240)', () => {
+  it('registeredIds lists CHK-007-09..13; tuning.greetRadiusRu 1.5 (360 px at 240)', () => {
     for (const id of IDS) expect(registeredIds).toContain(id);
-    expect(GREETING_RADIUS_RU * loadContent().tuning.roomUnitPx).toBe(360);
+    expect(loadContent().tuning.greetRadiusRu * loadContent().tuning.roomUnitPx).toBe(360);
+  });
+  it('CHK-007-12 reads its radius from tuning.greetRadiusRu (WORK-036-1 A4)', () => {
+    const c = shipped(); delete c.street.meetingPoint; c.tuning.greetRadiusRu = 2;
+    const messages = runContentChecks(c).filter(f => f.ids.includes('CHK-007-12')).map(f => f.message);
+    expect(messages.length).toBeGreaterThan(0);
+    expect(messages.every(m => m.includes('within 480 px'))).toBe(true);
   });
   it('the shipped street passes every rule (no warning either)', () => {
     expect(fired(shipped())).toEqual([]);

@@ -43,7 +43,8 @@ function faceToward(self: PetBehaviour, other: PetBehaviour): PetBehaviour['faci
 function meet(content: Content, state: GameState, petId: PetId, otherId: PetId): RuleResult {
   const behaviour = state.pets[petId].behaviour;
   const next: PetBehaviour = { ...behaviour, phase: 'meeting', facing: faceToward(behaviour, state.pets[otherId].behaviour),
-    timerMs: content.tuning.greetMeetingMs, target: null, verb: null, reaction: null };
+    // WORK-036-1 A2: the interrupted walk's target is kept so the next wander pick treats it as the previous one.
+    timerMs: content.tuning.greetMeetingMs, verb: null, reaction: null };
   return { state: withBehaviour(state, petId, next), events: [phaseChanged(petId, behaviour.phase, next)] };
 }
 
