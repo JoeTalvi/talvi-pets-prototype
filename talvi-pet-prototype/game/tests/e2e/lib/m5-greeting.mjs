@@ -109,7 +109,8 @@ export async function greetingBeats({ page, beat, still, mark, rowButton, drain 
   copyFileSync(await still(capturesDir, 'greeting-both-1080', 'g3/g4: ≈ +200 ms, both bubbles and the ♥ burst rising'), join(capturesDir, 'greeting-both-1080.png'));
   beat('g2 greeting: after a pet heads for street-meet with the pair > 1.5 ru apart, greeting.played names owl-mate (petA) and owl; both in meeting; the left pet faces right, the right pet left (state and flipX)',
     heading && event.petA === 'owl-mate' && event.petB === 'owl' && p2.owl.phase === 'meeting' && p2['owl-mate'].phase === 'meeting'
-    && p2[left].facing === 'right' && p2[right].facing === 'left' && p2[left].flipX === false && p2[right].flipX === true,
+    // Both pets at the same x (both on street-meet): faceToward keeps each facing (WORK-036-1 sim), so no left/right to check.
+    && (p2.owl.x === p2['owl-mate'].x || (p2[left].facing === 'right' && p2[right].facing === 'left' && p2[left].flipX === false && p2[right].flipX === true)),
     'heading first; petA owl-mate; meeting; facing each other', { method, heading, closest, event, pose: p2, lagMs: Math.round(lag) });
 
   await page.waitForTimeout(1200);

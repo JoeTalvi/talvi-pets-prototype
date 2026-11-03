@@ -9,7 +9,7 @@
 import { existsSync, readFileSync, writeFileSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { GAME_DIR, base, evidenceRoot, sha, launch, boot, waitScene, lines, getState, waitLine, steer, shot, encode,
+import { GAME_DIR, base, evidenceRoot, sha, launch, boot, waitScene, lines, getState, steer, shot, encode,
   startStreamRecording, domRead, errorsSummary, writeJson, setDebug, WORK, MILESTONE } from './lib/harness.mjs';
 import { greetingBeats, greetingLoops } from './lib/m5-greeting.mjs';
 
@@ -98,15 +98,34 @@ async function beatRoll() {
     v.streetVisits === before.streetVisits + 1 && v.outside.dog === false && v.outside.owl === v.rolls.owl && eqSet(v.drawn, v.selected) && v.drawn.includes('owl-mate'),
     'visits +1; dog false; owl = roll; drawn = selected', { before: { streetVisits: before.streetVisits, scene: before.scene }, view: v });
 }
-async function tapPetBeat(petId) {
-  const s = (await streetView()).sprites[petId];
-  const at = await pointOf(s.x, s.y - 40);
+/** WORK-036-2 attempt 2 (FORK, re-pinned to the as-built sim + view): with seed 1234 the Dog and the mate meet (WORK-036-1
+ * 'meeting') the instant All out applies, and the mate's meeting spot sits under the joystick's capture square, which claims
+ * any pointer on it (StreetScene.pointerDown). Before a tap, wait (bounded) until the pet is out of 'meeting' and pick a point
+ * inside its hit box (PetSprite.hitContains) outside that square; the assertion (a fresh pet.tapped and a bubble above) is kept. */
+const tapPoint = (petId, p = page) => p.evaluate(id => {
+  const { game, store } = window.__tpp, street = game.scene.getScene('Street'), cam = street.cameras.main;
+  const sprite = street.streetPets.pets.get(id)?.sprite;
+  if (!sprite) return { phase: null, at: null };
+  const phase = store.getState().pets[id].behaviour.phase;
+  const tuning = window.__tpp.content.tuning.joystick, half = tuning.baseDiameter / 2 + 12, centre = street.joystick.centre();
+  const under = (x, y) => street.joystick.base?.visible !== false && Math.abs(x - cam.scrollX - centre.x) <= half && Math.abs(y - cam.scrollY - centre.y) <= half;
+  const size = sprite.bubbleOffset - 8, { x, y } = sprite;
+  const candidates = [[x, y - 40], [x + size * 0.4, y - 40], [x - size * 0.4, y - 40], [x, y - size * 0.8], [x + size * 0.4, y - size * 0.8]];
+  const at = candidates.find(([cx, cy]) => sprite.hitContains(cx, cy) && !under(cx, cy)) ?? null;
+  return { phase, at, xy: [x, y] };
+}, petId);
+async function tapPetBeat(petId, ms = 20000) {
+  const t0 = Date.now(); let pick = await tapPoint(petId);
+  while (Date.now() - t0 < ms && (pick.phase === 'meeting' || !pick.at)) { await page.waitForTimeout(150); pick = await tapPoint(petId); }
+  const waitedMs = Date.now() - t0;
+  const at = await pointOf(...(pick.at ?? [pick.xy?.[0] ?? 0, (pick.xy?.[1] ?? 40) - 40]));
   const from = await nowT();
   await page.mouse.click(at.x, at.y, { delay: 30 });
-  const tapped = await waitLine(page, 'pet.tapped', { petId }, 2500).then(() => true, () => false);
+  const tapped = await page.waitForFunction(([id, t]) => window.__tpp.log.lines().some(l => l.type === 'pet.tapped' && l.petId === id && l.t >= t),
+    [petId, from], { timeout: 2500 }).then(() => true, () => false);
   await page.waitForTimeout(250);
   const after = (await streetView()).sprites[petId];
-  return { petId, tapped, from, bubble: after?.bubble ?? null, above: !!after?.bubble && after.bubble.y < after.y };
+  return { petId, tapped, from, waitedMs, phase: pick.phase, at: pick.at, bubble: after?.bubble ?? null, above: !!after?.bubble && after.bubble.y < after.y };
 }
 async function beatAllOut() {
   mark('overrideStart');
