@@ -27,7 +27,7 @@ function unionNames(path: string, alias: string): string[] {
   });
 }
 
-it('VERIFY-CORE-001: three set equalities at v1.5 — Action union = 30 actions, SimEvent union = 46 events, select exports = 33 selectors (WORK-037-2: +2 / +2 / +1); CONTRACT_VERSION 1.5', () => {
+it('VERIFY-CORE-001: three set equalities at v1.5 — Action union = 32 actions, SimEvent union = 48 events, select exports = 34 selectors (WORK-037-2 +2/+2/+1, WORK-035-1 +1/+1/+1, WORK-036-1 +1/+1/0; measured at the int-MILESTONE-011 union); CONTRACT_VERSION 1.5', () => {
   expectTypeOf<Action['type']>().toEqualTypeOf<typeof names.actionNames[number]>();
   expectTypeOf<SimEvent['type']>().toEqualTypeOf<typeof names.eventNames[number]>();
   const actions = new Set(unionNames('src/sim/actions.ts', 'Action'));
@@ -36,7 +36,7 @@ it('VERIFY-CORE-001: three set equalities at v1.5 — Action union = 30 actions,
   expect(actions).toEqual(new Set(names.actionNames));
   expect(events).toEqual(new Set(names.eventNames));
   expect(selectors).toEqual(new Set(names.selectorNames));
-  expect([actions.size, events.size, selectors.size]).toEqual([30, 46, 33]);
+  expect([actions.size, events.size, selectors.size]).toEqual([32, 48, 34]);
   expect(CONTRACT_VERSION).toBe('1.5');
   expect(names.CONTRACT_VERSION).toBe('1.5');
 });

@@ -51,7 +51,7 @@ describe('CONTRACT-ACTIONS v1.4 reduce', () => {
   });
 });
 
-it('CONTRACT-ACTIONS v1.5 reduce handles all 30 actions: a minimal dispatch of each returns a RuleResult, none throws', () => {
+it('CONTRACT-ACTIONS v1.5 reduce handles all 32 actions: a minimal dispatch of each returns a RuleResult, none throws', () => {
   const { content, state } = dogRoomDesign();
   const minimal: Record<Action['type'], Action> = {
     tick: tick(), setDesignMode: { type: 'setDesignMode', on: false },

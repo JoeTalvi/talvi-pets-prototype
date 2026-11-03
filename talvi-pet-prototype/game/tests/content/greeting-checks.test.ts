@@ -37,9 +37,9 @@ describe('VERIFY-WORK-036-1-01 compatibility and tuning load (gate Q10(a))', () 
 });
 
 describe('VERIFY-WORK-036-1-02 CHK-007-14..17 and lines.stripped', () => {
-  it('registeredIds lists CHK-007-14..17 (98 ids)', () => {
+  it('registeredIds lists CHK-007-14..17 (104 ids at the int-MILESTONE-011 union)', () => {
     for (const id of IDS) expect(registeredIds).toContain(id);
-    expect(new Set(registeredIds).size).toBe(98);
+    expect(new Set(registeredIds).size).toBe(104);
   });
   it('a missing pair reports CHK-007-15', () => {
     const c = shipped();

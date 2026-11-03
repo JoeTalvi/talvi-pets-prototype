@@ -30,7 +30,7 @@ describe('check-content continues past unresolved assets (F-04)', () => {
         expect(status).toBe(1);
         const messages: string[] = report.zodIssues.map((i: { message: string }) => i.message);
         expect([...new Set(messages)].sort()).toEqual(['Asset "charms/ball" must resolve as image', 'Asset "charms/fern" must resolve as image']);
-        expect(report.counts).toMatchObject({ errors: messages.length, checks: 95 });
+        expect(report.counts).toMatchObject({ errors: messages.length, checks: 104 }); // int-MILESTONE-011 union: 89 + 5 (WORK-035-1) + 4 (WORK-036-1) + 6 (WORK-037-2)
         expect(report.findings.some((f: Finding) => f.ids[0] === 'CHK-CORE-03' && f.level === 'error')).toBe(false);
     });
     it('downgrades only listed IDs; an unlisted missing ID still fails', () => {
