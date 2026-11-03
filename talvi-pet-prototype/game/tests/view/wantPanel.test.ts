@@ -5,6 +5,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { destroyScene } from './sceneHarness';
 import { click, designSetup, linesOf } from './designHarness';
 import type { GameState } from '../../src/sim/state';
+import { HEART_ARRIVED } from '../../src/view/celebration/heartMoment';
 
 afterEach(() => { destroyScene(); document.body.replaceChildren(); vi.restoreAllMocks(); });
 
@@ -29,6 +30,9 @@ describe('MEC-009 panel states (VERIFY-MEC-009-021)', () => {
     expect(pills(s)).toEqual([['✓ Soft', 'done'], ['✓ Seat', 'done']]);
     expect(textOf(s, '.tpp-want-note')).toEqual(['Want fulfilled!']);
     expect(textOf(s, '.tpp-want-reward')).toEqual(['Reward: Rug and Cushion']);
+    // WORK-038-1 Hearts-counter seam: the count holds n − 1 until the moment's heart arrives (tpp:heartArrived).
+    expect(s.root.querySelector('.tpp-hearts')!.textContent).toBe('♥ 0');
+    window.dispatchEvent(new Event(HEART_ARRIVED));
     expect(s.root.querySelector('.tpp-hearts')!.textContent).toBe('♥ 1');
     s.context.store.dispatch({ type: 'advanceDialogue' });
     if (s.state().dialogue.current !== null) expect(textOf(s, '.tpp-want-note')).toEqual(['Want fulfilled!']);
