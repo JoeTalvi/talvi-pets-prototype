@@ -70,6 +70,8 @@
   "tpp.toast.space": "A garden plot is open on the street",
   "tpp.reward.verb": "{pet} can now {verb}",
   "tpp.reward.new": "New",
+  "tpp.reward.outfit": "New outfit: {outfit}",
+  "tpp.hud.closet": "Closet",
   "tpp.outfit.default": "Everyday",
   "tpp.outfit.cosy": "Cosy set",
   "tpp.outfit.garden": "Garden set"

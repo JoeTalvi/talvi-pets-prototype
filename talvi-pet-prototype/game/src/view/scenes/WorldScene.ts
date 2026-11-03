@@ -14,6 +14,7 @@ import { previewLayers, type Preview } from '../preview';
 import { DesignTint } from '../objects/DesignTint';
 import { startHeartScene, type HeartScene } from '../celebration/heartScene';
 import { HEART_MOMENT_END } from '../celebration/heartMoment';
+import { playMakeover, type Makeover } from '../celebration/makeover';
 import { Bubble, chatterBubble, reactionBubble, textFrom, verbBubble, wantBubble } from '../objects/Bubble';
 import type { PetSprite } from '../objects/PetSprite';
 import { REACT } from '../celebration/timings';
@@ -59,6 +60,7 @@ export abstract class WorldScene extends Phaser.Scene {
     this.designTint = new DesignTint(this);
     this.syncDesignTint(this.context.store.getState());
     this.avatar = new AvatarSprite(this, this.context.store.getState().avatar.x, this.context.store.getState().avatar.y);
+    this.avatar.sync(this.context.store.getState().avatar); // WORK-037-3: the worn outfit from the first frame (fade-in skips update's sync)
     this.joystick = new Joystick(this, this.context);
     this.subscribeCommon();
     this.subscribeScene();
@@ -176,6 +178,7 @@ export abstract class WorldScene extends Phaser.Scene {
     });
     this.on('state.reset', () => { this.transitioning = true; this.scene.start('Street', {}); });
     this.subscribeHeartScene();
+    this.subscribeMakeover();
   }
 
   /** WORK-038-1 fork (a): `heart.earned` starts the Heart moment's scene half in the Interior and the Street; the overlay's end removes it. */
@@ -192,6 +195,16 @@ export abstract class WorldScene extends Phaser.Scene {
     const onMomentEnd = () => this.hearts.at(-1)?.end();
     window.addEventListener(HEART_MOMENT_END, onMomentEnd);
     this.unsubscribes.push(() => { window.removeEventListener(HEART_MOMENT_END, onMomentEnd); for (const h of this.hearts.splice(0)) h.destroy(); });
+  }
+
+  /** WORK-037-3 (gate Q12; spec §10): `outfit.changed` (the Closet or debug row 25) plays the makeover on the avatar. */
+  private subscribeMakeover(): void {
+    let makeover: Makeover | null = null;
+    this.on('outfit.changed', event => {
+      makeover?.cancel();
+      makeover = playMakeover(this, this.avatar, event.from, () => this.context.audio);
+    });
+    this.unsubscribes.push(() => { makeover?.cancel(); makeover = null; });
   }
 
   private teardown(): void {

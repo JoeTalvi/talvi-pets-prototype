@@ -110,7 +110,7 @@ async function touchJoystick(browser) {
     expectedKnobOffset: held && { x: Math.round(held.vector.x * 80), y: Math.round(held.vector.y * 80) }, joystickRecords: fresh, loop: loop.outputs ?? loop.gap,
     checks: {
       start: fresh[0]?.phase === 'start', end: fresh.at(-1)?.phase === 'end' && fresh.at(-1).ms >= 900, avatarMovedRight: held && held.x > before.x,
-      walkSideDuringHold: held?.anim === 'avatar-walk-side' && held.flipX === false, idleSideAfter: after.anim === 'avatar-idle-side',
+      walkSideDuringHold: held?.anim === 'avatar-default-walk-side' && held.flipX === false, idleSideAfter: after.anim === 'avatar-default-idle-side',
       knobMatchesVector: held && Math.abs(knobOffset.x - held.vector.x * 80) <= 2 && Math.abs(knobOffset.y - held.vector.y * 80) <= 2,
       hiddenEntryOpens: panelLines.some(l => l.open === true), joystickHiddenWhileOpen: joystickHidden },
     hiddenEntry: { entryRect: entry, records: panelLines, joystickHidden, still: debugPng }, lastJoystickLines: joy };

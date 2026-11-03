@@ -31,17 +31,17 @@ describe('presentation §6.2 avatar clips (ASSET-016; DEC-012 left = side flippe
   it('idles when the position is unchanged, walks while it moved, flips only for left, and returns to the matching idle', async () => {
     const scene = await createGame(); withAvatarClips(scene);
     const avatar = new AvatarSprite(scene, 700, 910);
-    expect(playing(avatar)).toEqual(['avatar-idle-down', false]);
+    expect(playing(avatar)).toEqual(['avatar-default-idle-down', false]);
     avatar.sync({ x: 700, y: 905, facing: 'up' });
-    expect(playing(avatar)).toEqual(['avatar-walk-up', false]);
+    expect(playing(avatar)).toEqual(['avatar-default-walk-up', false]);
     avatar.sync({ x: 695, y: 905, facing: 'left' });
-    expect(playing(avatar)).toEqual(['avatar-walk-side', true]);
+    expect(playing(avatar)).toEqual(['avatar-default-walk-side', true]);
     avatar.sync({ x: 700, y: 905, facing: 'right' });
-    expect(playing(avatar)).toEqual(['avatar-walk-side', false]);
+    expect(playing(avatar)).toEqual(['avatar-default-walk-side', false]);
     avatar.sync({ x: 700, y: 905, facing: 'right' });
-    expect(playing(avatar)).toEqual(['avatar-idle-side', false]);
+    expect(playing(avatar)).toEqual(['avatar-default-idle-side', false]);
     avatar.sync({ x: 700, y: 910, facing: 'down' });
-    expect(playing(avatar)).toEqual(['avatar-walk-down', false]);
+    expect(playing(avatar)).toEqual(['avatar-default-walk-down', false]);
     expect([avatar.x, avatar.y, avatar.depth]).toEqual([700, 910, 910]);
   });
 
@@ -51,7 +51,7 @@ describe('presentation §6.2 avatar clips (ASSET-016; DEC-012 left = side flippe
     avatar.sync({ x: 110, y: 900, facing: 'left' });
     const progress = (avatar.anims.nextTick = 12345);
     avatar.sync({ x: 120, y: 900 });
-    expect(playing(avatar)).toEqual(['avatar-walk-side', true]);
+    expect(playing(avatar)).toEqual(['avatar-default-walk-side', true]);
     expect(avatar.anims.nextTick).toBe(progress);
   });
 
@@ -62,6 +62,52 @@ describe('presentation §6.2 avatar clips (ASSET-016; DEC-012 left = side flippe
     avatar.sync({ x: 130, y: 900, facing: 'right' });
     expect(avatar.anims.currentAnim).toBeNull();
     expect(avatar.frame.name).toBe(0);
+  });
+});
+
+const outfitSheets = { 'player/avatar-sheet': 'default', 'player/avatar-cosy-sheet': 'cosy', 'player/avatar-garden-sheet': 'garden' };
+/** All three ASSET-016-shaped sheets (WORK-037-1 rows), registered as BootScene.create does with content.outfits. */
+function withOutfitClips(scene: Phaser.Scene, ids = Object.keys(outfitSheets)): void {
+  for (const id of ids) {
+    const entry = realManifest.entries.find(e => e.id === id)!;
+    addTexture(scene, entry.id, entry.px!.w, entry.px!.h, entry.frame);
+    registerClips(scene, entry as SheetEntry, outfitSheets);
+  }
+}
+
+describe('WORK-037-3 per-outfit avatar sheets (gate Q11)', () => {
+  it('swaps to the worn outfit\'s keys and texture on an outfitId change without changing facing', async () => {
+    const scene = await createGame(); withOutfitClips(scene);
+    const avatar = new AvatarSprite(scene, 100, 900);
+    avatar.sync({ x: 100, y: 900, facing: 'left' });
+    expect(playing(avatar)).toEqual(['avatar-default-idle-side', true]);
+    avatar.sync({ x: 100, y: 900, outfitId: 'cosy' });
+    expect(playing(avatar)).toEqual(['avatar-cosy-idle-side', true]);
+    expect(avatar.texture.key).toBe('player/avatar-cosy-sheet');
+    avatar.sync({ x: 110, y: 900 });
+    expect(playing(avatar)).toEqual(['avatar-cosy-walk-side', true]);
+    avatar.sync({ x: 110, y: 900, facing: 'down', outfitId: 'garden' });
+    expect([avatar.anims.currentAnim?.key, avatar.texture.key]).toEqual(['avatar-garden-idle-down', 'player/avatar-garden-sheet']);
+  });
+
+  it('lenient boot: an outfit whose sheet failed to load renders the default keys', async () => {
+    const scene = await createGame(); withOutfitClips(scene, ['player/avatar-sheet', 'player/avatar-garden-sheet']);
+    const avatar = new AvatarSprite(scene, 100, 900);
+    avatar.sync({ x: 100, y: 900, outfitId: 'cosy' });
+    expect([avatar.anims.currentAnim?.key, avatar.texture.key]).toEqual(['avatar-default-idle-down', 'player/avatar-sheet']);
+    avatar.sync({ x: 100, y: 900, outfitId: 'garden' });
+    expect(avatar.texture.key).toBe('player/avatar-garden-sheet');
+  });
+
+  it('hold() keeps the previous outfit on screen until released (makeover swap frame)', async () => {
+    const scene = await createGame(); withOutfitClips(scene);
+    const avatar = new AvatarSprite(scene, 100, 900);
+    avatar.hold('default');
+    avatar.sync({ x: 100, y: 900, outfitId: 'cosy' });
+    expect([avatar.shownOutfitId, avatar.anims.currentAnim?.key]).toEqual(['default', 'avatar-default-idle-down']);
+    avatar.hold(null);
+    avatar.sync({ x: 100, y: 900 });
+    expect([avatar.shownOutfitId, avatar.anims.currentAnim?.key]).toEqual(['cosy', 'avatar-cosy-idle-down']);
   });
 });
 
@@ -79,10 +125,10 @@ describe('presentation §6.2 avatar clips in-scene', () => {
     for (let i = 0; i < 10; i++) scene.update(0, 16);
     expect(context.store.getState().avatar.facing).toBe('left');
     expect(scene.avatar.x).toBeLessThan(x0);
-    expect(playing(scene.avatar)).toEqual(['avatar-walk-side', true]);
+    expect(playing(scene.avatar)).toEqual(['avatar-default-walk-side', true]);
     window.dispatchEvent(new KeyboardEvent('keyup', { code: 'KeyA' }));
     scene.update(0, 16); scene.update(0, 16);
-    expect(playing(scene.avatar)).toEqual(['avatar-idle-side', true]);
+    expect(playing(scene.avatar)).toEqual(['avatar-default-idle-side', true]);
     context.keyboard.destroy();
   });
 });

@@ -3,7 +3,7 @@ import './setup';
 import { afterEach, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { AssetManifest } from '../../src/content/schema/assets';
-import { clipKey, registerClips, useClipKey } from '@view/anims';
+import { avatarSheetsOf, clipKey, outfitClipKey, registerClips, useClipKey } from '@view/anims';
 import { VerbsSchema } from '../../src/content/schema/verbs';
 import { createGame, destroyGame } from './helper';
 const manifest = AssetManifest.parse(JSON.parse(readFileSync('public/assets/manifest.json', 'utf8')));
@@ -16,7 +16,11 @@ function addSheet(scene: Phaser.Scene, id: string) {
 }
 it('derives §1.4 animation keys', () => {
   expect(clipKey('pets/dog-sheet', 'idle')).toBe('pet-dog-idle');
-  expect(clipKey('player/avatar-sheet', 'walk-side')).toBe('avatar-walk-side');
+  expect(clipKey('player/avatar-sheet', 'walk-side')).toBe('avatar-default-walk-side');
+  // WORK-037-3 (Q11): outfit sheets are keyed by the outfit id from content.outfits
+  const sheets = avatarSheetsOf([{ id: 'default', sheet: 'player/avatar-sheet' }, { id: 'cosy', sheet: 'player/avatar-cosy-sheet' }]);
+  expect(clipKey('player/avatar-cosy-sheet', 'idle-down', sheets)).toBe('avatar-cosy-idle-down');
+  expect(clipKey('player/avatar-cosy-sheet', 'idle-down')).toBeUndefined();
   expect(clipKey('world/dust-poof', 'dust')).toBe('dust');
   expect(clipKey('charms/lamp', 'idle')).toBeUndefined();
 });
@@ -67,9 +71,19 @@ it('VERIFY-ASSET-005 / gate fork Q-A HEADLESS: owl perch maps to pet-owl-use-per
 });
 it('registers avatar and dust keys with frameRate timing', async () => {
   const scene = await createGame();
-  expect(registerClips(scene, addSheet(scene, 'player/avatar-sheet'))).toEqual(['avatar-idle-down', 'avatar-idle-up', 'avatar-idle-side', 'avatar-walk-down', 'avatar-walk-up', 'avatar-walk-side']);
-  expect(scene.anims.get('avatar-walk-side')!.frameRate).toBe(10);
-  expect(scene.anims.get('avatar-idle-down')!.frames.map(f => f.duration)).toEqual([2600, 80, 120, 80]);
+  expect(registerClips(scene, addSheet(scene, 'player/avatar-sheet'))).toEqual(['avatar-default-idle-down', 'avatar-default-idle-up', 'avatar-default-idle-side', 'avatar-default-walk-down', 'avatar-default-walk-up', 'avatar-default-walk-side']);
+  expect(scene.anims.get('avatar-default-walk-side')!.frameRate).toBe(10);
+  expect(scene.anims.get('avatar-default-idle-down')!.frames.map(f => f.duration)).toEqual([2600, 80, 120, 80]);
   expect(registerClips(scene, addSheet(scene, 'world/dust-poof'))).toEqual(['dust']);
   expect(scene.anims.get('dust')!.frameRate).toBe(18);
+});
+
+it('WORK-037-3 (Q11): every outfit sheet registers avatar-<outfitId>-<clip>; a missing outfit falls back to the default keys', async () => {
+  const scene = await createGame();
+  const sheets = avatarSheetsOf(JSON.parse(readFileSync('src/content/outfits.json', 'utf8')).outfits);
+  for (const id of ['player/avatar-sheet', 'player/avatar-cosy-sheet', 'player/avatar-garden-sheet']) registerClips(scene, addSheet(scene, id), sheets);
+  for (const outfit of ['default', 'cosy', 'garden']) for (const clip of ['idle', 'walk']) for (const row of ['down', 'up', 'side'])
+    expect(scene.anims.exists(`avatar-${outfit}-${clip}-${row}`)).toBe(true);
+  expect(outfitClipKey(scene.anims, 'cosy', 'walk-up')).toBe('avatar-cosy-walk-up');
+  expect(outfitClipKey(scene.anims, 'unknown', 'walk-up')).toBe('avatar-default-walk-up');
 });
