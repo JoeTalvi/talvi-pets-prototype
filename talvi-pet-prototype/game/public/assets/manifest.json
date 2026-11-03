@@ -3220,6 +3220,66 @@
       "recordedBy": "WORK-034-1 / TASK-218",
       "history": [],
       "note": "WORK-034-1 MILESTONE-009 batch tier2-m4 under DEC-040/DEC-044/DEC-048; site state base: cleared plot (two mulch beds, stepping-stone path, low stone edge), shown once unlocked; charms sit on it; canvas 640x320, base-centre pivot (origin 0.5, 1), world anchor {x: 380, y: 955}, ground decal above the ground tiles and below everything else; creative verdict at the MILESTONE-009 play session; not status accepted"
+    },
+    {
+      "id": "sfx/tick",
+      "type": "audio",
+      "urls": [
+        "sfx/tick.m4a",
+        "sfx/tick.ogg"
+      ],
+      "durationMs": 93,
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "tools/assets/sfx-placeholders.mjs (SHA-256 2f1e3e2fcdf458095e073190371a40bd1a15ea79c38113ae1ee48df3f0cb337a) + tools/assets/sfx-placeholders-v2.config.json (SHA-256 a3801e57f08f5257a8673319221affef3717047c66927bcb4b8a25e2411981da), entry tick: deterministic sine/envelope tone (one soft tuned marimba-like note (C6 with a quiet 4th harmonic), pitch-stepped 0/+4/+7/+12 by detune); OGG helper tools/assets/sfx-ogg-sndfile.py (SHA-256 18cca28917bd875b2c629a3e782f7f40c2e6001fe6de6d289eb5db2747b4fa38)",
+      "generator": "node waveform (tools/assets/sfx-placeholders.mjs), afconvert AAC 96k, libsndfile Vorbis (tools/assets/sfx-ogg-sndfile.py)",
+      "postProcess": "44100 Hz mono PCM 36 ms, peak -8.0 dBFS, no leading silence (4 ms attack from sample 0, 10 ms fade-out); afconvert AAC 96k (-c 1); OGG route B libsndfile Vorbis default quality via tools/assets/sfx-ogg-sndfile.py (route A ffmpeg vorbis rejects mono); WAV SHA-256 eb9cc3044ece7ef898cc6c80c32ff853bd18b2dd5f466a3e8b9a643fb08c9b0e; measured: m4a 92.9 ms / 4536 B / -8.06 dB, ogg 36.0 ms / 3924 B / -8.36 dB; limit 100 ms (DEC-049 delegation)",
+      "batch": "tier2-m5",
+      "hash": "ed96fc7b0985a5aa6fcddbc347fdcf9ee768729143c256077445c66a3efe49e7",
+      "recordedAt": "2026-11-02",
+      "recordedBy": "WORK-038-1 / TASK-238",
+      "history": [],
+      "note": "WORK-038-1 DEC-049 tier2-m5 batch under gate Q20(a) (scripted tones, zero spend, no audio-generation service); replaceable by id with no code change (ASSET-018); creative verdict at the play session; not status accepted"
+    },
+    {
+      "id": "sfx/riser",
+      "type": "audio",
+      "urls": [
+        "sfx/riser.m4a",
+        "sfx/riser.ogg"
+      ],
+      "durationMs": 441,
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "tools/assets/sfx-placeholders.mjs (SHA-256 2f1e3e2fcdf458095e073190371a40bd1a15ea79c38113ae1ee48df3f0cb337a) + tools/assets/sfx-placeholders-v2.config.json (SHA-256 a3801e57f08f5257a8673319221affef3717047c66927bcb4b8a25e2411981da), entry riser: deterministic sine/envelope tone (soft upward shimmer: C5 -> C6 glide swelling in, a fifth above for shimmer); OGG helper tools/assets/sfx-ogg-sndfile.py (SHA-256 18cca28917bd875b2c629a3e782f7f40c2e6001fe6de6d289eb5db2747b4fa38)",
+      "generator": "node waveform (tools/assets/sfx-placeholders.mjs), afconvert AAC 96k, libsndfile Vorbis (tools/assets/sfx-ogg-sndfile.py)",
+      "postProcess": "44100 Hz mono PCM 390 ms, peak -7.0 dBFS, no leading silence (4 ms attack from sample 0, 10 ms fade-out); afconvert AAC 96k (-c 1); OGG route B libsndfile Vorbis default quality via tools/assets/sfx-ogg-sndfile.py (route A ffmpeg vorbis rejects mono); WAV SHA-256 31f5b7e582e1f056d3817deee8e61b314b7ba0821f46cf3aabcd50d0d88f9632; measured: m4a 441.2 ms / 5968 B / -7.07 dB, ogg 390.0 ms / 5074 B / -7.06 dB; limit 500 ms (DEC-049 delegation)",
+      "batch": "tier2-m5",
+      "hash": "9a03754cc2d68b202118650e5c7bc07c1868f8a3b5a4d97e1254c76bc6cfdc38",
+      "recordedAt": "2026-11-02",
+      "recordedBy": "WORK-038-1 / TASK-238",
+      "history": [],
+      "note": "WORK-038-1 DEC-049 tier2-m5 batch under gate Q20(a) (scripted tones, zero spend, no audio-generation service); replaceable by id with no code change (ASSET-018); creative verdict at the play session; not status accepted"
+    },
+    {
+      "id": "sfx/reveal",
+      "type": "audio",
+      "urls": [
+        "sfx/reveal.m4a",
+        "sfx/reveal.ogg"
+      ],
+      "durationMs": 348,
+      "status": "ai-placeholder",
+      "origin": "authored",
+      "source": "tools/assets/sfx-placeholders.mjs (SHA-256 2f1e3e2fcdf458095e073190371a40bd1a15ea79c38113ae1ee48df3f0cb337a) + tools/assets/sfx-placeholders-v2.config.json (SHA-256 a3801e57f08f5257a8673319221affef3717047c66927bcb4b8a25e2411981da), entry reveal: deterministic sine/envelope tone (sparkle chime: G6 C7 E7 in quick succession, bell-like); OGG helper tools/assets/sfx-ogg-sndfile.py (SHA-256 18cca28917bd875b2c629a3e782f7f40c2e6001fe6de6d289eb5db2747b4fa38)",
+      "generator": "node waveform (tools/assets/sfx-placeholders.mjs), afconvert AAC 96k, libsndfile Vorbis (tools/assets/sfx-ogg-sndfile.py)",
+      "postProcess": "44100 Hz mono PCM 300 ms, peak -5.0 dBFS, no leading silence (4 ms attack from sample 0, 10 ms fade-out); afconvert AAC 96k (-c 1); OGG route B libsndfile Vorbis default quality via tools/assets/sfx-ogg-sndfile.py (route A ffmpeg vorbis rejects mono); WAV SHA-256 58f99cd5a70840d1abfc4439ca4ccc4d70e6022702e2145eb088adca76654262; measured: m4a 348.3 ms / 5694 B / -5.01 dB, ogg 300.0 ms / 5099 B / -5.20 dB; limit 400 ms (DEC-049 delegation)",
+      "batch": "tier2-m5",
+      "hash": "23ba7a50e12098423c00e0397796f8cdb2c5a41b060e14bead955ada6e08f25c",
+      "recordedAt": "2026-11-02",
+      "recordedBy": "WORK-038-1 / TASK-238",
+      "history": [],
+      "note": "WORK-038-1 DEC-049 tier2-m5 batch under gate Q20(a) (scripted tones, zero spend, no audio-generation service); replaceable by id with no code change (ASSET-018); creative verdict at the play session; not status accepted"
     }
   ]
 }
